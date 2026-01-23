@@ -49,8 +49,11 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
   )
 
   // Form with Zod validation
+  // Use type assertion to handle the conditional schema - cedula is always in the form
+  // but only validated on create. The disabled field prevents changes on edit.
   const form = useForm<PatientFormData>({
-    resolver: zodResolver(isEdit ? patientUpdateSchema : patientSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(isEdit ? patientUpdateSchema : patientSchema) as any,
     defaultValues: {
       cedula: '',
       nombre: '',

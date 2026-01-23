@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
-**Current focus:** Phase 2 - Patients (COMPLETE)
+**Current focus:** Phase 3 - Appointments
 
 ## Current Position
 
-Phase: 2 of 9 (Patients)
-Plan: 7 of 7 complete in current phase
-Status: Phase complete
-Last activity: 2026-01-23 — Completed 02-07-PLAN.md (Patient detail page with timeline)
+Phase: 3 of 9 (Appointments)
+Plan: 1 of 7 complete in current phase
+Status: In progress
+Last activity: 2026-01-23 — Completed 03-01-PLAN.md (FullCalendar + appointments table)
 
-Progress: [████████░░] ~50%
+Progress: [██████████░░░░░░░░░░] ~55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 5 min
-- Total execution time: 54 min
+- Total execution time: 59 min
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [████████░░] ~50%
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
+| 03-appointments | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (3 min), 02-04 (4 min), 02-05 (4 min), 02-06 (4 min), 02-07 (3 min)
-- Trend: Consistent ~3-4 min for focused implementation tasks
+- Last 5 plans: 02-04 (4 min), 02-05 (4 min), 02-06 (4 min), 02-07 (3 min), 03-01 (5 min)
+- Trend: Consistent ~4-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -77,12 +78,17 @@ Recent decisions affecting current work:
 - [02-07]: Timeline supports future event types (payment, appointment, procedure) via type union
 - [02-07]: Empty state placeholder mentions future features for user awareness
 - [02-07]: Parallel fetching via Promise.all for patient + timeline data
+- [03-01]: Used btree_gist extension for EXCLUDE USING gist constraint
+- [03-01]: appointment_status enum with 7 states matches workflow requirements
+- [03-01]: Exclusion constraint only applies to active appointments (not cancelada/no_asistio)
+- [03-01]: RLS policies use EXISTS subquery against user_roles table
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
+- [ ] Apply 007_appointments.sql migration to Supabase
 
 ### Blockers/Concerns
 
@@ -90,9 +96,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T22:04:00Z
-Stopped at: Completed 02-07-PLAN.md (Patient detail page with timeline) - Phase 2 complete
+Last session: 2026-01-23T22:55:35Z
+Stopped at: Completed 03-01-PLAN.md (FullCalendar + appointments table)
 Resume file: None
 
 ---
-*Phase 2 (Patients) complete. Next step: Phase 3 (Appointments) or next priority phase*
+*Phase 3 (Appointments) in progress. Next: 03-02 (TypeScript types and queries)*

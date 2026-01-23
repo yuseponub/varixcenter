@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 2 of 9 (Patients)
-Plan: 3 of 7 complete in current phase
+Plan: 5 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 02-03-PLAN.md (Zod validation schemas and Supabase query functions)
+Last activity: 2026-01-23 — Completed 02-05-PLAN.md (Patient list page with search and table)
 
-Progress: [██████░░░░] ~30%
+Progress: [███████░░░] ~40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 6 min
-- Total execution time: 39 min
+- Total plans completed: 9
+- Average duration: 5 min
+- Total execution time: 47 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
-| 02-patients | 3 | 12 min | 4 min |
+| 02-patients | 5 | 20 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (5 min), 02-02 (4 min), 02-01 (5 min), 02-03 (3 min)
+- Last 5 plans: 02-02 (4 min), 02-01 (5 min), 02-03 (3 min), 02-04 (4 min), 02-05 (4 min)
 - Trend: Consistent ~3-5 min for focused implementation tasks
 
 *Updated after each plan completion*
@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 - [02-03]: All validation messages in Spanish for Colombian users
 - [02-03]: patientUpdateSchema.omit({ cedula: true }) for Zod-level immutability
 - [02-03]: ILIKE with .or() for multi-field patient search
+- [02-05]: 300ms debounce for search balances responsiveness vs server load
+- [02-05]: URL params for search enables shareable/bookmarkable searches
+- [02-05]: Spanish locale (es-CO) for date formatting in tables
 
 ### Pending Todos
 
@@ -78,9 +81,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T21:48:00Z
-Stopped at: Completed 02-03-PLAN.md (Zod validation schemas and Supabase query functions)
+Last session: 2026-01-23T21:56:00Z
+Stopped at: Completed 02-05-PLAN.md (Patient list page with search and table)
 Resume file: None
 
 ---
-*Next step: Execute 02-04-PLAN.md (Patient server actions)*
+*Next step: Execute 02-06-PLAN.md (Patient detail and create pages)*

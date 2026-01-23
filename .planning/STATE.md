@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 3 of 9 (Appointments)
-Plan: 3 of 7 complete in current phase
+Plan: 4 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 03-02-PLAN.md (TypeScript types and state machine)
+Last activity: 2026-01-23 — Completed 03-04-PLAN.md (Appointment server actions)
 
-Progress: [████████████░░░░░░░░] ~59%
+Progress: [████████████░░░░░░░░] ~63%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 5 min
-- Total execution time: 64 min
+- Total plans completed: 15
+- Average duration: 4 min
+- Total execution time: 65 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████████░░░░░░░░] ~59%
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
-| 03-appointments | 3 | 10 min | 3 min |
+| 03-appointments | 4 | 11 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-06 (4 min), 02-07 (3 min), 03-01 (5 min), 03-03 (2 min), 03-02 (3 min)
-- Trend: Consistent ~3-5 min for focused implementation tasks
+- Last 5 plans: 02-07 (3 min), 03-01 (5 min), 03-03 (2 min), 03-02 (3 min), 03-04 (1 min)
+- Trend: Consistent ~1-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -89,6 +89,10 @@ Recent decisions affecting current work:
 - [03-03]: doctors_view uses SECURITY DEFINER to access auth.users without service role
 - [03-03]: STATUS_COLORS mapping for FullCalendar event styling by appointment state
 - [03-03]: CalendarEvent transformation pattern with extendedProps for metadata
+- [03-04]: ActionState type extended with data field for returning created entity ID
+- [03-04]: State machine validation happens server-side before DB update
+- [03-04]: 23P01 exclusion violation returns Spanish user-friendly message about overlap
+- [03-04]: deleteAppointment suggests using cancel for non-admins
 
 ### Pending Todos
 
@@ -103,9 +107,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T23:00:55Z
-Stopped at: Completed 03-02-PLAN.md (TypeScript types and state machine)
+Last session: 2026-01-23T23:05:00Z
+Stopped at: Completed 03-04-PLAN.md (Appointment server actions)
 Resume file: None
 
 ---
-*Phase 3 (Appointments) in progress. Plans 01-03 complete. Next: 03-04 (Server actions)*
+*Phase 3 (Appointments) in progress. Plans 01-04 complete. Next: 03-05 (Calendar UI)*

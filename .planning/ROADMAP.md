@@ -52,10 +52,16 @@ Plans:
   3. Usuario puede buscar pacientes por cedula, nombre parcial, o celular
   4. Perfil de paciente muestra timeline vacio (se llenara con pagos/citas en fases posteriores)
   5. Registro incluye contacto de emergencia obligatorio
-**Plans**: TBD
+**Plans**: 7 plans in 4 waves
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Install npm dependencies and shadcn/ui components
+- [ ] 02-02-PLAN.md — Database schema: patients table with RLS and immutable cedula trigger
+- [ ] 02-03-PLAN.md — Zod validation schemas and Supabase query functions
+- [ ] 02-04-PLAN.md — Server actions (create/update) and patient form component
+- [ ] 02-05-PLAN.md — Patient list page with search and data table
+- [ ] 02-06-PLAN.md — New patient and edit patient pages
+- [ ] 02-07-PLAN.md — Patient detail page with timeline component
 
 ### Phase 3: Appointments
 **Goal**: Usuario puede gestionar agenda de citas con vista por dia/semana y filtro por medico
@@ -164,7 +170,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Foundation | 0/5 | Planned | - |
-| 2. Patients | 0/? | Not started | - |
+| 2. Patients | 0/7 | Planned | - |
 | 3. Appointments | 0/? | Not started | - |
 | 4. Payments Core | 0/? | Not started | - |
 | 5. Cash Closing | 0/? | Not started | - |

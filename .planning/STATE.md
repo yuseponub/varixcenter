@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 2 of 9 (Patients)
-Plan: 2 of 7 complete in current phase
+Plan: 3 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 02-01-PLAN.md (npm dependencies and shadcn/ui)
+Last activity: 2026-01-23 — Completed 02-03-PLAN.md (Zod validation schemas and Supabase query functions)
 
-Progress: [█████░░░░░] ~25%
+Progress: [██████░░░░] ~30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 6 min
-- Total execution time: 36 min
+- Total execution time: 39 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
-| 02-patients | 2 | 9 min | 5 min |
+| 02-patients | 3 | 12 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (2 min), 01-03 (5 min), 02-02 (4 min), 02-01 (5 min)
-- Trend: Consistent ~2-5 min for focused implementation tasks
+- Last 5 plans: 01-03 (5 min), 02-02 (4 min), 02-01 (5 min), 02-03 (3 min)
+- Trend: Consistent ~3-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - [02-02]: cedula omitted from TypeScript Update type for compile-time immutability
 - [02-02]: All staff roles can INSERT/UPDATE patients, only admin can DELETE
 - [02-02]: Emergency contact fields are required (NOT NULL)
+- [02-03]: All validation messages in Spanish for Colombian users
+- [02-03]: patientUpdateSchema.omit({ cedula: true }) for Zod-level immutability
+- [02-03]: ILIKE with .or() for multi-field patient search
 
 ### Pending Todos
 
@@ -75,9 +78,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T21:35:56Z
-Stopped at: Completed 02-01-PLAN.md (npm dependencies and shadcn/ui)
+Last session: 2026-01-23T21:48:00Z
+Stopped at: Completed 02-03-PLAN.md (Zod validation schemas and Supabase query functions)
 Resume file: None
 
 ---
-*Next step: Execute 02-03-PLAN.md (Zod validation schemas and Supabase query functions)*
+*Next step: Execute 02-04-PLAN.md (Patient server actions)*

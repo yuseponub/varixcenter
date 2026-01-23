@@ -72,10 +72,16 @@ Plans:
   2. Usuario puede filtrar agenda por Dr. Ciro o Dra. Carolina
   3. Citas transicionan por estados: programada, confirmada, en_sala, en_atencion, completada
   4. Usuario puede crear cita vinculada a paciente existente
-**Plans**: TBD
+**Plans**: 7 plans in 4 waves
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — FullCalendar packages and appointments database schema
+- [ ] 03-02-PLAN.md — TypeScript types, state machine, and Zod schemas
+- [ ] 03-03-PLAN.md — Supabase appointment query functions
+- [ ] 03-04-PLAN.md — Server actions for appointment CRUD
+- [ ] 03-05-PLAN.md — Calendar components (FullCalendar wrapper, doctor filter, status badge)
+- [ ] 03-06-PLAN.md — Calendar page with data fetching and appointment dialog
+- [ ] 03-07-PLAN.md — Appointment form and new appointment page
 
 ### Phase 4: Payments Core
 **Goal**: Registros de pago son INMUTABLES — no UPDATE, no DELETE, solo anulacion por Admin con justificacion (CORE VALUE del proyecto)
@@ -170,8 +176,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Foundation | 0/5 | Planned | - |
-| 2. Patients | 7/7 | ✓ Complete | 2026-01-23 |
-| 3. Appointments | 0/? | Not started | - |
+| 2. Patients | 7/7 | Complete | 2026-01-23 |
+| 3. Appointments | 0/7 | Planned | - |
 | 4. Payments Core | 0/? | Not started | - |
 | 5. Cash Closing | 0/? | Not started | - |
 | 6. Medical Records | 0/? | Not started | - |

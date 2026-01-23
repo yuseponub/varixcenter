@@ -201,3 +201,27 @@ BEGIN
   END IF;
 END;
 $$;
+
+-- ============================================
+-- 10. DOCTORS VIEW
+-- ============================================
+
+-- View to get doctors list without requiring service role
+-- Joins user_roles with auth.users to get doctor names
+-- Security: Uses SECURITY DEFINER to allow access to auth.users
+CREATE OR REPLACE VIEW public.doctors_view
+WITH (security_invoker = false)
+AS
+SELECT
+  ur.user_id AS id,
+  u.email,
+  COALESCE(u.raw_user_meta_data->>'nombre', split_part(u.email, '@', 1)) AS nombre,
+  COALESCE(u.raw_user_meta_data->>'apellido', '') AS apellido
+FROM public.user_roles ur
+INNER JOIN auth.users u ON u.id = ur.user_id
+WHERE ur.role = 'medico';
+
+COMMENT ON VIEW public.doctors_view IS 'Vista de medicos para seleccion en citas - no requiere service role';
+
+-- Grant access to authenticated users
+GRANT SELECT ON public.doctors_view TO authenticated;

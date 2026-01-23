@@ -25,13 +25,65 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      // Tables will be generated after schema creation
-      // Example structure:
-      // patients: {
-      //   Row: { id: string; name: string; ... }
-      //   Insert: { id?: string; name: string; ... }
-      //   Update: { id?: string; name?: string; ... }
-      // }
+      patients: {
+        Row: {
+          id: string
+          cedula: string
+          nombre: string
+          apellido: string
+          celular: string
+          email: string | null
+          fecha_nacimiento: string | null
+          direccion: string | null
+          contacto_emergencia_nombre: string
+          contacto_emergencia_telefono: string
+          contacto_emergencia_parentesco: string
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          cedula: string
+          nombre: string
+          apellido: string
+          celular: string
+          email?: string | null
+          fecha_nacimiento?: string | null
+          direccion?: string | null
+          contacto_emergencia_nombre: string
+          contacto_emergencia_telefono: string
+          contacto_emergencia_parentesco: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          // cedula intentionally omitted - immutable
+          nombre?: string
+          apellido?: string
+          celular?: string
+          email?: string | null
+          fecha_nacimiento?: string | null
+          direccion?: string | null
+          contacto_emergencia_nombre?: string
+          contacto_emergencia_telefono?: string
+          contacto_emergencia_parentesco?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patients_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       // Views will be generated
@@ -40,8 +92,7 @@ export interface Database {
       // Functions will be generated
     }
     Enums: {
-      // Enums will be generated
-      // Example: user_role: 'admin' | 'medico' | 'enfermera' | 'secretaria'
+      user_role: 'admin' | 'medico' | 'enfermera' | 'secretaria'
     }
     CompositeTypes: {
       // Composite types will be generated

@@ -5,34 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
-**Current focus:** Phase 2 - Patients
+**Current focus:** Phase 2 - Patients (COMPLETE)
 
 ## Current Position
 
 Phase: 2 of 9 (Patients)
-Plan: 6 of 7 complete in current phase
-Status: In progress
-Last activity: 2026-01-23 — Completed 02-06-PLAN.md (Patient create and edit pages)
+Plan: 7 of 7 complete in current phase
+Status: Phase complete
+Last activity: 2026-01-23 — Completed 02-07-PLAN.md (Patient detail page with timeline)
 
-Progress: [████████░░] ~45%
+Progress: [████████░░] ~50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 5 min
-- Total execution time: 51 min
+- Total execution time: 54 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
-| 02-patients | 6 | 24 min | 4 min |
+| 02-patients | 7 | 27 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 02-03 (3 min), 02-04 (4 min), 02-05 (4 min), 02-06 (4 min)
-- Trend: Consistent ~3-5 min for focused implementation tasks
+- Last 5 plans: 02-03 (3 min), 02-04 (4 min), 02-05 (4 min), 02-06 (4 min), 02-07 (3 min)
+- Trend: Consistent ~3-4 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -74,6 +74,9 @@ Recent decisions affecting current work:
 - [02-06]: Edit page shows cedula in header with immutability notice
 - [02-06]: Breadcrumb includes patient name link to detail page
 - [02-06]: Null database values converted to empty strings for form compatibility
+- [02-07]: Timeline supports future event types (payment, appointment, procedure) via type union
+- [02-07]: Empty state placeholder mentions future features for user awareness
+- [02-07]: Parallel fetching via Promise.all for patient + timeline data
 
 ### Pending Todos
 
@@ -87,9 +90,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T22:05:00Z
-Stopped at: Completed 02-06-PLAN.md (Patient create and edit pages)
+Last session: 2026-01-23T22:04:00Z
+Stopped at: Completed 02-07-PLAN.md (Patient detail page with timeline) - Phase 2 complete
 Resume file: None
 
 ---
-*Next step: Execute 02-07-PLAN.md (Patient detail page with timeline)*
+*Phase 2 (Patients) complete. Next step: Phase 3 (Appointments) or next priority phase*

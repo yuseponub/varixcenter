@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 - [02-03]: All validation messages in Spanish for Colombian users
 - [02-03]: patientUpdateSchema.omit({ cedula: true }) for Zod-level immutability
 - [02-03]: ILIKE with .or() for multi-field patient search
+- [02-04]: ActionState type includes errors Record for field-level error display
+- [02-04]: Empty strings converted to null before database insert/update
+- [02-04]: Server action signature: (prevState, formData) for useActionState compatibility
 - [02-05]: 300ms debounce for search balances responsiveness vs server load
 - [02-05]: URL params for search enables shareable/bookmarkable searches
 - [02-05]: Spanish locale (es-CO) for date formatting in tables

@@ -112,15 +112,88 @@ export interface Database {
           }
         ]
       }
+      appointments: {
+        Row: {
+          id: string
+          patient_id: string
+          doctor_id: string
+          fecha_hora_inicio: string
+          fecha_hora_fin: string
+          estado: 'programada' | 'confirmada' | 'en_sala' | 'en_atencion' | 'completada' | 'cancelada' | 'no_asistio'
+          notas: string | null
+          motivo_consulta: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          patient_id: string
+          doctor_id: string
+          fecha_hora_inicio: string
+          fecha_hora_fin: string
+          estado?: 'programada' | 'confirmada' | 'en_sala' | 'en_atencion' | 'completada' | 'cancelada' | 'no_asistio'
+          notas?: string | null
+          motivo_consulta?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          patient_id?: string
+          doctor_id?: string
+          fecha_hora_inicio?: string
+          fecha_hora_fin?: string
+          estado?: 'programada' | 'confirmada' | 'en_sala' | 'en_atencion' | 'completada' | 'cancelada' | 'no_asistio'
+          notas?: string | null
+          motivo_consulta?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
-      // Views will be generated
+      doctors_view: {
+        Row: {
+          id: string
+          email: string
+          nombre: string
+          apellido: string
+        }
+        Relationships: []
+      }
     }
     Functions: {
       // Functions will be generated
     }
     Enums: {
       user_role: 'admin' | 'medico' | 'enfermera' | 'secretaria'
+      appointment_status: 'programada' | 'confirmada' | 'en_sala' | 'en_atencion' | 'completada' | 'cancelada' | 'no_asistio'
     }
     CompositeTypes: {
       // Composite types will be generated

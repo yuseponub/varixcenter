@@ -7,6 +7,9 @@
 // Re-export Supabase database types
 export * from './supabase'
 
+// Re-export appointment types
+export * from './appointments'
+
 /**
  * User roles for the VarixClinic system.
  * Matches the roles defined in the Custom Access Token Hook.

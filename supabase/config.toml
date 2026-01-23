@@ -1,0 +1,64 @@
+# supabase/config.toml
+# Configuracion de desarrollo local para Supabase
+# Para usar: supabase start (requiere Docker)
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = false  # Solo admin puede crear usuarios para la clinica
+
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = false  # Sin confirmacion de email para usuarios internos de la clinica
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+
+# Custom Access Token Hook - CRITICO para control de acceso basado en roles
+# Este hook inyecta el rol del usuario en el JWT
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
+
+# Limitacion de tasa
+[auth.rate_limit]
+email_sent = 60  # emails por hora por usuario
+
+[realtime]
+enabled = true
+
+[analytics]
+enabled = false

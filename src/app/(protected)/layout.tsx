@@ -14,8 +14,17 @@ export default async function ProtectedLayout({
     redirect('/login')
   }
 
-  // Get role from app_metadata (injected by custom access token hook)
-  const role = user.app_metadata?.role ?? 'none'
+  // El rol viene del JWT (Custom Access Token Hook lo inyecta)
+  const { data: { session } } = await supabase.auth.getSession()
+  let role = 'none'
+  if (session?.access_token) {
+    try {
+      const payload = JSON.parse(Buffer.from(session.access_token.split('.')[1], 'base64').toString())
+      role = payload.app_metadata?.role ?? 'none'
+    } catch {
+      role = 'none'
+    }
+  }
   const roleLabels: Record<string, string> = {
     admin: 'Administrador',
     medico: 'Medico',

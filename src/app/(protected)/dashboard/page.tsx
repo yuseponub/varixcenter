@@ -3,8 +3,18 @@ import { createClient } from '@/lib/supabase/server'
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
 
-  const role = user?.app_metadata?.role ?? 'none'
+  // El rol viene del JWT (Custom Access Token Hook lo inyecta)
+  let role = 'none'
+  if (session?.access_token) {
+    try {
+      const payload = JSON.parse(Buffer.from(session.access_token.split('.')[1], 'base64').toString())
+      role = payload.app_metadata?.role ?? 'none'
+    } catch {
+      role = 'none'
+    }
+  }
 
   return (
     <div className="bg-white shadow rounded-lg p-6">

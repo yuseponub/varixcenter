@@ -13,7 +13,7 @@ Sistema de gestion para clinica de flebologia en Bucaramanga, Colombia. El proye
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Security Foundation** - Authentication, roles, RLS, and audit logging infrastructure
-- [ ] **Phase 2: Patients** - Patient registry with cedula as unique ID and search
+- [x] **Phase 2: Patients** - Patient registry with cedula as unique ID and search
 - [ ] **Phase 3: Appointments** - Calendar views and appointment state machine
 - [ ] **Phase 4: Payments Core** - Immutable payment records with receipt photos (CORE VALUE)
 - [ ] **Phase 5: Cash Closing** - Daily reconciliation and post-close lockdown
@@ -57,11 +57,11 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Install npm dependencies and shadcn/ui components
 - [x] 02-02-PLAN.md — Database schema: patients table with RLS and immutable cedula trigger
-- [ ] 02-03-PLAN.md — Zod validation schemas and Supabase query functions
-- [ ] 02-04-PLAN.md — Server actions (create/update) and patient form component
-- [ ] 02-05-PLAN.md — Patient list page with search and data table
-- [ ] 02-06-PLAN.md — New patient and edit patient pages
-- [ ] 02-07-PLAN.md — Patient detail page with timeline component
+- [x] 02-03-PLAN.md — Zod validation schemas and Supabase query functions
+- [x] 02-04-PLAN.md — Server actions (create/update) and patient form component
+- [x] 02-05-PLAN.md — Patient list page with search and data table
+- [x] 02-06-PLAN.md — New patient and edit patient pages
+- [x] 02-07-PLAN.md — Patient detail page with timeline component
 
 ### Phase 3: Appointments
 **Goal**: Usuario puede gestionar agenda de citas con vista por dia/semana y filtro por medico
@@ -170,7 +170,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Foundation | 0/5 | Planned | - |
-| 2. Patients | 2/7 | In progress | - |
+| 2. Patients | 7/7 | ✓ Complete | 2026-01-23 |
 | 3. Appointments | 0/? | Not started | - |
 | 4. Payments Core | 0/? | Not started | - |
 | 5. Cash Closing | 0/? | Not started | - |

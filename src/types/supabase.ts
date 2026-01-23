@@ -25,6 +25,34 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      audit_log: {
+        Row: {
+          id: string
+          table_name: string
+          record_id: string
+          action: string
+          old_data: Json | null
+          new_data: Json | null
+          changed_fields: string[] | null
+          changed_by: string | null
+          changed_at: string
+        }
+        Insert: {
+          id?: string
+          table_name: string
+          record_id: string
+          action: string
+          old_data?: Json | null
+          new_data?: Json | null
+          changed_fields?: string[] | null
+          changed_by?: string | null
+          changed_at?: string
+        }
+        Update: {
+          // audit_log is immutable - no UPDATE allowed
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           id: string

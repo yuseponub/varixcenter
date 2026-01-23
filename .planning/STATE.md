@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 1 of 9 (Security Foundation)
-Plan: 3 of 5 complete in current phase
+Plan: 4 of 5 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 01-04-PLAN.md (Audit & RLS Verification)
+Last activity: 2026-01-23 — Completed 01-03-PLAN.md (Middleware & Route Protection)
 
-Progress: [███░░░░░░░] ~15%
+Progress: [████░░░░░░] ~20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 8 min
-- Total execution time: 22 min
+- Total plans completed: 4
+- Average duration: 7 min
+- Total execution time: 27 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-security-foundation | 3 | 22 min | 7 min |
+| 01-security-foundation | 4 | 27 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (18 min), 01-02 (2 min), 01-04 (2 min)
-- Trend: Stabilizing at ~2-5 min for database migrations
+- Last 5 plans: 01-01 (18 min), 01-02 (2 min), 01-04 (2 min), 01-03 (5 min)
+- Trend: Stabilizing at ~2-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -53,11 +53,15 @@ Recent decisions affecting current work:
 - [01-02]: No UPDATE/DELETE policies on audit_log = database-enforced immutability
 - [01-04]: Use tr_audit_{tablename} naming convention for audit triggers
 - [01-04]: bootstrap_first_admin() allows first-time setup without SQL access
+- [01-03]: Use getUser() not getSession() for secure JWT validation in middleware
+- [01-03]: Role read from app_metadata for security (set by access token hook)
+- [01-03]: Spanish UI with route groups: (auth) for login, (protected) for dashboard
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
+- [ ] Create test user in Supabase Auth to verify login flow
 
 ### Blockers/Concerns
 
@@ -65,9 +69,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T20:08:14Z
-Stopped at: Completed 01-04-PLAN.md (Audit & RLS Verification)
+Last session: 2026-01-23T20:12:00Z
+Stopped at: Completed 01-03-PLAN.md (Middleware & Route Protection)
 Resume file: None
 
 ---
-*Next step: Execute 01-03-PLAN.md (Middleware & Route Protection) or 01-05-PLAN.md (Config & Environment)*
+*Next step: Execute 01-05-PLAN.md (Config & Environment)*

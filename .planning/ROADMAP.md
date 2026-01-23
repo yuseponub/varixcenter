@@ -33,10 +33,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Sistema distingue 4 roles (Admin, Medico, Enfermera, Secretaria) con permisos diferenciados
   3. Toda accion de usuario queda registrada en log con quien, que, cuando, IP
   4. RLS esta habilitado en TODAS las tablas (verificable con Supabase Security Advisor)
-**Plans**: TBD
+**Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Initialize Next.js 15 with Supabase SSR clients
+- [ ] 01-02-PLAN.md — Database schema: user_roles, audit_log, custom access token hook
+- [ ] 01-03-PLAN.md — Auth middleware, login page, and protected routes
+- [ ] 01-04-PLAN.md — Audit triggers and RLS verification tooling
+- [ ] 01-05-PLAN.md — Setup docs and verification checkpoint
 
 ### Phase 2: Patients
 **Goal**: Usuario puede registrar y buscar pacientes con cedula como identificador unico inmutable
@@ -159,7 +163,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Security Foundation | 0/? | Not started | - |
+| 1. Security Foundation | 0/5 | Planned | - |
 | 2. Patients | 0/? | Not started | - |
 | 3. Appointments | 0/? | Not started | - |
 | 4. Payments Core | 0/? | Not started | - |

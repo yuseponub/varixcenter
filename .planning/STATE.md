@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 3 of 9 (Appointments)
-Plan: 1 of 7 complete in current phase
+Plan: 2 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 03-01-PLAN.md (FullCalendar + appointments table)
+Last activity: 2026-01-23 — Completed 03-03-PLAN.md (appointment queries + doctors_view)
 
-Progress: [██████████░░░░░░░░░░] ~55%
+Progress: [███████████░░░░░░░░░] ~57%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 5 min
-- Total execution time: 59 min
+- Total execution time: 61 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████████░░░░░░░░░░] ~55%
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
-| 03-appointments | 1 | 5 min | 5 min |
+| 03-appointments | 2 | 7 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (4 min), 02-05 (4 min), 02-06 (4 min), 02-07 (3 min), 03-01 (5 min)
-- Trend: Consistent ~4-5 min for focused implementation tasks
+- Last 5 plans: 02-05 (4 min), 02-06 (4 min), 02-07 (3 min), 03-01 (5 min), 03-03 (2 min)
+- Trend: Consistent ~3-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -82,6 +82,9 @@ Recent decisions affecting current work:
 - [03-01]: appointment_status enum with 7 states matches workflow requirements
 - [03-01]: Exclusion constraint only applies to active appointments (not cancelada/no_asistio)
 - [03-01]: RLS policies use EXISTS subquery against user_roles table
+- [03-03]: doctors_view uses SECURITY DEFINER to access auth.users without service role
+- [03-03]: STATUS_COLORS mapping for FullCalendar event styling by appointment state
+- [03-03]: CalendarEvent transformation pattern with extendedProps for metadata
 
 ### Pending Todos
 
@@ -96,9 +99,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T22:55:35Z
-Stopped at: Completed 03-01-PLAN.md (FullCalendar + appointments table)
+Last session: 2026-01-23T22:59:42Z
+Stopped at: Completed 03-03-PLAN.md (appointment queries + doctors_view)
 Resume file: None
 
 ---
-*Phase 3 (Appointments) in progress. Next: 03-02 (TypeScript types and queries)*
+*Phase 3 (Appointments) in progress. Next: 03-04 (Server actions)*

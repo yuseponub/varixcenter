@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 3 of 9 (Appointments)
-Plan: 4 of 7 complete in current phase
+Plan: 5 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 03-04-PLAN.md (Appointment server actions)
+Last activity: 2026-01-23 — Completed 03-05-PLAN.md (Calendar UI components)
 
-Progress: [████████████░░░░░░░░] ~63%
+Progress: [████████████████░░░░] ~67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 4 min
-- Total execution time: 65 min
+- Total execution time: 71 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████████░░░░░░░░] ~63%
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
-| 03-appointments | 4 | 11 min | 3 min |
+| 03-appointments | 5 | 17 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-07 (3 min), 03-01 (5 min), 03-03 (2 min), 03-02 (3 min), 03-04 (1 min)
-- Trend: Consistent ~1-5 min for focused implementation tasks
+- Last 5 plans: 03-01 (5 min), 03-03 (2 min), 03-02 (3 min), 03-04 (1 min), 03-05 (6 min)
+- Trend: Consistent ~1-6 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -93,6 +93,10 @@ Recent decisions affecting current work:
 - [03-04]: State machine validation happens server-side before DB update
 - [03-04]: 23P01 exclusion violation returns Spanish user-friendly message about overlap
 - [03-04]: deleteAppointment suggests using cancel for non-admins
+- [03-05]: 300ms longPressDelay for mobile-friendly drag-drop without tap interference
+- [03-05]: eventDurationEditable: false - appointments can only be moved, not resized
+- [03-05]: DoctorFilter uses 'all' string value for SelectItem compatibility
+- [03-05]: StatusBadge supports 'sm' and 'default' size variants
 
 ### Pending Todos
 
@@ -107,9 +111,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T23:05:00Z
-Stopped at: Completed 03-04-PLAN.md (Appointment server actions)
+Last session: 2026-01-23T23:09:52Z
+Stopped at: Completed 03-05-PLAN.md (Calendar UI components)
 Resume file: None
 
 ---
-*Phase 3 (Appointments) in progress. Plans 01-04 complete. Next: 03-05 (Calendar UI)*
+*Phase 3 (Appointments) in progress. Plans 01-05 complete. Next: 03-06 (Calendar page)*

@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
-**Current focus:** Phase 1 - Security Foundation
+**Current focus:** Phase 2 - Patients
 
 ## Current Position
 
-Phase: 1 of 9 (Security Foundation)
-Plan: 4 of 5 complete in current phase
+Phase: 2 of 9 (Patients)
+Plan: 2 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 01-03-PLAN.md (Middleware & Route Protection)
+Last activity: 2026-01-23 — Completed 02-02-PLAN.md (Patients Table Migration)
 
-Progress: [████░░░░░░] ~20%
+Progress: [█████░░░░░] ~25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 7 min
-- Total execution time: 27 min
+- Total plans completed: 5
+- Average duration: 6 min
+- Total execution time: 31 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
+| 02-patients | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (18 min), 01-02 (2 min), 01-04 (2 min), 01-03 (5 min)
-- Trend: Stabilizing at ~2-5 min for focused implementation tasks
+- Last 5 plans: 01-02 (2 min), 01-04 (2 min), 01-03 (5 min), 02-02 (4 min)
+- Trend: Consistent ~2-5 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -56,6 +57,9 @@ Recent decisions affecting current work:
 - [01-03]: Use getUser() not getSession() for secure JWT validation in middleware
 - [01-03]: Role read from app_metadata for security (set by access token hook)
 - [01-03]: Spanish UI with route groups: (auth) for login, (protected) for dashboard
+- [02-02]: cedula omitted from TypeScript Update type for compile-time immutability
+- [02-02]: All staff roles can INSERT/UPDATE patients, only admin can DELETE
+- [02-02]: Emergency contact fields are required (NOT NULL)
 
 ### Pending Todos
 
@@ -69,9 +73,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T20:12:00Z
-Stopped at: Completed 01-03-PLAN.md (Middleware & Route Protection)
+Last session: 2026-01-23T21:34:00Z
+Stopped at: Completed 02-02-PLAN.md (Patients Table Migration)
 Resume file: None
 
 ---
-*Next step: Execute 01-05-PLAN.md (Config & Environment)*
+*Next step: Execute 02-03-PLAN.md (Patients API Routes)*

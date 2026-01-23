@@ -12,26 +12,26 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 Phase: 2 of 9 (Patients)
 Plan: 2 of 7 complete in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 02-02-PLAN.md (Patients Table Migration)
+Last activity: 2026-01-23 — Completed 02-01-PLAN.md (npm dependencies and shadcn/ui)
 
 Progress: [█████░░░░░] ~25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 6 min
-- Total execution time: 31 min
+- Total execution time: 36 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-security-foundation | 4 | 27 min | 7 min |
-| 02-patients | 1 | 4 min | 4 min |
+| 02-patients | 2 | 9 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (2 min), 01-04 (2 min), 01-03 (5 min), 02-02 (4 min)
+- Last 5 plans: 01-04 (2 min), 01-03 (5 min), 02-02 (4 min), 02-01 (5 min)
 - Trend: Consistent ~2-5 min for focused implementation tasks
 
 *Updated after each plan completion*
@@ -57,6 +57,8 @@ Recent decisions affecting current work:
 - [01-03]: Use getUser() not getSession() for secure JWT validation in middleware
 - [01-03]: Role read from app_metadata for security (set by access token hook)
 - [01-03]: Spanish UI with route groups: (auth) for login, (protected) for dashboard
+- [02-01]: Use shadcn/ui with Tailwind CSS v4 for component library
+- [02-01]: Form validation pattern: zod schema + react-hook-form + @hookform/resolvers
 - [02-02]: cedula omitted from TypeScript Update type for compile-time immutability
 - [02-02]: All staff roles can INSERT/UPDATE patients, only admin can DELETE
 - [02-02]: Emergency contact fields are required (NOT NULL)
@@ -73,9 +75,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T21:34:00Z
-Stopped at: Completed 02-02-PLAN.md (Patients Table Migration)
+Last session: 2026-01-23T21:35:56Z
+Stopped at: Completed 02-01-PLAN.md (npm dependencies and shadcn/ui)
 Resume file: None
 
 ---
-*Next step: Execute 02-03-PLAN.md (Patients API Routes)*
+*Next step: Execute 02-03-PLAN.md (Zod validation schemas and Supabase query functions)*

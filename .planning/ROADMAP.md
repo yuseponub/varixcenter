@@ -55,8 +55,8 @@ Plans:
 **Plans**: 7 plans in 4 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Install npm dependencies and shadcn/ui components
-- [ ] 02-02-PLAN.md — Database schema: patients table with RLS and immutable cedula trigger
+- [x] 02-01-PLAN.md — Install npm dependencies and shadcn/ui components
+- [x] 02-02-PLAN.md — Database schema: patients table with RLS and immutable cedula trigger
 - [ ] 02-03-PLAN.md — Zod validation schemas and Supabase query functions
 - [ ] 02-04-PLAN.md — Server actions (create/update) and patient form component
 - [ ] 02-05-PLAN.md — Patient list page with search and data table
@@ -170,7 +170,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Security Foundation | 0/5 | Planned | - |
-| 2. Patients | 0/7 | Planned | - |
+| 2. Patients | 2/7 | In progress | - |
 | 3. Appointments | 0/? | Not started | - |
 | 4. Payments Core | 0/? | Not started | - |
 | 5. Cash Closing | 0/? | Not started | - |

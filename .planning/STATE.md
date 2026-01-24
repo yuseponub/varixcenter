@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 9 (Payments Core)
-Plan: 7 of ? in current phase
+Plan: 9 of ? in current phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 04-07-PLAN.md (service catalog admin)
+Last activity: 2026-01-24 — Completed 04-09-PLAN.md (payment form components)
 
 Progress: [██████████████████░░] ~84%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
+- Total plans completed: 21
 - Average duration: 4 min
-- Total execution time: 88 min
+- Total execution time: 93 min
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [██████████████████░░] ~84%
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
-| 04-payments-core | 3 | 12 min | 4 min |
+| 04-payments-core | 4 | 17 min | 4 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-06 (5 min), 04-06 (4 min), 04-08 (3 min), 04-09 (5 min)
@@ -135,6 +135,10 @@ Recent decisions affecting current work:
 - [04-07]: Use z.input instead of z.infer for form types when schema has .default() modifiers
 - [04-07]: Dialog-based editing for services (not separate page) for inline workflow
 - [04-07]: Conditional form fields pattern: watch() + conditional render
+- [04-09]: Auto-increment quantity when same service selected twice
+- [04-09]: Clamp variable price to min/max on input change
+- [04-09]: Reset comprobante_path when payment method type changes
+- [04-09]: Balance validation uses Math.abs(diff) < 0.01 for floating point safety
 
 ### Pending Todos
 
@@ -154,8 +158,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24T02:39:36Z
-Stopped at: Completed 04-07-PLAN.md (service catalog admin)
+Last session: 2026-01-24T02:40:00Z
+Stopped at: Completed 04-09-PLAN.md (payment form components)
 Resume file: None
 
 ---

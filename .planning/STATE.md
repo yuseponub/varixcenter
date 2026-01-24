@@ -110,6 +110,10 @@ Recent decisions affecting current work:
 - [04-01]: Invoice numbering format: FAC-NNNNNN (6 digits, zero-padded)
 - [04-01]: Service snapshots stored in payment_items (service_name, unit_price)
 - [04-01]: comprobante_path CHECK constraint requires photo for non-cash payments
+- [04-02]: IS DISTINCT FROM for null-safe immutable field comparisons
+- [04-02]: anulado_at auto-set in trigger if not provided
+- [04-02]: Justificacion 10+ chars enforced in RPC (better UX than trigger)
+- [04-02]: No DELETE/UPDATE policies on storage.objects for payment-receipts (evidence preservation)
 - [04-03]: PAYMENT_STATES uses 'activo'/'anulado' matching database enum
 - [04-03]: requiresComprobante() returns true for tarjeta/transferencia/nequi
 - [04-03]: PaymentWithDetails includes nested patients/items/methods relations
@@ -123,6 +127,8 @@ Recent decisions affecting current work:
 - [ ] Apply 007_appointments.sql migration to Supabase
 - [ ] Apply 008_services_catalog.sql migration to Supabase
 - [ ] Apply 009_payments_tables.sql migration to Supabase
+- [ ] Apply 010_payments_immutability.sql migration to Supabase
+- [ ] Apply 011_payment_receipts_bucket.sql migration to Supabase
 
 ### Blockers/Concerns
 
@@ -130,8 +136,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24T01:03:00Z
-Stopped at: Completed 04-03-PLAN.md (types)
+Last session: 2026-01-24T02:27:00Z
+Stopped at: Completed 04-02-PLAN.md (immutability)
 Resume file: None
 
 ---

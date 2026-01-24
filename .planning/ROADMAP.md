@@ -84,19 +84,29 @@ Plans:
 - [ ] 03-07-PLAN.md — Appointment form and new appointment page
 
 ### Phase 4: Payments Core
-**Goal**: Registros de pago son INMUTABLES — no UPDATE, no DELETE, solo anulacion por Admin con justificacion (CORE VALUE del proyecto)
+**Goal**: Registros de pago son INMUTABLES — no UPDATE, no DELETE, solo anulacion por Admin/Medico con justificacion (CORE VALUE del proyecto)
 **Depends on**: Phase 3
 **Requirements**: PAY-01, PAY-02, PAY-03, PAY-04
 **Success Criteria** (what must be TRUE):
   1. Usuario puede registrar pago seleccionando servicio del catalogo con precio automatico
   2. Pagos con tarjeta o transferencia REQUIEREN foto de comprobante — sin foto no se guarda
   3. Numeros de factura son secuenciales automaticos y nunca se reutilizan (incluso si se anula)
-  4. Solo Admin puede anular pago, y debe ingresar justificacion obligatoria
-  5. Intentar UPDATE o DELETE en tabla payments falla a nivel de base de datos (RLS)
-**Plans**: TBD
+  4. Solo Admin o Medico puede anular pago, y debe ingresar justificacion obligatoria
+  5. Intentar UPDATE o DELETE en tabla payments falla a nivel de base de datos (trigger)
+**Plans**: 11 plans in 4 waves
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Services catalog and payments database schema (migrations 008-009)
+- [ ] 04-02-PLAN.md — Payment immutability trigger and storage bucket (migrations 010-011)
+- [ ] 04-03-PLAN.md — TypeScript types for services and payments
+- [ ] 04-04-PLAN.md — Zod validation schemas for services and payments
+- [ ] 04-05-PLAN.md — Supabase query functions for services and payments
+- [ ] 04-06-PLAN.md — Receipt upload with signed URLs and ReceiptUpload component
+- [ ] 04-07-PLAN.md — Services admin CRUD page
+- [ ] 04-08-PLAN.md — Payment creation RPC and server actions
+- [ ] 04-09-PLAN.md — Payment form components (ServiceSelector, PaymentMethodForm, PaymentSummary)
+- [ ] 04-10-PLAN.md — PaymentForm component and new payment page
+- [ ] 04-11-PLAN.md — Payments list, detail page, and anulacion dialog
 
 ### Phase 5: Cash Closing
 **Goal**: Secretaria puede cerrar caja del dia con comparacion automatica y una vez cerrada los registros quedan bloqueados permanentemente
@@ -178,7 +188,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 1. Security Foundation | 0/5 | Planned | - |
 | 2. Patients | 7/7 | Complete | 2026-01-23 |
 | 3. Appointments | 0/7 | Planned | - |
-| 4. Payments Core | 0/? | Not started | - |
+| 4. Payments Core | 0/11 | Planned | - |
 | 5. Cash Closing | 0/? | Not started | - |
 | 6. Medical Records | 0/? | Not started | - |
 | 7. Voice Dictation | 0/? | Not started | - |
@@ -187,4 +197,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-23*
+*Last updated: 2026-01-24*

@@ -76,7 +76,8 @@ export interface AppointmentWithPatient extends Appointment {
 export interface Doctor {
   id: string
   email: string
-  nombre?: string // From user metadata if available
+  nombre: string | null
+  apellido: string | null
 }
 
 /**

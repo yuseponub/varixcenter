@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getDoctors, getAppointmentsForCalendar } from '@/lib/queries/appointments'
+import { getActiveServices } from '@/lib/queries/services'
 import { CalendarView } from './calendar-view'
 import { Button } from '@/components/ui/button'
 
@@ -9,10 +10,12 @@ import { Button } from '@/components/ui/button'
  * Main appointment calendar view for the clinic.
  * - Fetches doctors list for filter
  * - Fetches initial appointments for current week
+ * - Fetches services catalog for adding services to appointments
  * - Renders CalendarView client component
  *
  * APT-01: Calendar displays appointments in day and week views
  * APT-02: Doctor filter dropdown shows available medicos
+ * FASE-05: Services can be added to appointments
  */
 export default async function CitasPage() {
   // Get current week range for initial load
@@ -31,10 +34,11 @@ export default async function CitasPage() {
   const startDate = startOfWeek.toISOString()
   const endDate = endOfWeek.toISOString()
 
-  // Fetch doctors and initial events in parallel
-  const [doctors, events] = await Promise.all([
+  // Fetch doctors, initial events, and services in parallel
+  const [doctors, events, services] = await Promise.all([
     getDoctors(),
     getAppointmentsForCalendar(startDate, endDate),
+    getActiveServices(),
   ])
 
   return (
@@ -53,6 +57,7 @@ export default async function CitasPage() {
         initialEvents={events}
         initialStart={startDate}
         initialEnd={endDate}
+        services={services}
       />
     </div>
   )

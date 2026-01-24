@@ -3,12 +3,14 @@ import { z } from 'zod'
 /**
  * Payment item schema
  * Represents a single service line item in a payment
+ * Optionally includes appointment_service_id for services from appointments
  */
 export const paymentItemSchema = z.object({
   service_id: z.string().uuid('ID de servicio invalido'),
   service_name: z.string().min(1, 'Nombre de servicio requerido'),
   unit_price: z.number().min(0, 'El precio debe ser positivo o cero'),
   quantity: z.number().int().positive('La cantidad debe ser positiva'),
+  appointment_service_id: z.string().uuid().nullable().optional(),
 })
 
 /**

@@ -21,6 +21,7 @@ import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
+import type { ServiceOption } from '@/types/services'
 
 /**
  * Props for CalendarView component
@@ -34,6 +35,8 @@ interface CalendarViewProps {
   initialStart: string
   /** Initial end date for the calendar view */
   initialEnd: string
+  /** Services catalog for adding to appointments */
+  services?: ServiceOption[]
 }
 
 /**
@@ -51,6 +54,7 @@ export function CalendarView({
   initialEvents,
   initialStart,
   initialEnd,
+  services = [],
 }: CalendarViewProps) {
   const router = useRouter()
 
@@ -232,6 +236,7 @@ export function CalendarView({
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onStatusUpdate={handleStatusUpdate}
+        services={services}
       />
     </div>
   )

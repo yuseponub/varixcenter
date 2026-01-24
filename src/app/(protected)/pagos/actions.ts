@@ -37,11 +37,12 @@ export async function createPayment(
     return { error: 'No autorizado. Por favor inicie sesion.' }
   }
 
-  // Parse form data (items and methods are JSON strings from form)
-  let items, methods
+  // Parse form data (items, methods, and appointment_service_ids are JSON strings from form)
+  let items, methods, appointmentServiceIds: string[]
   try {
     items = JSON.parse((formData.get('items') as string) || '[]')
     methods = JSON.parse((formData.get('methods') as string) || '[]')
+    appointmentServiceIds = JSON.parse((formData.get('appointment_service_ids') as string) || '[]')
   } catch {
     return { error: 'Datos de formulario invalidos' }
   }
@@ -73,17 +74,20 @@ export async function createPayment(
   const total = subtotal - validated.data.descuento
 
   // Call RPC function for atomic creation with gapless invoice
+  // Pass appointment_service_ids if any services are from appointments
   const { data: paymentData, error: paymentError } = await supabase.rpc(
     'create_payment_with_invoice',
     {
       p_patient_id: validated.data.patient_id,
       p_subtotal: subtotal,
       p_descuento: validated.data.descuento,
-      p_descuento_justificacion: validated.data.descuento_justificacion ?? null,
+      p_descuento_justificacion: validated.data.descuento_justificacion ?? '',
       p_total: total,
       p_created_by: user.id,
       p_items: validated.data.items,
       p_methods: validated.data.methods,
+      p_appointment_service_ids: appointmentServiceIds.length > 0 ? appointmentServiceIds : undefined,
+      p_appointment_id: undefined, // Can be set if paying for a specific appointment
     }
   )
 
@@ -103,6 +107,12 @@ export async function createPayment(
     if (paymentError.message.includes('paciente no existe')) {
       return { error: 'El paciente seleccionado no existe' }
     }
+    if (paymentError.message.includes('Servicio de cita')) {
+      return { error: 'Uno de los servicios de cita ya fue pagado o no existe' }
+    }
+    if (paymentError.message.includes('cita especificada')) {
+      return { error: 'La cita especificada no existe' }
+    }
 
     return { error: 'Error al crear el pago. Por favor intente de nuevo.' }
   }
@@ -110,6 +120,7 @@ export async function createPayment(
   // Revalidate affected pages
   revalidatePath('/pagos')
   revalidatePath('/pacientes')
+  revalidatePath('/citas')
 
   return {
     success: true,

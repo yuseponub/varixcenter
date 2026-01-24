@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState, useEffect } from 'react'
+import { useActionState, useState, useEffect, useCallback, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,10 +19,13 @@ import { toast } from 'sonner'
 import { ServiceSelector } from './service-selector'
 import { PaymentMethodForm } from './payment-method-form'
 import { PaymentSummary } from './payment-summary'
+import { PendingServicesSelector } from './pending-services-selector'
 import { createPayment, type PaymentActionState } from '@/app/(protected)/pagos/actions'
+import { getPendingServicesGroupedAction } from '@/app/(protected)/pagos/pending-services-action'
 import type { ServiceOption } from '@/types/services'
 import type { PaymentItemInput, PaymentMethodInput } from '@/types/payments'
 import { requiresComprobante } from '@/types/payments'
+import type { PendingServicesGroup, PaymentItemWithAppointmentService } from '@/types/appointment-services'
 
 interface Patient {
   id: string
@@ -35,27 +38,37 @@ interface PaymentFormProps {
   services: ServiceOption[]
   patients: Patient[]
   defaultPatientId?: string
+  initialPendingServices?: PendingServicesGroup[]
 }
 
 /**
  * Complete payment form component
  *
- * Composes ServiceSelector, PaymentMethodForm, and PaymentSummary.
+ * Composes ServiceSelector, PaymentMethodForm, PendingServicesSelector, and PaymentSummary.
  * Handles discount with justification requirement.
  * Validates all fields before enabling submit.
  * Auto-updates first method amount when items change.
+ * Supports both appointment services and direct catalog services.
  * Redirects to detail page on success.
  */
-export function PaymentForm({ services, patients, defaultPatientId }: PaymentFormProps) {
+export function PaymentForm({
+  services,
+  patients,
+  defaultPatientId,
+  initialPendingServices = [],
+}: PaymentFormProps) {
   const router = useRouter()
   const [state, formAction, isPending] = useActionState<PaymentActionState | null, FormData>(
     createPayment,
     null
   )
+  const [isLoadingPending, startLoadingTransition] = useTransition()
 
   // Form state
   const [patientId, setPatientId] = useState(defaultPatientId || '')
-  const [items, setItems] = useState<PaymentItemInput[]>([])
+  const [directItems, setDirectItems] = useState<PaymentItemInput[]>([])
+  const [pendingServiceItems, setPendingServiceItems] = useState<PaymentItemWithAppointmentService[]>([])
+  const [pendingServicesGroups, setPendingServicesGroups] = useState<PendingServicesGroup[]>(initialPendingServices)
   const [methods, setMethods] = useState<PaymentMethodInput[]>([{
     metodo: 'efectivo',
     monto: 0,
@@ -64,18 +77,42 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
   const [descuento, setDescuento] = useState(0)
   const [descuentoJustificacion, setDescuentoJustificacion] = useState('')
 
+  // Combine all items for calculations and display
+  const allItems: PaymentItemWithAppointmentService[] = [
+    ...directItems.map(item => ({ ...item, appointment_service_id: null })),
+    ...pendingServiceItems,
+  ]
+
   // Calculated values
-  const subtotal = items.reduce((sum, item) => sum + item.unit_price * item.quantity, 0)
+  const subtotal = allItems.reduce((sum, item) => sum + item.unit_price * item.quantity, 0)
   const total = subtotal - descuento
   const methodsTotal = methods.reduce((sum, m) => sum + m.monto, 0)
   const isBalanced = Math.abs(total - methodsTotal) < 0.01
 
-  // Update first method amount when items change (if only one method with zero amount)
+  // Fetch pending services when patient changes
   useEffect(() => {
-    if (methods.length === 1 && methods[0].monto === 0 && total > 0) {
-      setMethods([{ ...methods[0], monto: total }])
+    if (patientId) {
+      startLoadingTransition(async () => {
+        const groups = await getPendingServicesGroupedAction(patientId)
+        setPendingServicesGroups(groups)
+        // Clear pending service selections when patient changes
+        setPendingServiceItems([])
+      })
+    } else {
+      setPendingServicesGroups([])
+      setPendingServiceItems([])
     }
-  }, [total, methods])
+  }, [patientId])
+
+  // Auto-update first method amount to match total when there's only one method
+  useEffect(() => {
+    setMethods(prev => {
+      if (prev.length === 1 && prev[0].monto !== total && total >= 0) {
+        return [{ ...prev[0], monto: total }]
+      }
+      return prev
+    })
+  }, [total])
 
   // Handle success/error
   useEffect(() => {
@@ -90,19 +127,25 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
   // Validation
   const canSubmit =
     patientId &&
-    items.length > 0 &&
+    allItems.length > 0 &&
     methods.length > 0 &&
     isBalanced &&
     (descuento === 0 || descuentoJustificacion.length >= 5) &&
-    methods.every(m => m.metodo === 'efectivo' || m.comprobante_path)
+    methods.every(m => !requiresComprobante(m.metodo) || m.comprobante_path)
 
   const handleSubmit = (formData: FormData) => {
     // Add JSON data to form
     formData.set('patient_id', patientId)
-    formData.set('items', JSON.stringify(items))
+    formData.set('items', JSON.stringify(allItems))
     formData.set('methods', JSON.stringify(methods))
     formData.set('descuento', descuento.toString())
     formData.set('descuento_justificacion', descuentoJustificacion)
+
+    // Extract appointment_service_ids for the RPC
+    const appointmentServiceIds = pendingServiceItems
+      .map(item => item.appointment_service_id)
+      .filter((id): id is string => id !== null && id !== undefined)
+    formData.set('appointment_service_ids', JSON.stringify(appointmentServiceIds))
 
     formAction(formData)
   }
@@ -133,16 +176,37 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
         </CardContent>
       </Card>
 
-      {/* Services */}
+      {/* Pending services from appointments */}
+      {patientId && (
+        isLoadingPending ? (
+          <Card>
+            <CardContent className="py-6 flex items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin mr-2" />
+              <span className="text-muted-foreground">Cargando servicios pendientes...</span>
+            </CardContent>
+          </Card>
+        ) : pendingServicesGroups.length > 0 ? (
+          <PendingServicesSelector
+            groups={pendingServicesGroups}
+            selectedItems={pendingServiceItems}
+            onChange={setPendingServiceItems}
+            disabled={isPending}
+          />
+        ) : null
+      )}
+
+      {/* Direct services from catalog */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Servicios</CardTitle>
+          <CardTitle className="text-lg">
+            {pendingServicesGroups.length > 0 ? 'Servicios Adicionales' : 'Servicios'}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ServiceSelector
             services={services}
-            items={items}
-            onChange={setItems}
+            items={directItems}
+            onChange={setDirectItems}
             disabled={isPending}
           />
           {state?.errors?.items && (
@@ -163,7 +227,7 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
               <Input
                 id="descuento"
                 type="number"
-                value={descuento || ''}
+                value={descuento}
                 onChange={e => setDescuento(parseFloat(e.target.value) || 0)}
                 disabled={isPending}
                 min={0}
@@ -211,9 +275,9 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
       </Card>
 
       {/* Summary */}
-      {items.length > 0 && (
+      {allItems.length > 0 && (
         <PaymentSummary
-          items={items}
+          items={allItems}
           methods={methods}
           descuento={descuento}
           descuentoJustificacion={descuentoJustificacion || null}
@@ -240,6 +304,7 @@ export function PaymentForm({ services, patients, defaultPatientId }: PaymentFor
       {state?.error && !state.errors && (
         <p className="text-sm text-red-500">{state.error}</p>
       )}
+
     </form>
   )
 }

@@ -92,7 +92,7 @@ export async function getPatientTimeline(patientId: string, limit = 20) {
 
   // Transform audit log entries into timeline events
   return data.map((entry) => ({
-    id: entry.id,
+    id: String(entry.id),
     type: 'patient_record' as const,
     action: entry.action,
     changedFields: entry.changed_fields,

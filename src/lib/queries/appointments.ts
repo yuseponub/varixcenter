@@ -155,10 +155,22 @@ export async function getDoctors() {
   const { data, error } = await supabase
     .from('doctors_view')
     .select('id, email, nombre, apellido')
+    .not('id', 'is', null)
     .order('apellido', { ascending: true })
 
   if (error) throw error
-  return data ?? []
+
+  // Filter to ensure non-null id and email, keep null for nombre/apellido
+  return (data ?? [])
+    .filter((d): d is { id: string; email: string; nombre: string | null; apellido: string | null } =>
+      d.id !== null && d.email !== null
+    )
+    .map(d => ({
+      id: d.id,
+      email: d.email,
+      nombre: d.nombre,
+      apellido: d.apellido,
+    }))
 }
 
 /**

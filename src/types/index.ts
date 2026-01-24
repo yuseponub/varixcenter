@@ -16,6 +16,9 @@ export * from './services'
 // Re-export payment types
 export * from './payments'
 
+// Re-export appointment services types
+export * from './appointment-services'
+
 /**
  * User roles for the VarixClinic system.
  * Matches the roles defined in the Custom Access Token Hook.

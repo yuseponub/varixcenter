@@ -125,6 +125,10 @@ Recent decisions affecting current work:
 - [04-06]: Safe filename sanitization replaces non-alphanumeric with underscore
 - [04-06]: 2 hour validity for signed upload URLs
 - [04-06]: Storage upload pattern: Server creates signed URL, client uploads via uploadToSignedUrl
+- [04-04]: Variable price validation: min <= base <= max when precio_variable=true
+- [04-04]: Comprobante validation via refine(): non-cash methods require photo path
+- [04-04]: Descuento justificacion: 5+ chars (more lenient than anulacion)
+- [04-04]: Anulacion justificacion: 10+ chars for proper audit trail
 
 ### Pending Todos
 

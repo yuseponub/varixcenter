@@ -386,7 +386,30 @@ export interface Database {
       }
     }
     Functions: {
-      // Functions will be generated
+      create_payment_with_invoice: {
+        Args: {
+          p_patient_id: string
+          p_subtotal: number
+          p_descuento: number
+          p_descuento_justificacion: string | null
+          p_total: number
+          p_created_by: string
+          p_items: Json
+          p_methods: Json
+        }
+        Returns: Json
+      }
+      anular_pago: {
+        Args: {
+          p_payment_id: string
+          p_justificacion: string
+        }
+        Returns: Json
+      }
+      get_next_invoice_number: {
+        Args: Record<string, never>
+        Returns: string
+      }
     }
     Enums: {
       user_role: 'admin' | 'medico' | 'enfermera' | 'secretaria'

@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 
 ## Current Position
 
-Phase: 3 of 9 (Appointments)
-Plan: 6 of 7 complete in current phase
+Phase: 4 of 9 (Payments Core)
+Plan: 3 of ? in current phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 03-06-PLAN.md (Calendar page with dialog)
+Last activity: 2026-01-24 — Completed 04-03-PLAN.md (types)
 
-Progress: [█████████████████░░░] ~71%
+Progress: [██████████████████░░] ~80%
 
 ## Performance Metrics
 
@@ -101,6 +101,10 @@ Recent decisions affecting current work:
 - [03-06]: CalendarView fetches via API route for refresh without page reload
 - [03-06]: Selected doctor filter pre-filled when navigating to new appointment
 - [03-06]: Toaster configured globally in root layout with richColors and closeButton
+- [04-03]: PAYMENT_STATES uses 'activo'/'anulado' matching database enum
+- [04-03]: requiresComprobante() returns true for tarjeta/transferencia/nequi
+- [04-03]: PaymentWithDetails includes nested patients/items/methods relations
+- [04-03]: ServiceOption type extracts only fields needed for payment form dropdown
 
 ### Pending Todos
 
@@ -115,9 +119,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23T23:18:20Z
-Stopped at: Completed 03-06-PLAN.md (Calendar page with dialog)
+Last session: 2026-01-24T01:03:00Z
+Stopped at: Completed 04-03-PLAN.md (types)
 Resume file: None
 
 ---
-*Phase 3 (Appointments) in progress. Plans 01-06 complete. Next: 03-07 (New appointment form)*
+*Phase 4 (Payments Core) starting. This is the CORE VALUE - immutable payments with mandatory evidence.*

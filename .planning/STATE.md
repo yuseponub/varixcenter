@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 9 (Payments Core)
-Plan: 9 of ? in current phase
+Plan: 10 of ? in current phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 04-09-PLAN.md (payment form components)
+Last activity: 2026-01-24 — Completed 04-10-PLAN.md (payment form and new payment page)
 
-Progress: [██████████████████░░] ~84%
+Progress: [██████████████████░░] ~85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: 4 min
-- Total execution time: 93 min
+- Total execution time: 96 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [██████████████████░░] ~84%
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
-| 04-payments-core | 4 | 17 min | 4 min |
+| 04-payments-core | 5 | 20 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-06 (5 min), 04-06 (4 min), 04-08 (3 min), 04-09 (5 min)
+- Last 5 plans: 04-06 (4 min), 04-08 (3 min), 04-09 (5 min), 04-10 (3 min)
 - Trend: Consistent ~3-5 min for focused implementation tasks
 
 *Updated after each plan completion*
@@ -139,6 +139,9 @@ Recent decisions affecting current work:
 - [04-09]: Clamp variable price to min/max on input change
 - [04-09]: Reset comprobante_path when payment method type changes
 - [04-09]: Balance validation uses Math.abs(diff) < 0.01 for floating point safety
+- [04-10]: Auto-update first method amount when items change for single-method UX
+- [04-10]: canSubmit combines all business rules as single source of truth
+- [04-10]: Patient query param for pre-selection from detail page
 
 ### Pending Todos
 
@@ -158,8 +161,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24T02:40:00Z
-Stopped at: Completed 04-09-PLAN.md (payment form components)
+Last session: 2026-01-24T02:45:12Z
+Stopped at: Completed 04-10-PLAN.md (payment form and new payment page)
 Resume file: None
 
 ---

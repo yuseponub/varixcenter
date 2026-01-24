@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 9 (Payments Core)
-Plan: 3 of ? in current phase
+Plan: 6 of ? in current phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 04-03-PLAN.md (types)
+Last activity: 2026-01-24 — Completed 04-06-PLAN.md (receipt upload)
 
 Progress: [██████████████████░░] ~80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 4 min
-- Total execution time: 76 min
+- Total execution time: 80 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [██████████████████░░] ~80%
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
+| 04-payments-core | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (2 min), 03-02 (3 min), 03-04 (1 min), 03-05 (6 min), 03-06 (5 min)
+- Last 5 plans: 03-04 (1 min), 03-05 (6 min), 03-06 (5 min), 04-06 (4 min)
 - Trend: Consistent ~1-6 min for focused implementation tasks
 
 *Updated after each plan completion*
@@ -118,6 +119,10 @@ Recent decisions affecting current work:
 - [04-03]: requiresComprobante() returns true for tarjeta/transferencia/nequi
 - [04-03]: PaymentWithDetails includes nested patients/items/methods relations
 - [04-03]: ServiceOption type extracts only fields needed for payment form dropdown
+- [04-06]: Unique path format: comprobantes/{user_id}/{timestamp}_{filename}
+- [04-06]: Safe filename sanitization replaces non-alphanumeric with underscore
+- [04-06]: 2 hour validity for signed upload URLs
+- [04-06]: Storage upload pattern: Server creates signed URL, client uploads via uploadToSignedUrl
 
 ### Pending Todos
 
@@ -136,8 +141,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24T02:27:00Z
-Stopped at: Completed 04-02-PLAN.md (immutability)
+Last session: 2026-01-24T02:35:00Z
+Stopped at: Completed 04-06-PLAN.md (receipt upload)
 Resume file: None
 
 ---

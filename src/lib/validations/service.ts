@@ -60,6 +60,8 @@ export const serviceUpdateSchema = serviceSchema.partial()
 
 /**
  * TypeScript types inferred from schemas
+ * Note: We use z.input for form types because .default() makes input/output types differ
  */
-export type ServiceFormData = z.infer<typeof serviceSchema>
+export type ServiceFormData = z.input<typeof serviceSchema>
+export type ServiceFormOutput = z.output<typeof serviceSchema>
 export type ServiceUpdateData = z.infer<typeof serviceUpdateSchema>

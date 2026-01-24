@@ -10,6 +10,12 @@ export * from './supabase'
 // Re-export appointment types
 export * from './appointments'
 
+// Re-export service types
+export * from './services'
+
+// Re-export payment types
+export * from './payments'
+
 /**
  * User roles for the VarixClinic system.
  * Matches the roles defined in the Custom Access Token Hook.

@@ -119,6 +119,8 @@ Recent decisions affecting current work:
 - [04-03]: requiresComprobante() returns true for tarjeta/transferencia/nequi
 - [04-03]: PaymentWithDetails includes nested patients/items/methods relations
 - [04-03]: ServiceOption type extracts only fields needed for payment form dropdown
+- [04-05]: Type cast complex joins to PaymentWithDetails using `as unknown as` pattern
+- [04-05]: Added services, payments, payment_items, payment_methods to supabase.ts
 - [04-06]: Unique path format: comprobantes/{user_id}/{timestamp}_{filename}
 - [04-06]: Safe filename sanitization replaces non-alphanumeric with underscore
 - [04-06]: 2 hour validity for signed upload URLs

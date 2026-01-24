@@ -101,6 +101,15 @@ Recent decisions affecting current work:
 - [03-06]: CalendarView fetches via API route for refresh without page reload
 - [03-06]: Selected doctor filter pre-filled when navigating to new appointment
 - [03-06]: Toaster configured globally in root layout with richColors and closeButton
+- [04-01]: payment_status enum with only 'activo' and 'anulado' values
+- [04-01]: payment_method_type enum: efectivo, tarjeta, transferencia, nequi
+- [04-01]: Single-row invoice_counter with CHECK (id = 1) enforcement
+- [04-01]: No updated_at on payments table - payments are immutable
+- [04-01]: ON DELETE RESTRICT for all payment FK references
+- [04-01]: No RLS UPDATE/DELETE policies on payment tables (immutability foundation)
+- [04-01]: Invoice numbering format: FAC-NNNNNN (6 digits, zero-padded)
+- [04-01]: Service snapshots stored in payment_items (service_name, unit_price)
+- [04-01]: comprobante_path CHECK constraint requires photo for non-cash payments
 - [04-03]: PAYMENT_STATES uses 'activo'/'anulado' matching database enum
 - [04-03]: requiresComprobante() returns true for tarjeta/transferencia/nequi
 - [04-03]: PaymentWithDetails includes nested patients/items/methods relations
@@ -112,6 +121,8 @@ Recent decisions affecting current work:
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
 - [ ] Apply 007_appointments.sql migration to Supabase
+- [ ] Apply 008_services_catalog.sql migration to Supabase
+- [ ] Apply 009_payments_tables.sql migration to Supabase
 
 ### Blockers/Concerns
 

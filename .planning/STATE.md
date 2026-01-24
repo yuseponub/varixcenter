@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 9 (Payments Core)
-Plan: 6 of ? in current phase
+Plan: 8 of ? in current phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 04-06-PLAN.md (receipt upload)
+Last activity: 2026-01-24 — Completed 04-08-PLAN.md (payment server actions)
 
-Progress: [██████████████████░░] ~80%
+Progress: [██████████████████░░] ~82%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 4 min
-- Total execution time: 80 min
+- Total execution time: 83 min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [██████████████████░░] ~80%
 | 01-security-foundation | 4 | 27 min | 7 min |
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
-| 04-payments-core | 1 | 4 min | 4 min |
+| 04-payments-core | 2 | 7 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (1 min), 03-05 (6 min), 03-06 (5 min), 04-06 (4 min)
-- Trend: Consistent ~1-6 min for focused implementation tasks
+- Last 5 plans: 03-05 (6 min), 03-06 (5 min), 04-06 (4 min), 04-08 (3 min)
+- Trend: Consistent ~3-6 min for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -129,6 +129,9 @@ Recent decisions affecting current work:
 - [04-04]: Comprobante validation via refine(): non-cash methods require photo path
 - [04-04]: Descuento justificacion: 5+ chars (more lenient than anulacion)
 - [04-04]: Anulacion justificacion: 10+ chars for proper audit trail
+- [04-08]: RPC function types added manually to supabase.ts until regeneration
+- [04-08]: Patient existence validated in RPC before creating payment
+- [04-08]: SET LOCAL lock_timeout = '10s' to prevent deadlocks on invoice_counter
 
 ### Pending Todos
 
@@ -140,6 +143,7 @@ Recent decisions affecting current work:
 - [ ] Apply 009_payments_tables.sql migration to Supabase
 - [ ] Apply 010_payments_immutability.sql migration to Supabase
 - [ ] Apply 011_payment_receipts_bucket.sql migration to Supabase
+- [ ] Apply 012_create_payment_rpc.sql migration to Supabase
 
 ### Blockers/Concerns
 
@@ -147,8 +151,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24T02:35:00Z
-Stopped at: Completed 04-06-PLAN.md (receipt upload)
+Last session: 2026-01-24T02:38:00Z
+Stopped at: Completed 04-08-PLAN.md (payment server actions)
 Resume file: None
 
 ---

@@ -9,11 +9,11 @@ Requirements for Varix-Medias module. Phases continue from VarixClinic (Phase 10
 
 ### Catalogo de Productos
 
-- [ ] **CAT-01**: Admin puede ver listado de todos los productos con precio y stock actual
-- [ ] **CAT-02**: Admin puede editar precio de un producto existente
-- [ ] **CAT-03**: Admin puede agregar nuevos productos (tipo, talla, precio, codigo)
-- [ ] **CAT-04**: Admin puede desactivar un producto (no aparece en ventas pero mantiene historico)
-- [ ] **CAT-05**: Sistema tiene 11 productos pre-cargados (Muslo M/L/XL/XXL $175k, Panty M/L/XL/XXL $190k, Rodilla M/L/XL $130k)
+- [x] **CAT-01**: Admin puede ver listado de todos los productos con precio y stock actual
+- [x] **CAT-02**: Admin puede editar precio de un producto existente
+- [x] **CAT-03**: Admin puede agregar nuevos productos (tipo, talla, precio, codigo)
+- [x] **CAT-04**: Admin puede desactivar un producto (no aparece en ventas pero mantiene historico)
+- [x] **CAT-05**: Sistema tiene 11 productos pre-cargados (Muslo M/L/XL/XXL $175k, Panty M/L/XL/XXL $190k, Rodilla M/L/XL $130k)
 
 ### Ventas
 
@@ -34,13 +34,13 @@ Requirements for Varix-Medias module. Phases continue from VarixClinic (Phase 10
 
 ### Inventario
 
-- [ ] **INV-01**: Usuario puede ver stock actual de todos los productos
-- [ ] **INV-02**: Sistema muestra stock separado: stock_normal (compras) y stock_devoluciones (returns)
+- [x] **INV-01**: Usuario puede ver stock actual de todos los productos
+- [x] **INV-02**: Sistema muestra stock separado: stock_normal (compras) y stock_devoluciones (returns)
 - [ ] **INV-03**: Sistema muestra alertas cuando stock total < 3 unidades
 - [ ] **INV-04**: Admin puede realizar ajuste manual de inventario con justificacion obligatoria
 - [ ] **INV-05**: Ajustes de inventario requieren codigo de razon (dano, perdida, correccion conteo, etc.)
-- [ ] **INV-06**: Sistema registra historial de todos los movimientos de stock (inmutable)
-- [ ] **INV-07**: Cada movimiento registra: producto, tipo, cantidad, stock antes/despues, usuario, timestamp
+- [x] **INV-06**: Sistema registra historial de todos los movimientos de stock (inmutable)
+- [x] **INV-07**: Cada movimiento registra: producto, tipo, cantidad, stock antes/despues, usuario, timestamp
 
 ### Compras
 
@@ -119,11 +119,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAT-01 | Phase 10 | Pending |
-| CAT-02 | Phase 10 | Pending |
-| CAT-03 | Phase 10 | Pending |
-| CAT-04 | Phase 10 | Pending |
-| CAT-05 | Phase 10 | Pending |
+| CAT-01 | Phase 10 | Complete |
+| CAT-02 | Phase 10 | Complete |
+| CAT-03 | Phase 10 | Complete |
+| CAT-04 | Phase 10 | Complete |
+| CAT-05 | Phase 10 | Complete |
 | VTA-01 | Phase 11 | Pending |
 | VTA-02 | Phase 11 | Pending |
 | VTA-03 | Phase 11 | Pending |
@@ -138,13 +138,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VTA-12 | Phase 11 | Pending |
 | VTA-13 | Phase 11 | Pending |
 | VTA-14 | Phase 11 | Pending |
-| INV-01 | Phase 10 | Pending |
-| INV-02 | Phase 10 | Pending |
+| INV-01 | Phase 10 | Complete |
+| INV-02 | Phase 10 | Complete |
 | INV-03 | Phase 15 | Pending |
 | INV-04 | Phase 15 | Pending |
 | INV-05 | Phase 15 | Pending |
-| INV-06 | Phase 10 | Pending |
-| INV-07 | Phase 10 | Pending |
+| INV-06 | Phase 10 | Complete |
+| INV-07 | Phase 10 | Complete |
 | COM-01 | Phase 13 | Pending |
 | COM-02 | Phase 13 | Pending |
 | COM-03 | Phase 13 | Pending |
@@ -187,4 +187,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-25 — Phase mappings added after roadmap creation*
+*Last updated: 2026-01-25 — Phase 10 requirements marked Complete*

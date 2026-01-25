@@ -210,10 +210,13 @@ Plans:
   3. Sistema tiene 11 productos pre-cargados con precios iniciales
   4. Sistema muestra stock separado: stock_normal (de compras) y stock_devoluciones (de returns)
   5. Cada movimiento de stock queda registrado con producto, tipo, cantidad, stock antes/despues, usuario, timestamp (inmutable)
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 10-01-PLAN.md — Database migration (medias_products, medias_stock_movements, RLS, seed data)
+- [ ] 10-02-PLAN.md — TypeScript types and Zod validation schemas
+- [ ] 10-03-PLAN.md — Server actions and products table component
+- [ ] 10-04-PLAN.md — Product form and products admin page
 
 ### Phase 11: Sales Core
 **Goal**: Usuario puede registrar ventas inmutables con generacion de recibo para impresora termica
@@ -306,7 +309,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Voice Dictation | v1.0 | 0/? | Not started | - |
 | 8. Reports & Alerts | v1.0 | 0/? | Not started | - |
 | 9. Notifications | v1.0 | 0/? | Not started | - |
-| 10. Medias Foundation | v1.1 | 0/? | Not started | - |
+| 10. Medias Foundation | v1.1 | 0/4 | Planned | - |
 | 11. Sales Core | v1.1 | 0/? | Not started | - |
 | 12. Cash Closing Medias | v1.1 | 0/? | Not started | - |
 | 13. Purchases | v1.1 | 0/? | Not started | - |
@@ -315,4 +318,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-25 — Added Varix-Medias phases (10-15)*
+*Last updated: 2026-01-25 — Phase 10 planned (4 plans in 2 waves)*

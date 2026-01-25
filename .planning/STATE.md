@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 10 of 15 (Medias Foundation)
-Plan: 02 of TBD (Types and validations complete)
+Plan: 03 of TBD (Product actions and table complete)
 Status: In progress
-Last activity: 2026-01-25 — Completed 10-02-PLAN.md (medias types and validations)
+Last activity: 2026-01-25 — Completed 10-03-PLAN.md (product server actions and table)
 
-Progress: [####################] v1.0 complete (simulated) | [###░░░░░░░░░░░░░░░░░] v1.1 ~10%
+Progress: [####################] v1.0 complete (simulated) | [####░░░░░░░░░░░░░░░░] v1.1 ~15%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
+- Total plans completed: 25
 - Average duration: 4 min
-- Total execution time: 101 min
+- Total execution time: 103 min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [####################] v1.0 complete (simulated) | [###░░░░░
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
-| 10-medias-foundation | 2 | 5 min | 2.5 min |
+| 10-medias-foundation | 3 | 7 min | 2.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-09 (5 min), 04-10 (3 min), 10-01 (2 min), 10-02 (3 min)
+- Last 5 plans: 04-10 (3 min), 10-01 (2 min), 10-02 (3 min), 10-03 (2 min)
 - Trend: Consistent ~2-5 min for focused implementation tasks
 
 *Updated after each plan completion*
@@ -57,6 +57,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [10-01]: Stock movements are fully immutable with before/after snapshots for audit trail
 - [10-02]: Separate medias types/validations directories for module isolation
 - [10-02]: Zod v4 API syntax ({ error: } instead of { required_error: })
+- [10-03]: Dual stock display shows stock_normal/stock_devoluciones separately with total
+- [10-03]: Only precio and activo are editable after product creation (tipo, talla, codigo immutable)
 
 ### Pending Todos
 
@@ -71,8 +73,8 @@ None yet for v1.1 Varix-Medias.
 
 ## Session Continuity
 
-Last session: 2026-01-25T22:00:17Z
-Stopped at: Completed 10-02-PLAN.md (medias types and validations)
+Last session: 2026-01-25T22:05:36Z
+Stopped at: Completed 10-03-PLAN.md (product server actions and table)
 Resume file: None
 
 ---

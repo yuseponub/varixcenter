@@ -229,10 +229,17 @@ Plans:
   4. Numeros de venta son secuenciales (VTA-000001) y nunca se reutilizan
   5. Ventas son inmutables — solo Admin puede eliminar con justificacion, y eliminacion revierte stock
   6. Sistema genera recibo imprimible optimizado para impresora termica de 58mm
-**Plans**: TBD
+**Plans**: 8 plans in 5 waves
 
 Plans:
-- [ ] 11-01: TBD
+- [ ] 11-01-PLAN.md — Sales database schema (medias_sales, medias_sale_items, medias_sale_methods, venta_counter)
+- [ ] 11-02-PLAN.md — Immutability trigger and admin delete RPC with stock reversal
+- [ ] 11-03-PLAN.md — Atomic sale creation RPC with stock decrement and FOR UPDATE locking
+- [ ] 11-04-PLAN.md — TypeScript types and Zod validation schemas for sales
+- [ ] 11-05-PLAN.md — Query functions and server actions for sales
+- [ ] 11-06-PLAN.md — ProductSelector, SaleMethodForm, and SaleSummary components
+- [ ] 11-07-PLAN.md — SaleForm, new sale page, and sales list page
+- [ ] 11-08-PLAN.md — Sale detail page with thermal receipt and admin delete dialog
 
 ### Phase 12: Cash Closing Medias
 **Goal**: Cierre de caja de Medias es INDEPENDIENTE del cierre de clinica, con tolerancia cero para diferencias
@@ -310,7 +317,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Reports & Alerts | v1.0 | 0/? | Not started | - |
 | 9. Notifications | v1.0 | 0/? | Not started | - |
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
-| 11. Sales Core | v1.1 | 0/? | Not started | - |
+| 11. Sales Core | v1.1 | 0/8 | Planned | - |
 | 12. Cash Closing Medias | v1.1 | 0/? | Not started | - |
 | 13. Purchases | v1.1 | 0/? | Not started | - |
 | 14. Returns Workflow | v1.1 | 0/? | Not started | - |
@@ -318,4 +325,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-25 — Phase 10 complete (4 plans executed)*
+*Last updated: 2026-01-25 — Phase 11 planned (8 plans in 5 waves)*

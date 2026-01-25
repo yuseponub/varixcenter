@@ -662,3 +662,553 @@ Based on component dependencies, here is the recommended build sequence:
 - [Hospital Management System Guide](https://topflightapps.com/ideas/how-to-develop-a-hospital-management-system/)
 - [POS Reconciliation Best Practices](https://www.highradius.com/resources/Blog/sales-reconciliation-process-point-of-sale-best-practices-guide/)
 - [Cash Register Discrepancies Prevention](https://apprissretail.com/blog/getting-to-the-bottom-of-register-discrepancies/)
+
+---
+
+# Varix-Medias Module Architecture
+
+**Domain:** Compression stockings retail module integrated into existing clinic management system
+**Researched:** 2026-01-25
+**Confidence:** HIGH (based on verified existing codebase patterns)
+
+## Executive Summary
+
+Varix-Medias integrates as a parallel module within VarixClinic, sharing authentication and audit infrastructure while maintaining complete isolation for financial operations (sales, cash, inventory). The architecture follows the "shared schema with prefix isolation" pattern rather than multi-schema, keeping all tables in the `public` schema but using `medias_` prefix for new tables. This approach minimizes complexity while maintaining clear boundaries.
+
+**Key Architectural Decision:** Sales and cash operations are completely separate from clinic operations. There is no shared invoice numbering, no shared cash drawer, and no shared payment records. This is intentional -- the two businesses (clinic services vs. retail) have different accounting requirements and need independent reconciliation.
+
+## Component Boundaries
+
+### Shared Components (Reuse from VarixClinic)
+
+| Component | Table/Function | Varix-Medias Usage |
+|-----------|---------------|-------------------|
+| Authentication | `auth.users` | Same users can operate both systems |
+| Authorization | `user_roles` | Same roles (enfermera, admin) for medias operations |
+| Audit Log | `audit_log` | Same audit table, distinguish by `table_name` prefix |
+| Audit Trigger | `audit_trigger_func()` | Reuse exact same trigger function |
+| RLS Helper | `get_user_role()` | Reuse for medias RLS policies |
+
+### New Components (Varix-Medias Specific)
+
+| Component | Purpose | Isolation Strategy |
+|-----------|---------|-------------------|
+| `medias_products` | Fixed catalog of 11 products | Separate from clinic `services` table |
+| `medias_inventory` | Stock tracking per product | N/A (new domain) |
+| `medias_sales` | Immutable sales records | Separate from clinic `payments` |
+| `medias_sale_items` | Line items per sale | Mirrors `payment_items` pattern |
+| `medias_sale_methods` | Payment methods per sale | Mirrors `payment_methods` pattern |
+| `medias_invoice_counter` | Gapless sale numbering | Separate counter from clinic (prefix: VTA) |
+| `medias_cash_closings` | Daily retail cash closing | Separate from clinic `cash_closings` |
+| `medias_closing_counter` | Gapless closing numbering | Separate counter (prefix: CIM) |
+| `medias_returns` | Return requests with approval | N/A (new domain) |
+| `medias_purchases` | Supplier purchases for restocking | N/A (new domain) |
+| `medias_inventory_movements` | All stock movements (audit trail) | N/A (new domain) |
+| `medias-receipts` bucket | Storage for sale/purchase photos | Separate from `payment-receipts` |
+
+## Medias Data Flow
+
+### Sale Flow (Happy Path)
+
+```
+[User selects products]
+       |
+       v
+[Create Sale RPC: create_medias_sale()]
+       |
+       +---> Lock medias_invoice_counter FOR UPDATE
+       +---> Get next invoice number (VTA-000001)
+       +---> Verify stock available for each item
+       +---> Decrement medias_inventory.stock_normal
+       +---> Insert medias_sales record
+       +---> Insert medias_sale_items records
+       +---> Insert medias_sale_methods records
+       +---> Insert medias_inventory_movements records
+       +---> Audit trigger fires automatically
+       v
+[Return sale confirmation with invoice number]
+```
+
+### Return Flow (2-Phase Approval)
+
+```
+[Enfermera creates return request]
+       |
+       v
+[Insert medias_returns with estado='pendiente']
+       |
+       v
+[Admin reviews return request]
+       |
+       +---> APPROVE:
+       |     +---> Update estado='aprobado'
+       |     +---> Increment medias_inventory.stock_devoluciones
+       |     +---> Insert inventory_movement (tipo='devolucion_entrada')
+       |     +---> (Optional: refund linked to original sale)
+       |
+       +---> REJECT:
+             +---> Update estado='rechazado'
+             +---> Record motivo_rechazo
+```
+
+### Cash Closing Flow (Mirrors Clinic)
+
+```
+[Secretaria requests closing summary]
+       |
+       v
+[get_medias_closing_summary(fecha)]
+       +---> Sum sales by payment method (WHERE fecha = p_fecha)
+       +---> Return totals for preview
+       v
+[Secretaria enters physical cash count + photo]
+       |
+       v
+[create_medias_cash_closing()]
+       +---> Lock medias_closing_counter FOR UPDATE
+       +---> Get next closing number (CIM-000001)
+       +---> Calculate difference
+       +---> Require justification if difference != 0
+       +---> Insert medias_cash_closings record
+       v
+[Trigger: block_medias_sales_on_closed_day()]
+       +---> Prevents new sales for closed dates
+```
+
+### Purchase Flow (Restocking)
+
+```
+[Admin creates purchase with invoice photo]
+       |
+       v
+[Insert medias_purchases record]
+       |
+       v
+[For each product in purchase:]
+       +---> Increment medias_inventory.stock_normal
+       +---> Insert inventory_movement (tipo='compra')
+```
+
+## Database Schema Patterns
+
+### Pattern 1: Immutable Sales (Mirror Clinic Payments)
+
+Exact same pattern as clinic payments for anti-fraud:
+
+```sql
+-- medias_sales table (mirrors payments)
+CREATE TABLE public.medias_sales (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  numero_venta VARCHAR(20) NOT NULL UNIQUE,  -- VTA-000001
+  subtotal DECIMAL(12,2) NOT NULL,
+  descuento DECIMAL(12,2) NOT NULL DEFAULT 0,
+  descuento_justificacion TEXT,
+  total DECIMAL(12,2) NOT NULL,
+  estado public.medias_sale_status NOT NULL DEFAULT 'activo',
+
+  -- Anulacion fields
+  anulado_por UUID REFERENCES auth.users(id),
+  anulado_at TIMESTAMPTZ,
+  anulacion_justificacion TEXT,
+
+  -- Audit
+  created_by UUID NOT NULL REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  -- Constraints (same as payments)
+  CONSTRAINT descuento_positive CHECK (descuento >= 0),
+  CONSTRAINT total_positive CHECK (total >= 0),
+  CONSTRAINT descuento_requires_justificacion CHECK (
+    descuento = 0 OR descuento_justificacion IS NOT NULL
+  )
+);
+
+-- Immutability trigger (same pattern as payments)
+CREATE TRIGGER tr_medias_sale_immutability
+  BEFORE UPDATE OR DELETE ON public.medias_sales
+  FOR EACH ROW
+  EXECUTE FUNCTION public.enforce_medias_sale_immutability();
+```
+
+### Pattern 2: Dual Stock Tracking
+
+Separate columns for normal vs. return stock to enable proper accounting:
+
+```sql
+CREATE TABLE public.medias_inventory (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES public.medias_products(id),
+
+  -- Dual stock tracking
+  stock_normal INTEGER NOT NULL DEFAULT 0,       -- Sellable new items
+  stock_devoluciones INTEGER NOT NULL DEFAULT 0, -- Returned items (may need inspection)
+
+  -- Alerts
+  stock_minimo INTEGER NOT NULL DEFAULT 2,
+
+  -- Audit
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  UNIQUE(product_id),
+  CONSTRAINT stock_normal_non_negative CHECK (stock_normal >= 0),
+  CONSTRAINT stock_devoluciones_non_negative CHECK (stock_devoluciones >= 0)
+);
+```
+
+### Pattern 3: Movement Audit Trail
+
+Every stock change creates an immutable movement record:
+
+```sql
+CREATE TYPE public.medias_movement_tipo AS ENUM (
+  'venta',              -- Sale decrements stock_normal
+  'compra',             -- Purchase increments stock_normal
+  'devolucion_entrada', -- Approved return increments stock_devoluciones
+  'devolucion_salida',  -- Return item sold from stock_devoluciones
+  'ajuste',             -- Manual adjustment by admin
+  'traslado'            -- Move between stock_normal and stock_devoluciones
+);
+
+CREATE TABLE public.medias_inventory_movements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES public.medias_products(id),
+  tipo public.medias_movement_tipo NOT NULL,
+  cantidad INTEGER NOT NULL,  -- Positive = in, Negative = out
+  stock_anterior INTEGER NOT NULL,
+  stock_nuevo INTEGER NOT NULL,
+
+  -- Reference to source document
+  sale_id UUID REFERENCES public.medias_sales(id),
+  return_id UUID REFERENCES public.medias_returns(id),
+  purchase_id UUID REFERENCES public.medias_purchases(id),
+
+  -- Justification for manual adjustments
+  justificacion TEXT,
+
+  -- Audit
+  created_by UUID NOT NULL REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- RLS: INSERT only, no UPDATE/DELETE (immutable)
+```
+
+### Pattern 4: Separate Counter Tables
+
+Each counter is a single-row table with protection trigger (exact pattern from clinic):
+
+```sql
+-- Medias invoice counter (separate from clinic)
+CREATE TABLE public.medias_invoice_counter (
+  id INTEGER PRIMARY KEY DEFAULT 1,
+  last_number BIGINT NOT NULL DEFAULT 0,
+  prefix VARCHAR(10) NOT NULL DEFAULT 'VTA',  -- Different from clinic's FAC
+  CONSTRAINT medias_single_row_enforcement CHECK (id = 1)
+);
+
+-- Medias closing counter (separate from clinic)
+CREATE TABLE public.medias_closing_counter (
+  id INTEGER PRIMARY KEY DEFAULT 1,
+  last_number BIGINT NOT NULL DEFAULT 0,
+  prefix VARCHAR(10) NOT NULL DEFAULT 'CIM',  -- Different from clinic's CIE
+  CONSTRAINT medias_closing_single_row CHECK (id = 1)
+);
+```
+
+### Pattern 5: Return Approval Workflow
+
+Two-phase state machine with required justification:
+
+```sql
+CREATE TYPE public.medias_return_estado AS ENUM (
+  'pendiente',  -- Initial state, awaiting admin review
+  'aprobado',   -- Admin approved, stock updated
+  'rechazado'   -- Admin rejected with reason
+);
+
+CREATE TABLE public.medias_returns (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_id UUID NOT NULL REFERENCES public.medias_sales(id),
+  sale_item_id UUID NOT NULL REFERENCES public.medias_sale_items(id),
+
+  -- Product/quantity being returned
+  product_id UUID NOT NULL REFERENCES public.medias_products(id),
+  cantidad INTEGER NOT NULL DEFAULT 1,
+
+  -- Return reason
+  motivo TEXT NOT NULL,
+
+  -- State machine
+  estado public.medias_return_estado NOT NULL DEFAULT 'pendiente',
+
+  -- Approval/rejection fields
+  revisado_por UUID REFERENCES auth.users(id),
+  revisado_at TIMESTAMPTZ,
+  motivo_rechazo TEXT,
+
+  -- Audit
+  solicitado_por UUID NOT NULL REFERENCES auth.users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  -- Only one pending return per sale item
+  CONSTRAINT unique_pending_return UNIQUE (sale_item_id, estado)
+    WHERE (estado = 'pendiente')
+);
+```
+
+## Integration Points
+
+### 1. Authentication (SHARED)
+
+Varix-Medias uses exact same auth infrastructure:
+- Same `auth.users` table
+- Same JWT with `app_metadata.role`
+- Same `get_user_role()` helper function
+- Same session handling in Next.js middleware
+
+**No changes needed to auth system.**
+
+### 2. Authorization (SHARED with same roles)
+
+| Role | Medias Permissions |
+|------|-------------------|
+| admin | Full access: CRUD products, approve returns, reopen closings, view reports |
+| medico | View inventory, can make sales (doctors also receive cash) |
+| enfermera | CRUD sales, request returns, close cash |
+| secretaria | Same as enfermera for medias |
+
+RLS policies follow exact same pattern as clinic:
+
+```sql
+CREATE POLICY "Staff can view medias sales"
+  ON public.medias_sales FOR SELECT
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.user_roles
+      WHERE user_id = auth.uid()
+      AND role IN ('admin', 'medico', 'enfermera', 'secretaria')
+    )
+  );
+```
+
+### 3. Audit Log (SHARED table, distinguished by table_name)
+
+Same `audit_log` table captures all medias operations:
+
+```sql
+-- Enable audit on medias tables
+SELECT enable_audit_for_table('public.medias_products');
+SELECT enable_audit_for_table('public.medias_sales');
+SELECT enable_audit_for_table('public.medias_returns');
+SELECT enable_audit_for_table('public.medias_cash_closings');
+```
+
+Queries can filter: `WHERE table_name LIKE 'medias_%'`
+
+### 4. Storage (SEPARATE bucket)
+
+New bucket `medias-receipts` for:
+- Sale receipt photos (comprobantes de venta)
+- Purchase invoice photos (facturas de compra)
+
+Same pattern as `payment-receipts`:
+- Private bucket
+- 5MB limit
+- Image-only MIME types
+- INSERT only (no DELETE/UPDATE)
+
+### 5. Navigation (EXTEND existing)
+
+Add medias routes to existing navigation:
+
+```typescript
+// In sidebar or nav
+{
+  href: '/medias',
+  label: 'Medias',
+  icon: ShoppingBag,
+  children: [
+    { href: '/medias/ventas', label: 'Ventas' },
+    { href: '/medias/inventario', label: 'Inventario' },
+    { href: '/medias/devoluciones', label: 'Devoluciones' },
+    { href: '/medias/compras', label: 'Compras' },
+    { href: '/medias/cierres', label: 'Cierres de Caja' },
+  ]
+}
+```
+
+### 6. Dashboard (SEPARATE widgets)
+
+Medias gets its own dashboard at `/medias` with:
+- Ventas del dia (total, count)
+- Inventario critico (products below minimum)
+- Devoluciones pendientes (awaiting approval)
+- Efectivo en caja (since last closing)
+
+**Not** mixed with clinic dashboard.
+
+## Anti-Patterns to Avoid (Medias-Specific)
+
+### Anti-Pattern 1: Shared Payment Table
+
+**Do NOT** add medias sales to existing `payments` table with a `type` column.
+
+**Why bad:**
+- Complicates clinic cash closing queries
+- Mixes accounting for two different businesses
+- Makes RLS policies more complex
+- Creates ambiguity in invoice numbering
+
+**Instead:** Completely separate `medias_sales` table with own numbering.
+
+### Anti-Pattern 2: Schema-per-Module
+
+**Do NOT** create a separate `medias` schema for isolation.
+
+**Why bad:**
+- Cross-schema foreign keys cause maintenance issues
+- Supabase RLS works best with `public` schema
+- Unnecessary complexity for internal module
+
+**Instead:** Use `medias_` prefix on table names in `public` schema.
+
+### Anti-Pattern 3: Shared Invoice Counter
+
+**Do NOT** share `invoice_counter` between clinic and medias.
+
+**Why bad:**
+- Mixed sequences confuse accounting
+- Cash closing queries become complex
+- Different prefixes in same counter causes issues
+
+**Instead:** Separate `medias_invoice_counter` with different prefix (VTA).
+
+### Anti-Pattern 4: Mutable Inventory
+
+**Do NOT** allow direct UPDATE on inventory without movement record.
+
+**Why bad:**
+- No audit trail for stock changes
+- Cannot reconcile discrepancies
+- Missing accountability
+
+**Instead:** All inventory changes go through movement records; trigger updates stock.
+
+## Scalability Considerations
+
+| Concern | Now (MVP) | Future |
+|---------|-----------|--------|
+| Products | Fixed 11 products | Consider `is_active` flag for soft-disable |
+| Inventory locations | Single location | Add `location_id` if multi-store |
+| Report performance | Simple queries | Add materialized views for aggregations |
+| Photo storage | Supabase Storage | Same bucket can scale |
+
+## Suggested Build Order (Medias Module)
+
+Based on dependencies and incremental value delivery:
+
+### Wave 1: Foundation (Database)
+**Plans: 01-02**
+
+1. **Database migrations: Products and Inventory**
+   - `medias_products` table with fixed catalog
+   - `medias_inventory` table with dual stock
+   - `medias_inventory_movements` table
+   - RLS policies for all tables
+   - Audit triggers
+
+2. **Database migrations: Sales Infrastructure**
+   - `medias_invoice_counter` with protection
+   - `medias_sales`, `medias_sale_items`, `medias_sale_methods`
+   - Immutability trigger for sales
+   - `medias-receipts` storage bucket
+
+### Wave 2: Core Sales Flow (Backend)
+**Plans: 03-05**
+
+3. **TypeScript types and Zod schemas**
+   - Product types, inventory types
+   - Sale types (mirrors payment types)
+   - Return types, purchase types
+
+4. **Query functions**
+   - Products and inventory queries
+   - Sales queries (getMediasSales, getMediasSaleWithDetails)
+   - Stock level checks
+
+5. **Server actions and RPC**
+   - `create_medias_sale()` RPC (atomic sale with stock update)
+   - Server actions for product management
+
+### Wave 3: Sales UI
+**Plans: 06-08**
+
+6. **Product management page**
+   - Simple CRUD for the 11 products
+   - Stock levels display
+
+7. **Sales flow UI**
+   - Product selector component
+   - Cart component
+   - Payment method form (reuse pattern from payments)
+   - Receipt upload (reuse ReceiptUpload component)
+
+8. **New sale page**
+   - Full flow: select products -> payment -> confirmation
+   - Print receipt option
+
+### Wave 4: Cash Closing
+**Plans: 09-10**
+
+9. **Database migrations: Cash closing**
+   - `medias_closing_counter`
+   - `medias_cash_closings`
+   - Block sales trigger for closed days
+
+10. **Cash closing UI**
+    - Preview summary
+    - Physical count input
+    - Difference justification
+    - Photo upload
+    - Closing confirmation
+
+### Wave 5: Returns and Purchases
+**Plans: 11-13**
+
+11. **Returns workflow**
+    - `medias_returns` table with approval state machine
+    - Return request form
+    - Admin approval page
+    - Stock update on approval
+
+12. **Purchases workflow**
+    - `medias_purchases` table
+    - Purchase form with invoice photo
+    - Stock update on save
+
+13. **Dashboard**
+    - Medias overview page
+    - Sales metrics
+    - Low stock alerts
+    - Pending returns
+
+## Sources (Medias Module)
+
+**Verified from existing codebase (HIGH confidence):**
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/009_payments_tables.sql` - Payment immutability pattern
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/010_payments_immutability.sql` - Trigger enforcement
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/015_cash_closings.sql` - Cash closing pattern
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/016_cash_closing_rpc.sql` - RPC functions
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/002_audit_infrastructure.sql` - Audit pattern
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/011_payment_receipts_bucket.sql` - Storage bucket pattern
+- `/mnt/c/Users/Usuario/Proyectos/varix-clinic/supabase/migrations/001_user_roles.sql` - Role infrastructure
+
+**WebSearch references (MEDIUM confidence):**
+- [Supabase Multi-Tenancy Patterns](https://www.antstack.com/blog/multi-tenant-applications-with-rls-on-supabase-postgress/) - Shared schema approach
+- [PostgreSQL Inventory Management](https://www.dbvis.com/thetable/how-to-use-sql-to-manage-business-inventory-data-in-postgres-and-visualize-the-data/) - Stock tracking patterns
+- [Inventory Adjustment Best Practices](https://cashflowinventory.com/blog/inventory-adjustment/) - Movement audit trails
+
+---
+*Original architecture researched: 2026-01-23*
+*Medias module architecture added: 2026-01-25*

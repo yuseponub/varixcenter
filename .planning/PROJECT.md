@@ -8,6 +8,25 @@ Sistema de gestión integral para VarixCenter, una clínica de flebología en Bu
 
 **Pagos inmutables con evidencia obligatoria.** Si todo lo demás falla, los pagos deben ser imposibles de manipular, borrar o modificar sin dejar rastro auditable.
 
+## Current Milestone: v1.1 Varix-Medias
+
+**Goal:** Módulo de gestión para tienda de medias de compresión médica con inventario, ventas, devoluciones, compras y cierre de caja independiente.
+
+**Target features:**
+- Catálogo fijo de 11 productos (Muslo, Panty, Rodilla en varias tallas)
+- Ventas directas en plataforma con foto de comprobante obligatoria
+- Inventario con stock_normal y stock_devoluciones separados
+- Devoluciones en 2 fases (enfermera solicita → admin aprueba)
+- Compras con OCR para extracción de datos de facturas
+- Cierre de caja idéntico a VarixClinic (tolerancia cero, foto obligatoria, bloqueo post-cierre)
+- Dashboard con métricas de ventas, inventario crítico, efectivo en caja
+- Auditoría inmutable de todos los movimientos
+
+**Relación con VarixClinic:**
+- Módulo integrado dentro de la misma aplicación
+- Contabilidad/caja de efectivo SEPARADA de la clínica
+- Roles compartidos: enfermeras venden y cierran, médicos también reciben efectivo
+
 ## Requirements
 
 ### Validated
@@ -60,10 +79,11 @@ Sistema de gestión integral para VarixCenter, una clínica de flebología en Bu
 
 ### Out of Scope
 
-- **Varix-Medias (sistema de medias de compresión)** — Se construirá después como sistema separado
 - **App móvil nativa** — Web responsive es suficiente para tablets
 - **Integración con sistemas externos de salud** — No requerido para v1
 - **Facturación electrónica DIAN** — Evaluar para v2
+- **OCR para ventas de medias** — Ventas se registran directamente en plataforma
+- **Integración bidireccional Medias↔Clínica** — Contabilidades separadas por diseño
 
 ## Context
 
@@ -95,8 +115,11 @@ Sistema de gestión integral para VarixCenter, una clínica de flebología en Bu
 | Supabase como backend | PostgreSQL manejado, Auth incluido, Storage para fotos, RLS para seguridad | — Pending |
 | Pagos 100% inmutables | Prevenir fraude es el problema #1 a resolver | — Pending |
 | v0.dev para UI | Acelera desarrollo, genera código shadcn/ui compatible | — Pending |
-| Sin Varix-Medias en v1 | Enfocarse en sistema principal primero | — Pending |
-| Empezar fresh (ignorar docs existentes) | No condicionarse por decisiones previas | — Pending |
+| Sin Varix-Medias en v1 | Enfocarse en sistema principal primero | ✓ Good — ahora iniciando v1.1 |
+| Empezar fresh (ignorar docs existentes) | No condicionarse por decisiones previas | ✓ Good |
+| Varix-Medias como módulo integrado | Reutiliza auth, UI, patrones existentes | — Pending |
+| Caja de medias separada de clínica | Contabilidades independientes por diseño | — Pending |
+| Cierre de caja idéntico a clínica | Consistencia UX, reutilización de código | — Pending |
 
 ---
-*Last updated: 2025-01-23 after initialization*
+*Last updated: 2026-01-25 after milestone v1.1 initialization*

@@ -2,19 +2,20 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-23)
+See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
-**Current focus:** Phase 3 - Appointments
+**Current milestone:** v1.1 Varix-Medias
+**Current focus:** Defining requirements
 
 ## Current Position
 
-Phase: 4 of 9 (Payments Core)
-Plan: 10 of ? in current phase
-Status: In progress
-Last activity: 2026-01-24 — Completed 04-10-PLAN.md (payment form and new payment page)
+Phase: Not started (defining requirements for v1.1)
+Plan: —
+Status: Defining requirements for Varix-Medias module
+Last activity: 2026-01-25 — Milestone v1.1 started
 
-Progress: [██████████████████░░] ~85%
+Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (new milestone)
 
 ## Performance Metrics
 

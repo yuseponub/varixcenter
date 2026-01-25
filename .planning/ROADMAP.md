@@ -4,6 +4,11 @@
 
 Sistema de gestion para clinica de flebologia en Bucaramanga, Colombia. El proyecto prioriza la infraestructura anti-fraude (pagos inmutables, cierre de caja, auditoria) en fases tempranas porque la manipulacion de pagos es el problema central a resolver. Las fases clinicas (historias, agenda) se construyen sobre esta base segura. Dictado por voz y notificaciones externas se dejan para el final por su alta complejidad e independencia del flujo core.
 
+## Milestones
+
+- 🚧 **v1.0 MVP** - Phases 1-9 (in progress)
+- 📋 **v1.1 Varix-Medias** - Phases 10-15 (planned)
+
 ## Phases
 
 **Phase Numbering:**
@@ -11,6 +16,8 @@ Sistema de gestion para clinica de flebologia en Bucaramanga, Colombia. El proye
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 Decimal phases appear between their surrounding integers in numeric order.
+
+### v1.0 MVP (Phases 1-9)
 
 - [ ] **Phase 1: Security Foundation** - Authentication, roles, RLS, and audit logging infrastructure
 - [x] **Phase 2: Patients** - Patient registry with cedula as unique ID and search
@@ -21,6 +28,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 7: Voice Dictation** - Speech-to-text for diagnosis (high complexity)
 - [ ] **Phase 8: Reports & Alerts** - Financial reports and anomaly detection
 - [ ] **Phase 9: Notifications** - SMS/WhatsApp appointment reminders
+
+### v1.1 Varix-Medias (Phases 10-15)
+
+- [ ] **Phase 10: Medias Foundation** - Database schema, product catalog, inventory tables, immutability patterns
+- [ ] **Phase 11: Sales Core** - POS functionality with thermal receipt printing
+- [ ] **Phase 12: Cash Closing Medias** - Separate cash drawer with zero-tolerance reconciliation
+- [ ] **Phase 13: Purchases** - Stock replenishment with invoice photos
+- [ ] **Phase 14: Returns Workflow** - Two-phase approval for fraud prevention
+- [ ] **Phase 15: Dashboard & Inventory** - Stock alerts, adjustments, and operational dashboard
 
 ## Phase Details
 
@@ -178,23 +194,125 @@ Plans:
 Plans:
 - [ ] 09-01: TBD
 
+---
+
+## Milestone v1.1: Varix-Medias
+
+**Milestone Goal:** Modulo de gestion para tienda de medias de compresion medica con inventario, ventas, devoluciones, compras y cierre de caja independiente de la clinica.
+
+### Phase 10: Medias Foundation
+**Goal**: Base de datos con productos, inventario dual (normal/devoluciones), y patrones de inmutabilidad establecidos
+**Depends on**: Phase 9 (v1.0 completion) or Phase 1 (if building in parallel)
+**Requirements**: CAT-01, CAT-02, CAT-03, CAT-04, CAT-05, INV-01, INV-02, INV-06, INV-07
+**Success Criteria** (what must be TRUE):
+  1. Admin puede ver listado completo de productos con precio y stock actual
+  2. Admin puede agregar, editar precio, y desactivar productos del catalogo
+  3. Sistema tiene 11 productos pre-cargados con precios iniciales
+  4. Sistema muestra stock separado: stock_normal (de compras) y stock_devoluciones (de returns)
+  5. Cada movimiento de stock queda registrado con producto, tipo, cantidad, stock antes/despues, usuario, timestamp (inmutable)
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: TBD
+
+### Phase 11: Sales Core
+**Goal**: Usuario puede registrar ventas inmutables con generacion de recibo para impresora termica
+**Depends on**: Phase 10
+**Requirements**: VTA-01, VTA-02, VTA-03, VTA-04, VTA-05, VTA-06, VTA-07, VTA-08, VTA-09, VTA-10, VTA-11, VTA-12, VTA-13, VTA-14
+**Success Criteria** (what must be TRUE):
+  1. Usuario puede registrar venta seleccionando productos, cantidades, y metodo de pago
+  2. Pagos electronicos (tarjeta, transferencia, nequi) REQUIEREN foto de comprobante
+  3. Venta decrementa stock automaticamente; sistema bloquea venta si stock es 0
+  4. Numeros de venta son secuenciales (VTA-000001) y nunca se reutilizan
+  5. Ventas son inmutables — solo Admin puede eliminar con justificacion, y eliminacion revierte stock
+  6. Sistema genera recibo imprimible optimizado para impresora termica de 58mm
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01: TBD
+
+### Phase 12: Cash Closing Medias
+**Goal**: Cierre de caja de Medias es INDEPENDIENTE del cierre de clinica, con tolerancia cero para diferencias
+**Depends on**: Phase 11
+**Requirements**: CIE-01, CIE-02, CIE-03, CIE-04, CIE-05, CIE-06, CIE-07, CIE-08
+**Success Criteria** (what must be TRUE):
+  1. Sistema calcula totales automaticos por metodo de pago del dia (efectivo, tarjeta, transferencia, nequi)
+  2. Usuario ingresa conteo fisico y sistema muestra diferencia con esperado
+  3. CUALQUIER diferencia (tolerancia cero) requiere justificacion escrita
+  4. Una vez cerrada la caja, sistema bloquea registro de ventas para ese dia
+  5. Numeros de cierre son secuenciales (CIM-000001) y solo Admin puede reabrir con justificacion
+**Plans**: TBD
+
+Plans:
+- [ ] 12-01: TBD
+
+### Phase 13: Purchases
+**Goal**: Usuario puede registrar compras que incrementan stock_normal automaticamente
+**Depends on**: Phase 10
+**Requirements**: COM-01, COM-02, COM-03, COM-04
+**Success Criteria** (what must be TRUE):
+  1. Usuario puede registrar compra con fecha, proveedor, y productos recibidos
+  2. Usuario puede subir foto de factura de compra como evidencia
+  3. Compra incrementa stock_normal automaticamente al registrarse
+  4. Usuario puede ver historial completo de compras con filtros
+**Plans**: TBD
+
+Plans:
+- [ ] 13-01: TBD
+
+### Phase 14: Returns Workflow
+**Goal**: Devoluciones requieren aprobacion de Admin para prevenir fraude, y afectan stock_devoluciones (no stock_normal)
+**Depends on**: Phase 11
+**Requirements**: DEV-01, DEV-02, DEV-03, DEV-04, DEV-05, DEV-06, DEV-07
+**Success Criteria** (what must be TRUE):
+  1. Enfermera/Secretaria puede crear solicitud de devolucion vinculada a venta original con motivo y foto
+  2. Devolucion queda en estado "pendiente" hasta aprobacion de Admin
+  3. Admin puede ver lista de devoluciones pendientes y aprobar/rechazar con notas
+  4. Al aprobar, sistema incrementa stock_devoluciones (NO stock_normal) y registra metodo de reembolso
+**Plans**: TBD
+
+Plans:
+- [ ] 14-01: TBD
+
+### Phase 15: Dashboard & Inventory
+**Goal**: Dashboard operativo con alertas de stock critico y capacidad de ajuste manual de inventario
+**Depends on**: Phase 11, Phase 12, Phase 14
+**Requirements**: INV-03, INV-04, INV-05, DSH-01, DSH-02, DSH-03, DSH-04, DSH-05
+**Success Criteria** (what must be TRUE):
+  1. Dashboard muestra efectivo actual en caja, ventas del dia/mes, devoluciones pendientes
+  2. Sistema muestra alertas cuando stock total < 3 unidades
+  3. Dashboard muestra productos con stock critico
+  4. Admin puede realizar ajuste manual de inventario con justificacion y codigo de razon (dano, perdida, correccion conteo)
+**Plans**: TBD
+
+Plans:
+- [ ] 15-01: TBD
+
+---
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13 -> 14 -> 15
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Security Foundation | 0/5 | Planned | - |
-| 2. Patients | 7/7 | Complete | 2026-01-23 |
-| 3. Appointments | 0/7 | Planned | - |
-| 4. Payments Core | 0/11 | Planned | - |
-| 5. Cash Closing | 0/? | Not started | - |
-| 6. Medical Records | 0/? | Not started | - |
-| 7. Voice Dictation | 0/? | Not started | - |
-| 8. Reports & Alerts | 0/? | Not started | - |
-| 9. Notifications | 0/? | Not started | - |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Security Foundation | v1.0 | 0/5 | Planned | - |
+| 2. Patients | v1.0 | 7/7 | Complete | 2026-01-23 |
+| 3. Appointments | v1.0 | 0/7 | Planned | - |
+| 4. Payments Core | v1.0 | 0/11 | Planned | - |
+| 5. Cash Closing | v1.0 | 0/? | Not started | - |
+| 6. Medical Records | v1.0 | 0/? | Not started | - |
+| 7. Voice Dictation | v1.0 | 0/? | Not started | - |
+| 8. Reports & Alerts | v1.0 | 0/? | Not started | - |
+| 9. Notifications | v1.0 | 0/? | Not started | - |
+| 10. Medias Foundation | v1.1 | 0/? | Not started | - |
+| 11. Sales Core | v1.1 | 0/? | Not started | - |
+| 12. Cash Closing Medias | v1.1 | 0/? | Not started | - |
+| 13. Purchases | v1.1 | 0/? | Not started | - |
+| 14. Returns Workflow | v1.1 | 0/? | Not started | - |
+| 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-24*
+*Last updated: 2026-01-25 — Added Varix-Medias phases (10-15)*

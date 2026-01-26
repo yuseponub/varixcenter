@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ### v1.1 Varix-Medias (Phases 10-15)
 
 - [x] **Phase 10: Medias Foundation** - Database schema, product catalog, inventory tables, immutability patterns
-- [ ] **Phase 11: Sales Core** - POS functionality with thermal receipt printing
+- [x] **Phase 11: Sales Core** - POS functionality with thermal receipt printing
 - [ ] **Phase 12: Cash Closing Medias** - Separate cash drawer with zero-tolerance reconciliation
 - [ ] **Phase 13: Purchases** - Stock replenishment with invoice photos
 - [ ] **Phase 14: Returns Workflow** - Two-phase approval for fraud prevention
@@ -251,10 +251,15 @@ Plans:
   3. CUALQUIER diferencia (tolerancia cero) requiere justificacion escrita
   4. Una vez cerrada la caja, sistema bloquea registro de ventas para ese dia
   5. Numeros de cierre son secuenciales (CIM-000001) y solo Admin puede reabrir con justificacion
-**Plans**: TBD
+**Plans**: 6 plans in 4 waves
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 12-01-PLAN.md — Database schema: medias_cierre_counter, medias_cierres table, immutability and lockdown triggers
+- [ ] 12-02-PLAN.md — RPC functions: get_medias_cierre_summary, create_medias_cierre, reopen_medias_cierre
+- [ ] 12-03-PLAN.md — TypeScript types and Zod validation schemas for medias cierres
+- [ ] 12-04-PLAN.md — Query functions and server actions for medias cierres
+- [ ] 12-05-PLAN.md — UI components: cierre summary card, form, reopen dialog, cierres table
+- [ ] 12-06-PLAN.md — Pages: cierres list, new cierre with date picker, cierre detail
 
 ### Phase 13: Purchases
 **Goal**: Usuario puede registrar compras que incrementan stock_normal automaticamente
@@ -318,11 +323,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Notifications | v1.0 | 0/? | Not started | - |
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
-| 12. Cash Closing Medias | v1.1 | 0/? | Not started | - |
+| 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
 | 13. Purchases | v1.1 | 0/? | Not started | - |
 | 14. Returns Workflow | v1.1 | 0/? | Not started | - |
 | 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 11 complete (8 plans executed)*
+*Last updated: 2026-01-26 — Phase 12 planned (6 plans in 4 waves)*

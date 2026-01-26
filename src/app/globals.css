@@ -123,3 +123,141 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* FullCalendar custom styles - larger time slots */
+.appointment-calendar {
+  /* Make slots taller for better visibility */
+  --fc-slot-height: 60px;
+}
+
+.appointment-calendar .fc-timegrid-slot {
+  height: var(--fc-slot-height) !important;
+}
+
+.appointment-calendar .fc-timegrid-slot-label {
+  vertical-align: top;
+  padding-top: 4px;
+}
+
+/* Event styles for better readability */
+.appointment-calendar .fc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  border-width: 0;
+  border-left-width: 3px;
+}
+
+.appointment-calendar .fc-event-title {
+  font-weight: 500;
+}
+
+/* Scrollable container */
+.appointment-calendar .fc-scroller {
+  overflow-y: auto !important;
+}
+
+/* Now indicator */
+.appointment-calendar .fc-timegrid-now-indicator-line {
+  border-color: #ef4444;
+  border-width: 2px;
+}
+
+.appointment-calendar .fc-timegrid-now-indicator-arrow {
+  border-color: #ef4444;
+}
+
+/* List view styles */
+.appointment-calendar .fc-list {
+  border-radius: 8px;
+}
+
+.appointment-calendar .fc-list-event {
+  cursor: pointer;
+}
+
+.appointment-calendar .fc-list-event:hover td {
+  background-color: hsl(var(--accent));
+}
+
+.appointment-calendar .fc-list-event-title {
+  font-weight: 500;
+}
+
+.appointment-calendar .fc-list-event-time {
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+.appointment-calendar .fc-list-day-cushion {
+  background-color: hsl(var(--muted));
+  font-weight: 600;
+}
+
+.appointment-calendar .fc-list-event-dot {
+  border-radius: 50%;
+}
+
+/* Button group styling */
+.appointment-calendar .fc-button-group {
+  gap: 2px;
+}
+
+.appointment-calendar .fc-button {
+  text-transform: capitalize;
+}
+
+/* Thermal Receipt Print Styles - 58mm width */
+.receipt {
+  width: 58mm;
+  max-width: 58mm;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.3;
+  margin: 0 auto;
+}
+
+.receipt h1 {
+  font-size: 14px;
+}
+
+.no-print {
+  display: block;
+}
+
+@media print {
+  /* Hide everything except receipt */
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt,
+  .receipt * {
+    visibility: visible;
+  }
+
+  .receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+    max-width: 58mm;
+    background: white !important;
+    color: black !important;
+    padding: 2mm;
+    margin: 0;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide print button and other non-receipt elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Page size for thermal printer */
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+}

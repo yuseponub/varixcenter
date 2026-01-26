@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 14 of 15 (Returns Workflow)
-Plan: 03 of 5 (Returns Types and Validations)
+Plan: 04 of 5 (Cierre Integration and Data Access)
 Status: In progress
-Last activity: 2026-01-26 — Completed 14-03-PLAN.md
+Last activity: 2026-01-26 — Completed 14-04-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~97%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 58
+- Total plans completed: 59
 - Average duration: 3.4 min
-- Total execution time: 198 min
+- Total execution time: 202 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-03 (3 min), 14-02 (2 min), 14-01 (2 min), 13-09 (4 min), 13-08 (2 min)
+- Last 5 plans: 14-04 (4 min), 14-03 (3 min), 14-02 (2 min), 14-01 (2 min), 13-09 (4 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~4 min
 
 *Updated after each plan completion*
@@ -163,6 +163,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [14-02]: reject_medias_return does NOT create stock movement (estado change only)
 - [14-03]: Direct type imports from @/types/medias/returns (not barrel export)
 - [14-03]: Zod v4 z.number() without options (invalid_type_error not supported)
+- [14-04]: Cash refunds tracked by aprobado_at for correct cierre attribution
+- [14-04]: efectivo_neto = total_efectivo - total_devoluciones_efectivo for reconciliation
+- [14-04]: return_count in cierre summary includes all approved returns (not just efectivo)
 
 ### Pending Todos
 
@@ -178,7 +181,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 14-03-PLAN.md
+Stopped at: Completed 14-04-PLAN.md
 Resume file: None
 
 ---

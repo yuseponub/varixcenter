@@ -29,12 +29,21 @@ const formatDate = (dateStr: string) =>
     timeStyle: 'short'
   }).format(new Date(dateStr))
 
-async function canAnular(): Promise<boolean> {
+async function getUserRole(): Promise<string> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.access_token) return 'none'
 
-  const role = user.app_metadata?.role
+  try {
+    const payload = JSON.parse(Buffer.from(session.access_token.split('.')[1], 'base64').toString())
+    return payload.app_metadata?.role ?? 'none'
+  } catch {
+    return 'none'
+  }
+}
+
+async function canAnular(): Promise<boolean> {
+  const role = await getUserRole()
   return role === 'admin' || role === 'medico'
 }
 

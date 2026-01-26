@@ -60,21 +60,24 @@ export const patientSchema = z.object({
     .optional()
     .or(z.literal('')),
 
-  // Emergency contact (REQUIRED per PAT-04)
+  // Emergency contact (OPTIONAL)
   contacto_emergencia_nombre: z
     .string()
-    .min(2, 'El nombre del contacto de emergencia es requerido')
-    .max(100, 'El nombre es muy largo'),
+    .max(100, 'El nombre es muy largo')
+    .optional()
+    .or(z.literal('')),
 
   contacto_emergencia_telefono: z
     .string()
-    .min(1, 'El telefono de emergencia es requerido')
-    .regex(phoneRegex, 'El telefono debe tener 10 digitos'),
+    .regex(phoneRegex, 'El telefono debe tener 10 digitos')
+    .optional()
+    .or(z.literal('')),
 
   contacto_emergencia_parentesco: z
     .string()
-    .min(2, 'El parentesco es requerido')
-    .max(50, 'El parentesco es muy largo'),
+    .max(50, 'El parentesco es muy largo')
+    .optional()
+    .or(z.literal('')),
 })
 
 /**

@@ -6,15 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { X, Upload, Loader2 } from 'lucide-react'
-import { createReceiptUploadUrl } from '@/lib/storage/receipts'
+import { createCierreUploadUrl } from '@/lib/storage/receipts'
+import { createClient } from '@/lib/supabase/client'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic']
 
-/**
- * Client-side validation for receipt files
- */
-function validateReceiptFile(file: { size: number; type: string }): string | null {
+function validatePhotoFile(file: { size: number; type: string }): string | null {
   if (file.size > MAX_FILE_SIZE) {
     return 'El archivo es muy grande. Maximo 5MB.'
   }
@@ -24,29 +22,25 @@ function validateReceiptFile(file: { size: number; type: string }): string | nul
   return null
 }
 
-interface ReceiptUploadProps {
-  /** Called when upload completes with the storage path */
+interface CierrePhotoUploadProps {
+  fecha: string
   onUploadComplete: (path: string) => void
-  /** Called when file is removed */
   onRemove: () => void
-  /** Initial path (for showing existing receipt) */
   initialPath?: string | null
-  /** Disable input */
   disabled?: boolean
-  /** Show required indicator */
   required?: boolean
-  /** Error message from parent form */
   error?: string
 }
 
-export function ReceiptUpload({
+export function CierrePhotoUpload({
+  fecha,
   onUploadComplete,
   onRemove,
   initialPath,
   disabled,
   required,
   error
-}: ReceiptUploadProps) {
+}: CierrePhotoUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [uploadedPath, setUploadedPath] = useState<string | null>(initialPath || null)
@@ -60,7 +54,7 @@ export function ReceiptUpload({
     setUploadError(null)
 
     // Client-side validation
-    const validationError = validateReceiptFile({ size: file.size, type: file.type })
+    const validationError = validatePhotoFile({ size: file.size, type: file.type })
     if (validationError) {
       setUploadError(validationError)
       return
@@ -74,23 +68,20 @@ export function ReceiptUpload({
     // Upload to Supabase Storage
     setIsUploading(true)
     try {
-      // Get signed URL from server
-      const urlResult = await createReceiptUploadUrl(file.name)
+      // Get signed URL from server (using cierre-specific function)
+      const urlResult = await createCierreUploadUrl(file.name, fecha)
       if ('error' in urlResult) {
         throw new Error(urlResult.error)
       }
 
-      // Upload directly to signed URL via fetch
-      const uploadResponse = await fetch(urlResult.signedUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': file.type,
-        },
-        body: file,
-      })
+      // Upload directly to storage
+      const supabase = createClient()
+      const { error: uploadErr } = await supabase.storage
+        .from('payment-receipts')
+        .uploadToSignedUrl(urlResult.path, urlResult.signedUrl.split('?')[1], file)
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed: ${uploadResponse.statusText}`)
+      if (uploadErr) {
+        throw uploadErr
       }
 
       setUploadedPath(urlResult.path)
@@ -105,7 +96,7 @@ export function ReceiptUpload({
     } finally {
       setIsUploading(false)
     }
-  }, [onUploadComplete])
+  }, [fecha, onUploadComplete])
 
   const handleRemove = useCallback(() => {
     if (preview) {
@@ -123,7 +114,7 @@ export function ReceiptUpload({
   return (
     <div className="space-y-2">
       <Label className={required ? "after:content-['*'] after:ml-0.5 after:text-red-500" : ''}>
-        Foto del comprobante
+        Foto del reporte firmado
       </Label>
 
       {!preview && !uploadedPath ? (
@@ -134,10 +125,10 @@ export function ReceiptUpload({
             onChange={handleFileChange}
             disabled={disabled || isUploading}
             className="hidden"
-            id="receipt-upload"
+            id="cierre-photo-upload"
           />
           <label
-            htmlFor="receipt-upload"
+            htmlFor="cierre-photo-upload"
             className={`cursor-pointer flex flex-col items-center gap-2 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isUploading ? (
@@ -149,7 +140,7 @@ export function ReceiptUpload({
               <>
                 <Upload className="h-8 w-8 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  Subir foto del comprobante
+                  Subir foto del reporte firmado
                 </span>
                 <span className="text-xs text-muted-foreground">
                   JPEG, PNG, WebP o HEIC (max 5MB)
@@ -163,7 +154,7 @@ export function ReceiptUpload({
           {preview ? (
             <Image
               src={preview}
-              alt="Vista previa del comprobante"
+              alt="Vista previa del reporte"
               width={200}
               height={200}
               className="rounded-lg object-cover border"
@@ -171,7 +162,7 @@ export function ReceiptUpload({
           ) : uploadedPath ? (
             <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center border">
               <span className="text-sm text-muted-foreground text-center px-2">
-                Comprobante guardado
+                Foto guardada
               </span>
             </div>
           ) : null}

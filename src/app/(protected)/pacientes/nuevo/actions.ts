@@ -39,9 +39,9 @@ export async function createPatient(
     email: formData.get('email') || '',
     fecha_nacimiento: formData.get('fecha_nacimiento') || '',
     direccion: formData.get('direccion') || '',
-    contacto_emergencia_nombre: formData.get('contacto_emergencia_nombre'),
-    contacto_emergencia_telefono: formData.get('contacto_emergencia_telefono'),
-    contacto_emergencia_parentesco: formData.get('contacto_emergencia_parentesco'),
+    contacto_emergencia_nombre: formData.get('contacto_emergencia_nombre') || '',
+    contacto_emergencia_telefono: formData.get('contacto_emergencia_telefono') || '',
+    contacto_emergencia_parentesco: formData.get('contacto_emergencia_parentesco') || '',
   }
 
   // Validate with Zod
@@ -60,6 +60,9 @@ export async function createPatient(
     email: validated.data.email || null,
     fecha_nacimiento: validated.data.fecha_nacimiento || null,
     direccion: validated.data.direccion || null,
+    contacto_emergencia_nombre: validated.data.contacto_emergencia_nombre || null,
+    contacto_emergencia_telefono: validated.data.contacto_emergencia_telefono || null,
+    contacto_emergencia_parentesco: validated.data.contacto_emergencia_parentesco || null,
     created_by: user.id,
   }
 

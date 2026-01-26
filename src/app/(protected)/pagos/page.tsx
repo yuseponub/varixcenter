@@ -1,8 +1,5 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
 import { getPayments } from '@/lib/queries/payments'
-import { PaymentsTable } from '@/components/payments/payments-table'
+import { PaymentsView } from '@/components/payments/payments-view'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,7 +10,7 @@ import {
 } from '@/components/ui/breadcrumb'
 
 export default async function PaymentsPage() {
-  const { payments } = await getPayments({ limit: 50 })
+  const { payments } = await getPayments({ limit: 100 })
 
   return (
     <div className="space-y-6">
@@ -30,24 +27,8 @@ export default async function PaymentsPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pagos</h1>
-          <p className="text-muted-foreground">
-            Registro de pagos de la clinica
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/pagos/nuevo">
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Pago
-          </Link>
-        </Button>
-      </div>
-
-      {/* Table */}
-      <PaymentsTable payments={payments} />
+      {/* Payments View with filter */}
+      <PaymentsView payments={payments} />
     </div>
   )
 }

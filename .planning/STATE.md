@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 11 of 15 (Sales Core) — IN PROGRESS
-Plan: 02 of 8 (wave 2 complete)
-Status: Executing wave 2 plans
-Last activity: 2026-01-26 — Completed 11-02-PLAN.md (Immutability enforcement)
+Plan: 05 of 8 (wave 3 in progress)
+Status: Executing wave 3 plans
+Last activity: 2026-01-26 — Completed 11-05-PLAN.md (Sales queries and server actions)
 
-Progress: [####################] v1.0 complete (simulated) | [######░░░░░░░░░░░░░░] v1.1 ~25%
+Progress: [####################] v1.0 complete (simulated) | [########░░░░░░░░░░░░] v1.1 ~35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration: 4 min
-- Total execution time: 110 min
+- Total execution time: 113 min
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [####################] v1.0 complete (simulated) | [######░░░░
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
-| 11-sales-core | 3 | 5 min | 1.7 min |
+| 11-sales-core | 4 | 8 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-04 (2 min), 11-04 (2 min), 11-01 (2 min), 11-03 (1 min), 11-02 (2 min)
-- Trend: Consistent ~2 min for types/validation tasks, 1 min for single-file RPC migrations
+- Last 5 plans: 11-04 (2 min), 11-01 (2 min), 11-03 (1 min), 11-02 (2 min), 11-05 (3 min)
+- Trend: Consistent ~2 min for types/validation/query tasks
 
 *Updated after each plan completion*
 
@@ -68,6 +68,7 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [11-02]: Stock reversal goes to stock_normal via ajuste_entrada movement type
 - [11-03]: Two-pass validation pattern for atomic stock operations (validate all, then execute all)
 - [11-03]: FOR UPDATE row locking prevents race conditions on concurrent sales
+- [11-05]: Explicit any cast for Supabase client on untyped tables (pending migration)
 
 ### Pending Todos
 
@@ -83,7 +84,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 11-02-PLAN.md
+Stopped at: Completed 11-05-PLAN.md
 Resume file: None
 
 ---

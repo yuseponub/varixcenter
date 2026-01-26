@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 12 - Cash Closing Medias
+**Current focus:** Phase 08 - Reports & Alerts
 
 ## Current Position
 
-Phase: 12 of 15 (Cash Closing Medias) - COMPLETE
-Plan: 06 of 6 (Pages complete)
-Status: Phase 12 COMPLETE - ready for UAT
-Last activity: 2026-01-26 — Completed 12-06-PLAN.md
+Phase: 08 of 15 (Reports & Alerts)
+Plan: 01 of 6 (Foundation complete)
+Status: In progress
+Last activity: 2026-01-26 — Completed 08-01-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [#################░░░] v1.1 ~85%
+Progress: [####################] v1.0 complete (simulated) | [##################░░] v1.1 ~90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 38
+- Total plans completed: 39
 - Average duration: 4 min
-- Total execution time: 142 min
+- Total execution time: 146 min
 
 **By Phase:**
 
@@ -32,13 +32,14 @@ Progress: [####################] v1.0 complete (simulated) | [#################�
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
+| 08-reports-alerts | 1 | 4 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 12-06 (7 min), 12-05 (4 min), 12-04 (2 min), 12-03 (6 min), 12-02 (2 min)
-- Trend: Page tasks ~7 min
+- Last 5 plans: 08-01 (4 min), 12-06 (7 min), 12-05 (4 min), 12-04 (2 min), 12-03 (6 min)
+- Trend: Foundation tasks ~4 min
 
 *Updated after each plan completion*
 
@@ -92,13 +93,16 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [12-06]: Two-step new cierre flow: date picker then form
 - [12-06]: DatePickerForm accepts basePath prop for reusability
 - [12-06]: Zero-tolerance messaging on both list and new cierre pages
+- [08-01]: react-is ^19.0.0 override for React 19 compatibility with Recharts
+- [08-01]: Faltante (negative diferencia) triggers critico severity, sobrante triggers advertencia
+- [08-01]: SECURITY DEFINER functions bypass RLS for automatic alert insertion
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
-- [ ] Apply pending migrations (007-025) to Supabase
+- [ ] Apply pending migrations (007-028) to Supabase
 
 ### Blockers/Concerns
 
@@ -107,7 +111,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 12-06-PLAN.md (Pages) - Phase 12 COMPLETE
+Stopped at: Completed 08-01-PLAN.md (Foundation) - Phase 08 started
 Resume file: None
 
 ---

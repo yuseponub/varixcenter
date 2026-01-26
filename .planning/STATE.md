@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 14 of 15 (Returns Workflow)
-Plan: 01 of 5 (Medias Returns Migration)
+Plan: 02 of 5 (Returns RPC Functions)
 Status: In progress
-Last activity: 2026-01-26 — Completed 14-01-PLAN.md
+Last activity: 2026-01-26 — Completed 14-02-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~95%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 56
-- Average duration: 4 min
-- Total execution time: 193 min
+- Total plans completed: 57
+- Average duration: 3.4 min
+- Total execution time: 195 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-01 (2 min), 13-09 (4 min), 13-08 (2 min), 13-07 (2 min), 13-06 (3 min)
+- Last 5 plans: 14-02 (2 min), 14-01 (2 min), 13-09 (4 min), 13-08 (2 min), 13-07 (2 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~4 min
 
 *Updated after each plan completion*
@@ -157,6 +157,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [14-01]: foto_path OPTIONAL per CONTEXT.md decision
 - [14-01]: motivo minimum 10 chars for meaningful explanations
 - [14-01]: Terminal states (aprobada/rechazada) are completely immutable
+- [14-02]: Quantity validation counts pendiente + aprobada returns (rechazada excluded)
+- [14-02]: Approved returns increment stock_devoluciones, NOT stock_normal
+- [14-02]: Stock movement uses tipo='devolucion' and referencia_tipo='devolucion'
+- [14-02]: reject_medias_return does NOT create stock movement (estado change only)
 
 ### Pending Todos
 
@@ -172,7 +176,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 14-01-PLAN.md
+Stopped at: Completed 14-02-PLAN.md
 Resume file: None
 
 ---

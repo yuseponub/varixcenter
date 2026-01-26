@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type TimelineEvent = {
   id: string
-  type: 'patient_record' | 'payment' | 'appointment' | 'procedure'
+  type: 'patient_record' | 'payment' | 'appointment' | 'procedure' | 'sms_reminder'
   action: string
   timestamp: string
   details: string
@@ -109,6 +109,8 @@ function getEventColor(type: TimelineEvent['type']): string {
       return 'bg-purple-500'
     case 'procedure':
       return 'bg-orange-500'
+    case 'sms_reminder':
+      return 'bg-cyan-500'
     default:
       return 'bg-gray-500'
   }
@@ -127,6 +129,8 @@ function getEventTitle(event: TimelineEvent): string {
       return 'Cita'
     case 'procedure':
       return 'Procedimiento'
+    case 'sms_reminder':
+      return 'Recordatorio SMS'
     default:
       return 'Evento'
   }

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getPatientNotifications } from './notifications'
 
 /**
  * Search patients by cedula, nombre, apellido, or celular
@@ -65,11 +66,8 @@ export async function getPatientById(id: string) {
 }
 
 /**
- * Get patient timeline from audit_log
- * Shows history of changes to the patient record
- *
- * Note: In future phases, this will expand to include
- * payments, appointments, and medical records
+ * Get patient timeline from audit_log AND notifications
+ * Shows history of changes and SMS reminders
  *
  * @param patientId - Patient UUID
  * @param limit - Max events to return (default 20)
@@ -78,8 +76,7 @@ export async function getPatientById(id: string) {
 export async function getPatientTimeline(patientId: string, limit = 20) {
   const supabase = await createClient()
 
-  // For Phase 2, timeline only shows patient record changes
-  // Future phases will add: payments, appointments, procedures
+  // Get audit log entries
   const { data, error } = await supabase
     .from('audit_log')
     .select('id, action, changed_fields, changed_at, old_data, new_data')
@@ -91,7 +88,7 @@ export async function getPatientTimeline(patientId: string, limit = 20) {
   if (error) throw error
 
   // Transform audit log entries into timeline events
-  return data.map((entry) => ({
+  const auditEvents = data.map((entry) => ({
     id: String(entry.id),
     type: 'patient_record' as const,
     action: entry.action,
@@ -99,6 +96,44 @@ export async function getPatientTimeline(patientId: string, limit = 20) {
     timestamp: entry.changed_at,
     details: getTimelineEventDetails(entry),
   }))
+
+  // Get notifications for this patient
+  let notificationEvents: Array<{
+    id: string
+    type: 'sms_reminder'
+    action: string
+    changedFields: null
+    timestamp: string
+    details: string
+  }> = []
+
+  try {
+    const notifications = await getPatientNotifications(patientId, limit)
+    notificationEvents = notifications.map((notif) => ({
+      id: notif.id,
+      type: 'sms_reminder' as const,
+      action: notif.estado,
+      changedFields: null,
+      timestamp: notif.enviado_at || notif.created_at,
+      details: `Recordatorio ${notif.tipo_recordatorio === '24h' ? '24 horas' : '2 horas'} - ${
+        notif.estado === 'enviado'
+          ? 'Enviado'
+          : notif.estado === 'fallido'
+            ? 'Fallido'
+            : 'Pendiente'
+      }`,
+    }))
+  } catch (err) {
+    // If notifications table doesn't exist yet, continue without
+    console.warn('Could not fetch notifications for timeline:', err)
+  }
+
+  // Merge and sort by timestamp
+  const allEvents = [...auditEvents, ...notificationEvents].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  )
+
+  return allEvents.slice(0, limit)
 }
 
 /**

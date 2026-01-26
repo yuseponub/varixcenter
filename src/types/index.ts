@@ -25,6 +25,10 @@ export * from './cash-closing'
 // Re-export medical records types
 export * from './medical-records'
 
+// NOTE: Medias types (products, sales, cierres) are NOT re-exported here
+// to avoid conflicts with clinic types (PAYMENT_METHODS, CierreEstado, etc.)
+// Import directly from @/types/medias/products, @/types/medias/sales, @/types/medias/cierres
+
 /**
  * User roles for the VarixClinic system.
  * Matches the roles defined in the Custom Access Token Hook.

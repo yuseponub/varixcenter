@@ -309,10 +309,15 @@ Plans:
   2. Devolucion queda en estado "pendiente" hasta aprobacion de Admin
   3. Admin puede ver lista de devoluciones pendientes y aprobar/rechazar con notas
   4. Al aprobar, sistema incrementa stock_devoluciones (NO stock_normal) y registra metodo de reembolso
-**Plans**: TBD
+**Plans**: 6 plans in 5 waves
 
 Plans:
-- [ ] 14-01: TBD
+- [ ] 14-01-PLAN.md — Database schema: medias_returns table, ENUMs, counter, RLS, immutability trigger
+- [ ] 14-02-PLAN.md — RPC functions: create_return, approve_return, reject_return with stock increment
+- [ ] 14-03-PLAN.md — TypeScript types and Zod validation schemas for returns
+- [ ] 14-04-PLAN.md — Update cierre summary RPC, query functions, and server actions
+- [ ] 14-05-PLAN.md — UI components: returns table, return form, approve/reject dialogs
+- [ ] 14-06-PLAN.md — Pages: returns list, new return flow, pending returns, detail page
 
 ### Phase 15: Dashboard & Inventory
 **Goal**: Dashboard operativo con alertas de stock critico y capacidad de ajuste manual de inventario
@@ -372,10 +377,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
 | 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
 | 13. Purchases | v1.1 | 0/9 | Planned | - |
-| 14. Returns Workflow | v1.1 | 0/? | Not started | - |
+| 14. Returns Workflow | v1.1 | 0/6 | Planned | - |
 | 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
 | 16. Expense Control | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 9 planned (5 plans in 3 waves)*
+*Last updated: 2026-01-26 — Phase 14 planned (6 plans in 5 waves)*

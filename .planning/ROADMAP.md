@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 6: Medical Records** - Clinical forms, CEAP classification, and quotations
 - [ ] **Phase 7: Voice Dictation** - Speech-to-text for diagnosis (high complexity)
 - [ ] **Phase 8: Reports & Alerts** - Financial reports and anomaly detection
-- [ ] **Phase 9: Notifications** - SMS/WhatsApp appointment reminders
+- [ ] **Phase 9: Notifications** - SMS appointment reminders
 
 ### v1.1 Varix-Medias (Phases 10-15)
 
@@ -192,17 +192,23 @@ Plans:
 - [ ] 08-06-PLAN.md — Reports page and dashboard integration with alerts widget
 
 ### Phase 9: Notifications
-**Goal**: Sistema envia recordatorios de citas a pacientes por SMS o WhatsApp
+**Goal**: Sistema envia recordatorios de citas a pacientes por SMS (WhatsApp en fase futura)
 **Depends on**: Phase 3
 **Requirements**: NOT-01
 **Success Criteria** (what must be TRUE):
   1. Sistema envia recordatorio automatico 24h antes de cita programada
-  2. Recordatorio se envia por SMS o WhatsApp segun preferencia del paciente
-  3. Admin puede ver historial de notificaciones enviadas
-**Plans**: TBD
+  2. Sistema envia recordatorio automatico 2h antes de cita programada
+  3. Recordatorio se envia por SMS via Twilio
+  4. Admin puede ver historial de notificaciones enviadas en /notificaciones
+  5. Historial de SMS aparece en timeline del paciente
+**Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 09-01: TBD
+- [ ] 09-01-PLAN.md — Database schema: notifications table with status tracking and RLS
+- [ ] 09-02-PLAN.md — TypeScript types and Zod validation schemas for notifications
+- [ ] 09-03-PLAN.md — Twilio client setup and SMS sending functions
+- [ ] 09-04-PLAN.md — Cron API route and vercel.json configuration
+- [ ] 09-05-PLAN.md — Notifications page and patient timeline integration
 
 ---
 
@@ -361,7 +367,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Medical Records | v1.0 | 0/? | Not started | - |
 | 7. Voice Dictation | v1.0 | 0/? | Not started | - |
 | 8. Reports & Alerts | v1.0 | 0/6 | Planned | - |
-| 9. Notifications | v1.0 | 0/? | Not started | - |
+| 9. Notifications | v1.0 | 0/5 | Planned | - |
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
 | 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
@@ -372,4 +378,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 13 planned (9 plans in 5 waves)*
+*Last updated: 2026-01-26 — Phase 9 planned (5 plans in 3 waves)*

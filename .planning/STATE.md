@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 13 - Purchases
+**Current focus:** Phase 09 - Notifications
 
 ## Current Position
 
-Phase: 13 of 15 (Purchases)
-Plan: 01 of ? (Database Schema)
+Phase: 09 of 15 (Notifications)
+Plan: 03 of 5 (Twilio SMS Client)
 Status: In progress
-Last activity: 2026-01-26 — Completed 13-01-PLAN.md
+Last activity: 2026-01-26 — Completed 09-03-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~97%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 45
+- Total plans completed: 46
 - Average duration: 4 min
-- Total execution time: 163 min
+- Total execution time: 166 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-01 (2 min), 09-02 (3 min), 09-01 (1 min), 08-04 (4 min), 08-03 (4 min)
+- Last 5 plans: 09-03 (3 min), 13-01 (2 min), 09-02 (3 min), 09-01 (1 min), 08-04 (4 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, UI components ~4 min
 
 *Updated after each plan completion*
@@ -114,6 +114,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [09-02]: E.164 phone format for Colombia: +57 followed by 10 digits
 - [09-02]: SMS message limit 160 chars (single segment)
 - [09-02]: Status config uses string icon names for flexible rendering
+- [09-03]: Graceful degradation: null client in dev when credentials missing
+- [09-03]: PERMANENT_ERROR_CODES list for retry logic (21211, 21212, 21214, 21217, 21608)
+- [09-03]: GSM-7 encoding: uses 'manana' instead of special char to avoid UCS-2
+- [09-03]: Spanish message template with es-CO locale for date formatting
 - [13-01]: Migration numbered 031 (030 already taken by notifications)
 - [13-01]: factura_path NOT NULL enforces required invoice evidence
 - [13-01]: Follows venta_counter pattern for gapless COM-000001 numbering
@@ -133,7 +137,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 13-01-PLAN.md
+Stopped at: Completed 09-03-PLAN.md
 Resume file: None
 
 ---

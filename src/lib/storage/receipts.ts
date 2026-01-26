@@ -142,3 +142,39 @@ export async function getAudioSignedUrl(path: string): Promise<string | null> {
 
   return data.signedUrl
 }
+
+/**
+ * Generate a signed upload URL for purchase invoice
+ * Stores in facturas/{user_id}/{timestamp}_{filename}
+ * Valid for 2 hours
+ */
+export async function createInvoiceUploadUrl(
+  fileName: string
+): Promise<{ signedUrl: string; path: string } | { error: string }> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'No autorizado' }
+  }
+
+  // Generate unique path: facturas/{user_id}/{timestamp}_{filename}
+  const timestamp = Date.now()
+  const safeName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const path = `facturas/${user.id}/${timestamp}_${safeName}`
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .createSignedUploadUrl(path)
+
+  if (error) {
+    console.error('Failed to create signed URL for invoice:', error)
+    return { error: 'Error al generar URL de subida' }
+  }
+
+  return {
+    signedUrl: data.signedUrl,
+    path: path
+  }
+}

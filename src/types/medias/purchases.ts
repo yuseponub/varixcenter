@@ -107,3 +107,39 @@ export interface PurchaseFormItem {
   costo_unitario: number
   subtotal: number
 }
+
+/**
+ * OCR-parsed product from invoice
+ */
+export interface OCRProductResult {
+  descripcion: string
+  codigo_producto: string | null
+  cantidad: number
+  costo_unitario: number | null
+  confidence: number
+  needs_review: boolean
+}
+
+/**
+ * OCR result from invoice parsing
+ */
+export interface OCRInvoiceResult {
+  proveedor: string | null
+  fecha_factura: string | null
+  numero_factura: string | null
+  total: number | null
+  productos: OCRProductResult[]
+  overall_confidence: number
+}
+
+/**
+ * Matched product for OCR review component
+ */
+export interface MatchedProduct {
+  ocr_index: number
+  product_id: string | null
+  product_codigo: string | null
+  cantidad: number
+  costo_unitario: number
+  matched: boolean
+}

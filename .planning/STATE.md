@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 08 of 15 (Reports & Alerts)
-Plan: 04 of 6 (Alert UI Components complete)
-Status: In progress
-Last activity: 2026-01-26 — Completed 08-04-PLAN.md
+Plan: 06 of 6 (Reports Page and Alert Integration - awaiting human verification)
+Status: In progress (checkpoint)
+Last activity: 2026-01-26 — Completed 08-06-PLAN.md tasks 1-3, awaiting human verification
 
-Progress: [####################] v1.0 complete (simulated) | [##################░░] v1.1 ~93%
+Progress: [####################] v1.0 complete (simulated) | [###################░] v1.1 ~95%
 
 ## Performance Metrics
 
@@ -104,6 +104,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [08-04]: AlertBadge is server component calling getUnreadAlertCount directly
 - [08-04]: AlertItem uses severity icon mapping (Info/AlertTriangle/AlertCircle)
 - [08-04]: AlertsWidget uses router.refresh() after resolution for data update
+- [08-06]: Split reports page into server (page.tsx) + client (reports-page-client.tsx) components
+- [08-06]: AlertsWidget wrapped in Card with Panel de Seguridad header
+- [08-06]: Mobile navigation uses flex-wrap for smaller screens
+- [08-06]: Alert badge links to /dashboard where alerts widget is visible
 
 ### Pending Todos
 
@@ -119,8 +123,8 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 08-04-PLAN.md (Alert UI Components) - Phase 08 in progress
-Resume file: None
+Stopped at: 08-06-PLAN.md tasks 1-3 complete, awaiting human-verify checkpoint
+Resume file: .planning/phases/08-reports-alerts/08-06-PLAN.md (Task 4)
 
 ---
 *v1.1 Varix-Medias: Modulo de medias de compresion con ventas inmutables, inventario dual, y cierre de caja independiente.*

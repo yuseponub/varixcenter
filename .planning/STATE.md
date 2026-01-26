@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 09 of 15 (Notifications)
-Plan: 03 of 5 (Twilio SMS Client)
+Plan: 04 of 5 (Cron Job and Query Functions)
 Status: In progress
-Last activity: 2026-01-26 — Completed 09-03-PLAN.md
+Last activity: 2026-01-26 — Completed 09-04-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~97%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 46
+- Total plans completed: 47
 - Average duration: 4 min
-- Total execution time: 166 min
+- Total execution time: 170 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-03 (3 min), 13-01 (2 min), 09-02 (3 min), 09-01 (1 min), 08-04 (4 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, UI components ~4 min
+- Last 5 plans: 09-04 (4 min), 09-03 (3 min), 13-01 (2 min), 09-02 (3 min), 09-01 (1 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, API/cron ~4 min
 
 *Updated after each plan completion*
 
@@ -118,6 +118,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [09-03]: PERMANENT_ERROR_CODES list for retry logic (21211, 21212, 21214, 21217, 21608)
 - [09-03]: GSM-7 encoding: uses 'manana' instead of special char to avoid UCS-2
 - [09-03]: Spanish message template with es-CO locale for date formatting
+- [09-04]: 1-hour time window (+-30min) for reminder queries handles Vercel cron variance
+- [09-04]: E.164 formatting adds +57 for 10-digit Colombian numbers starting with 3
+- [09-04]: 30 minute retry delay with max 2 attempts (initial + 1 retry)
+- [09-04]: Cron auth via CRON_SECRET Bearer token in Authorization header
 - [13-01]: Migration numbered 031 (030 already taken by notifications)
 - [13-01]: factura_path NOT NULL enforces required invoice evidence
 - [13-01]: Follows venta_counter pattern for gapless COM-000001 numbering
@@ -137,7 +141,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 09-03-PLAN.md
+Stopped at: Completed 09-04-PLAN.md
 Resume file: None
 
 ---

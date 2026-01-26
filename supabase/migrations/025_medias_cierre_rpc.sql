@@ -228,3 +228,122 @@ GRANT EXECUTE ON FUNCTION public.create_medias_cierre(DATE, DECIMAL, TEXT, TEXT,
 
 COMMENT ON FUNCTION public.create_medias_cierre IS
   'Crea cierre de caja de medias atomico. Tolerancia CERO para diferencias (CIE-04). Usa numeracion CIM- independiente.';
+
+-- ============================================================================
+-- 3. REOPEN MEDIAS CIERRE RPC
+-- ============================================================================
+-- CIE-07: Only Admin can reopen with mandatory justification
+
+CREATE OR REPLACE FUNCTION public.reopen_medias_cierre(
+  p_cierre_id UUID,
+  p_justificacion TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID;
+  v_user_role TEXT;
+  v_closing RECORD;
+BEGIN
+  -- Get current user
+  v_user_id := auth.uid();
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'No autorizado';
+  END IF;
+
+  -- Check user role (only admin can reopen)
+  SELECT role INTO v_user_role
+  FROM public.user_roles
+  WHERE user_id = v_user_id;
+
+  IF v_user_role != 'admin' THEN
+    RAISE EXCEPTION 'Solo Admin puede reabrir cierres de caja de medias';
+  END IF;
+
+  -- Validate justification (10 character minimum)
+  IF p_justificacion IS NULL OR LENGTH(TRIM(p_justificacion)) < 10 THEN
+    RAISE EXCEPTION 'La justificacion debe tener al menos 10 caracteres';
+  END IF;
+
+  -- Get the closing
+  SELECT * INTO v_closing
+  FROM public.medias_cierres
+  WHERE id = p_cierre_id;
+
+  IF v_closing IS NULL THEN
+    RAISE EXCEPTION 'Cierre de medias no encontrado';
+  END IF;
+
+  IF v_closing.estado = 'reabierto' THEN
+    RAISE EXCEPTION 'El cierre ya esta reabierto';
+  END IF;
+
+  -- Update the closing to reabierto
+  UPDATE public.medias_cierres
+  SET
+    estado = 'reabierto',
+    reopened_by = v_user_id,
+    reopen_justificacion = TRIM(p_justificacion),
+    reopened_at = now()
+  WHERE id = p_cierre_id;
+
+  RETURN jsonb_build_object(
+    'id', p_cierre_id,
+    'cierre_numero', v_closing.cierre_numero,
+    'estado', 'reabierto',
+    'reopened_by', v_user_id,
+    'reopened_at', now()
+  );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.reopen_medias_cierre(UUID, TEXT) TO authenticated;
+
+COMMENT ON FUNCTION public.reopen_medias_cierre IS
+  'Reabre un cierre de caja de medias. Solo admin, requiere justificacion minimo 10 caracteres (CIE-07).';
+
+-- ============================================================================
+-- 4. VERIFICATION
+-- ============================================================================
+
+DO $$
+BEGIN
+  -- Verify get_medias_cierre_summary exists
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc WHERE proname = 'get_medias_cierre_summary'
+  ) THEN
+    RAISE EXCEPTION 'get_medias_cierre_summary function not created';
+  END IF;
+
+  -- Verify create_medias_cierre exists
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc WHERE proname = 'create_medias_cierre'
+  ) THEN
+    RAISE EXCEPTION 'create_medias_cierre function not created';
+  END IF;
+
+  -- Verify reopen_medias_cierre exists
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc WHERE proname = 'reopen_medias_cierre'
+  ) THEN
+    RAISE EXCEPTION 'reopen_medias_cierre function not created';
+  END IF;
+
+  RAISE NOTICE 'Medias cierre RPC functions verified successfully';
+  RAISE NOTICE '- get_medias_cierre_summary: Totals from medias_sale_methods';
+  RAISE NOTICE '- create_medias_cierre: Zero-tolerance, CIM- numbering';
+  RAISE NOTICE '- reopen_medias_cierre: Admin-only with justification';
+END;
+$$;
+
+-- ============================================================================
+-- Summary of RPC functions:
+-- get_medias_cierre_summary(DATE): Preview totals from medias_sale_methods
+-- create_medias_cierre(DATE, DECIMAL, TEXT, TEXT, TEXT): Atomic closing with zero-tolerance
+-- reopen_medias_cierre(UUID, TEXT): Admin-only reopen with 10-char justification
+--
+-- All functions reference medias_* tables (independent from clinic per CIE-08)
+-- ============================================================================

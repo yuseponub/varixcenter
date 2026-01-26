@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 14 - Returns Workflow
+**Current focus:** Phase 14 - Returns Workflow (COMPLETE)
 
 ## Current Position
 
 Phase: 14 of 15 (Returns Workflow)
-Plan: 05 of 5 (Returns UI Components)
+Plan: 06 of 6 (Returns Workflow Pages)
 Status: Phase 14 complete
-Last activity: 2026-01-26 — Completed 14-05-PLAN.md
+Last activity: 2026-01-26 — Completed 14-06-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~99%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 60
+- Total plans completed: 61
 - Average duration: 3.4 min
-- Total execution time: 207 min
+- Total execution time: 210 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-05 (5 min), 14-04 (4 min), 14-03 (3 min), 14-02 (2 min), 14-01 (2 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~5 min
+- Last 5 plans: 14-06 (3 min), 14-05 (5 min), 14-04 (4 min), 14-03 (3 min), 14-02 (2 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~5 min, pages ~3 min
 
 *Updated after each plan completion*
 
@@ -169,6 +169,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [14-05]: ReturnForm receives returnableQuantities as prop (server-calculated validation limits)
 - [14-05]: Approve/reject buttons only visible for admin/medico and pendiente returns
 - [14-05]: Refund amount preview shown in form before submission
+- [14-06]: Inline getUserRole pattern in each page file (follows ventas/[id], cierres/[id])
+- [14-06]: Two-step return flow: select sale first via searchParams, then show form
+- [14-06]: SaleSearchSelect filters client-side from server-fetched 50-sale list
 
 ### Pending Todos
 
@@ -184,7 +187,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 14-05-PLAN.md (Phase 14 complete)
+Stopped at: Completed 14-06-PLAN.md (Phase 14 COMPLETE)
 Resume file: None
 
 ---

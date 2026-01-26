@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 12 of 15 (Cash Closing Medias)
-Plan: 03 of 6 (types & validations complete)
+Plan: 04 of 6 (queries & actions complete)
 Status: Phase 12 in progress
-Last activity: 2026-01-26 — Completed 12-03-PLAN.md
+Last activity: 2026-01-26 — Completed 12-04-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [##############░░░░░░] v1.1 ~70%
+Progress: [####################] v1.0 complete (simulated) | [###############░░░░░] v1.1 ~75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 35
+- Total plans completed: 36
 - Average duration: 4 min
-- Total execution time: 129 min
+- Total execution time: 131 min
 
 **By Phase:**
 
@@ -34,11 +34,11 @@ Progress: [####################] v1.0 complete (simulated) | [##############░�
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
-| 12-cash-closing-medias | 3 | 11 min | 3.7 min |
+| 12-cash-closing-medias | 4 | 13 min | 3.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 12-03 (6 min), 12-02 (2 min), 12-01 (3 min), 11-06 (2 min), 11-05 (3 min)
-- Trend: Types/validation tasks ~3-6 min
+- Last 5 plans: 12-04 (2 min), 12-03 (6 min), 12-02 (2 min), 12-01 (3 min), 11-06 (2 min)
+- Trend: Query/action tasks ~2 min
 
 *Updated after each plan completion*
 
@@ -85,6 +85,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [12-03]: Medias types not added to barrel export (conflicts with clinic PAYMENT_METHODS, CierreEstado)
 - [12-03]: Import medias cierres from @/types/medias/cierres directly
 - [12-03]: cierre_photo_path required in medias (vs optional in clinic)
+- [12-04]: Direct type imports from @/types/medias/cierres (not barrel export)
+- [12-04]: Auth check in server actions before RPC calls for explicit error handling
 
 ### Pending Todos
 
@@ -100,7 +102,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 12-03-PLAN.md (types & validations)
+Stopped at: Completed 12-04-PLAN.md (queries & actions)
 Resume file: None
 
 ---

@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 08 of 15 (Reports & Alerts)
-Plan: 03 of 6 (RPC Functions & Query Layer complete)
+Plan: 05 of 6 (Report Visualization Components complete)
 Status: In progress
-Last activity: 2026-01-26 — Completed 08-03-PLAN.md
+Last activity: 2026-01-26 — Completed 08-05-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [##################░░] v1.1 ~93%
+Progress: [####################] v1.0 complete (simulated) | [###################░] v1.1 ~95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 41
+- Total plans completed: 42
 - Average duration: 4 min
-- Total execution time: 153 min
+- Total execution time: 156 min
 
 **By Phase:**
 
@@ -32,14 +32,14 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
-| 08-reports-alerts | 3 | 11 min | 3.7 min |
+| 08-reports-alerts | 4 | 14 min | 3.5 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-03 (4 min), 08-02 (3 min), 08-01 (4 min), 12-06 (7 min), 12-05 (4 min)
-- Trend: RPC/Query tasks ~4 min
+- Last 5 plans: 08-05 (3 min), 08-03 (4 min), 08-02 (3 min), 08-01 (4 min), 12-06 (7 min)
+- Trend: UI component tasks ~3 min
 
 *Updated after each plan completion*
 
@@ -101,6 +101,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [08-03]: RPC functions use DATE() BETWEEN for date range filtering
 - [08-03]: citas_atendidas counts appointments with estado='completada'
 - [08-03]: Server action role guard extracts from JWT app_metadata
+- [08-05]: ChartConfig satisfies pattern with CSS variables --chart-1 through --chart-4
+- [08-05]: Date picker uses native HTML input type=date (Calendar component not present)
+- [08-05]: Summary card variant affects border color only for subtle visual feedback
 
 ### Pending Todos
 
@@ -116,7 +119,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 08-03-PLAN.md (RPC Functions & Query Layer) - Phase 08 in progress
+Stopped at: Completed 08-05-PLAN.md (Report Visualization Components) - Phase 08 in progress
 Resume file: None
 
 ---

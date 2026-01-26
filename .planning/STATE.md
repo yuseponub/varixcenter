@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 13 of 15 (Purchases)
-Plan: 08 of 9 (Purchase UI Components)
-Status: In progress
-Last activity: 2026-01-26 — Completed 13-08-PLAN.md
+Plan: 09 of 9 (Purchase Pages)
+Status: Phase complete
+Last activity: 2026-01-26 — Completed 13-09-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~99%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 54
+- Total plans completed: 55
 - Average duration: 4 min
-- Total execution time: 187 min
+- Total execution time: 191 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-08 (2 min), 13-07 (2 min), 13-06 (3 min), 09-05 (5 min), 13-05 (2 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~2-3 min
+- Last 5 plans: 13-09 (4 min), 13-08 (2 min), 13-07 (2 min), 13-06 (3 min), 09-05 (5 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~4 min
 
 *Updated after each plan completion*
 
@@ -149,6 +149,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-08]: Controlled form pattern: PurchaseForm uses external state for OCR integration
 - [13-08]: calculatePurchaseTotal exported as utility for parent component use
 - [13-08]: Table filters use onFilterChange callback for parent control
+- [13-09]: Pages under /medias/compras (not /compras) following existing medias module structure
+- [13-09]: countPurchasesByEstado added to queries for stats badges
+- [13-09]: getProductsForMatching added for OCR product matching
+- [13-09]: Multi-step purchase flow: upload -> OCR review (optional) -> form confirmation
 
 ### Pending Todos
 
@@ -164,7 +168,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 13-08-PLAN.md
+Stopped at: Completed 13-09-PLAN.md (Phase 13 complete)
 Resume file: None
 
 ---

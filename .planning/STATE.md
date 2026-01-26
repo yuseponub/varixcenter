@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 11 of 15 (Sales Core) — IN PROGRESS
-Plan: 03 of 8 (wave 2)
+Plan: 02 of 8 (wave 2 complete)
 Status: Executing wave 2 plans
-Last activity: 2026-01-26 — Completed 11-03-PLAN.md (Atomic sale RPC)
+Last activity: 2026-01-26 — Completed 11-02-PLAN.md (Immutability enforcement)
 
 Progress: [####################] v1.0 complete (simulated) | [######░░░░░░░░░░░░░░] v1.1 ~25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
+- Total plans completed: 29
 - Average duration: 4 min
-- Total execution time: 108 min
+- Total execution time: 110 min
 
 **By Phase:**
 
@@ -33,10 +33,10 @@ Progress: [####################] v1.0 complete (simulated) | [######░░░░
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
-| 11-sales-core | 2 | 3 min | 1.5 min |
+| 11-sales-core | 3 | 5 min | 1.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-03 (2 min), 10-04 (2 min), 11-04 (2 min), 11-03 (1 min)
+- Last 5 plans: 10-04 (2 min), 11-04 (2 min), 11-01 (2 min), 11-03 (1 min), 11-02 (2 min)
 - Trend: Consistent ~2 min for types/validation tasks, 1 min for single-file RPC migrations
 
 *Updated after each plan completion*
@@ -64,6 +64,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [10-04]: Products ordered by tipo then talla for logical grouping
 - [11-04]: Reused PaymentMethodType pattern from clinic payments for medias sales
 - [11-04]: Product snapshots stored as strings for immutability
+- [11-02]: Sales fully immutable (no estado transition like payments - simpler model)
+- [11-02]: Stock reversal goes to stock_normal via ajuste_entrada movement type
 - [11-03]: Two-pass validation pattern for atomic stock operations (validate all, then execute all)
 - [11-03]: FOR UPDATE row locking prevents race conditions on concurrent sales
 
@@ -81,7 +83,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 11-03-PLAN.md
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
 
 ---

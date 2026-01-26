@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 11 of 15 (Sales Core) — IN PROGRESS
-Plan: 04 of 8
-Status: Executing wave 1 plans
-Last activity: 2026-01-26 — Completed 11-04-PLAN.md (Sales types and validations)
+Plan: 03 of 8 (wave 2)
+Status: Executing wave 2 plans
+Last activity: 2026-01-26 — Completed 11-03-PLAN.md (Atomic sale RPC)
 
-Progress: [####################] v1.0 complete (simulated) | [#####░░░░░░░░░░░░░░░] v1.1 ~21%
+Progress: [####################] v1.0 complete (simulated) | [######░░░░░░░░░░░░░░] v1.1 ~25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
+- Total plans completed: 28
 - Average duration: 4 min
-- Total execution time: 107 min
+- Total execution time: 108 min
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [####################] v1.0 complete (simulated) | [#####░░░░�
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
-| 11-sales-core | 1 | 2 min | 2 min |
+| 11-sales-core | 2 | 3 min | 1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-02 (3 min), 10-03 (2 min), 10-04 (2 min), 11-04 (2 min)
-- Trend: Consistent ~2 min for types/validation tasks
+- Last 5 plans: 10-03 (2 min), 10-04 (2 min), 11-04 (2 min), 11-03 (1 min)
+- Trend: Consistent ~2 min for types/validation tasks, 1 min for single-file RPC migrations
 
 *Updated after each plan completion*
 
@@ -64,13 +64,15 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [10-04]: Products ordered by tipo then talla for logical grouping
 - [11-04]: Reused PaymentMethodType pattern from clinic payments for medias sales
 - [11-04]: Product snapshots stored as strings for immutability
+- [11-03]: Two-pass validation pattern for atomic stock operations (validate all, then execute all)
+- [11-03]: FOR UPDATE row locking prevents race conditions on concurrent sales
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
-- [ ] Apply pending migrations (007-021) to Supabase
+- [ ] Apply pending migrations (007-023) to Supabase
 
 ### Blockers/Concerns
 
@@ -79,7 +81,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 11-04-PLAN.md
+Stopped at: Completed 11-03-PLAN.md
 Resume file: None
 
 ---

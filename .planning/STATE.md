@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 09 - Notifications
+**Current focus:** Phase 13 - Purchases
 
 ## Current Position
 
-Phase: 09 of 15 (Notifications)
-Plan: 04 of 5 (Cron Job and Query Functions)
+Phase: 13 of 15 (Purchases)
+Plan: 03 of 9 (Purchases RPC Functions)
 Status: In progress
-Last activity: 2026-01-26 — Completed 09-04-PLAN.md
+Last activity: 2026-01-26 — Completed 13-03-PLAN.md
 
 Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 47
+- Total plans completed: 48
 - Average duration: 4 min
-- Total execution time: 170 min
+- Total execution time: 172 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-04 (4 min), 09-03 (3 min), 13-01 (2 min), 09-02 (3 min), 09-01 (1 min)
+- Last 5 plans: 13-03 (2 min), 09-04 (4 min), 09-03 (3 min), 13-01 (2 min), 09-02 (3 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, API/cron ~4 min
 
 *Updated after each plan completion*
@@ -126,6 +126,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-01]: factura_path NOT NULL enforces required invoice evidence
 - [13-01]: Follows venta_counter pattern for gapless COM-000001 numbering
 - [13-01]: Two-step reception flow: pendiente_recepcion -> recibido triggers stock increment
+- [13-03]: create_purchase RPC validates items and creates with gapless COM- numbering
+- [13-03]: confirm_purchase_reception atomically increments stock_normal for all items
+- [13-03]: cancel_purchase checks admin/medico role via JWT app_metadata.user_role
+- [13-03]: Stock reversal on cancellation uses ajuste_salida with referencia_tipo=compra_anulada
 
 ### Pending Todos
 
@@ -141,7 +145,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 09-04-PLAN.md
+Stopped at: Completed 13-03-PLAN.md
 Resume file: None
 
 ---

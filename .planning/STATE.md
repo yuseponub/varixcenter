@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 10 - Medias Foundation
+**Current focus:** Phase 11 - Sales Core
 
 ## Current Position
 
-Phase: 11 of 15 (Sales Core) — PLANNED
-Plan: —
-Status: 8 plans created, ready for execution
-Last activity: 2026-01-25 — Phase 11 planning complete (8 plans, 5 waves)
+Phase: 11 of 15 (Sales Core) — IN PROGRESS
+Plan: 04 of 8
+Status: Executing wave 1 plans
+Last activity: 2026-01-26 — Completed 11-04-PLAN.md (Sales types and validations)
 
-Progress: [####################] v1.0 complete (simulated) | [####░░░░░░░░░░░░░░░░] v1.1 ~17%
+Progress: [####################] v1.0 complete (simulated) | [#####░░░░░░░░░░░░░░░] v1.1 ~21%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
+- Total plans completed: 27
 - Average duration: 4 min
-- Total execution time: 105 min
+- Total execution time: 107 min
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [####################] v1.0 complete (simulated) | [####░░░░�
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
+| 11-sales-core | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-01 (2 min), 10-02 (3 min), 10-03 (2 min), 10-04 (2 min)
-- Trend: Consistent ~2-5 min for focused implementation tasks
+- Last 5 plans: 10-02 (3 min), 10-03 (2 min), 10-04 (2 min), 11-04 (2 min)
+- Trend: Consistent ~2 min for types/validation tasks
 
 *Updated after each plan completion*
 
@@ -61,13 +62,15 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [10-03]: Only precio and activo are editable after product creation (tipo, talla, codigo immutable)
 - [10-04]: Button shows "Actualizar Precio" when editing (only price changes allowed)
 - [10-04]: Products ordered by tipo then talla for logical grouping
+- [11-04]: Reused PaymentMethodType pattern from clinic payments for medias sales
+- [11-04]: Product snapshots stored as strings for immutability
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
-- [ ] Apply pending migrations (007-020) to Supabase
+- [ ] Apply pending migrations (007-021) to Supabase
 
 ### Blockers/Concerns
 
@@ -75,8 +78,8 @@ None yet for v1.1 Varix-Medias.
 
 ## Session Continuity
 
-Last session: 2026-01-25
-Stopped at: Phase 10 complete — ready for Phase 11 Sales Core
+Last session: 2026-01-26
+Stopped at: Completed 11-04-PLAN.md
 Resume file: None
 
 ---

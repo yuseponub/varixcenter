@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 12 of 15 (Cash Closing Medias)
-Plan: 01 of 6 (database schema complete)
+Plan: 02 of 6 (RPC functions complete)
 Status: Phase 12 in progress
-Last activity: 2026-01-26 — Completed 12-01-PLAN.md
+Last activity: 2026-01-26 — Completed 12-02-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [############░░░░░░░░] v1.1 ~60%
+Progress: [####################] v1.0 complete (simulated) | [#############░░░░░░░] v1.1 ~65%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
+- Total plans completed: 34
 - Average duration: 4 min
-- Total execution time: 121 min
+- Total execution time: 123 min
 
 **By Phase:**
 
@@ -34,11 +34,11 @@ Progress: [####################] v1.0 complete (simulated) | [############░░
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
-| 12-cash-closing-medias | 1 | 3 min | 3 min |
+| 12-cash-closing-medias | 2 | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 12-01 (3 min), 11-06 (2 min), 11-05 (3 min), 11-04 (2 min), 11-08 (3 min)
-- Trend: Consistent ~2-3 min for database/validation tasks
+- Last 5 plans: 12-02 (2 min), 12-01 (3 min), 11-06 (2 min), 11-05 (3 min), 11-04 (2 min)
+- Trend: Consistent ~2-3 min for database/RPC tasks
 
 *Updated after each plan completion*
 
@@ -80,13 +80,15 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [12-01]: CIM prefix for medias cierre (independent from clinic CIE prefix)
 - [12-01]: Zero tolerance constraint: ANY difference requires justification (no threshold)
 - [12-01]: Reuses cierre_estado ENUM from clinic migration 015
+- [12-02]: RPC zero-tolerance check: IF v_diferencia != 0 (not ABS > threshold)
+- [12-02]: sale_count used for medias (not payment_count like clinic)
 
 ### Pending Todos
 
 - [ ] Enable Custom Access Token Hook in Supabase Dashboard after migrations applied
 - [ ] Bootstrap first admin user via `SELECT public.bootstrap_first_admin();`
 - [ ] Create test user in Supabase Auth to verify login flow
-- [ ] Apply pending migrations (007-024) to Supabase
+- [ ] Apply pending migrations (007-025) to Supabase
 
 ### Blockers/Concerns
 
@@ -95,7 +97,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 12-01-PLAN.md (database schema)
+Stopped at: Completed 12-02-PLAN.md (RPC functions)
 Resume file: None
 
 ---

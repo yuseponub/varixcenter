@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 13 of 15 (Purchases)
-Plan: 03 of 9 (Purchases RPC Functions)
+Plan: 04 of 9 (Database Queries)
 Status: In progress
-Last activity: 2026-01-26 — Completed 13-03-PLAN.md
+Last activity: 2026-01-26 — Completed 13-04-PLAN.md
 
 Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 48
+- Total plans completed: 49
 - Average duration: 4 min
-- Total execution time: 172 min
+- Total execution time: 173 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-03 (2 min), 09-04 (4 min), 09-03 (3 min), 13-01 (2 min), 09-02 (3 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, API/cron ~4 min
+- Last 5 plans: 13-04 (1 min), 13-03 (2 min), 09-04 (4 min), 09-03 (3 min), 13-01 (2 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/cron ~4 min
 
 *Updated after each plan completion*
 
@@ -133,6 +133,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-03]: confirm_purchase_reception atomically increments stock_normal for all items
 - [13-03]: cancel_purchase checks admin/medico role via JWT app_metadata.user_role
 - [13-03]: Stock reversal on cancellation uses ajuste_salida with referencia_tipo=compra_anulada
+- [13-04]: Client-side sort ensures pendiente_recepcion always first regardless of DB collation
+- [13-04]: PurchaseFilters uses ilike for case-insensitive proveedor search
 
 ### Pending Todos
 
@@ -148,7 +150,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 13-03-PLAN.md
+Stopped at: Completed 13-04-PLAN.md
 Resume file: None
 
 ---

@@ -111,6 +111,77 @@ export interface PurchaseSummary {
 }
 
 /**
+ * Count purchases by estado
+ * Returns count for each state for UI stats badges
+ */
+export interface PurchaseStateCounts {
+  pendiente_recepcion: number
+  recibido: number
+  anulado: number
+}
+
+export async function countPurchasesByEstado(): Promise<PurchaseStateCounts> {
+  const supabase = await createClient()
+
+  // Table not in generated types yet (pending migration)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('purchases')
+    .select('estado')
+
+  if (error) throw error
+
+  const purchases = (data || []) as Array<{ estado: CompraEstado }>
+
+  return {
+    pendiente_recepcion: purchases.filter(p => p.estado === 'pendiente_recepcion').length,
+    recibido: purchases.filter(p => p.estado === 'recibido').length,
+    anulado: purchases.filter(p => p.estado === 'anulado').length,
+  }
+}
+
+/**
+ * Get products for OCR matching
+ * Returns active products with id, codigo, tipo, talla, precio
+ */
+export interface ProductForMatching {
+  id: string
+  codigo: string
+  tipo: string
+  talla: string
+  precio: number
+}
+
+export async function getProductsForMatching(): Promise<ProductForMatching[]> {
+  const supabase = await createClient()
+
+  // Table not in generated types yet (pending migration)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('medias_products')
+    .select('id, codigo, tipo, talla, precio')
+    .eq('activo', true)
+    .order('tipo')
+    .order('talla')
+
+  if (error) throw error
+  return (data || []) as ProductForMatching[]
+}
+
+/**
+ * Get public URL for invoice file
+ */
+export async function getInvoicePublicUrl(path: string): Promise<string | null> {
+  const supabase = await createClient()
+
+  const { data } = supabase.storage
+    .from('payment-receipts')
+    .getPublicUrl(path)
+
+  return data.publicUrl
+}
+
+/**
  * Get purchase summary for dashboard
  * - Total purchases count
  * - Pending reception count

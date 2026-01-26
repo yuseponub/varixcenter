@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 14 of 15 (Returns Workflow)
-Plan: 04 of 5 (Cierre Integration and Data Access)
-Status: In progress
-Last activity: 2026-01-26 — Completed 14-04-PLAN.md
+Plan: 05 of 5 (Returns UI Components)
+Status: Phase 14 complete
+Last activity: 2026-01-26 — Completed 14-05-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~99%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 59
+- Total plans completed: 60
 - Average duration: 3.4 min
-- Total execution time: 202 min
+- Total execution time: 207 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-04 (4 min), 14-03 (3 min), 14-02 (2 min), 14-01 (2 min), 13-09 (4 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~4 min
+- Last 5 plans: 14-05 (5 min), 14-04 (4 min), 14-03 (3 min), 14-02 (2 min), 14-01 (2 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~5 min
 
 *Updated after each plan completion*
 
@@ -166,6 +166,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [14-04]: Cash refunds tracked by aprobado_at for correct cierre attribution
 - [14-04]: efectivo_neto = total_efectivo - total_devoluciones_efectivo for reconciliation
 - [14-04]: return_count in cierre summary includes all approved returns (not just efectivo)
+- [14-05]: ReturnForm receives returnableQuantities as prop (server-calculated validation limits)
+- [14-05]: Approve/reject buttons only visible for admin/medico and pendiente returns
+- [14-05]: Refund amount preview shown in form before submission
 
 ### Pending Todos
 
@@ -181,7 +184,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 14-04-PLAN.md
+Stopped at: Completed 14-05-PLAN.md (Phase 14 complete)
 Resume file: None
 
 ---

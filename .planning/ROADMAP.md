@@ -179,12 +179,17 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Admin/Medico puede ver reporte de ingresos por dia y por mes
   2. Reporte desglosa ingresos por metodo de pago (efectivo, tarjeta, transferencia, Nequi)
-  3. Dashboard muestra alertas de anomalias detectadas (muchas anulaciones, diferencias frecuentes, accesos fuera de horario)
-  4. Admin puede investigar alertas viendo detalles del log de auditoria
-**Plans**: TBD
+  3. Dashboard muestra alertas de anomalias detectadas (pagos anulados, diferencias en cierre)
+  4. Admin puede investigar alertas viendo detalles
+**Plans**: 6 plans in 4 waves
 
 Plans:
-- [ ] 08-01: TBD
+- [ ] 08-01-PLAN.md — Install shadcn chart (Recharts) and alerts database schema with triggers
+- [ ] 08-02-PLAN.md — TypeScript types and Zod schemas for reports and alerts
+- [ ] 08-03-PLAN.md — RPC functions for reports and query/action functions for alerts
+- [ ] 08-04-PLAN.md — Alert UI components (badge, item, widget, resolve dialog)
+- [ ] 08-05-PLAN.md — Report chart components (bar chart, summary cards, date picker)
+- [ ] 08-06-PLAN.md — Reports page and dashboard integration with alerts widget
 
 ### Phase 9: Notifications
 **Goal**: Sistema envia recordatorios de citas a pacientes por SMS o WhatsApp
@@ -346,7 +351,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 5. Cash Closing | v1.0 | 0/? | Not started | - |
 | 6. Medical Records | v1.0 | 0/? | Not started | - |
 | 7. Voice Dictation | v1.0 | 0/? | Not started | - |
-| 8. Reports & Alerts | v1.0 | 0/? | Not started | - |
+| 8. Reports & Alerts | v1.0 | 0/6 | Planned | - |
 | 9. Notifications | v1.0 | 0/? | Not started | - |
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
@@ -358,4 +363,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Added Phase 16: Expense Control (v1.2)*
+*Last updated: 2026-01-26 — Phase 8 planned (6 plans in 4 waves)*

@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 13 - Purchases
+**Current focus:** Phase 14 - Returns Workflow
 
 ## Current Position
 
-Phase: 13 of 15 (Purchases)
-Plan: 09 of 9 (Purchase Pages)
-Status: Phase complete
-Last activity: 2026-01-26 — Completed 13-09-PLAN.md
+Phase: 14 of 15 (Returns Workflow)
+Plan: 01 of 5 (Medias Returns Migration)
+Status: In progress
+Last activity: 2026-01-26 — Completed 14-01-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~100%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~95%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 55
+- Total plans completed: 56
 - Average duration: 4 min
-- Total execution time: 191 min
+- Total execution time: 193 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-09 (4 min), 13-08 (2 min), 13-07 (2 min), 13-06 (3 min), 09-05 (5 min)
+- Last 5 plans: 14-01 (2 min), 13-09 (4 min), 13-08 (2 min), 13-07 (2 min), 13-06 (3 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~4 min
 
 *Updated after each plan completion*
@@ -153,6 +153,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-09]: countPurchasesByEstado added to queries for stats badges
 - [13-09]: getProductsForMatching added for OCR product matching
 - [13-09]: Multi-step purchase flow: upload -> OCR review (optional) -> form confirmation
+- [14-01]: DEV- prefix for return numbering (consistent with VTA-, CIM-, COM-)
+- [14-01]: foto_path OPTIONAL per CONTEXT.md decision
+- [14-01]: motivo minimum 10 chars for meaningful explanations
+- [14-01]: Terminal states (aprobada/rechazada) are completely immutable
 
 ### Pending Todos
 
@@ -168,7 +172,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 13-09-PLAN.md (Phase 13 complete)
+Stopped at: Completed 14-01-PLAN.md
 Resume file: None
 
 ---

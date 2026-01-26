@@ -1,22 +1,16 @@
 import { z } from 'zod'
 
 /**
- * Service creation schema
- * Used by: Service form, createService server action
- *
- * All messages in Spanish for Colombian users
+ * Base service schema without refinements
+ * Used as foundation for both create and update schemas
  */
-export const serviceSchema = z.object({
+const serviceBaseSchema = z.object({
   nombre: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres')
     .max(100, 'El nombre es muy largo'),
 
-  descripcion: z
-    .string()
-    .max(500, 'La descripcion es muy larga')
-    .optional()
-    .or(z.literal('')),
+  descripcion: z.any().optional(),
 
   precio_base: z
     .number({ message: 'El precio base es requerido' })
@@ -43,20 +37,26 @@ export const serviceSchema = z.object({
     .boolean()
     .default(true),
 })
-.refine(
-  data => !data.precio_variable || (data.precio_minimo !== null && data.precio_maximo !== null),
-  { message: 'Servicios de precio variable requieren precio minimo y maximo', path: ['precio_variable'] }
-)
-.refine(
-  data => !data.precio_variable || (data.precio_minimo! <= data.precio_base && data.precio_base <= data.precio_maximo!),
-  { message: 'El precio base debe estar entre el minimo y maximo', path: ['precio_base'] }
-)
 
 /**
- * Service update schema
- * All fields optional for partial updates
+ * Service creation schema with refinements
+ * Used by: Service form, createService server action
  */
-export const serviceUpdateSchema = serviceSchema.partial()
+export const serviceSchema = serviceBaseSchema
+  .refine(
+    data => !data.precio_variable || (data.precio_minimo !== null && data.precio_maximo !== null),
+    { message: 'Servicios de precio variable requieren precio minimo y maximo', path: ['precio_variable'] }
+  )
+  .refine(
+    data => !data.precio_variable || (data.precio_minimo! <= data.precio_base && data.precio_base <= data.precio_maximo!),
+    { message: 'El precio base debe estar entre el minimo y maximo', path: ['precio_base'] }
+  )
+
+/**
+ * Service update schema - partial fields without refinements
+ * Refinements are checked at the server action level for updates
+ */
+export const serviceUpdateSchema = serviceBaseSchema.partial()
 
 /**
  * TypeScript types inferred from schemas

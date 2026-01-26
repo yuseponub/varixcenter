@@ -12,6 +12,7 @@
 import { useRef, useCallback } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import esLocale from '@fullcalendar/core/locales/es'
 import type { EventClickArg, DateSelectArg, EventDropArg, DatesSetArg } from '@fullcalendar/core'
@@ -32,7 +33,7 @@ interface AppointmentCalendarProps {
   /** Callback when the visible date range changes */
   onDatesSet?: (info: DatesSetArg) => void
   /** Initial view (defaults to timeGridWeek) */
-  initialView?: 'timeGridDay' | 'timeGridWeek'
+  initialView?: 'timeGridDay' | 'timeGridWeek' | 'listWeek' | 'listDay'
   /** Initial date to display */
   initialDate?: Date | string
   /** Whether events are editable (draggable) */
@@ -60,6 +61,51 @@ export function AppointmentCalendar({
   editable = true,
 }: AppointmentCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null)
+
+  // Track current view mode (list or calendar) and range (week or day)
+  const getCurrentRange = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    const viewType = api?.view.type || initialView
+    return viewType.includes('Week') ? 'week' : 'day'
+  }, [initialView])
+
+  const isListView = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    const viewType = api?.view.type || initialView
+    return viewType.startsWith('list')
+  }, [initialView])
+
+  // Switch to list view keeping current range
+  const switchToList = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    const range = getCurrentRange()
+    api.changeView(range === 'week' ? 'listWeek' : 'listDay')
+  }, [getCurrentRange])
+
+  // Switch to calendar view keeping current range
+  const switchToCalendar = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    const range = getCurrentRange()
+    api.changeView(range === 'week' ? 'timeGridWeek' : 'timeGridDay')
+  }, [getCurrentRange])
+
+  // Switch to week view keeping current mode
+  const switchToWeek = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    const isList = isListView()
+    api.changeView(isList ? 'listWeek' : 'timeGridWeek')
+  }, [isListView])
+
+  // Switch to day view keeping current mode
+  const switchToDay = useCallback(() => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    const isList = isListView()
+    api.changeView(isList ? 'listDay' : 'timeGridDay')
+  }, [isListView])
 
   // Memoized event handlers to prevent unnecessary re-renders
   const handleEventClick = useCallback(
@@ -94,20 +140,43 @@ export function AppointmentCalendar({
     <div className="appointment-calendar h-full">
       <FullCalendar
         ref={calendarRef}
-        plugins={[timeGridPlugin, interactionPlugin]}
+        plugins={[timeGridPlugin, listPlugin, interactionPlugin]}
         initialView={initialView}
         initialDate={initialDate}
         locale={esLocale}
         events={events}
+        // Custom buttons for simplified navigation
+        customButtons={{
+          listViewBtn: {
+            text: 'Lista',
+            click: switchToList,
+          },
+          calendarViewBtn: {
+            text: 'Calendario',
+            click: switchToCalendar,
+          },
+          weekBtn: {
+            text: 'Semana',
+            click: switchToWeek,
+          },
+          dayBtn: {
+            text: 'Día',
+            click: switchToDay,
+          },
+        }}
         // View configuration
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'timeGridWeek,timeGridDay',
+          right: 'listViewBtn,calendarViewBtn weekBtn,dayBtn',
         }}
-        // Time configuration
-        slotMinTime="08:00:00"
-        slotMaxTime="18:00:00"
+        // Custom button labels in Spanish
+        buttonText={{
+          today: 'Hoy',
+        }}
+        // Time configuration - Extended hours with larger slots
+        slotMinTime="07:00:00"
+        slotMaxTime="20:00:00"
         slotDuration="00:30:00"
         slotLabelInterval="01:00:00"
         // Business hours (visual indicator)
@@ -134,8 +203,9 @@ export function AppointmentCalendar({
         nowIndicator={true}
         dayMaxEvents={true}
         weekNumbers={false}
-        // Height
-        height="100%"
+        // Height - auto allows scrolling within container
+        height="auto"
+        contentHeight={700}
         // Ensure week starts on Monday
         firstDay={1}
       />

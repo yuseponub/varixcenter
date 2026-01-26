@@ -19,6 +19,7 @@ import type { EventClickArg, DateSelectArg, EventDropArg, DatesSetArg } from '@f
 import { AppointmentCalendar } from '@/components/appointments/appointment-calendar'
 import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
+import { AppointmentSearch } from '@/components/appointments/appointment-search'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
 import type { ServiceOption } from '@/types/services'
@@ -198,17 +199,73 @@ export function CalendarView({
     fetchEvents()
   }, [fetchEvents])
 
+  /**
+   * Handle search result selection.
+   * Navigates to the appointment's week and opens the dialog.
+   */
+  const handleSearchSelect = useCallback((appointment: {
+    id: string
+    fecha_hora_inicio: string
+    fecha_hora_fin: string
+    estado: string
+    motivo_consulta: string | null
+    patient: { nombre: string; apellido: string; cedula: string; celular: string | null }
+    doctor: { nombre: string | null; apellido: string | null; email: string }
+  }) => {
+    // Create a CalendarEvent from search result
+    const calendarEvent: CalendarEvent = {
+      id: appointment.id,
+      title: `${appointment.patient.nombre} ${appointment.patient.apellido}`,
+      start: appointment.fecha_hora_inicio,
+      end: appointment.fecha_hora_fin,
+      extendedProps: {
+        appointmentId: appointment.id,
+        patientId: '', // Not needed for dialog display
+        patientName: `${appointment.patient.nombre} ${appointment.patient.apellido}`,
+        patientCedula: appointment.patient.cedula,
+        patientCelular: appointment.patient.celular || '',
+        doctorId: '', // Not needed for dialog display
+        estado: appointment.estado as CalendarEvent['extendedProps']['estado'],
+        motivoConsulta: appointment.motivo_consulta,
+        notas: null,
+      },
+    }
+
+    // Update date range to show the appointment's week
+    const appointmentDate = new Date(appointment.fecha_hora_inicio)
+    const startOfWeek = new Date(appointmentDate)
+    const dayOfWeek = appointmentDate.getDay()
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+    startOfWeek.setDate(appointmentDate.getDate() - daysFromMonday)
+    startOfWeek.setHours(0, 0, 0, 0)
+
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 7)
+
+    setDateRange({
+      start: startOfWeek.toISOString(),
+      end: endOfWeek.toISOString(),
+    })
+
+    // Open the dialog with the selected event
+    setSelectedEvent(calendarEvent)
+    setDialogOpen(true)
+  }, [])
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between">
-        <DoctorFilter
-          doctors={doctors}
-          value={selectedDoctorId}
-          onValueChange={handleDoctorChange}
-          disabled={isLoading}
-          className="w-64"
-        />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <DoctorFilter
+            doctors={doctors}
+            value={selectedDoctorId}
+            onValueChange={handleDoctorChange}
+            disabled={isLoading}
+            className="w-64"
+          />
+          <AppointmentSearch onSelect={handleSearchSelect} />
+        </div>
 
         {isLoading && (
           <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -219,7 +276,7 @@ export function CalendarView({
       </div>
 
       {/* Calendar */}
-      <div className="h-[calc(100vh-220px)] min-h-[500px]">
+      <div className="h-[calc(100vh-240px)] min-h-[500px] overflow-auto border rounded-lg bg-white">
         <AppointmentCalendar
           events={events}
           onEventClick={handleEventClick}

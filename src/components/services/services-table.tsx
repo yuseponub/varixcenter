@@ -31,6 +31,7 @@ import { ServiceForm } from './service-form'
 
 interface ServicesTableProps {
   data: Service[]
+  onRefresh?: () => void
 }
 
 /**
@@ -48,7 +49,7 @@ function formatCurrency(value: number): string {
 /**
  * Services table with sorting, edit dialog, and toggle active
  */
-export function ServicesTable({ data }: ServicesTableProps) {
+export function ServicesTable({ data, onRefresh }: ServicesTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'nombre', desc: false }])
   const [editService, setEditService] = useState<Service | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -59,6 +60,7 @@ export function ServicesTable({ data }: ServicesTableProps) {
     startTransition(async () => {
       await toggleServiceActive(service.id, !service.activo)
       setTogglingId(null)
+      onRefresh?.()
     })
   }
 
@@ -222,7 +224,10 @@ export function ServicesTable({ data }: ServicesTableProps) {
           {editService && (
             <ServiceForm
               service={editService}
-              onSuccess={() => setEditService(null)}
+              onSuccess={() => {
+                setEditService(null)
+                onRefresh?.()
+              }}
             />
           )}
         </DialogContent>

@@ -6,6 +6,7 @@ import {
   appointmentStatusSchema,
   appointmentRescheduleSchema,
 } from '@/lib/validations/appointment'
+import { patientSchema } from '@/lib/validations/patient'
 import { canTransition, STATUS_LABELS } from '@/lib/appointments/state-machine'
 import type { AppointmentStatus } from '@/types/appointments'
 import { revalidatePath } from 'next/cache'
@@ -265,6 +266,101 @@ export async function rescheduleAppointment(
 }
 
 /**
+ * Update an appointment (all fields except status)
+ *
+ * Validates with Zod schema and handles overlap constraint (23P01)
+ * Returns Spanish error messages for user-friendly feedback
+ */
+export async function updateAppointment(
+  appointmentId: string,
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Parse form data
+  const rawData = {
+    patient_id: formData.get('patient_id'),
+    doctor_id: formData.get('doctor_id'),
+    fecha_hora_inicio: formData.get('fecha_hora_inicio'),
+    fecha_hora_fin: formData.get('fecha_hora_fin'),
+    motivo_consulta: formData.get('motivo_consulta') || '',
+    notas: formData.get('notas') || '',
+  }
+
+  // Validate with Zod
+  const validated = appointmentSchema.safeParse(rawData)
+
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors as Record<string, string[]>,
+      error: 'Por favor corrija los errores en el formulario',
+    }
+  }
+
+  // Prepare data for update (handle empty strings -> null)
+  const updateData = {
+    patient_id: validated.data.patient_id,
+    doctor_id: validated.data.doctor_id,
+    fecha_hora_inicio: validated.data.fecha_hora_inicio,
+    fecha_hora_fin: validated.data.fecha_hora_fin,
+    motivo_consulta: validated.data.motivo_consulta || null,
+    notas: validated.data.notas || null,
+  }
+
+  // Update in database
+  const { error } = await supabase
+    .from('appointments')
+    .update(updateData)
+    .eq('id', appointmentId)
+
+  if (error) {
+    // Handle exclusion constraint violation (overlapping appointments)
+    if (error.code === '23P01') {
+      return {
+        error: 'El doctor ya tiene una cita programada en ese horario. Por favor seleccione otro horario.',
+        errors: {
+          fecha_hora_inicio: ['Horario no disponible - hay otra cita'],
+        },
+      }
+    }
+
+    // Handle foreign key violations
+    if (error.code === '23503') {
+      if (error.message?.includes('patient_id')) {
+        return {
+          error: 'El paciente seleccionado no existe',
+          errors: { patient_id: ['Paciente no encontrado'] },
+        }
+      }
+      if (error.message?.includes('doctor_id')) {
+        return {
+          error: 'El doctor seleccionado no existe',
+          errors: { doctor_id: ['Doctor no encontrado'] },
+        }
+      }
+    }
+
+    console.error('Appointment update error:', error)
+    return { error: 'Error al actualizar la cita. Por favor intente de nuevo.' }
+  }
+
+  // Revalidate citas pages
+  revalidatePath('/citas')
+
+  return { success: true, data: { id: appointmentId } }
+}
+
+/**
  * Delete an appointment
  *
  * Only admins can delete appointments (enforced by RLS)
@@ -314,4 +410,140 @@ export async function deleteAppointment(
   revalidatePath('/citas')
 
   return { success: true }
+}
+
+/**
+ * Create a new appointment with a new patient (inline creation)
+ *
+ * Creates the patient first, then the appointment
+ * Returns Spanish error messages for user-friendly feedback
+ */
+export async function createAppointmentWithNewPatient(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Parse patient data
+  const patientRawData = {
+    cedula: formData.get('cedula'),
+    nombre: formData.get('nombre'),
+    apellido: formData.get('apellido'),
+    celular: formData.get('celular'),
+    email: formData.get('email') || '',
+    fecha_nacimiento: formData.get('fecha_nacimiento') || '',
+    direccion: formData.get('direccion') || '',
+    contacto_emergencia_nombre: formData.get('contacto_emergencia_nombre') || '',
+    contacto_emergencia_telefono: formData.get('contacto_emergencia_telefono') || '',
+    contacto_emergencia_parentesco: formData.get('contacto_emergencia_parentesco') || '',
+  }
+
+  // Validate patient with Zod
+  const validatedPatient = patientSchema.safeParse(patientRawData)
+
+  if (!validatedPatient.success) {
+    return {
+      errors: validatedPatient.error.flatten().fieldErrors as Record<string, string[]>,
+      error: 'Por favor corrija los errores del paciente',
+    }
+  }
+
+  // Prepare patient data for insert
+  const patientInsertData = {
+    ...validatedPatient.data,
+    email: validatedPatient.data.email || null,
+    fecha_nacimiento: validatedPatient.data.fecha_nacimiento || null,
+    direccion: validatedPatient.data.direccion || null,
+    contacto_emergencia_nombre: validatedPatient.data.contacto_emergencia_nombre || null,
+    contacto_emergencia_telefono: validatedPatient.data.contacto_emergencia_telefono || null,
+    contacto_emergencia_parentesco: validatedPatient.data.contacto_emergencia_parentesco || null,
+    created_by: user.id,
+  }
+
+  // Create patient
+  const { data: patientData, error: patientError } = await supabase
+    .from('patients')
+    .insert(patientInsertData)
+    .select('id')
+    .single()
+
+  if (patientError) {
+    // Handle unique constraint violation (duplicate cedula)
+    if (patientError.code === '23505') {
+      return {
+        error: 'Ya existe un paciente con esta cedula',
+        errors: { cedula: ['Esta cedula ya esta registrada'] },
+      }
+    }
+    console.error('Patient creation error:', patientError)
+    return { error: 'Error al crear paciente. Por favor intente de nuevo.' }
+  }
+
+  // Parse appointment data
+  const appointmentRawData = {
+    patient_id: patientData.id,
+    doctor_id: formData.get('doctor_id'),
+    fecha_hora_inicio: formData.get('fecha_hora_inicio'),
+    fecha_hora_fin: formData.get('fecha_hora_fin'),
+    motivo_consulta: formData.get('motivo_consulta') || '',
+    notas: formData.get('notas') || '',
+  }
+
+  // Validate appointment with Zod
+  const validatedAppointment = appointmentSchema.safeParse(appointmentRawData)
+
+  if (!validatedAppointment.success) {
+    return {
+      errors: validatedAppointment.error.flatten().fieldErrors as Record<string, string[]>,
+      error: 'Por favor corrija los errores de la cita',
+    }
+  }
+
+  // Prepare appointment data for insert
+  const appointmentInsertData = {
+    patient_id: patientData.id,
+    doctor_id: validatedAppointment.data.doctor_id,
+    fecha_hora_inicio: validatedAppointment.data.fecha_hora_inicio,
+    fecha_hora_fin: validatedAppointment.data.fecha_hora_fin,
+    motivo_consulta: validatedAppointment.data.motivo_consulta || null,
+    notas: validatedAppointment.data.notas || null,
+    created_by: user.id,
+  }
+
+  // Create appointment
+  const { data: appointmentData, error: appointmentError } = await supabase
+    .from('appointments')
+    .insert(appointmentInsertData)
+    .select('id')
+    .single()
+
+  if (appointmentError) {
+    // Handle exclusion constraint violation (overlapping appointments)
+    if (appointmentError.code === '23P01') {
+      return {
+        error: 'El doctor ya tiene una cita programada en ese horario. Por favor seleccione otro horario.',
+        errors: {
+          fecha_hora_inicio: ['Horario no disponible - hay otra cita'],
+        },
+      }
+    }
+
+    console.error('Appointment creation error:', appointmentError)
+    return { error: 'Paciente creado pero error al crear la cita. Por favor intente de nuevo.' }
+  }
+
+  // Revalidate pages
+  revalidatePath('/citas')
+  revalidatePath('/pacientes')
+
+  return { success: true, data: { id: appointmentData.id } }
 }

@@ -27,9 +27,10 @@ export async function createService(
 
   // Parse form data
   const precioVariable = formData.get('precio_variable') === 'true'
+  const descripcionRaw = formData.get('descripcion') as string | null
   const rawData = {
     nombre: formData.get('nombre'),
-    descripcion: formData.get('descripcion') || null,
+    descripcion: descripcionRaw && descripcionRaw.trim() !== '' ? descripcionRaw.trim() : null,
     precio_base: parseFloat(formData.get('precio_base') as string || '0'),
     precio_variable: precioVariable,
     precio_minimo: precioVariable && formData.get('precio_minimo')
@@ -88,9 +89,10 @@ export async function updateService(
   }
 
   const precioVariable = formData.get('precio_variable') === 'true'
+  const descripcionRaw2 = formData.get('descripcion') as string | null
   const rawData = {
     nombre: formData.get('nombre'),
-    descripcion: formData.get('descripcion') || null,
+    descripcion: descripcionRaw2 && descripcionRaw2.trim() !== '' ? descripcionRaw2.trim() : null,
     precio_base: parseFloat(formData.get('precio_base') as string || '0'),
     precio_variable: precioVariable,
     precio_minimo: precioVariable && formData.get('precio_minimo')

@@ -14,15 +14,15 @@ export default async function NewSalePage() {
   const products = await getActiveSaleProducts()
 
   // Get staff users for receptor selection
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: staffUsers } = await supabase
     .from('user_roles')
     .select('user_id, users:user_id(id, email)')
-    .in('role', ['admin', 'medico', 'enfermera', 'secretaria'])
+    .in('role', ['admin', 'medico', 'enfermera', 'secretaria']) as { data: { user_id: string; users: { id: string; email: string } | null }[] | null }
 
   const users = (staffUsers || [])
-    .map((u: { user_id: string; users: { id: string; email: string } | null }) => u.users)
-    .filter((u): u is { id: string; email: string } => u !== null)
-    .map((u) => ({ id: u.id, email: u.email }))
+    .filter((u) => u.users !== null)
+    .map((u) => ({ id: u.users!.id, email: u.users!.email }))
 
   // Get recent patients for optional linking (VTA-06)
   const recentPatients = await searchPatients('', 100)

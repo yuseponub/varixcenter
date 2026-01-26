@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 11 of 15 (Sales Core) — IN PROGRESS
-Plan: 05 of 8 (wave 3 in progress)
-Status: Executing wave 3 plans
-Last activity: 2026-01-26 — Completed 11-05-PLAN.md (Sales queries and server actions)
+Plan: 06 of 8 (wave 4 in progress)
+Status: Executing wave 4 plans
+Last activity: 2026-01-26 — Completed 11-06-PLAN.md (Sale form sub-components)
 
-Progress: [####################] v1.0 complete (simulated) | [########░░░░░░░░░░░░] v1.1 ~35%
+Progress: [####################] v1.0 complete (simulated) | [#########░░░░░░░░░░░] v1.1 ~40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
+- Total plans completed: 31
 - Average duration: 4 min
-- Total execution time: 113 min
+- Total execution time: 115 min
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [####################] v1.0 complete (simulated) | [########░░░�
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
-| 11-sales-core | 4 | 8 min | 2 min |
+| 11-sales-core | 5 | 10 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 11-04 (2 min), 11-01 (2 min), 11-03 (1 min), 11-02 (2 min), 11-05 (3 min)
-- Trend: Consistent ~2 min for types/validation/query tasks
+- Last 5 plans: 11-05 (3 min), 11-04 (2 min), 11-01 (2 min), 11-03 (1 min), 11-06 (2 min)
+- Trend: Consistent ~2 min for types/validation/query/component tasks
 
 *Updated after each plan completion*
 
@@ -69,6 +69,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [11-03]: Two-pass validation pattern for atomic stock operations (validate all, then execute all)
 - [11-03]: FOR UPDATE row locking prevents race conditions on concurrent sales
 - [11-05]: Explicit any cast for Supabase client on untyped tables (pending migration)
+- [11-06]: Cart state managed via parent-controlled callbacks pattern
+- [11-06]: SaleMethodForm reuses ReceiptUpload from payments for VTA-05 compliance
 
 ### Pending Todos
 
@@ -84,7 +86,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 11-05-PLAN.md
+Stopped at: Completed 11-06-PLAN.md
 Resume file: None
 
 ---

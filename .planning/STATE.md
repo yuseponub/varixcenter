@@ -71,6 +71,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [11-05]: Explicit any cast for Supabase client on untyped tables (pending migration)
 - [11-06]: Cart state managed via parent-controlled callbacks pattern
 - [11-06]: SaleMethodForm reuses ReceiptUpload from payments for VTA-05 compliance
+- [11-07]: Patient selection via searchable Select dropdown (matching appointment-form pattern)
+- [11-07]: date-fns added for date formatting in SalesTable
 - [11-08]: window.print() with CSS @media print for thermal receipt (VTA-14)
 - [11-08]: 58mm width with monospace font for thermal printer compatibility
 - [11-08]: Delete button only visible to admin users for active sales

@@ -272,18 +272,27 @@ Plans:
 - [ ] 12-06-PLAN.md — Pages: cierres list, new cierre with date picker, cierre detail
 
 ### Phase 13: Purchases
-**Goal**: Usuario puede registrar compras que incrementan stock_normal automaticamente
+**Goal**: Usuario puede registrar compras con OCR de factura y confirmacion de recepcion para incrementar stock
 **Depends on**: Phase 10
 **Requirements**: COM-01, COM-02, COM-03, COM-04
 **Success Criteria** (what must be TRUE):
   1. Usuario puede registrar compra con fecha, proveedor, y productos recibidos
-  2. Usuario puede subir foto de factura de compra como evidencia
-  3. Compra incrementa stock_normal automaticamente al registrarse
-  4. Usuario puede ver historial completo de compras con filtros
-**Plans**: TBD
+  2. Usuario puede subir foto/PDF de factura como evidencia obligatoria
+  3. OCR extrae productos de la factura para confirmacion del usuario
+  4. Compra incrementa stock_normal al confirmar recepcion (no al registrar)
+  5. Usuario puede ver historial completo de compras con filtros por estado/proveedor/fecha
+**Plans**: 9 plans in 5 waves
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — Database schema: purchases, purchase_items, purchase_counter, RLS
+- [ ] 13-02-PLAN.md — Confirm reception RPC and alert types for modification requests
+- [ ] 13-03-PLAN.md — TypeScript types and Zod validation schemas
+- [ ] 13-04-PLAN.md — OCR API route with GPT-4o vision and PDF conversion
+- [ ] 13-05-PLAN.md — Storage helpers and query functions
+- [ ] 13-06-PLAN.md — Server actions for purchase CRUD
+- [ ] 13-07-PLAN.md — Invoice upload and OCR product review components
+- [ ] 13-08-PLAN.md — Purchase form, table, and confirmation dialog components
+- [ ] 13-09-PLAN.md — Pages: purchases list, new purchase flow, detail page
 
 ### Phase 14: Returns Workflow
 **Goal**: Devoluciones requieren aprobacion de Admin para prevenir fraude, y afectan stock_devoluciones (no stock_normal)
@@ -356,11 +365,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
 | 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
-| 13. Purchases | v1.1 | 0/? | Not started | - |
+| 13. Purchases | v1.1 | 0/9 | Planned | - |
 | 14. Returns Workflow | v1.1 | 0/? | Not started | - |
 | 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
 | 16. Expense Control | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 8 planned (6 plans in 4 waves)*
+*Last updated: 2026-01-26 — Phase 13 planned (9 plans in 5 waves)*

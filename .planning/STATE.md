@@ -126,6 +126,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-01]: factura_path NOT NULL enforces required invoice evidence
 - [13-01]: Follows venta_counter pattern for gapless COM-000001 numbering
 - [13-01]: Two-step reception flow: pendiente_recepcion -> recibido triggers stock increment
+- [13-02]: Purchase types follow existing medias pattern (products.ts, sales.ts)
+- [13-02]: PURCHASE_STATES const array for type inference and runtime checks
+- [13-02]: cancelPurchaseSchema requires 10+ char justification (COM-06)
 - [13-03]: create_purchase RPC validates items and creates with gapless COM- numbering
 - [13-03]: confirm_purchase_reception atomically increments stock_normal for all items
 - [13-03]: cancel_purchase checks admin/medico role via JWT app_metadata.user_role

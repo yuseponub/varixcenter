@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 08 - Reports & Alerts
+**Current focus:** Phase 09 - Notifications
 
 ## Current Position
 
-Phase: 08 of 15 (Reports & Alerts)
-Plan: 06 of 6 (Reports Page and Alert Integration - awaiting human verification)
-Status: In progress (checkpoint)
-Last activity: 2026-01-26 — Completed 08-06-PLAN.md tasks 1-3, awaiting human verification
+Phase: 09 of 15 (Notifications)
+Plan: 01 of ? (Notifications Database Migration)
+Status: In progress
+Last activity: 2026-01-26 — Completed 09-01-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [###################░] v1.1 ~95%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 42
+- Total plans completed: 43
 - Average duration: 4 min
-- Total execution time: 157 min
+- Total execution time: 158 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-04 (4 min), 08-03 (4 min), 08-02 (3 min), 08-01 (4 min), 12-06 (7 min)
-- Trend: UI component tasks ~4 min
+- Last 5 plans: 09-01 (1 min), 08-04 (4 min), 08-03 (4 min), 08-02 (3 min), 08-01 (4 min)
+- Trend: Database migrations ~1-2 min, UI components ~4 min
 
 *Updated after each plan completion*
 
@@ -108,6 +108,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [08-06]: AlertsWidget wrapped in Card with Panel de Seguridad header
 - [08-06]: Mobile navigation uses flex-wrap for smaller screens
 - [08-06]: Alert badge links to /dashboard where alerts widget is visible
+- [09-01]: Four notification states (pendiente, enviado, fallido, reintentando) - no 'entregado' without webhook
+- [09-01]: Partial index on siguiente_reintento_at WHERE estado='reintentando' for retry queue optimization
+- [09-01]: Service role full access policy for cron job notification operations
 
 ### Pending Todos
 
@@ -123,8 +126,8 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: 08-06-PLAN.md tasks 1-3 complete, awaiting human-verify checkpoint
-Resume file: .planning/phases/08-reports-alerts/08-06-PLAN.md (Task 4)
+Stopped at: Completed 09-01-PLAN.md
+Resume file: None
 
 ---
 *v1.1 Varix-Medias: Modulo de medias de compresion con ventas inmutables, inventario dual, y cierre de caja independiente.*

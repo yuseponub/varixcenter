@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 08 of 15 (Reports & Alerts)
-Plan: 01 of 6 (Foundation complete)
+Plan: 02 of 6 (Types & Validations complete)
 Status: In progress
-Last activity: 2026-01-26 — Completed 08-01-PLAN.md
+Last activity: 2026-01-26 — Completed 08-02-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [##################░░] v1.1 ~90%
+Progress: [####################] v1.0 complete (simulated) | [##################░░] v1.1 ~92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 39
+- Total plans completed: 40
 - Average duration: 4 min
-- Total execution time: 146 min
+- Total execution time: 149 min
 
 **By Phase:**
 
@@ -32,14 +32,14 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 02-patients | 7 | 27 min | 4 min |
 | 03-appointments | 6 | 22 min | 4 min |
 | 04-payments-core | 5 | 20 min | 4 min |
-| 08-reports-alerts | 1 | 4 min | 4 min |
+| 08-reports-alerts | 2 | 7 min | 3.5 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-01 (4 min), 12-06 (7 min), 12-05 (4 min), 12-04 (2 min), 12-03 (6 min)
-- Trend: Foundation tasks ~4 min
+- Last 5 plans: 08-02 (3 min), 08-01 (4 min), 12-06 (7 min), 12-05 (4 min), 12-04 (2 min)
+- Trend: Type tasks ~3 min
 
 *Updated after each plan completion*
 
@@ -96,6 +96,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [08-01]: react-is ^19.0.0 override for React 19 compatibility with Recharts
 - [08-01]: Faltante (negative diferencia) triggers critico severity, sobrante triggers advertencia
 - [08-01]: SECURITY DEFINER functions bypass RLS for automatic alert insertion
+- [08-02]: formatCurrency uses es-CO locale for Colombian Peso formatting
+- [08-02]: ALERT_SEVERIDAD_CONFIG includes variant, icon, bgColor for consistent UI
 
 ### Pending Todos
 
@@ -111,7 +113,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 08-01-PLAN.md (Foundation) - Phase 08 started
+Stopped at: Completed 08-02-PLAN.md (Types & Validations) - Phase 08 in progress
 Resume file: None
 
 ---

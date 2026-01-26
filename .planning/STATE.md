@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 12 of 15 (Cash Closing Medias)
-Plan: 05 of 6 (UI components complete)
-Status: Phase 12 in progress
-Last activity: 2026-01-26 — Completed 12-05-PLAN.md
+Phase: 12 of 15 (Cash Closing Medias) - COMPLETE
+Plan: 06 of 6 (Pages complete)
+Status: Phase 12 COMPLETE - ready for UAT
+Last activity: 2026-01-26 — Completed 12-06-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [################░░░░] v1.1 ~80%
+Progress: [####################] v1.0 complete (simulated) | [#################░░░] v1.1 ~85%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 37
+- Total plans completed: 38
 - Average duration: 4 min
-- Total execution time: 135 min
+- Total execution time: 142 min
 
 **By Phase:**
 
@@ -34,11 +34,11 @@ Progress: [####################] v1.0 complete (simulated) | [################�
 | 04-payments-core | 5 | 20 min | 4 min |
 | 10-medias-foundation | 4 | 9 min | 2.3 min |
 | 11-sales-core | 8 | 13 min | 1.6 min |
-| 12-cash-closing-medias | 5 | 17 min | 3.4 min |
+| 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 12-05 (4 min), 12-04 (2 min), 12-03 (6 min), 12-02 (2 min), 12-01 (3 min)
-- Trend: Component tasks ~4 min
+- Last 5 plans: 12-06 (7 min), 12-05 (4 min), 12-04 (2 min), 12-03 (6 min), 12-02 (2 min)
+- Trend: Page tasks ~7 min
 
 *Updated after each plan completion*
 
@@ -89,6 +89,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [12-04]: Auth check in server actions before RPC calls for explicit error handling
 - [12-05]: Photo upload REQUIRED for medias cierre (vs optional in clinic)
 - [12-05]: Reuse CierrePhotoUpload from clinic components (no duplication)
+- [12-06]: Two-step new cierre flow: date picker then form
+- [12-06]: DatePickerForm accepts basePath prop for reusability
+- [12-06]: Zero-tolerance messaging on both list and new cierre pages
 
 ### Pending Todos
 
@@ -104,7 +107,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 12-05-PLAN.md (UI components)
+Stopped at: Completed 12-06-PLAN.md (Pages) - Phase 12 COMPLETE
 Resume file: None
 
 ---

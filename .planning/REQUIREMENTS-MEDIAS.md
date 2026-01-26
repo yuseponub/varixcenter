@@ -17,20 +17,20 @@ Requirements for Varix-Medias module. Phases continue from VarixClinic (Phase 10
 
 ### Ventas
 
-- [ ] **VTA-01**: Usuario puede registrar venta seleccionando producto(s) del catalogo
-- [ ] **VTA-02**: Usuario puede especificar cantidad por producto
-- [ ] **VTA-03**: Sistema calcula total automaticamente basado en precios del catalogo
-- [ ] **VTA-04**: Usuario puede seleccionar metodo de pago (efectivo, tarjeta, transferencia, nequi)
-- [ ] **VTA-05**: Pagos con tarjeta, transferencia o nequi REQUIEREN foto de comprobante
-- [ ] **VTA-06**: Usuario puede vincular venta a paciente existente (buscador de BD de VarixClinic)
-- [ ] **VTA-07**: Sistema registra quien realizo la venta (vendedor) automaticamente
-- [ ] **VTA-08**: Usuario puede especificar quien recibio el efectivo (si es diferente al vendedor)
-- [ ] **VTA-09**: Ventas no permiten UPDATE — solo Admin puede eliminar con justificacion obligatoria
-- [ ] **VTA-10**: Numeros de venta son secuenciales automaticos (VTA-000001) y nunca se reutilizan
-- [ ] **VTA-11**: Venta decrementa stock automaticamente al registrarse
-- [ ] **VTA-12**: Sistema bloquea venta si stock del producto es 0 (no permite stock negativo)
-- [ ] **VTA-13**: Al eliminar venta, sistema revierte el stock automaticamente
-- [ ] **VTA-14**: Sistema genera recibo imprimible para impresora termica al crear venta
+- [x] **VTA-01**: Usuario puede registrar venta seleccionando producto(s) del catalogo
+- [x] **VTA-02**: Usuario puede especificar cantidad por producto
+- [x] **VTA-03**: Sistema calcula total automaticamente basado en precios del catalogo
+- [x] **VTA-04**: Usuario puede seleccionar metodo de pago (efectivo, tarjeta, transferencia, nequi)
+- [x] **VTA-05**: Pagos con tarjeta, transferencia o nequi REQUIEREN foto de comprobante
+- [x] **VTA-06**: Usuario puede vincular venta a paciente existente (buscador de BD de VarixClinic)
+- [x] **VTA-07**: Sistema registra quien realizo la venta (vendedor) automaticamente
+- [x] **VTA-08**: Usuario puede especificar quien recibio el efectivo (si es diferente al vendedor)
+- [x] **VTA-09**: Ventas no permiten UPDATE — solo Admin puede eliminar con justificacion obligatoria
+- [x] **VTA-10**: Numeros de venta son secuenciales automaticos (VTA-000001) y nunca se reutilizan
+- [x] **VTA-11**: Venta decrementa stock automaticamente al registrarse
+- [x] **VTA-12**: Sistema bloquea venta si stock del producto es 0 (no permite stock negativo)
+- [x] **VTA-13**: Al eliminar venta, sistema revierte el stock automaticamente
+- [x] **VTA-14**: Sistema genera recibo imprimible para impresora termica al crear venta
 
 ### Inventario
 
@@ -124,20 +124,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAT-03 | Phase 10 | Complete |
 | CAT-04 | Phase 10 | Complete |
 | CAT-05 | Phase 10 | Complete |
-| VTA-01 | Phase 11 | Pending |
-| VTA-02 | Phase 11 | Pending |
-| VTA-03 | Phase 11 | Pending |
-| VTA-04 | Phase 11 | Pending |
-| VTA-05 | Phase 11 | Pending |
-| VTA-06 | Phase 11 | Pending |
-| VTA-07 | Phase 11 | Pending |
-| VTA-08 | Phase 11 | Pending |
-| VTA-09 | Phase 11 | Pending |
-| VTA-10 | Phase 11 | Pending |
-| VTA-11 | Phase 11 | Pending |
-| VTA-12 | Phase 11 | Pending |
-| VTA-13 | Phase 11 | Pending |
-| VTA-14 | Phase 11 | Pending |
+| VTA-01 | Phase 11 | Complete |
+| VTA-02 | Phase 11 | Complete |
+| VTA-03 | Phase 11 | Complete |
+| VTA-04 | Phase 11 | Complete |
+| VTA-05 | Phase 11 | Complete |
+| VTA-06 | Phase 11 | Complete |
+| VTA-07 | Phase 11 | Complete |
+| VTA-08 | Phase 11 | Complete |
+| VTA-09 | Phase 11 | Complete |
+| VTA-10 | Phase 11 | Complete |
+| VTA-11 | Phase 11 | Complete |
+| VTA-12 | Phase 11 | Complete |
+| VTA-13 | Phase 11 | Complete |
+| VTA-14 | Phase 11 | Complete |
 | INV-01 | Phase 10 | Complete |
 | INV-02 | Phase 10 | Complete |
 | INV-03 | Phase 15 | Pending |

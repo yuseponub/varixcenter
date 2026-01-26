@@ -144,8 +144,8 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
           <div className="space-y-2">
             <Label>Paciente (opcional)</Label>
             <Select
-              value={patientId || ''}
-              onValueChange={(v) => setPatientId(v || null)}
+              value={patientId || '__none__'}
+              onValueChange={(v) => setPatientId(v === '__none__' ? null : v)}
               disabled={isPending}
             >
               <SelectTrigger>
@@ -162,7 +162,7 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
-                <SelectItem value="">Sin paciente</SelectItem>
+                <SelectItem value="__none__">Sin paciente</SelectItem>
                 {filteredPatients.length === 0 ? (
                   <div className="p-2 text-center text-sm text-muted-foreground">
                     No se encontraron pacientes
@@ -186,15 +186,15 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
                 Quien recibio efectivo (si diferente al vendedor)
               </Label>
               <Select
-                value={receptorId || ''}
-                onValueChange={(v) => setReceptorId(v || null)}
+                value={receptorId || '__none__'}
+                onValueChange={(v) => setReceptorId(v === '__none__' ? null : v)}
                 disabled={isPending}
               >
                 <SelectTrigger id="receptor">
                   <SelectValue placeholder="Mismo vendedor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Mismo vendedor</SelectItem>
+                  <SelectItem value="__none__">Mismo vendedor</SelectItem>
                   {staffUsers.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.email}

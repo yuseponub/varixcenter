@@ -86,7 +86,8 @@ export interface MediasSaleWithDetails extends MediasSale {
   methods: MediasSaleMethod[]
   patient?: {
     id: string
-    nombre_completo: string
+    nombre: string
+    apellido: string
     cedula: string
   } | null
   vendedor?: {

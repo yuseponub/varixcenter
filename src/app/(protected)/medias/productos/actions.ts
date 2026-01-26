@@ -40,7 +40,8 @@ export async function createProduct(
     }
   }
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('medias_products')
     .insert(validated.data)
 
@@ -89,7 +90,8 @@ export async function updateProduct(
     }
   }
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('medias_products')
     .update(validated.data)
     .eq('id', id)
@@ -117,7 +119,8 @@ export async function toggleProductActive(
     return { error: 'No autorizado' }
   }
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('medias_products')
     .update({ activo })
     .eq('id', id)

@@ -54,7 +54,7 @@ export async function createMediasCierre(
     fecha: formData.get('fecha') as string,
     conteo_fisico: parseFloat(formData.get('conteo_fisico') as string) || 0,
     diferencia_justificacion: (formData.get('diferencia_justificacion') as string) || null,
-    cierre_photo_path: formData.get('cierre_photo_path') as string,
+    cierre_photo_path: (formData.get('cierre_photo_path') as string) || null,
     notas: (formData.get('notas') as string) || null,
   }
 
@@ -74,7 +74,7 @@ export async function createMediasCierre(
     p_fecha: validated.data.fecha,
     p_conteo_fisico: validated.data.conteo_fisico,
     p_diferencia_justificacion: validated.data.diferencia_justificacion || '',
-    p_cierre_photo_path: validated.data.cierre_photo_path,
+    p_cierre_photo_path: validated.data.cierre_photo_path || null,
     p_notas: validated.data.notas || null,
   })
 

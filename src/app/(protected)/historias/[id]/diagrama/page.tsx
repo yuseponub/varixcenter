@@ -40,6 +40,10 @@ export default async function DiagramaPage({ params }: PageProps) {
     nota: item.nota || '',
   })) || []
 
+  // Get saved audios (cast as any since field may not be in types yet)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const initialAudios = ((record as any).audios as { path: string; timestamp: string; transcription?: string }[]) || []
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
@@ -74,6 +78,7 @@ export default async function DiagramaPage({ params }: PageProps) {
         initialDiagramData={record.diagrama_piernas}
         initialDiagnostico={record.diagnostico}
         initialTreatmentItems={initialTreatmentItems}
+        initialAudios={initialAudios}
         treatmentOptions={treatmentOptions}
         isReadOnly={record.estado === 'completado'}
       />

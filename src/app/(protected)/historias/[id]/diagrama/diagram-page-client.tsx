@@ -20,11 +20,17 @@ import { VoiceDictation } from '@/components/medical-records/voice-dictation'
 import { TreatmentSelector, type TreatmentItem } from '@/components/medical-records/treatment-selector'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Pencil } from 'lucide-react'
-import { updateDiagramAndDiagnosis, updateTreatments } from './actions'
+import { updateDiagramAndDiagnosis, updateTreatments, addAudioRecording } from './actions'
 
 interface TreatmentOption {
   id: string
   nombre: string
+}
+
+interface AudioRecording {
+  path: string
+  timestamp: string
+  transcription?: string
 }
 
 interface DiagramPageClientProps {
@@ -32,6 +38,7 @@ interface DiagramPageClientProps {
   initialDiagramData: string | null
   initialDiagnostico: string | null
   initialTreatmentItems: TreatmentItem[]
+  initialAudios: AudioRecording[]
   treatmentOptions: TreatmentOption[]
   isReadOnly: boolean
 }
@@ -41,12 +48,14 @@ export function DiagramPageClient({
   initialDiagramData,
   initialDiagnostico,
   initialTreatmentItems,
+  initialAudios,
   treatmentOptions,
   isReadOnly,
 }: DiagramPageClientProps) {
   const [diagramData, setDiagramData] = useState<string | null>(initialDiagramData)
   const [diagnostico, setDiagnostico] = useState<string | null>(initialDiagnostico)
   const [treatmentItems, setTreatmentItems] = useState<TreatmentItem[]>(initialTreatmentItems)
+  const [audios, setAudios] = useState<AudioRecording[]>(initialAudios)
   const [hasChanges, setHasChanges] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -66,6 +75,18 @@ export function DiagramPageClient({
     setDiagnostico(value)
     setHasChanges(true)
   }, [])
+
+  // Handle audio saved
+  const handleAudioSaved = useCallback(async (audio: AudioRecording) => {
+    // Add to local state immediately
+    setAudios(prev => [...prev, audio])
+
+    // Save to database
+    const result = await addAudioRecording(medicalRecordId, audio)
+    if (!result.success) {
+      toast.error('Error al guardar referencia del audio')
+    }
+  }, [medicalRecordId])
 
   // Handle treatment change with debounce
   const handleTreatmentChange = useCallback((items: TreatmentItem[]) => {
@@ -176,6 +197,9 @@ export function DiagramPageClient({
           <VoiceDictation
             value={diagnostico}
             onChange={handleDiagnosticoChange}
+            medicalRecordId={medicalRecordId}
+            savedAudios={audios}
+            onAudioSaved={handleAudioSaved}
             disabled={isReadOnly}
           />
 

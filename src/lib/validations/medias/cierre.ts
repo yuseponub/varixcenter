@@ -20,14 +20,15 @@ export const mediasCierreSchema = z.object({
 
   diferencia_justificacion: z
     .string()
-    .max(500, { error: 'La justificacion es muy larga' })
+    .max(500, { message: 'La justificacion es muy larga' })
     .nullable()
     .optional(),
 
-  // Required for medias (different from clinic where it's optional)
+  // Photo is optional for medias
   cierre_photo_path: z
     .string()
-    .min(1, { error: 'La foto del cierre es obligatoria' }),
+    .nullable()
+    .optional(),
 
   notas: z
     .string()

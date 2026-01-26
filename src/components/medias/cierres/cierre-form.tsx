@@ -11,7 +11,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { MediasCierreSummaryCard } from './cierre-summary-card'
-import { CierrePhotoUpload } from '@/components/cash-closing/cierre-photo-upload'
 import {
   createMediasCierre,
   type MediasCierreActionState,
@@ -38,7 +37,6 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
   const [diferencia, setDiferencia] = useState<number>(0)
   const [justificacion, setJustificacion] = useState('')
   const [notas, setNotas] = useState('')
-  const [photoPath, setPhotoPath] = useState<string | null>(null)
 
   const [state, formAction, isPending] = useActionState<
     MediasCierreActionState | null,
@@ -51,13 +49,15 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
     setDiferencia(conteoNum - summary.total_efectivo)
   }, [conteoFisico, summary.total_efectivo])
 
-  // Handle success/error
+  // Handle success/error - redirect to print page on success
   useEffect(() => {
     if (state?.success && state.data) {
+      const cierreId = (state.data as { id: string }).id
       toast.success(
         `Cierre ${(state.data as { cierre_numero: string }).cierre_numero} creado exitosamente`
       )
-      router.push('/medias/cierres')
+      // Redirect to detail page
+      router.push(`/medias/cierres/${cierreId}`)
     } else if (state?.error) {
       toast.error(state.error)
     }
@@ -68,21 +68,18 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
       formData.set('fecha', fecha)
       formData.set('conteo_fisico', conteoFisico)
       formData.set('diferencia_justificacion', justificacion)
-      formData.set('cierre_photo_path', photoPath || '')
       formData.set('notas', notas)
       formAction(formData)
     },
-    [fecha, conteoFisico, justificacion, photoPath, notas, formAction]
+    [fecha, conteoFisico, justificacion, notas, formAction]
   )
 
   const hasDiferencia = diferencia !== 0
   const needsJustificacion = hasDiferencia && justificacion.trim().length < 10
-  // CRITICAL: Photo is REQUIRED for medias (different from clinic optional)
-  const hasPhoto = photoPath !== null && photoPath.trim() !== ''
-  const isValid = !needsJustificacion && hasPhoto
+  const isValid = !needsJustificacion
 
-  // Check if already closed
-  if (summary.has_existing_closing) {
+  // Check if already closed (but not if we just created it successfully)
+  if (summary.has_existing_closing && !state?.success) {
     return (
       <Alert>
         <AlertTriangle className="h-4 w-4" />
@@ -211,34 +208,6 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
                 </p>
               )}
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Photo Upload (REQUIRED for medias) */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            Foto del Cierre{' '}
-            <span className="text-red-500 text-sm">(obligatoria)</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CierrePhotoUpload
-            fecha={fecha}
-            onUploadComplete={(path) => setPhotoPath(path)}
-            onRemove={() => setPhotoPath(null)}
-            disabled={isPending}
-            error={state?.errors?.cierre_photo_path?.[0]}
-          />
-          <p className="text-xs text-muted-foreground mt-2">
-            Suba una foto del cierre de caja firmado. Es obligatoria para
-            completar el cierre.
-          </p>
-          {!hasPhoto && (
-            <p className="text-xs text-red-500 mt-1">
-              Debe subir la foto del cierre para continuar.
-            </p>
           )}
         </CardContent>
       </Card>

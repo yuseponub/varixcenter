@@ -136,7 +136,7 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
                   href={`/pacientes/${sale.patient.id}`}
                   className="hover:underline font-medium"
                 >
-                  {sale.patient.nombre_completo}
+                  {`${sale.patient.nombre} ${sale.patient.apellido}`}
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   {sale.patient.cedula}

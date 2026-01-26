@@ -22,6 +22,7 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import { CIERRE_ESTADO_LABELS, CIERRE_ESTADO_VARIANTS } from '@/types'
 import { MediasReopenDialog } from '@/components/medias/cierres/reopen-dialog'
+import { PrintButton } from '@/components/medias/cierres/print-button'
 
 export const metadata = {
   title: 'Detalle de Cierre - Medias | VarixClinic',
@@ -79,10 +80,10 @@ export default async function MediasCierreDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header - buttons hidden in print */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="no-print">
             <Link href="/medias/cierres">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver
@@ -103,11 +104,16 @@ export default async function MediasCierreDetailPage({ params }: Props) {
           <Badge variant={CIERRE_ESTADO_VARIANTS[cierre.estado]}>
             {CIERRE_ESTADO_LABELS[cierre.estado]}
           </Badge>
+          <div className="no-print">
+            <PrintButton />
+          </div>
           {isAdmin && cierre.estado === 'cerrado' && (
-            <MediasReopenDialog
-              cierreId={cierre.id}
-              cierreNumero={cierre.cierre_numero}
-            />
+            <div className="no-print">
+              <MediasReopenDialog
+                cierreId={cierre.id}
+                cierreNumero={cierre.cierre_numero}
+              />
+            </div>
           )}
         </div>
       </div>

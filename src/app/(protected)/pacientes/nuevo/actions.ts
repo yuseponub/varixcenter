@@ -67,7 +67,8 @@ export async function createPatient(
   }
 
   // Insert into database
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('patients')
     .insert(insertData)
     .select('id')

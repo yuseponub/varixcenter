@@ -22,7 +22,7 @@ export async function getSales(options?: {
       *,
       items:medias_sale_items(*),
       methods:medias_sale_methods(*),
-      patient:patients(id, nombre_completo, cedula)
+      patient:patients(id, nombre, apellido, cedula)
     `)
     .order('created_at', { ascending: false })
 
@@ -66,7 +66,7 @@ export async function getSaleById(id: string): Promise<MediasSaleWithDetails | n
       *,
       items:medias_sale_items(*),
       methods:medias_sale_methods(*),
-      patient:patients(id, nombre_completo, cedula)
+      patient:patients(id, nombre, apellido, cedula)
     `)
     .eq('id', id)
     .single()

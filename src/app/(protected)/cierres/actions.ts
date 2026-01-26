@@ -244,7 +244,8 @@ export async function deleteCashClosing(
   })
 
   // Delete the cash closing
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('cash_closings')
     .delete()
     .eq('id', validated.data.cierre_id)

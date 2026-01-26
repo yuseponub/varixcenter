@@ -89,3 +89,56 @@ export async function getReceiptPublicUrl(path: string): Promise<string | null> 
 
   return data.publicUrl
 }
+
+/**
+ * Generate a signed upload URL for voice dictation audio
+ * Stores in audios/{medical_record_id}/{timestamp}.webm
+ * Valid for 2 hours
+ */
+export async function createAudioUploadUrl(
+  medicalRecordId: string
+): Promise<{ signedUrl: string; path: string } | { error: string }> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'No autorizado' }
+  }
+
+  // Generate unique path: audios/{medical_record_id}/{timestamp}.webm
+  const timestamp = Date.now()
+  const path = `audios/${medicalRecordId}/${timestamp}.webm`
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .createSignedUploadUrl(path)
+
+  if (error) {
+    console.error('Failed to create signed URL for audio:', error)
+    return { error: 'Error al generar URL de subida de audio' }
+  }
+
+  return {
+    signedUrl: data.signedUrl,
+    path: path
+  }
+}
+
+/**
+ * Get signed URL for audio playback (valid for 1 hour)
+ */
+export async function getAudioSignedUrl(path: string): Promise<string | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .createSignedUrl(path, 3600) // 1 hour
+
+  if (error) {
+    console.error('Failed to get audio signed URL:', error)
+    return null
+  }
+
+  return data.signedUrl
+}

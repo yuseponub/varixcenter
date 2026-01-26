@@ -60,7 +60,8 @@ export async function createMediasSale(
   }
 
   // Call RPC function for atomic creation
-  const { data: saleData, error: saleError } = await supabase.rpc('create_medias_sale', {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: saleData, error: saleError } = await (supabase as any).rpc('create_medias_sale', {
     p_items: validated.data.items,
     p_methods: validated.data.methods,
     p_patient_id: validated.data.patient_id || null,
@@ -130,7 +131,8 @@ export async function deleteMediasSale(
   }
 
   // Call RPC (validates admin role internally)
-  const { error } = await supabase.rpc('eliminar_medias_sale', {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).rpc('eliminar_medias_sale', {
     p_sale_id: validated.data.sale_id,
     p_justificacion: validated.data.justificacion,
   })

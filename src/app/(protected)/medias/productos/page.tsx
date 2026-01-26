@@ -26,7 +26,8 @@ export default function ProductosPage() {
   // Fetch products on mount and after changes
   const fetchProducts = async () => {
     const supabase = createClient()
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
       .from('medias_products')
       .select('*')
       .order('tipo')

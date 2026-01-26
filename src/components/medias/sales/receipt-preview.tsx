@@ -68,7 +68,7 @@ export function ReceiptPreview({ sale }: ReceiptPreviewProps) {
             <div className="flex justify-between">
               <span>Cliente:</span>
               <span className="truncate ml-2 max-w-[60%] text-right">
-                {sale.patient.nombre_completo}
+                {`${sale.patient.nombre} ${sale.patient.apellido}`}
               </span>
             </div>
           )}

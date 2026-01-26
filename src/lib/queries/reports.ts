@@ -20,7 +20,7 @@ export async function getIncomeReport(
   })
 
   if (error) {
-    console.error('Error fetching income report:', error)
+    console.error('Error fetching income report:', error.message)
     return null
   }
 

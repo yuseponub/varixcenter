@@ -226,38 +226,40 @@
 }
 
 @media print {
-  /* Hide everything except receipt */
-  body * {
-    visibility: hidden;
-  }
-
-  .receipt,
-  .receipt * {
-    visibility: visible;
-  }
-
-  .receipt {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 58mm;
-    max-width: 58mm;
-    background: white !important;
-    color: black !important;
-    padding: 2mm;
-    margin: 0;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  /* Hide print button and other non-receipt elements */
+  /* Hide non-printable elements */
   .no-print {
     display: none !important;
   }
 
-  /* Page size for thermal printer */
+  /* Default: print everything normally */
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Clean up cards for print */
+  .card, [class*="Card"] {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
   @page {
-    size: 58mm auto;
-    margin: 0;
+    size: A4;
+    margin: 15mm;
+  }
+
+  /* Receipt-specific: when .receipt exists, only show receipt */
+  .receipt ~ *:not(.receipt),
+  body:has(.receipt) > *:not(.receipt):not(:has(.receipt)) {
+    display: none !important;
+  }
+
+  .receipt {
+    width: 58mm !important;
+    max-width: 58mm !important;
+    padding: 2mm !important;
+    margin: 0 !important;
   }
 }

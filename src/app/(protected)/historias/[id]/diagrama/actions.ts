@@ -205,3 +205,68 @@ export async function updateTreatments(
 
   return { success: true }
 }
+
+/**
+ * Audio recording input
+ */
+export interface AudioRecordingInput {
+  path: string
+  timestamp: string
+  transcription?: string
+}
+
+/**
+ * Add an audio recording to a medical record
+ */
+export async function addAudioRecording(
+  medicalRecordId: string,
+  audio: AudioRecordingInput
+): Promise<UpdateResult> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Get current audios array
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: record, error: fetchError } = await (supabase as any)
+    .from('medical_records')
+    .select('audios')
+    .eq('id', medicalRecordId)
+    .single()
+
+  if (fetchError) {
+    console.error('Error fetching medical record:', fetchError)
+    return { success: false, error: 'Error al obtener historia clinica.' }
+  }
+
+  // Append new audio to array
+  const currentAudios = record?.audios || []
+  const updatedAudios = [...currentAudios, audio]
+
+  // Update medical record
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: updateError } = await (supabase as any)
+    .from('medical_records')
+    .update({
+      audios: updatedAudios,
+      updated_by: user.id,
+    })
+    .eq('id', medicalRecordId)
+
+  if (updateError) {
+    console.error('Error saving audio:', updateError)
+    return { success: false, error: 'Error al guardar audio.' }
+  }
+
+  // Revalidate
+  revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+
+  return { success: true }
+}

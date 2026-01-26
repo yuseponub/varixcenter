@@ -121,6 +121,7 @@ export function ProductSelector({
 
                 return (
                   <Button
+                    type="button"
                     key={product.id}
                     variant={inCart ? 'default' : 'outline'}
                     className="h-auto py-2 px-3 flex flex-col items-start"

@@ -60,7 +60,7 @@ export function SalesTable({ sales }: SalesTableProps) {
                 })}
               </TableCell>
               <TableCell>
-                {sale.patient?.nombre_completo || (
+                {sale.patient ? `${sale.patient.nombre} ${sale.patient.apellido}` : (
                   <span className="text-muted-foreground">Sin paciente</span>
                 )}
               </TableCell>

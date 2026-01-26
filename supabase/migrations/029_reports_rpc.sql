@@ -69,7 +69,7 @@ BEGIN
   SELECT COUNT(*)
   INTO v_citas_atendidas
   FROM public.appointments
-  WHERE DATE(fecha) BETWEEN p_start_date AND p_end_date
+  WHERE DATE(fecha_hora_inicio) BETWEEN p_start_date AND p_end_date
   AND estado = 'completada';
 
   -- Calculate grand total (only from active payments)

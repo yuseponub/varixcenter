@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 13 of 15 (Purchases)
-Plan: 05 of 9 (Invoice OCR Service)
+Plan: 06 of 9 (Purchase Server Actions)
 Status: In progress
-Last activity: 2026-01-26 — Completed 13-05-PLAN.md
+Last activity: 2026-01-26 — Completed 13-06-PLAN.md
 
 Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 51
+- Total plans completed: 52
 - Average duration: 4 min
-- Total execution time: 180 min
+- Total execution time: 183 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-05 (5 min), 13-05 (2 min), 13-04 (1 min), 13-03 (2 min), 09-04 (4 min)
+- Last 5 plans: 13-06 (3 min), 09-05 (5 min), 13-05 (2 min), 13-04 (1 min), 13-03 (2 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI pages ~5 min
 
 *Updated after each plan completion*
@@ -138,6 +138,8 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-05]: GPT-4o vision API with structured outputs for guaranteed JSON response
 - [13-05]: Confidence threshold 0.7 for needs_review flag on invoice items
 - [13-05]: Temperature 0.1 for consistent, deterministic OCR extraction
+- [13-06]: parseInvoice wraps OCR service as server action for authenticated access
+- [13-06]: Zod v4 uses issues[0].message instead of errors[0].message
 - [09-05]: sms_reminder uses cyan color (bg-cyan-500) for timeline differentiation
 - [09-05]: Stats cards count pendiente+reintentando together as 'Pendientes'
 - [09-05]: Timeline merges audit events and notifications sorted by timestamp
@@ -156,7 +158,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 09-05-PLAN.md
+Stopped at: Completed 13-06-PLAN.md
 Resume file: None
 
 ---

@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 13 of 15 (Purchases)
-Plan: 07 of 9 (Purchase Form Components)
+Plan: 08 of 9 (Purchase UI Components)
 Status: In progress
-Last activity: 2026-01-26 — Completed 13-07-PLAN.md
+Last activity: 2026-01-26 — Completed 13-08-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~98%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~99%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 53
+- Total plans completed: 54
 - Average duration: 4 min
-- Total execution time: 185 min
+- Total execution time: 187 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-07 (2 min), 13-06 (3 min), 09-05 (5 min), 13-05 (2 min), 13-04 (1 min)
+- Last 5 plans: 13-08 (2 min), 13-07 (2 min), 13-06 (3 min), 09-05 (5 min), 13-05 (2 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~2-3 min
 
 *Updated after each plan completion*
@@ -146,6 +146,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [13-07]: OCR failure doesn't block upload - graceful degradation to manual entry
 - [13-07]: 10MB file limit for invoices (larger than 5MB receipts)
 - [13-07]: Multi-stage upload state machine (idle/uploading/processing/success/error)
+- [13-08]: Controlled form pattern: PurchaseForm uses external state for OCR integration
+- [13-08]: calculatePurchaseTotal exported as utility for parent component use
+- [13-08]: Table filters use onFilterChange callback for parent control
 
 ### Pending Todos
 
@@ -161,7 +164,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 13-07-PLAN.md
+Stopped at: Completed 13-08-PLAN.md
 Resume file: None
 
 ---

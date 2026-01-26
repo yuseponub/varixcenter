@@ -8,6 +8,7 @@ Sistema de gestion para clinica de flebologia en Bucaramanga, Colombia. El proye
 
 - 🚧 **v1.0 MVP** - Phases 1-9 (in progress)
 - 📋 **v1.1 Varix-Medias** - Phases 10-15 (planned)
+- 📋 **v1.2 Financials** - Phase 16 (planned)
 
 ## Phases
 
@@ -37,6 +38,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 13: Purchases** - Stock replenishment with invoice photos
 - [ ] **Phase 14: Returns Workflow** - Two-phase approval for fraud prevention
 - [ ] **Phase 15: Dashboard & Inventory** - Stock alerts, adjustments, and operational dashboard
+
+### v1.2 Financials (Phase 16)
+
+- [ ] **Phase 16: Expense Control** - Recurring and variable expense tracking with petty cash management
 
 ## Phase Details
 
@@ -305,10 +310,32 @@ Plans:
 
 ---
 
+## Milestone v1.2: Financials
+
+**Milestone Goal:** Control financiero completo con registro de gastos operativos, caja menor, y reportes de egresos.
+
+### Phase 16: Expense Control
+**Goal**: Usuario puede registrar gastos operativos con comprobante obligatorio, gestionar caja menor, y ver reporte de egresos
+**Depends on**: Phase 8 (for alerts integration)
+**Requirements**: GAS-01, GAS-02, GAS-03, GAS-04
+**Success Criteria** (what must be TRUE):
+  1. Usuario puede registrar gasto seleccionando categoria, monto, y adjuntando comprobante (foto/PDF)
+  2. Sistema soporta gastos recurrentes (arriendo, servicios) con recordatorios mensuales
+  3. Usuario puede elegir fuente de pago: efectivo del dia, caja menor, o externo
+  4. Gastos de "efectivo del dia" se restan del cierre de caja automaticamente
+  5. Caja menor tiene saldo visible, umbral configurable, y alerta cuando baja del minimo
+  6. Admin/Medico ven reporte diario de gastos con comprobantes
+**Plans**: TBD
+
+Plans:
+- [ ] 16-01: TBD
+
+---
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13 -> 14 -> 15
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13 -> 14 -> 15 -> 16
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -327,7 +354,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 13. Purchases | v1.1 | 0/? | Not started | - |
 | 14. Returns Workflow | v1.1 | 0/? | Not started | - |
 | 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
+| 16. Expense Control | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 12 planned (6 plans in 4 waves)*
+*Last updated: 2026-01-26 — Added Phase 16: Expense Control (v1.2)*

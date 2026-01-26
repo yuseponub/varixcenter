@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 09 of 15 (Notifications)
-Plan: 01 of ? (Notifications Database Migration)
+Plan: 02 of ? (Types and Validations)
 Status: In progress
-Last activity: 2026-01-26 — Completed 09-01-PLAN.md
+Last activity: 2026-01-26 — Completed 09-02-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~96%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 ~97%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 43
+- Total plans completed: 44
 - Average duration: 4 min
-- Total execution time: 158 min
+- Total execution time: 161 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-01 (1 min), 08-04 (4 min), 08-03 (4 min), 08-02 (3 min), 08-01 (4 min)
-- Trend: Database migrations ~1-2 min, UI components ~4 min
+- Last 5 plans: 09-02 (3 min), 09-01 (1 min), 08-04 (4 min), 08-03 (4 min), 08-02 (3 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, UI components ~4 min
 
 *Updated after each plan completion*
 
@@ -111,6 +111,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [09-01]: Four notification states (pendiente, enviado, fallido, reintentando) - no 'entregado' without webhook
 - [09-01]: Partial index on siguiente_reintento_at WHERE estado='reintentando' for retry queue optimization
 - [09-01]: Service role full access policy for cron job notification operations
+- [09-02]: E.164 phone format for Colombia: +57 followed by 10 digits
+- [09-02]: SMS message limit 160 chars (single segment)
+- [09-02]: Status config uses string icon names for flexible rendering
 
 ### Pending Todos
 
@@ -126,7 +129,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 09-01-PLAN.md
+Stopped at: Completed 09-02-PLAN.md
 Resume file: None
 
 ---

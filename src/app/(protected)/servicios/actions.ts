@@ -51,6 +51,17 @@ export async function createService(
     }
   }
 
+  // Debug: check user role
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData) {
+    return { error: `DEBUG: No se encontro rol para user ${user.id} (${user.email})` }
+  }
+
   // Insert into database
   const { error } = await supabase
     .from('services')
@@ -66,7 +77,7 @@ export async function createService(
       return { error: 'Ya existe un servicio con ese nombre' }
     }
     console.error('Service creation error:', error)
-    return { error: `Error al crear el servicio: ${error.message} (code: ${error.code})` }
+    return { error: `Error (role: ${roleData.role}, uid: ${user.id}): ${error.message} (code: ${error.code})` }
   }
 
   revalidatePath('/servicios')

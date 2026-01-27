@@ -93,3 +93,34 @@ export async function getStockAlertsSummary(): Promise<StockAlertsSummary> {
     products,
   }
 }
+
+/**
+ * Product option for dropdowns (filters, forms)
+ */
+export interface ProductOption {
+  id: string
+  codigo: string
+  tipo: string
+  talla: string
+  stock_normal: number
+  stock_devoluciones: number
+}
+
+/**
+ * Get all products for dropdown selects
+ * Used by: movement filters, adjustment forms
+ */
+export async function getProducts(): Promise<ProductOption[]> {
+  const supabase = await createClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('medias_products')
+    .select('id, codigo, tipo, talla, stock_normal, stock_devoluciones')
+    .eq('activo', true)
+    .order('tipo')
+    .order('talla')
+
+  if (error) throw error
+  return (data || []) as ProductOption[]
+}

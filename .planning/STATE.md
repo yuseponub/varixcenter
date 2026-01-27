@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 15 of 15 (Dashboard & Inventory)
-Plan: 01 of 6 (Migration for umbral_alerta and adjustment RPC)
+Plan: 02 of 6 (Types and validation schema)
 Status: In progress
-Last activity: 2026-01-27 — Completed 15-01-PLAN.md
+Last activity: 2026-01-27 — Completed 15-02-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 97%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 98%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 62
+- Total plans completed: 63
 - Average duration: 3.4 min
-- Total execution time: 212 min
+- Total execution time: 215 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-01 (2 min), 14-06 (3 min), 14-05 (5 min), 14-04 (4 min), 14-03 (3 min)
+- Last 5 plans: 15-02 (3 min), 15-01 (2 min), 14-06 (3 min), 14-05 (5 min), 14-04 (4 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~5 min, pages ~3 min
 
 *Updated after each plan completion*
@@ -176,6 +176,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-01]: create_inventory_adjustment RPC checks JWT app_metadata.user_role first, fallback to user_roles table
 - [15-01]: Adjustment RPC supports both stock_normal and stock_devoluciones modifications
 - [15-01]: Movement referencia_tipo = 'ajuste' for all manual adjustments
+- [15-02]: ADJUSTMENT_TYPES and STOCK_TYPES as const arrays for dual use (type inference + enum validation)
+- [15-02]: Zod coerce.number() for cantidad to handle form string input
+- [15-02]: Error messages in Spanish matching existing validation patterns
 
 ### Pending Todos
 
@@ -191,7 +194,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 15-01-PLAN.md
+Stopped at: Completed 15-02-PLAN.md
 Resume file: None
 
 ---

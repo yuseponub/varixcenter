@@ -86,9 +86,16 @@ export function VoiceDictation({
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      })
+      // Use supported mimeType: Safari/iOS only supports mp4, Chrome supports webm
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+          ? 'audio/mp4'
+          : ''
+
+      const mediaRecorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream)
 
       chunksRef.current = []
 
@@ -102,8 +109,9 @@ export function VoiceDictation({
         // Stop all tracks
         stream.getTracks().forEach(track => track.stop())
 
-        // Create blob from chunks
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        // Create blob from chunks using the recorder's actual mimeType
+        const blobType = mediaRecorder.mimeType || 'audio/webm'
+        const audioBlob = new Blob(chunksRef.current, { type: blobType })
 
         // Transcribe and optionally upload
         await processAudio(audioBlob)

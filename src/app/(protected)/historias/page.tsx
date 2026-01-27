@@ -55,6 +55,9 @@ export default async function HistoriasPage({ searchParams }: PageProps) {
             Gestion de historias clinicas de pacientes
           </p>
         </div>
+        <Link href="/historias/nueva">
+          <Button>Nueva Historia</Button>
+        </Link>
       </div>
 
       {/* Search and Filters */}

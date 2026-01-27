@@ -7,7 +7,7 @@ Sistema de gestion para clinica de flebologia en Bucaramanga, Colombia. El proye
 ## Milestones
 
 - 🚧 **v1.0 MVP** - Phases 1-9 (in progress)
-- 📋 **v1.1 Varix-Medias** - Phases 10-15 (planned)
+- ✅ **v1.1 Varix-Medias** - Phases 10-15 (complete)
 - 📋 **v1.2 Financials** - Phase 16 (planned)
 
 ## Phases
@@ -34,10 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 10: Medias Foundation** - Database schema, product catalog, inventory tables, immutability patterns
 - [x] **Phase 11: Sales Core** - POS functionality with thermal receipt printing
-- [ ] **Phase 12: Cash Closing Medias** - Separate cash drawer with zero-tolerance reconciliation
-- [ ] **Phase 13: Purchases** - Stock replenishment with invoice photos
-- [ ] **Phase 14: Returns Workflow** - Two-phase approval for fraud prevention
-- [ ] **Phase 15: Dashboard & Inventory** - Stock alerts, adjustments, and operational dashboard
+- [x] **Phase 12: Cash Closing Medias** - Separate cash drawer with zero-tolerance reconciliation
+- [x] **Phase 13: Purchases** - Stock replenishment with invoice photos
+- [x] **Phase 14: Returns Workflow** - Two-phase approval for fraud prevention
+- [x] **Phase 15: Dashboard & Inventory** - Stock alerts, adjustments, and operational dashboard
 
 ### v1.2 Financials (Phase 16)
 
@@ -383,12 +383,12 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Notifications | v1.0 | 0/5 | Planned | - |
 | 10. Medias Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 11. Sales Core | v1.1 | 8/8 | Complete | 2026-01-26 |
-| 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
-| 13. Purchases | v1.1 | 0/9 | Planned | - |
-| 14. Returns Workflow | v1.1 | 0/6 | Planned | - |
-| 15. Dashboard & Inventory | v1.1 | 0/8 | Planned | - |
+| 12. Cash Closing Medias | v1.1 | 6/6 | Complete | 2026-01-26 |
+| 13. Purchases | v1.1 | 9/9 | Complete | 2026-01-26 |
+| 14. Returns Workflow | v1.1 | 6/6 | Complete | 2026-01-26 |
+| 15. Dashboard & Inventory | v1.1 | 8/8 | Complete | 2026-01-26 |
 | 16. Expense Control | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 15 planned (8 plans in 4 waves)*
+*Last updated: 2026-01-26 — Phase 15 complete (v1.1 Varix-Medias milestone complete)*

@@ -9,6 +9,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from '@tanstack/react-table'
+import { AlertTriangle } from 'lucide-react'
 import type { MediasProduct } from '@/types/medias/products'
 import { toggleProductActive } from '@/app/(protected)/medias/productos/actions'
 import {
@@ -108,13 +109,32 @@ export function ProductsTable({ data, onRefresh }: ProductsTableProps) {
       cell: ({ row }) => {
         const product = row.original
         const total = product.stock_normal + product.stock_devoluciones
+        const isLowStock = product.activo && product.stock_normal < product.umbral_alerta
         return (
           <div className={`text-sm ${product.activo ? '' : 'opacity-50'}`}>
             <div className="font-medium">{total} total</div>
-            <div className="text-muted-foreground text-xs">
+            <div className={`text-xs flex items-center gap-1 ${isLowStock ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+              {isLowStock && (
+                <AlertTriangle
+                  className="h-3 w-3"
+                  aria-label={`Stock por debajo del umbral (${product.umbral_alerta})`}
+                />
+              )}
               {product.stock_normal} normal / {product.stock_devoluciones} dev
             </div>
           </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'umbral_alerta',
+      header: 'Umbral',
+      cell: ({ row }) => {
+        const product = row.original
+        return (
+          <span className={`text-muted-foreground ${product.activo ? '' : 'opacity-50'}`}>
+            {product.umbral_alerta}
+          </span>
         )
       },
     },
@@ -202,15 +222,22 @@ export function ProductsTable({ data, onRefresh }: ProductsTableProps) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const product = row.original
+                const isLowStock = product.activo && product.stock_normal < product.umbral_alerta
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={isLowStock ? 'bg-red-50 border-l-4 border-l-red-500' : ''}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">

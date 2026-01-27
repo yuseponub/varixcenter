@@ -42,6 +42,7 @@ export interface MediasProduct {
   precio: number
   stock_normal: number
   stock_devoluciones: number
+  umbral_alerta: number
   activo: boolean
   created_at: string
   updated_at: string

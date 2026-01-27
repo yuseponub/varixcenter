@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 15 of 15 (Dashboard & Inventory)
-Plan: 04 of 6 (Dashboard UI components)
+Plan: 05 of 6 (Adjustment action and components)
 Status: In progress
-Last activity: 2026-01-27 — Completed 15-04-PLAN.md
+Last activity: 2026-01-27 — Completed 15-05-PLAN.md
 
 Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 99%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 65
-- Average duration: 3.4 min
-- Total execution time: 219 min
+- Total plans completed: 66
+- Average duration: 3.3 min
+- Total execution time: 221 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-04 (2 min), 15-03 (2 min), 15-02 (3 min), 15-01 (2 min), 14-06 (3 min)
+- Last 5 plans: 15-05 (2 min), 15-04 (2 min), 15-03 (2 min), 15-02 (3 min), 15-01 (2 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~2-5 min, pages ~3 min
 
 *Updated after each plan completion*
@@ -185,6 +185,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-04]: MetricCard primary variant uses bg-primary/10 and text-3xl for emphasis
 - [15-04]: NavigationCards statically defined with icon + title only (no counters)
 - [15-04]: StockAlertsCard shows empty state when no critical products
+- [15-05]: AdjustmentForm resets all fields on successful submission
+- [15-05]: Dialog auto-close on success via onSuccess callback pattern
+- [15-05]: Product select shows both stock counts inline (N: X | D: Y)
 
 ### Pending Todos
 
@@ -200,7 +203,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 15-04-PLAN.md
+Stopped at: Completed 15-05-PLAN.md
 Resume file: None
 
 ---

@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { AlertTriangle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { MediasProduct } from '@/types/medias/products'
 import { ProductsTable } from '@/components/medias/products/products-table'
@@ -22,6 +23,11 @@ export default function ProductosPage() {
   const [products, setProducts] = useState<MediasProduct[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  // Calculate critical stock products (active products with stock_normal < umbral_alerta)
+  const criticalProducts = useMemo(() => {
+    return products.filter(p => p.activo && p.stock_normal < p.umbral_alerta)
+  }, [products])
 
   // Fetch products on mount and after changes
   const fetchProducts = async () => {
@@ -78,6 +84,30 @@ export default function ProductosPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Stock Alert Banner */}
+      {!isLoading && criticalProducts.length > 0 && (
+        <div className="mb-4 flex items-start gap-3 rounded-md border-l-4 border-amber-500 bg-amber-50 p-4">
+          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium text-amber-800">
+              {criticalProducts.length} producto{criticalProducts.length > 1 ? 's' : ''} con stock critico
+            </p>
+            <ul className="mt-2 text-sm text-amber-700 space-y-1">
+              {criticalProducts.slice(0, 5).map(p => (
+                <li key={p.id} className="font-mono">
+                  {p.codigo} ({p.tipo} {p.talla}) - {p.stock_normal} unidades
+                </li>
+              ))}
+              {criticalProducts.length > 5 && (
+                <li className="text-amber-600">
+                  y {criticalProducts.length - 5} mas...
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Products Table */}
       {isLoading ? (

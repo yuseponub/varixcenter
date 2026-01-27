@@ -320,18 +320,26 @@ Plans:
 - [ ] 14-06-PLAN.md — Pages: returns list, new return flow, pending returns, detail page
 
 ### Phase 15: Dashboard & Inventory
-**Goal**: Dashboard operativo con alertas de stock critico y capacidad de ajuste manual de inventario
+**Goal**: Dashboard operativo con alertas de stock critico (umbral configurable por producto) y capacidad de ajuste manual de inventario
 **Depends on**: Phase 11, Phase 12, Phase 14
 **Requirements**: INV-03, INV-04, INV-05, DSH-01, DSH-02, DSH-03, DSH-04, DSH-05
 **Success Criteria** (what must be TRUE):
   1. Dashboard muestra efectivo actual en caja, ventas del dia/mes, devoluciones pendientes
-  2. Sistema muestra alertas cuando stock total < 3 unidades
+  2. Sistema muestra alertas cuando stock_normal < umbral_alerta (configurable por producto)
   3. Dashboard muestra productos con stock critico
-  4. Admin puede realizar ajuste manual de inventario con justificacion y codigo de razon (dano, perdida, correccion conteo)
-**Plans**: TBD
+  4. Admin/Medico puede realizar ajuste manual de inventario con justificacion escrita
+  5. Pagina de movimientos muestra historial completo con filtros (producto, fecha, tipo)
+**Plans**: 8 plans in 4 waves
 
 Plans:
-- [ ] 15-01: TBD
+- [ ] 15-01-PLAN.md — Database migration: umbral_alerta column and inventory adjustment RPC
+- [ ] 15-02-PLAN.md — TypeScript types and Zod validation schemas for dashboard and adjustments
+- [ ] 15-03-PLAN.md — Query functions for dashboard metrics, low stock, and movements
+- [ ] 15-04-PLAN.md — Dashboard UI components: metric cards, navigation cards, stock alerts
+- [ ] 15-05-PLAN.md — Server action and form components for inventory adjustments
+- [ ] 15-06-PLAN.md — Dashboard page at /medias with metrics and navigation
+- [ ] 15-07-PLAN.md — Movements history page with filters and adjustment capability
+- [ ] 15-08-PLAN.md — Update products table and page with stock alert indicators
 
 ---
 
@@ -378,9 +386,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 12. Cash Closing Medias | v1.1 | 0/6 | Planned | - |
 | 13. Purchases | v1.1 | 0/9 | Planned | - |
 | 14. Returns Workflow | v1.1 | 0/6 | Planned | - |
-| 15. Dashboard & Inventory | v1.1 | 0/? | Not started | - |
+| 15. Dashboard & Inventory | v1.1 | 0/8 | Planned | - |
 | 16. Expense Control | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Last updated: 2026-01-26 — Phase 14 planned (6 plans in 5 waves)*
+*Last updated: 2026-01-26 — Phase 15 planned (8 plans in 4 waves)*

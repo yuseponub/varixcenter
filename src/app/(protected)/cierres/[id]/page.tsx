@@ -362,7 +362,7 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
       </Card>
 
       {/* Print Report */}
-      <ClosingPrintReport closing={closing} />
+      <ClosingPrintReport closing={closing} payments={payments} />
 
       {/* Audit info */}
       <Card>

@@ -7,8 +7,19 @@ import { Separator } from '@/components/ui/separator'
 import { Printer } from 'lucide-react'
 import type { CashClosing } from '@/types'
 
+interface PaymentForPrint {
+  id: string
+  numero_factura: string
+  total: number
+  descuento: number
+  estado: string
+  patients: { nombre: string; apellido: string; cedula: string }
+  payment_methods: { metodo: string; monto: number }[]
+}
+
 interface ClosingPrintReportProps {
   closing: CashClosing
+  payments?: PaymentForPrint[]
 }
 
 const formatCurrency = (amount: number) =>
@@ -19,12 +30,22 @@ const formatDate = (dateStr: string) =>
     dateStyle: 'full'
   }).format(new Date(dateStr + 'T12:00:00'))
 
-export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
+export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintReportProps) {
   const printRef = useRef<HTMLDivElement>(null)
 
   const handlePrint = () => {
     const printContent = printRef.current
     if (!printContent) return
+
+    const paymentsRows = payments.map(p => `
+      <tr>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.numero_factura}${p.estado === 'anulado' ? ' <span style="color:red;">(ANULADO)</span>' : ''}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.patients.nombre} ${p.patients.apellido}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.patients.cedula}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee; text-align: right;">${formatCurrency(p.total)}${p.descuento > 0 ? ` <span style="color:#b45309;font-size:11px;">(-${formatCurrency(p.descuento)})</span>` : ''}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.payment_methods.map(pm => `${pm.metodo}: ${formatCurrency(pm.monto)}`).join(', ')}</td>
+      </tr>
+    `).join('')
 
     const printWindow = window.open('', '_blank')
     if (!printWindow) return
@@ -38,47 +59,61 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
           body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            font-size: 13px;
           }
           .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
           }
           .header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 22px;
           }
           .header p {
-            margin: 5px 0;
+            margin: 4px 0;
             color: #666;
           }
           .section {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
           }
           .section-title {
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
+            font-size: 14px;
           }
           .row {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 3px 0;
           }
           .row.total {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             border-top: 2px solid #000;
-            padding-top: 10px;
-            margin-top: 10px;
+            padding-top: 8px;
+            margin-top: 8px;
           }
           .row.difference {
             color: ${closing.diferencia !== 0 ? 'red' : 'green'};
           }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+          }
+          th {
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 2px solid #333;
+            font-size: 12px;
+          }
+          th.right { text-align: right; }
           .signature-section {
-            margin-top: 60px;
+            margin-top: 50px;
             display: flex;
             justify-content: space-around;
           }
@@ -96,7 +131,8 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
       </head>
       <body>
         <div class="header">
-          <h1>CIERRE DE CAJA</h1>
+          <h1>VARIX CENTER</h1>
+          <h2 style="margin:4px 0;">CIERRE DE CAJA</h2>
           <p><strong>${closing.cierre_numero}</strong></p>
           <p>${formatDate(closing.fecha_cierre)}</p>
         </div>
@@ -140,7 +176,7 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
             <span>${formatCurrency(closing.diferencia)}</span>
           </div>
           ${closing.diferencia_justificacion ? `
-          <div style="margin-top: 10px; font-style: italic;">
+          <div style="margin-top: 8px; font-style: italic;">
             <strong>Justificacion:</strong> ${closing.diferencia_justificacion}
           </div>
           ` : ''}
@@ -164,6 +200,26 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
         </div>
         ` : ''}
 
+        ${payments.length > 0 ? `
+        <div class="section">
+          <div class="section-title">Detalle de Pagos del Dia (${payments.length})</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Factura</th>
+                <th>Paciente</th>
+                <th>Cedula</th>
+                <th class="right">Total</th>
+                <th>Metodo</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${paymentsRows}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
         ${closing.notas ? `
         <div class="section">
           <div class="section-title">Notas</div>
@@ -174,7 +230,7 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
         <div class="signature-section">
           <div class="signature-line">
             <hr />
-            <span>Firma Secretaria</span>
+            <span>Firma Responsable</span>
           </div>
           <div class="signature-line">
             <hr />
@@ -238,6 +294,20 @@ export function ClosingPrintReport({ closing }: ClosingPrintReportProps) {
               </span>
             </div>
           </div>
+
+          {payments.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Pagos del Dia ({payments.length})</h3>
+              <div className="text-xs space-y-1">
+                {payments.map(p => (
+                  <div key={p.id} className="flex justify-between border-b pb-1">
+                    <span>{p.patients.nombre} {p.patients.apellido}</span>
+                    <span>{formatCurrency(p.total)} - {p.payment_methods.map(pm => pm.metodo).join(', ')}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 15 - Dashboard & Inventory (COMPLETE)
+**Current focus:** Phase 15 - Dashboard & Inventory (IN PROGRESS)
 
 ## Current Position
 
 Phase: 15 of 15 (Dashboard & Inventory)
-Plan: 06 of 6 (Medias dashboard page)
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 15-06-PLAN.md
+Plan: 08 of 8 (Products stock alerts)
+Status: In progress
+Last activity: 2026-01-27 — Completed 15-08-PLAN.md
 
 Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 67
+- Total plans completed: 68
 - Average duration: 3.3 min
-- Total execution time: 223 min
+- Total execution time: 227 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-06 (2 min), 15-05 (2 min), 15-04 (2 min), 15-03 (2 min), 15-02 (3 min)
+- Last 5 plans: 15-08 (4 min), 15-06 (2 min), 15-05 (2 min), 15-04 (2 min), 15-03 (2 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~2-5 min, pages ~2-3 min
 
 *Updated after each plan completion*
@@ -191,6 +191,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-06]: Dashboard page is server component for optimal SSR
 - [15-06]: Promise.all for parallel data fetching (metrics + stock alerts)
 - [15-06]: Module dashboard serves as navigation hub (metrics + nav cards + alerts)
+- [15-08]: umbral_alerta added to MediasProduct interface (was missing despite DB column existing)
+- [15-08]: Client-side filtering for critical products (reuses fetched data, no extra query)
+- [15-08]: Alert banner shows up to 5 products with codigo, tipo, talla, stock count
+- [15-08]: Row styling uses bg-red-50 and border-l-4 border-l-red-500 for low stock emphasis
 
 ### Pending Todos
 
@@ -206,7 +210,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 15-06-PLAN.md (Phase 15 complete, v1.1 Varix-Medias complete)
+Stopped at: Completed 15-08-PLAN.md
 Resume file: None
 
 ---

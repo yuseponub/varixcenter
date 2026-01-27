@@ -217,7 +217,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
         {/* Emergency Contact */}
         <Card>
           <CardHeader>
-            <CardTitle>Contacto de Emergencia</CardTitle>
+            <CardTitle>Contacto de Emergencia (opcional)</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             {/* Nombre Contacto */}
@@ -226,7 +226,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
               name="contacto_emergencia_nombre"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre *</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Maria Garcia" />
                   </FormControl>
@@ -246,7 +246,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
               name="contacto_emergencia_telefono"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefono *</FormLabel>
+                  <FormLabel>Telefono</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="3009876543" type="tel" />
                   </FormControl>
@@ -266,7 +266,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
               name="contacto_emergencia_parentesco"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Parentesco *</FormLabel>
+                  <FormLabel>Parentesco</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Esposa, Hijo, Hermano..." />
                   </FormControl>

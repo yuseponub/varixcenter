@@ -486,8 +486,9 @@ export function AppointmentForm({
                 const combineDateTime = (date: string, time: string) => {
                   if (!date) return ''
                   const [hours, minutes] = time.split(':').map(Number)
-                  const dateObj = new Date(date)
-                  dateObj.setHours(hours, minutes, 0, 0)
+                  // Parse date parts manually to avoid UTC timezone shift
+                  const [year, month, day] = date.split('-').map(Number)
+                  const dateObj = new Date(year, month - 1, day, hours, minutes, 0, 0)
                   return dateObj.toISOString()
                 }
 

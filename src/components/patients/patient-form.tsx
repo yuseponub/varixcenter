@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DateOfBirthInput } from '@/components/ui/date-of-birth-input'
 
 interface PatientFormProps {
   mode: 'create' | 'edit'
@@ -190,7 +191,11 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                 <FormItem>
                   <FormLabel>Fecha de Nacimiento</FormLabel>
                   <FormControl>
-                    <Input {...field} type="date" />
+                    <DateOfBirthInput
+                      name="fecha_nacimiento"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

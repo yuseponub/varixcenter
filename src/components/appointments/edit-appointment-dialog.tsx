@@ -38,6 +38,7 @@ interface Doctor {
 interface AppointmentData {
   appointmentId: string
   patientId: string
+  patientName?: string
   doctorId: string
   start: string
   end: string
@@ -134,6 +135,7 @@ export function EditAppointmentDialog({
             doctors={doctors}
             defaultValues={{
               patient: appointment.patientId,
+              patientName: appointment.patientName,
               doctor: appointment.doctorId,
               start: appointment.start,
               end: appointment.end,

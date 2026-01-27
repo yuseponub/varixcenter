@@ -439,6 +439,7 @@ export function AppointmentDialog({
         appointment={{
           appointmentId: extendedProps.appointmentId,
           patientId: extendedProps.patientId,
+          patientName: extendedProps.patientName,
           doctorId: extendedProps.doctorId,
           start: typeof event.start === 'string' ? event.start : event.start.toISOString(),
           end: typeof event.end === 'string' ? event.end : event.end.toISOString(),

@@ -486,7 +486,7 @@ export async function createAppointmentWithNewPatient(
       }
     }
     console.error('Patient creation error:', patientError)
-    return { error: 'Error al crear paciente. Por favor intente de nuevo.' }
+    return { error: `Error al crear paciente: ${patientError.message} (code: ${patientError.code})` }
   }
 
   // Parse appointment data

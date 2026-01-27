@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { DateOfBirthInput } from '@/components/ui/date-of-birth-input'
 import {
   Select,
   SelectContent,
@@ -59,6 +60,7 @@ interface AppointmentFormProps {
     end?: string
     doctor?: string
     patient?: string
+    patientName?: string
     motivo_consulta?: string
     notas?: string
   }
@@ -244,51 +246,68 @@ export function AppointmentForm({
               <FormField
                 control={form.control}
                 name="patient_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Paciente *</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar paciente" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* Search input inside dropdown */}
-                        <div className="p-2">
-                          <Input
-                            placeholder="Buscar por cedula, nombre..."
-                            value={patientSearch}
-                            onChange={(e) => setPatientSearch(e.target.value)}
-                            className="h-8"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </div>
-                        {filteredPatients.length === 0 ? (
-                          <div className="p-2 text-center text-sm text-muted-foreground">
-                            No se encontraron pacientes
+                render={({ field }) => {
+                  const selectedPatient = patients.find(p => p.id === field.value)
+                  const displayName = selectedPatient
+                    ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula})`
+                    : defaultValues?.patientName || 'Cargando...'
+                  return (
+                    <FormItem>
+                      <FormLabel>Paciente *</FormLabel>
+                      {mode === 'edit' ? (
+                        <>
+                          <div className="rounded-md border px-3 py-2 bg-gray-50 text-sm font-medium">
+                            {displayName}
                           </div>
-                        ) : (
-                          filteredPatients.map((patient) => (
-                            <SelectItem key={patient.id} value={patient.id}>
-                              <span className="font-medium">{patient.nombre} {patient.apellido}</span>
-                              <span className="ml-2 text-muted-foreground">({patient.cedula})</span>
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    {/* Hidden input for form submission */}
-                    <input type="hidden" name="patient_id" value={field.value} />
-                    <FormMessage />
-                    {state?.errors?.patient_id && (
-                      <p className="text-sm text-red-600">{state.errors.patient_id[0]}</p>
-                    )}
-                  </FormItem>
-                )}
+                          <input type="hidden" name="patient_id" value={field.value} />
+                        </>
+                      ) : (
+                        <>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Seleccionar paciente" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {/* Search input inside dropdown */}
+                              <div className="p-2">
+                                <Input
+                                  placeholder="Buscar por cedula, nombre..."
+                                  value={patientSearch}
+                                  onChange={(e) => setPatientSearch(e.target.value)}
+                                  className="h-8"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              </div>
+                              {filteredPatients.length === 0 ? (
+                                <div className="p-2 text-center text-sm text-muted-foreground">
+                                  No se encontraron pacientes
+                                </div>
+                              ) : (
+                                filteredPatients.map((patient) => (
+                                  <SelectItem key={patient.id} value={patient.id}>
+                                    <span className="font-medium">{patient.nombre} {patient.apellido}</span>
+                                    <span className="ml-2 text-muted-foreground">({patient.cedula})</span>
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                          {/* Hidden input for form submission */}
+                          <input type="hidden" name="patient_id" value={field.value} />
+                        </>
+                      )}
+                      <FormMessage />
+                      {state?.errors?.patient_id && (
+                        <p className="text-sm text-red-600">{state.errors.patient_id[0]}</p>
+                      )}
+                    </FormItem>
+                  )
+                }}
               />
             )}
 
@@ -363,12 +382,8 @@ export function AppointmentForm({
 
                   {/* Fecha de Nacimiento */}
                   <div className="space-y-2">
-                    <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
-                    <Input
-                      id="fecha_nacimiento"
-                      name="fecha_nacimiento"
-                      type="date"
-                    />
+                    <Label>Fecha de Nacimiento</Label>
+                    <DateOfBirthInput name="fecha_nacimiento" />
                   </div>
 
                   {/* Direccion */}

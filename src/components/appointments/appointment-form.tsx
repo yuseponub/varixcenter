@@ -349,6 +349,37 @@ export function AppointmentForm({
                       <p className="text-sm text-red-600">{state.errors.apellido[0]}</p>
                     )}
                   </div>
+
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="juan@ejemplo.com"
+                    />
+                  </div>
+
+                  {/* Fecha de Nacimiento */}
+                  <div className="space-y-2">
+                    <Label htmlFor="fecha_nacimiento">Fecha de Nacimiento</Label>
+                    <Input
+                      id="fecha_nacimiento"
+                      name="fecha_nacimiento"
+                      type="date"
+                    />
+                  </div>
+
+                  {/* Direccion */}
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="direccion">Direccion</Label>
+                    <Input
+                      id="direccion"
+                      name="direccion"
+                      placeholder="Calle 123 #45-67, Bucaramanga"
+                    />
+                  </div>
                 </div>
 
                 {/* Emergency Contact Section (Optional) */}

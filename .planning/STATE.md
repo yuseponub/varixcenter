@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 14 - Returns Workflow (COMPLETE)
+**Current focus:** Phase 15 - Dashboard & Inventory (IN PROGRESS)
 
 ## Current Position
 
-Phase: 14 of 15 (Returns Workflow)
-Plan: 06 of 6 (Returns Workflow Pages)
-Status: Phase 14 complete
-Last activity: 2026-01-26 — Completed 14-06-PLAN.md
+Phase: 15 of 15 (Dashboard & Inventory)
+Plan: 01 of 6 (Migration for umbral_alerta and adjustment RPC)
+Status: In progress
+Last activity: 2026-01-27 — Completed 15-01-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 100%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 97%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 61
+- Total plans completed: 62
 - Average duration: 3.4 min
-- Total execution time: 210 min
+- Total execution time: 212 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 14-06 (3 min), 14-05 (5 min), 14-04 (4 min), 14-03 (3 min), 14-02 (2 min)
+- Last 5 plans: 15-01 (2 min), 14-06 (3 min), 14-05 (5 min), 14-04 (4 min), 14-03 (3 min)
 - Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~1 min, API/services ~2-4 min, UI components ~5 min, pages ~3 min
 
 *Updated after each plan completion*
@@ -172,6 +172,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [14-06]: Inline getUserRole pattern in each page file (follows ventas/[id], cierres/[id])
 - [14-06]: Two-step return flow: select sale first via searchParams, then show form
 - [14-06]: SaleSearchSelect filters client-side from server-fetched 50-sale list
+- [15-01]: umbral_alerta default 3 applies to all 11 existing products automatically
+- [15-01]: create_inventory_adjustment RPC checks JWT app_metadata.user_role first, fallback to user_roles table
+- [15-01]: Adjustment RPC supports both stock_normal and stock_devoluciones modifications
+- [15-01]: Movement referencia_tipo = 'ajuste' for all manual adjustments
 
 ### Pending Todos
 
@@ -186,8 +190,8 @@ None yet for v1.1 Varix-Medias.
 
 ## Session Continuity
 
-Last session: 2026-01-26
-Stopped at: Completed 14-06-PLAN.md (Phase 14 COMPLETE)
+Last session: 2026-01-27
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
 
 ---

@@ -6,8 +6,17 @@ import { getMedicalRecordByAppointment, getActiveServices } from '@/lib/queries/
 import { MedicalRecordForm } from '@/components/medical-records'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import Link from 'next/link'
-import { AlertTriangle, ArrowLeft } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, CalendarDays } from 'lucide-react'
 
 interface PageProps {
   searchParams: Promise<{
@@ -19,26 +28,124 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
   const params = await searchParams
   const appointmentId = params.appointment_id
 
-  // Appointment ID is required
+  // If no appointment_id, show appointment picker
   if (!appointmentId) {
+    const supabase = await createClient()
+
+    // Get appointments that don't have a medical record yet
+    const { data: appointments, error: aptError } = await supabase
+      .from('appointments')
+      .select(`
+        id,
+        fecha_hora_inicio,
+        estado,
+        motivo_consulta,
+        patients:patient_id (id, nombre, apellido, cedula)
+      `)
+      .in('estado', ['programada', 'confirmada', 'en_sala', 'en_atencion', 'completada'])
+      .order('fecha_hora_inicio', { ascending: false })
+      .limit(50)
+
+    if (aptError) {
+      console.error('Error fetching appointments:', aptError)
+    }
+    console.log('Appointments found:', appointments?.length, 'Error:', aptError)
+
+    // Filter out appointments that already have a medical record
+    const { data: existingRecords } = await supabase
+      .from('medical_records')
+      .select('appointment_id')
+
+    const usedAppointmentIds = new Set(
+      (existingRecords || []).map((r: { appointment_id: string }) => r.appointment_id)
+    )
+
+    const availableAppointments = (appointments || []).filter(
+      (a: { id: string }) => !usedAppointmentIds.has(a.id)
+    )
+
+    const formatDate = (date: string) =>
+      new Date(date).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+
     return (
       <div className="container mx-auto py-6 max-w-4xl">
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Se requiere una cita para crear una historia clinica.
-            Las historias clinicas siempre se crean desde una cita.
-          </AlertDescription>
-        </Alert>
-        <div className="mt-4">
-          <Link href="/citas">
-            <Button variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Ir a Citas
-            </Button>
+        <div className="mb-6">
+          <Link href="/historias" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver a Historias
           </Link>
+          <h1 className="text-2xl font-bold mt-4">Nueva Historia Clinica</h1>
+          <p className="text-muted-foreground">
+            Seleccione la cita para crear la historia clinica
+          </p>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5" />
+              Citas Disponibles
+            </CardTitle>
+            <CardDescription>
+              Citas sin historia clinica asignada
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {availableAppointments.length === 0 ? (
+              <div className="text-center py-8">
+                <CalendarDays className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No hay citas disponibles</h3>
+                <p className="text-muted-foreground mb-4">
+                  Todas las citas ya tienen historia clinica o no hay citas registradas.
+                </p>
+                <Link href="/citas">
+                  <Button>Ir a Citas</Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Paciente</TableHead>
+                      <TableHead>Cedula</TableHead>
+                      <TableHead>Fecha Cita</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Motivo</TableHead>
+                      <TableHead className="text-right">Accion</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {availableAppointments.map((apt: any) => (
+                      <TableRow key={apt.id}>
+                        <TableCell className="font-medium">
+                          {apt.patients?.nombre} {apt.patients?.apellido}
+                        </TableCell>
+                        <TableCell>{apt.patients?.cedula}</TableCell>
+                        <TableCell>{formatDate(apt.fecha_hora_inicio)}</TableCell>
+                        <TableCell>{apt.estado}</TableCell>
+                        <TableCell className="max-w-[200px] truncate">
+                          {apt.motivo_consulta || '-'}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link href={`/historias/nueva?appointment_id=${apt.id}`}>
+                            <Button size="sm">Crear Historia</Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     )
   }

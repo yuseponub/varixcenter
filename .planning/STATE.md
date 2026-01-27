@@ -191,6 +191,10 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-06]: Dashboard page is server component for optimal SSR
 - [15-06]: Promise.all for parallel data fetching (metrics + stock alerts)
 - [15-06]: Module dashboard serves as navigation hub (metrics + nav cards + alerts)
+- [15-07]: URL-based filters via searchParams for server-side movement filtering
+- [15-07]: Color-coded badges per movement type (green=compra, blue=venta, teal=ajuste+, orange=ajuste-, purple=devolucion)
+- [15-07]: Tooltip for truncated notes (>30 chars)
+- [15-07]: AdjustmentDialog visibility based on admin/medico role check
 - [15-08]: umbral_alerta added to MediasProduct interface (was missing despite DB column existing)
 - [15-08]: Client-side filtering for critical products (reuses fetched data, no extra query)
 - [15-08]: Alert banner shows up to 5 products with codigo, tipo, talla, stock count

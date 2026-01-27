@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { AnulacionDialog } from '@/components/payments/anulacion-dialog'
+import { PaymentReceipt } from '@/components/payments/payment-receipt'
 import { PAYMENT_METHOD_LABELS } from '@/types/payments'
 import {
   Breadcrumb,
@@ -93,12 +94,15 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
           </p>
         </div>
 
-        {userCanAnular && payment.estado === 'activo' && (
-          <AnulacionDialog
-            paymentId={payment.id}
-            numeroFactura={payment.numero_factura}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          <PaymentReceipt payment={payment} />
+          {userCanAnular && payment.estado === 'activo' && (
+            <AnulacionDialog
+              paymentId={payment.id}
+              numeroFactura={payment.numero_factura}
+            />
+          )}
+        </div>
       </div>
 
       {/* Anulacion info */}

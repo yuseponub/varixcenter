@@ -75,8 +75,8 @@ export async function closeCash(
     console.error('Cash closing error:', closingError)
 
     // Map database errors to user-friendly Spanish messages
-    if (closingError.message.includes('Solo Secretaria y Admin')) {
-      return { error: 'Solo Secretaria y Admin pueden cerrar caja' }
+    if (closingError.message.includes('Solo Secretaria') || closingError.message.includes('Solo Admin')) {
+      return { error: 'Solo Secretaria, Enfermera y Admin pueden cerrar caja' }
     }
     if (closingError.message.includes('dia futuro')) {
       return { error: 'No se puede cerrar un dia futuro' }

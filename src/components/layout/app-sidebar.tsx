@@ -126,8 +126,21 @@ export function AppSidebar({
   const isMediasActive = pathname.startsWith("/medias")
 
   const showAdmin = role === "admin" || role === "medico"
+  const showCierres = showAdmin || role === "enfermera"
 
-  const navItems = showAdmin ? [...mainNavItems, ...adminNavItems] : mainNavItems
+  const buildNavItems = () => {
+    const items = [...mainNavItems]
+    if (showCierres && !showAdmin) {
+      // Enfermera: only add Cierres from admin items
+      items.push({ href: "/cierres", label: "Cierres", icon: <Vault className="h-5 w-5 shrink-0" /> })
+    }
+    if (showAdmin) {
+      items.push(...adminNavItems)
+    }
+    return items
+  }
+
+  const navItems = buildNavItems()
 
   function renderNavLink(item: NavItem) {
     const active = isActive(item.href)

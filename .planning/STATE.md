@@ -6,23 +6,23 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Pagos inmutables con evidencia obligatoria — hacer el fraude imposible
 **Current milestone:** v1.1 Varix-Medias
-**Current focus:** Phase 15 - Dashboard & Inventory (IN PROGRESS)
+**Current focus:** Phase 15 - Dashboard & Inventory (COMPLETE)
 
 ## Current Position
 
 Phase: 15 of 15 (Dashboard & Inventory)
-Plan: 05 of 6 (Adjustment action and components)
-Status: In progress
-Last activity: 2026-01-27 — Completed 15-05-PLAN.md
+Plan: 06 of 6 (Medias dashboard page)
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 15-06-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 99%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 66
+- Total plans completed: 67
 - Average duration: 3.3 min
-- Total execution time: 221 min
+- Total execution time: 223 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-05 (2 min), 15-04 (2 min), 15-03 (2 min), 15-02 (3 min), 15-01 (2 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~2-5 min, pages ~3 min
+- Last 5 plans: 15-06 (2 min), 15-05 (2 min), 15-04 (2 min), 15-03 (2 min), 15-02 (3 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~2-5 min, pages ~2-3 min
 
 *Updated after each plan completion*
 
@@ -188,6 +188,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-05]: AdjustmentForm resets all fields on successful submission
 - [15-05]: Dialog auto-close on success via onSuccess callback pattern
 - [15-05]: Product select shows both stock counts inline (N: X | D: Y)
+- [15-06]: Dashboard page is server component for optimal SSR
+- [15-06]: Promise.all for parallel data fetching (metrics + stock alerts)
+- [15-06]: Module dashboard serves as navigation hub (metrics + nav cards + alerts)
 
 ### Pending Todos
 
@@ -203,7 +206,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 15-05-PLAN.md
+Stopped at: Completed 15-06-PLAN.md (Phase 15 complete, v1.1 Varix-Medias complete)
 Resume file: None
 
 ---

@@ -11,18 +11,18 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 15 of 15 (Dashboard & Inventory)
-Plan: 03 of 6 (Dashboard and movements queries)
+Plan: 04 of 6 (Dashboard UI components)
 Status: In progress
-Last activity: 2026-01-27 — Completed 15-03-PLAN.md
+Last activity: 2026-01-27 — Completed 15-04-PLAN.md
 
-Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 98%
+Progress: [####################] v1.0 complete (simulated) | [####################] v1.1 99%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 64
+- Total plans completed: 65
 - Average duration: 3.4 min
-- Total execution time: 217 min
+- Total execution time: 219 min
 
 **By Phase:**
 
@@ -38,8 +38,8 @@ Progress: [####################] v1.0 complete (simulated) | [##################
 | 12-cash-closing-medias | 6 | 24 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-03 (2 min), 15-02 (3 min), 15-01 (2 min), 14-06 (3 min), 14-05 (5 min)
-- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~5 min, pages ~3 min
+- Last 5 plans: 15-04 (2 min), 15-03 (2 min), 15-02 (3 min), 15-01 (2 min), 14-06 (3 min)
+- Trend: Database migrations ~1-2 min, types/validations ~3 min, queries ~2 min, API/services ~2-4 min, UI components ~2-5 min, pages ~3 min
 
 *Updated after each plan completion*
 
@@ -182,6 +182,9 @@ Recent decisions affecting v1.1 Varix-Medias:
 - [15-03]: Client-side filter for stock_normal < umbral_alerta (Supabase PostgREST limitation)
 - [15-03]: efectivo_en_caja from get_medias_cierre_summary RPC efectivo_neto
 - [15-03]: Movements include product relation (codigo, tipo, talla) for display
+- [15-04]: MetricCard primary variant uses bg-primary/10 and text-3xl for emphasis
+- [15-04]: NavigationCards statically defined with icon + title only (no counters)
+- [15-04]: StockAlertsCard shows empty state when no critical products
 
 ### Pending Todos
 
@@ -197,7 +200,7 @@ None yet for v1.1 Varix-Medias.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 15-03-PLAN.md
+Stopped at: Completed 15-04-PLAN.md
 Resume file: None
 
 ---

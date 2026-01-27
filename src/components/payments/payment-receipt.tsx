@@ -28,17 +28,15 @@ export function PaymentReceipt({ payment }: PaymentReceiptProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Print button - hidden in print */}
-      <div className="no-print">
-        <Button onClick={handlePrint} variant="outline" size="sm">
-          <Printer className="mr-2 h-4 w-4" />
-          Imprimir Recibo
-        </Button>
-      </div>
+    <>
+      {/* Print button - visible on screen only */}
+      <Button onClick={handlePrint} variant="outline" size="sm" className="no-print">
+        <Printer className="mr-2 h-4 w-4" />
+        Imprimir Recibo
+      </Button>
 
-      {/* Receipt content - optimized for 58mm thermal printer */}
-      <div className="receipt bg-white text-black p-2 border rounded-lg">
+      {/* Receipt content - hidden on screen, only visible when printing */}
+      <div className="receipt hidden print:block bg-white text-black p-2">
         {/* Header */}
         <div className="text-center mb-3">
           <h1 className="text-lg font-bold">VARIX CENTER</h1>
@@ -129,6 +127,6 @@ export function PaymentReceipt({ payment }: PaymentReceiptProps) {
           </p>
         </div>
       </div>
-    </div>
+    </>
   )
 }

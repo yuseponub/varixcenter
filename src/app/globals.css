@@ -250,16 +250,42 @@
     margin: 15mm;
   }
 
-  /* Receipt-specific: when .receipt exists, only show receipt */
-  .receipt ~ *:not(.receipt),
-  body:has(.receipt) > *:not(.receipt):not(:has(.receipt)) {
-    display: none !important;
+  /* Receipt-specific: when .receipt exists, hide everything else */
+  body:has(.receipt) *:not(.receipt):not(.receipt *) {
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
   }
 
   .receipt {
+    visibility: visible !important;
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 58mm !important;
     max-width: 58mm !important;
     padding: 2mm !important;
     margin: 0 !important;
+    z-index: 99999 !important;
+    background: white !important;
+  }
+
+  .receipt * {
+    visibility: visible !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body:has(.receipt) {
+    @page {
+      size: 58mm auto;
+      margin: 0;
+    }
   }
 }

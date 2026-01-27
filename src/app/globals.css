@@ -281,11 +281,4 @@
     height: auto !important;
     overflow: visible !important;
   }
-
-  body:has(.receipt) {
-    @page {
-      size: 58mm auto;
-      margin: 0;
-    }
-  }
 }

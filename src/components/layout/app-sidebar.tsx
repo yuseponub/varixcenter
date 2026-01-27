@@ -23,6 +23,9 @@ import {
   Menu,
   X,
   LogOut,
+  FileText,
+  Bell,
+  Vault,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -58,13 +61,16 @@ const STORAGE_KEY = "sidebar-collapsed"
 const mainNavItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5 shrink-0" /> },
   { href: "/pacientes", label: "Pacientes", icon: <Users className="h-5 w-5 shrink-0" /> },
+  { href: "/historias", label: "Historias", icon: <FileText className="h-5 w-5 shrink-0" /> },
   { href: "/citas", label: "Citas", icon: <CalendarDays className="h-5 w-5 shrink-0" /> },
   { href: "/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5 shrink-0" /> },
 ]
 
 const adminNavItems: NavItem[] = [
   { href: "/servicios", label: "Servicios", icon: <Wrench className="h-5 w-5 shrink-0" /> },
+  { href: "/cierres", label: "Cierres", icon: <Vault className="h-5 w-5 shrink-0" /> },
   { href: "/reportes", label: "Reportes", icon: <BarChart3 className="h-5 w-5 shrink-0" /> },
+  { href: "/notificaciones", label: "Notificaciones", icon: <Bell className="h-5 w-5 shrink-0" /> },
 ]
 
 const mediasSubItems: MediasSubItem[] = [

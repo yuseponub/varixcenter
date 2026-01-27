@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { FileText } from 'lucide-react'
 
 type Patient = {
   id: string
@@ -64,6 +66,21 @@ const columns: ColumnDef<Patient>[] = [
         dateStyle: 'medium',
       }).format(date)
     },
+  },
+  {
+    id: 'historia',
+    header: 'Historia Clinica',
+    enableSorting: false,
+    cell: ({ row }) => (
+      <Link
+        href={`/historias?search=${row.original.cedula}`}
+        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <FileText className="h-4 w-4" />
+        Ver
+      </Link>
+    ),
   },
 ]
 

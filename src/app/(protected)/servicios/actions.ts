@@ -66,7 +66,7 @@ export async function createService(
       return { error: 'Ya existe un servicio con ese nombre' }
     }
     console.error('Service creation error:', error)
-    return { error: 'Error al crear el servicio' }
+    return { error: `Error al crear el servicio: ${error.message} (code: ${error.code})` }
   }
 
   revalidatePath('/servicios')

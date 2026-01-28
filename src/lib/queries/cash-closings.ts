@@ -145,8 +145,8 @@ export async function getPaymentsForDate(fecha: string) {
       patients!inner(id, nombre, apellido, cedula),
       payment_methods(metodo, monto)
     `)
-    .gte('created_at', `${fecha}T00:00:00`)
-    .lt('created_at', `${fecha}T23:59:59.999`)
+    .gte('created_at', `${fecha}T00:00:00-05:00`)
+    .lt('created_at', `${fecha}T23:59:59.999-05:00`)
     .order('created_at', { ascending: true })
 
   if (error) {

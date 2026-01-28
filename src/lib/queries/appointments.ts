@@ -220,8 +220,8 @@ export async function countAppointmentsForDate(
   const supabase = await createClient()
 
   // Build date range for the full day
-  const startOfDay = `${date}T00:00:00.000Z`
-  const endOfDay = `${date}T23:59:59.999Z`
+  const startOfDay = `${date}T00:00:00.000-05:00`
+  const endOfDay = `${date}T23:59:59.999-05:00`
 
   let query = supabase
     .from('appointments')

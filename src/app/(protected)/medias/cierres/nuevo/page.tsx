@@ -57,7 +57,7 @@ export default async function NuevoMediasCierrePage({ searchParams }: Props) {
           <AlertDescription className="text-amber-800">
             <strong>Recuerde:</strong> Cualquier diferencia entre el conteo
             fisico y el total calculado requerira justificacion escrita (minimo
-            10 caracteres). La foto del cierre es obligatoria.
+            10 caracteres).
           </AlertDescription>
         </Alert>
       </div>

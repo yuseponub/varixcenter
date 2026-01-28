@@ -104,14 +104,13 @@ export async function getActiveSaleProducts() {
  * Get sales for today (for cash closing)
  */
 export async function getTodaySales(): Promise<MediasSaleWithDetails[]> {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  const now = new Date()
+  const colombiaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
+  const todayStr = `${colombiaDate.getFullYear()}-${String(colombiaDate.getMonth() + 1).padStart(2, '0')}-${String(colombiaDate.getDate()).padStart(2, '0')}`
 
   return getSales({
-    startDate: today.toISOString(),
-    endDate: tomorrow.toISOString(),
+    startDate: `${todayStr}T00:00:00-05:00`,
+    endDate: `${todayStr}T23:59:59.999-05:00`,
     status: 'activo',
   })
 }

@@ -14,20 +14,20 @@ import { getPendingReturnsCount } from './returns'
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const supabase = await createClient()
 
-  // Get today's date range
-  const today = new Date()
-  const todayStart = new Date(today)
-  todayStart.setHours(0, 0, 0, 0)
-  const todayEnd = new Date(today)
-  todayEnd.setHours(23, 59, 59, 999)
+  // Get today's date in Colombia timezone (UTC-5)
+  const now = new Date()
+  const colombiaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
+  const todayStr = `${colombiaDate.getFullYear()}-${String(colombiaDate.getMonth() + 1).padStart(2, '0')}-${String(colombiaDate.getDate()).padStart(2, '0')}`
 
-  // Get month's date range
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
-  const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-  monthEnd.setHours(23, 59, 59, 999)
+  // Date ranges with Colombia offset
+  const todayStartISO = `${todayStr}T00:00:00-05:00`
+  const todayEndISO = `${todayStr}T23:59:59.999-05:00`
 
-  // Get today's date string for RPC
-  const todayStr = today.toISOString().split('T')[0]
+  const monthStr = `${colombiaDate.getFullYear()}-${String(colombiaDate.getMonth() + 1).padStart(2, '0')}-01`
+  const lastDay = new Date(colombiaDate.getFullYear(), colombiaDate.getMonth() + 1, 0).getDate()
+  const monthEndStr = `${colombiaDate.getFullYear()}-${String(colombiaDate.getMonth() + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
+  const monthStartISO = `${monthStr}T00:00:00-05:00`
+  const monthEndISO = `${monthEndStr}T23:59:59.999-05:00`
 
   // Fetch efectivo_en_caja from cierre summary RPC
   // This returns efectivo_neto (cash received minus cash refunds)
@@ -41,8 +41,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
 
   // Fetch sales summaries for today and month
   const [ventasHoy, ventasMes, devolucionesPendientes] = await Promise.all([
-    getSalesSummary(todayStart.toISOString(), todayEnd.toISOString()),
-    getSalesSummary(monthStart.toISOString(), monthEnd.toISOString()),
+    getSalesSummary(todayStartISO, todayEndISO),
+    getSalesSummary(monthStartISO, monthEndISO),
     getPendingReturnsCount(),
   ])
 

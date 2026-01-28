@@ -46,16 +46,16 @@ export function MovementFilters({ products }: MovementFiltersProps) {
   const searchParams = useSearchParams()
 
   // Initialize state from URL params
-  const [productId, setProductId] = useState(searchParams.get('product_id') || '')
-  const [tipo, setTipo] = useState(searchParams.get('tipo') || '')
+  const [productId, setProductId] = useState(searchParams.get('product_id') || 'all')
+  const [tipo, setTipo] = useState(searchParams.get('tipo') || 'all')
   const [fromDate, setFromDate] = useState(searchParams.get('from_date') || '')
   const [toDate, setToDate] = useState(searchParams.get('to_date') || '')
 
   const handleApply = () => {
     const params = new URLSearchParams()
 
-    if (productId) params.set('product_id', productId)
-    if (tipo) params.set('tipo', tipo)
+    if (productId && productId !== 'all') params.set('product_id', productId)
+    if (tipo && tipo !== 'all') params.set('tipo', tipo)
     if (fromDate) params.set('from_date', fromDate)
     if (toDate) params.set('to_date', toDate)
 
@@ -64,14 +64,14 @@ export function MovementFilters({ products }: MovementFiltersProps) {
   }
 
   const handleClear = () => {
-    setProductId('')
-    setTipo('')
+    setProductId('all')
+    setTipo('all')
     setFromDate('')
     setToDate('')
     router.push('/medias/movimientos')
   }
 
-  const hasFilters = productId || tipo || fromDate || toDate
+  const hasFilters = (productId && productId !== 'all') || (tipo && tipo !== 'all') || fromDate || toDate
 
   return (
     <div className="flex flex-wrap items-end gap-4">
@@ -83,7 +83,7 @@ export function MovementFilters({ products }: MovementFiltersProps) {
             <SelectValue placeholder="Todos los productos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los productos</SelectItem>
+            <SelectItem value="all">Todos los productos</SelectItem>
             {products.map((product) => (
               <SelectItem key={product.id} value={product.id}>
                 {product.codigo} - {product.tipo} {product.talla}
@@ -101,7 +101,7 @@ export function MovementFilters({ products }: MovementFiltersProps) {
             <SelectValue placeholder="Todos los tipos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los tipos</SelectItem>
+            <SelectItem value="all">Todos los tipos</SelectItem>
             {MOVEMENT_TYPES.map((movementType) => (
               <SelectItem key={movementType} value={movementType}>
                 {MOVEMENT_TYPE_LABELS[movementType]}

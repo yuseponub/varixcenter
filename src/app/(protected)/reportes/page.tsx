@@ -15,7 +15,9 @@ import type { IncomeReport, DailyIncomeData } from '@/types/reports'
  * Get today's date in YYYY-MM-DD format
  */
 function getTodayDate(): string {
-  return format(new Date(), 'yyyy-MM-dd')
+  const now = new Date()
+  const col = new Date(now.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
+  return `${col.getFullYear()}-${String(col.getMonth() + 1).padStart(2, '0')}-${String(col.getDate()).padStart(2, '0')}`
 }
 
 export default async function ReportesPage() {

@@ -20,11 +20,8 @@ interface NuevoCierrePageProps {
  */
 function getTodayDate(): string {
   const now = new Date()
-  // Adjust for Colombia timezone (UTC-5)
-  const colombiaOffset = -5 * 60
-  const localOffset = now.getTimezoneOffset()
-  const colombiaTime = new Date(now.getTime() + (localOffset + colombiaOffset) * 60000)
-  return colombiaTime.toISOString().split('T')[0]
+  const col = new Date(now.toLocaleString('en-US', { timeZone: 'America/Bogota' }))
+  return `${col.getFullYear()}-${String(col.getMonth() + 1).padStart(2, '0')}-${String(col.getDate()).padStart(2, '0')}`
 }
 
 export default async function NuevoCierrePage({ searchParams }: NuevoCierrePageProps) {

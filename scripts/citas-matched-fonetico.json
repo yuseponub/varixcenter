@@ -1,0 +1,3006 @@
+[
+  {
+    "fecha": "2026-01-29T06:00:00.000Z",
+    "summary": "8.30  PAOLA YANIRA DIAZ DAZA 2 SESIONES DRA",
+    "nombreExtraido": "PAOLA YANIRA DIAZ DAZA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f7ae3b2e-29cd-43df-b2e2-846bd920e482",
+      "cedula": "1095815253",
+      "nombre": "Paola Yanira",
+      "apellido": "Diaz Daza",
+      "celular": "3152249940"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T08:00:00.000Z",
+    "summary": "9.30  YISELA NAVARRO VERGARA 2 SESIONES",
+    "nombreExtraido": "YISELA NAVARRO VERGARA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "092f3364-c592-4faa-9982-58faf59059d9",
+      "cedula": "1062906136",
+      "nombre": "Yisela",
+      "apellido": "Navarro Vergara",
+      "celular": "3170462446"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T08:30:00.000Z",
+    "summary": "9.45  CARMEN ATUESTA 2 SESIONES",
+    "nombreExtraido": "CARMEN ATUESTA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "1241b76e-ef19-4d33-9011-59b9166eb3e9",
+      "cedula": "1064836875",
+      "nombre": "Carmen",
+      "apellido": "Atuesta Durán",
+      "celular": "3017316525"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-01-29T09:00:00.000Z",
+    "summary": "10.00 SIRLEY JOHANA CARVAJAL DURAN  CEL  317.2885.769 1 VEZ",
+    "nombreExtraido": "SIRLEY JOHANA CARVAJAL DURAN",
+    "phone": "31728857691",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "a2f17093-5770-4b6d-9db7-02f183c51de5",
+        "cedula": "36455420",
+        "nombre": "Ana Dolores",
+        "apellido": "Duran Duran",
+        "celular": "3167816464"
+      },
+      {
+        "id": "6668a80c-cb26-43a8-9f20-66e5a245836f",
+        "cedula": "37319423",
+        "nombre": "Diana",
+        "apellido": "Lemus Duran",
+        "celular": "3174023438"
+      },
+      {
+        "id": "a9db6fff-363b-47d4-a1b7-14ac5f3afe0e",
+        "cedula": "63526931",
+        "nombre": "Diana Patricia",
+        "apellido": "Carvajalin",
+        "celular": "3164994427"
+      },
+      {
+        "id": "bc0468f5-3a88-4445-a627-5d115b303a22",
+        "cedula": "28403609",
+        "nombre": "Florentina",
+        "apellido": "Durate de Joya",
+        "celular": "3182242225"
+      },
+      {
+        "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+        "cedula": "1234567890",
+        "nombre": "Juan",
+        "apellido": "Perez",
+        "celular": "3001234567"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-01-29T09:30:00.000Z",
+    "summary": "10.15 CLAUDIA LILIANA MORENO 1 SESION",
+    "nombreExtraido": "CLAUDIA LILIANA MORENO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "c37daed6-3564-40a5-9652-02bd9b539c16",
+      "cedula": "63515304",
+      "nombre": "Claudia Liliana",
+      "apellido": "Moreno",
+      "celular": "3185538671"
+    }
+  },
+  {
+    "fecha": "2026-01-29T10:00:00.000Z",
+    "summary": "10.30 LILIANA NUÑEZ MUJICA 1 sesion",
+    "nombreExtraido": "LILIANA NUÑEZ MUJICA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f8aec55a-3f18-4f82-9e75-853181095094",
+      "cedula": "63354521",
+      "nombre": "Liliana",
+      "apellido": "Nuñez Mojica",
+      "celular": "3167824999"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T10:30:00.000Z",
+    "summary": "10.45  SILVIA JULIANA PEÑUELA 2 SESIONES  DRA",
+    "nombreExtraido": "SILVIA JULIANA PEÑUELA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "4e5b6fc7-cffd-4728-a50b-458f8cecaf40",
+      "cedula": "37862686",
+      "nombre": "Silvia Juliana",
+      "apellido": "Peñuela Cornejo",
+      "celular": "3153834868"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-29T11:00:00.000Z",
+    "summary": "10.45 MARIA ELVIRA CORNEJO PEÑUELA ECOR VSI 1.700",
+    "nombreExtraido": "MARIA ELVIRA CORNEJO PEÑUELA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "0b261436-77e7-413b-9db0-fec0f9f6807b",
+      "cedula": "37790470",
+      "nombre": "Maria Elvira",
+      "apellido": "Cornejo de Peñuela",
+      "celular": "3153776836"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T11:30:00.000Z",
+    "summary": "11.00 REIMUNDO SUÑIGA CARDENAS CEL  .  316.484.1566 1 VEZ",
+    "nombreExtraido": "REIMUNDO SUÑIGA CARDENAS",
+    "phone": "31648415661",
+    "cedula": null,
+    "patient": {
+      "id": "11bc0b03-7749-40b2-8c1f-585edb737ed7",
+      "cedula": "13444384",
+      "nombre": "Reymundo",
+      "apellido": "Zuñiga Cardenas",
+      "celular": "3164841566"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T12:00:00.000Z",
+    "summary": "11.30  NELSY GUEVARA RODRIGUEZ  1 SESION C",
+    "nombreExtraido": "NELSY GUEVARA RO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "88e34534-6e68-4c80-829d-51d0318ecd25",
+      "cedula": "63325959",
+      "nombre": "Nelsy",
+      "apellido": "Guevara Rodriguez",
+      "celular": "3174029955"
+    }
+  },
+  {
+    "fecha": "2026-01-29T14:00:00.000Z",
+    "summary": "2.30 LINA MARCELA ZULUAGA CONTROL",
+    "nombreExtraido": "LINA MARCELA ZULUAGA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "eb8400a2-d23a-4231-9997-b241cdc269ab",
+      "cedula": "29928400",
+      "nombre": "Lina Marcela",
+      "apellido": "Zuluaga Ocampo",
+      "celular": "3138877919"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-29T14:30:00.000Z",
+    "summary": "2.45 CAMILO ANDRES VILLABONA LOPEZ CEL .  300.417.5915 1 VEZ",
+    "nombreExtraido": "CAMILO AN",
+    "phone": "30041759151",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "bd44a80f-aae3-426b-a1c3-e25f4b19e9d6",
+        "cedula": "63443622",
+        "nombre": "Yamile",
+        "apellido": "Zarate Camacho",
+        "celular": "3154369358"
+      },
+      {
+        "id": "a3a5ad82-352c-4ecb-a9e1-0df15c901d45",
+        "cedula": "63462666",
+        "nombre": "Yamile",
+        "apellido": "Bautista",
+        "celular": "3183704202"
+      },
+      {
+        "id": "81247940-9906-412f-ac34-00d1c14a9a88",
+        "cedula": "63532250",
+        "nombre": "Yovanna",
+        "apellido": "Camacho",
+        "celular": "3185917154"
+      },
+      {
+        "id": "da0a6507-c2dc-4c05-a4a8-d9d7547efe5c",
+        "cedula": "5545727",
+        "nombre": "Carmelo",
+        "apellido": "Duarte",
+        "celular": "6404057"
+      },
+      {
+        "id": "04045ba1-4eb3-47a6-bfd7-d868147f5537",
+        "cedula": "30325073",
+        "nombre": "Claudia",
+        "apellido": "Campo",
+        "celular": "3156404001"
+      }
+    ],
+    "status": "matched",
+    "patient": {
+      "id": "b8dacf3a-6233-403d-acc9-422f2c310348",
+      "cedula": "91525756",
+      "nombre": "Camilo Andres",
+      "apellido": "Villabona Lopez",
+      "celular": "3168846611",
+      "email": null,
+      "fecha_nacimiento": "1983-12-17",
+      "direccion": "CALLE 103 A #35-55 BALCON DE TEJAR 6 ETAPA CASA 23B",
+      "contacto_emergencia_nombre": null,
+      "contacto_emergencia_telefono": null,
+      "contacto_emergencia_parentesco": null,
+      "created_by": null,
+      "created_at": "2026-01-28T22:11:38.179707+00:00",
+      "updated_at": "2026-01-28T22:11:38.179707+00:00",
+      "ocupacion": "Odontologo",
+      "estado_civil": "Soltero",
+      "ciudad": "Bucaramanga",
+      "pais": "Colombia",
+      "fecha_registro": "2012-01-19"
+    }
+  },
+  {
+    "fecha": "2026-01-29T15:00:00.000Z",
+    "summary": "3.00 LILIBETH BALDOBINO 2 SESIONES",
+    "nombreExtraido": "LILIBETH BALDOBINO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "2b5ada67-548a-4c7f-85e6-1f8d8c208f04",
+      "cedula": "1049018860",
+      "nombre": "Lilibeth",
+      "apellido": "Baldovino Carbonero",
+      "celular": "3156448775"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-01-29T15:30:00.000Z",
+    "summary": "3.15 ALICIA RIVERO",
+    "nombreExtraido": "ALICIA RIVERO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "949eef03-3b87-46ca-bbc3-6a29aa45b313",
+      "cedula": "37813385",
+      "nombre": "Alicia",
+      "apellido": "Ribero",
+      "celular": "3246557194"
+    }
+  },
+  {
+    "fecha": "2026-01-29T16:00:00.000Z",
+    "summary": "3.30 CARMEN CECILIA PABON REVISION",
+    "nombreExtraido": "CARMEN CECILIA PABON",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "8bc18669-7b86-46d0-a45e-4ba45794fd1c",
+      "cedula": "37821873",
+      "nombre": "Carmen Cecilia",
+      "apellido": "Pabon Patarroyo",
+      "celular": "3153298096"
+    }
+  },
+  {
+    "fecha": "2026-01-29T18:00:00.000Z",
+    "summary": "9.30 OLGA MERCEDES SERRANO  3 sesiones  DRA",
+    "nombreExtraido": "OLGA MERCEDES SERRANO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "9df17f6d-6a59-46c1-9613-1e7ae7eb93e0",
+      "cedula": "27790119",
+      "nombre": "Olga Mercedes",
+      "apellido": "Serrano",
+      "celular": "3166861860"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-29T19:30:00.000Z",
+    "summary": "4.00 CENAIDA BLANCO RESIDUOS",
+    "nombreExtraido": "CENAIDA BLANCO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "a278eb41-5787-4960-b5b2-e30da764b40f",
+      "cedula": "37876196",
+      "nombre": "Senaida",
+      "apellido": "Blanco Gutierrez",
+      "celular": "3153628727"
+    }
+  },
+  {
+    "fecha": "2026-01-29T20:00:00.000Z",
+    "summary": "4.00 GLORIA PATRICIA CARDONA RESIDUOS",
+    "nombreExtraido": "GLORIA PATRICIA CARDONA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "2f55a51f-d6f4-448a-8ce8-72f76440775a",
+      "cedula": "43549867",
+      "nombre": "Gloria Patricia",
+      "apellido": "Cardona Pineda",
+      "celular": "3142587516"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T06:30:00.000Z",
+    "summary": "8.45  ESPERANZA MURILLO  2 SESIONES",
+    "nombreExtraido": "ESPERANZA MURILLO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "32a1dd64-813b-4225-b322-3850214ac8cf",
+      "cedula": "63315061",
+      "nombre": "Esperanza",
+      "apellido": "Murillo Carreño",
+      "celular": "3115617601"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-01-30T07:00:00.000Z",
+    "summary": "9.00 ISABEL ROMERO DURAN  2 SESIONES DRA",
+    "nombreExtraido": "ISABEL ROMERO DURAN",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "4b333325-0a5c-4215-a15c-1871f5888699",
+      "cedula": "37842345",
+      "nombre": "Isabel",
+      "apellido": "Romero Duran",
+      "celular": "3168179979"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-30T07:30:00.000Z",
+    "summary": "9.00 NAYIBE AREVALO PEREZ CC. 63.536.236 CEL. 300.834.9980 1 sesion DRA",
+    "nombreExtraido": "NAYIBE AREVALO PEREZ",
+    "phone": "30083499801",
+    "cedula": "63536236",
+    "patient": {
+      "id": "8a42b152-e16b-405d-a96c-d986158fdbd5",
+      "cedula": "63536236",
+      "nombre": "Nayibe",
+      "apellido": "Arevalo Perez",
+      "celular": "3008349980"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-30T08:00:00.000Z",
+    "summary": "9.15 DORIZ ELENA RONDON URIBE 2 SESIONES",
+    "nombreExtraido": "DORIZ ELENA RONDON URIBE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "94becda4-6923-4f53-88c7-c6e73378944a",
+      "cedula": "63449655",
+      "nombre": "Doriz Elena",
+      "apellido": "Rondon Uribe",
+      "celular": "3164130598"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-30T08:30:00.000Z",
+    "summary": "9.30 ALBA DEL CARMEN HERNANDEZ 1 SESION",
+    "nombreExtraido": "ALBA DEL CARMEN HERNANDEZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "313085c6-c679-4c24-8ba2-733ad9e2fe4c",
+      "cedula": "63277996",
+      "nombre": "Alba del Carmen",
+      "apellido": "Hernandez Balaguera",
+      "celular": "3228359503"
+    }
+  },
+  {
+    "fecha": "2026-01-30T09:00:00.000Z",
+    "summary": "9.45  MARIA GLADYZ ESPINOZA   2 SESIONES",
+    "nombreExtraido": "MARIA GLADYZ ESPINOZA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c98770e2-0cf2-46db-9b3a-14c1dfce8e92",
+      "cedula": "28217807",
+      "nombre": "Maria Gladys",
+      "apellido": "Espinosa",
+      "celular": "3018430694"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-30T09:30:00.000Z",
+    "summary": "10.00   BLANCA DORIS  RAMIREZ ECOR",
+    "nombreExtraido": "BLANCA DORIS RAMIREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3ad430f0-6421-4aef-be6c-c0e57e0714a7",
+      "cedula": "28333156",
+      "nombre": "Blanca Doris",
+      "apellido": "Ramirez Garcia",
+      "celular": "3209346774"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T10:00:00.000Z",
+    "summary": "10.15 LUBBY ISABEL AGUILAR 1 SESION",
+    "nombreExtraido": "LUBBY ISABEL AGUILAR",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "9b2fa74a-110a-493f-a0a3-219c3011910a",
+      "cedula": "22447043",
+      "nombre": "Lubby Isabel",
+      "apellido": "Aguilar Tobar",
+      "celular": "3184341318"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T10:30:00.000Z",
+    "summary": "10.30 BLANCA HELENA RODRIGUEZ COTE  2 SESIONES",
+    "nombreExtraido": "BLANCA HELENA RO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "51627023-ee5a-415c-b1db-ac3ad94ad292",
+      "cedula": "60250185",
+      "nombre": "Blanca Helena",
+      "apellido": "Rodriguez Cote",
+      "celular": "3156492434"
+    }
+  },
+  {
+    "fecha": "2026-01-30T11:00:00.000Z",
+    "summary": "10.45  DEISSY LILIANA MORENO 2 SESIONES",
+    "nombreExtraido": "DEISSY LILIANA MORENO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "478edf93-2c55-438a-8fba-dbca8a9d6da6",
+      "cedula": "1100949237",
+      "nombre": "Deissy Liliana",
+      "apellido": "Moreno Murillo",
+      "celular": "3162895112"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T11:30:00.000Z",
+    "summary": "11.00 JINNETH ROCIO ESTUPIÑAN ECOR VSI + ECOR",
+    "nombreExtraido": "JINNETH ROCIO ESTUPIÑAN",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "4c359a67-6453-4427-9006-f512ed531946",
+      "cedula": "63503227",
+      "nombre": "Jinnet Rocio",
+      "apellido": "Estupiñan Valenzuela",
+      "celular": "3163320178"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T12:00:00.000Z",
+    "summary": "11.30 janeth chiquinquira salas revision",
+    "nombreExtraido": "JANETH CHIQUINQUIRA SALAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "75945a61-26a6-4852-ad53-1b7e03be6076",
+      "cedula": "4237875",
+      "nombre": "Janeth Chiquinquira",
+      "apellido": "Salas Garcia",
+      "celular": "3105885912"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-30T15:30:00.000Z",
+    "summary": "2.30  LAURA BLANCO  1 VEZ CEL  3154149800",
+    "nombreExtraido": "LAURA BLANCO",
+    "phone": "3154149800",
+    "cedula": null,
+    "status": "nuevo",
+    "score": 0.95,
+    "nota": "Paciente nueva - no encontrada en BD"
+  },
+  {
+    "fecha": "2026-01-30T16:30:00.000Z",
+    "summary": "3.00 ANA PATRICIA CARDENAS GUTIERREZ CEL. 3183761354 1 VEZ",
+    "nombreExtraido": "ANA PATRICIA CARDENAS GUTIERREZ",
+    "phone": "31837613541",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "4a53aa95-79e6-43c1-a936-c0f167ca7136",
+        "cedula": "49662327",
+        "nombre": "Lina Patricia",
+        "apellido": "Gutierrez",
+        "celular": "3144925605"
+      },
+      {
+        "id": "9d55be35-46e9-470d-bb5a-c2c60e2ad062",
+        "cedula": "63328176",
+        "nombre": "Nancy Patricia",
+        "apellido": "Luna Arenas",
+        "celular": "3156759350"
+      },
+      {
+        "id": "ee6f39c2-170a-4cc4-9a52-b2457dd78659",
+        "cedula": "45620964",
+        "nombre": "Ana Dilfa",
+        "apellido": "Gutierrez Hoya",
+        "celular": "3143585807"
+      },
+      {
+        "id": "c0cfb80c-8de4-4506-99df-b01c666e37b2",
+        "cedula": "28215356",
+        "nombre": "Sara Patricia",
+        "apellido": "Robles Roa",
+        "celular": "3176209307"
+      },
+      {
+        "id": "3e498396-0ab6-4062-86c3-86e609a07146",
+        "cedula": "53048740",
+        "nombre": "Tania Patricia",
+        "apellido": "Haro Quintero",
+        "celular": "4126368405"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-01-31T05:30:00.000Z",
+    "summary": "8.30 DEICY GIL  DIAZ 2 SESIONes dra",
+    "nombreExtraido": "DEICY GIL DIAZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5c6e8d57-a703-4b27-86b3-51e9120af57c",
+      "cedula": "1010056264",
+      "nombre": "Deisy",
+      "apellido": "Gil Diaz",
+      "celular": "3187790003"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T06:00:00.000Z",
+    "summary": "8.45 YORLEDY ROJAS BARON 2 sesiones",
+    "nombreExtraido": "YORLEDY ROJAS BARON",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5facb239-f386-4c4d-ac26-1f41697adb46",
+      "cedula": "1096946131",
+      "nombre": "Yorledy",
+      "apellido": "Rojas Baron",
+      "celular": "3125156680"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T06:30:00.000Z",
+    "summary": "9.00 LISETH ALDANA LOPEZ 1 VEZ CEL . 316 4673216",
+    "nombreExtraido": "LISETH ALDANA LOPEZ",
+    "phone": "3164673216",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "857f89e5-da70-4e5b-904c-55a5015e2438",
+        "cedula": "37754592",
+        "nombre": "Eliana",
+        "apellido": "Florez Patiño",
+        "celular": "3002159524"
+      },
+      {
+        "id": "589abcb4-d9ae-4008-a078-ed2567c7573c",
+        "cedula": "28218380",
+        "nombre": "Eliana Ibeth",
+        "apellido": "Dominguez",
+        "celular": "3124626004"
+      },
+      {
+        "id": "8939d0ba-1a10-46a4-9ff9-8fddeda915a3",
+        "cedula": "37550993",
+        "nombre": "Jackeline Bisseth",
+        "apellido": "Gomez",
+        "celular": "3158936243"
+      },
+      {
+        "id": "3d36c08b-795b-4eeb-ab2e-f2904e7f70f1",
+        "cedula": "1095803142",
+        "nombre": "Lizeth",
+        "apellido": "Cuadros Gomez",
+        "celular": "3167079904"
+      },
+      {
+        "id": "64fd48ed-9889-4185-887c-5c1bfc6f2f09",
+        "cedula": "63551472",
+        "nombre": "Lisse Yurley",
+        "apellido": "Lopez Muñoz",
+        "celular": "3228147572"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-01-31T07:00:00.000Z",
+    "summary": "9.15 ANGIE XIOMARA CRUZ SANTAMARIA 1 SESION",
+    "nombreExtraido": "ANGIE XIOMARA CRUZ SANTAMARIA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3e250ea7-01df-406d-9b54-2a5504d05b8b",
+      "cedula": "1000992820",
+      "nombre": "Angie Xiomara",
+      "apellido": "Cruz Santamaria",
+      "celular": "3157004195"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T07:30:00.000Z",
+    "summary": "9.30   PATRICIA VALENZUELA NAVARRO 3 SESIONES DRA",
+    "nombreExtraido": "PATRICIA VALENZUELA NAVARRO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "132c4fbe-d59a-4cf7-83de-009965e41ad9",
+      "cedula": "63303242",
+      "nombre": "Patricia",
+      "apellido": "Valenzuela Navarro",
+      "celular": "3212107101"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T08:00:00.000Z",
+    "summary": "9.45 CLAUDIA ROCIO QUIÑONEZ ECOR",
+    "nombreExtraido": "CLAUDIA ROCIO QUIÑONEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "e9004e13-83ff-4e73-b992-638072b05c8f",
+      "cedula": "63309849",
+      "nombre": "Claudia Rocio",
+      "apellido": "Quiñonez Esparza",
+      "celular": "3163963540"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-31T09:00:00.000Z",
+    "summary": "10.15 OLGA MERCEDES SERRANO  3 sesiones retiro de puntos",
+    "nombreExtraido": "OLGA MERCEDES SERRANO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "9df17f6d-6a59-46c1-9613-1e7ae7eb93e0",
+      "cedula": "27790119",
+      "nombre": "Olga Mercedes",
+      "apellido": "Serrano",
+      "celular": "3166861860"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T09:30:00.000Z",
+    "summary": "10.30 XIOMARA ZORRO MANRIQUE 3 SESIONES",
+    "nombreExtraido": "XIOMARA ZORRO MANRIQUE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "65928c70-cdee-4c20-890c-f673e01f834c",
+      "cedula": "63510076",
+      "nombre": "Xiomara",
+      "apellido": "Zorro Manrrique",
+      "celular": "3012333098"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-01-31T10:00:00.000Z",
+    "summary": "10.45 INGRID TATIANA CHACON",
+    "nombreExtraido": "INGRID TATIANA CHACON",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "e75ca801-a3a4-460a-a087-9b678efd6a89",
+      "cedula": "1096213346",
+      "nombre": "Ingri Tatiana",
+      "apellido": "Chacon Sanchez",
+      "celular": "3123828382"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-01-31T11:00:00.000Z",
+    "summary": "11.45 JANETTE LUNA PINZON 1 SESION",
+    "nombreExtraido": "JANETTE LUNA PINZON",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "4496e4d3-c851-49a4-ab6d-559164d277eb",
+      "cedula": "63514071",
+      "nombre": "Jeanette",
+      "apellido": "Luna Pinzon",
+      "celular": "3186001255"
+    }
+  },
+  {
+    "fecha": "2026-02-02T06:00:00.000Z",
+    "summary": "8.30 Olga lucía Arévalo cel 300 7236809  2 sesiones DRA",
+    "nombreExtraido": "OLGA LUCÍA ARÉVALO",
+    "phone": "30072368092",
+    "cedula": null,
+    "patient": {
+      "id": "7eb2635d-7af0-42d7-84c5-21f552254e42",
+      "cedula": "24218668",
+      "nombre": "Olga Lucia",
+      "apellido": "Arevalo Cantor",
+      "celular": "3007236809"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-02T07:00:00.000Z",
+    "summary": "9.00 ROSALBA PEREZ LEON 1 SESION",
+    "nombreExtraido": "ROSALBA PEREZ LEON",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "d2d34463-f343-4c5f-874c-0c81eb670d61",
+      "cedula": "63512333",
+      "nombre": "Rosalba",
+      "apellido": "Perez Leon",
+      "celular": "3123607648"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-02T07:30:00.000Z",
+    "summary": "9.00    ROSA DELIA CARRILLO 2 SESIONES",
+    "nombreExtraido": "ROSA DELIA CARRILLO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "5e530827-db7e-4d70-bfcd-174bb6b09928",
+      "cedula": "23357159",
+      "nombre": "Rosa Delia",
+      "apellido": "Carrillo de Carrillo",
+      "celular": "3173167991"
+    }
+  },
+  {
+    "fecha": "2026-02-02T08:00:00.000Z",
+    "summary": "9.15 CARMEN CARRILLO CARRILLO  RETIRO DE PUNTOS  + 2 SESIONES",
+    "nombreExtraido": "CARMEN CARRILLO CARRILLO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "c4486f81-3a87-47b3-b18a-c80a00ca7a35",
+      "cedula": "63367884",
+      "nombre": "Carmen",
+      "apellido": "Carrillo Carrillo",
+      "celular": "3163367500"
+    }
+  },
+  {
+    "fecha": "2026-02-02T08:30:00.000Z",
+    "summary": "9.30 ANA RUTH MONSALVE PATIÑO  2 SESIONES",
+    "nombreExtraido": "ANA RUTH MONSALVE PATIÑO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "6da96a62-add7-4faa-81c3-ba0fcb42cd06",
+      "cedula": "37875024",
+      "nombre": "Ana Ruth",
+      "apellido": "Monsalve Patiño",
+      "celular": "3002067786"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-02T09:00:00.000Z",
+    "summary": "9.45 WILLIAM GOMEZ BUENO CEL. 313.362.3204 1 VEZ",
+    "nombreExtraido": "WILLIAM GOMEZ BUENO",
+    "phone": "31336232041",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "cc3ca0a5-de06-4159-b9d9-75c59284b612",
+        "cedula": "37891672",
+        "nombre": "Miriam",
+        "apellido": "Gomez",
+        "celular": "3006881743"
+      },
+      {
+        "id": "9b6611f0-9bcc-4b4e-b8e8-94eeaffab03d",
+        "cedula": "37893207",
+        "nombre": "Myriam",
+        "apellido": "Gomez Mendoza",
+        "celular": "3167991213"
+      },
+      {
+        "id": "57ceea2c-d14d-4d5d-a697-d33bd754a8ea",
+        "cedula": "28338616",
+        "nombre": "Miriam",
+        "apellido": "Sierra Lopez",
+        "celular": "6551959"
+      },
+      {
+        "id": "2296852a-7b4f-403e-b447-5d974df72142",
+        "cedula": "37807700",
+        "nombre": "Miriam",
+        "apellido": "Gomez Mendez",
+        "celular": "3153476648"
+      },
+      {
+        "id": "b2a4c928-9f1e-41a7-ab75-d6e13de25e85",
+        "cedula": "63340908",
+        "nombre": "Miriam",
+        "apellido": "Gomez Gelvez",
+        "celular": "3152900439"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-02T09:30:00.000Z",
+    "summary": "10.00 ISABEL ANGARITA GAMBOA 1 VEZ CEL . 3008929461",
+    "nombreExtraido": "ISABEL ANGARITA GAMBOA",
+    "phone": "3008929461",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "0205fd09-89ca-49cc-9f28-40e02fe9a959",
+        "cedula": "36586545",
+        "nombre": "Rosabel",
+        "apellido": "Angarita Minorta",
+        "celular": "3102949670"
+      },
+      {
+        "id": "319f7e36-bd88-40ef-978b-1b9f15283bd2",
+        "cedula": "63512257",
+        "nombre": "Marta Isabel",
+        "apellido": "Jaimes Gamboa",
+        "celular": "3173879755"
+      },
+      {
+        "id": "0c1001c9-8fab-4115-990b-3569c91a6038",
+        "cedula": "2000001200",
+        "nombre": "Anith Isabel",
+        "apellido": "Gamboa de Delgado",
+        "celular": "3168330089"
+      },
+      {
+        "id": "43d6a9db-c7d6-4eb4-be91-8f0f735703bb",
+        "cedula": "91390937",
+        "nombre": "Eliseo",
+        "apellido": "Angarita Angarita",
+        "celular": "3154439094"
+      },
+      {
+        "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+        "cedula": "37541427",
+        "nombre": "Isabel",
+        "apellido": "Vargas",
+        "celular": "3163339835"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-02T10:00:00.000Z",
+    "summary": "10.15 Gladys Rodríguez  CEL . 315 8559315 1 VEZ",
+    "nombreExtraido": "GLADYS RO",
+    "phone": "31585593151",
+    "cedula": null,
+    "status": "nuevo",
+    "patient": {
+      "id": "a059c0d4-5880-4df4-96c9-0daaae9709e7",
+      "cedula": "27955763",
+      "nombre": "Gladys Maria",
+      "apellido": "Rodriguez Forero",
+      "celular": "3138770504"
+    },
+    "nota": "Paciente nuevo - buscar por teléfono"
+  },
+  {
+    "fecha": "2026-02-02T10:30:00.000Z",
+    "summary": "10.30   NIVIA STELLA SANABRIA 3 SESIONES",
+    "nombreExtraido": "NIVIA STELLA SANABRIA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "2c174343-a504-4e26-8663-a717a666a48b",
+      "cedula": "37800752",
+      "nombre": "Nivia Stella",
+      "apellido": "Sanabria de Jaimes",
+      "celular": "3153746246"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-02T11:00:00.000Z",
+    "summary": "10.45  DIANA BOHORQUEZ CEL. 300.227.6752 1 SESION",
+    "nombreExtraido": "DIANA BOHORQUEZ",
+    "phone": "30022767521",
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "7d04e888-ac8d-4fe1-aa54-597aa26f2d89",
+      "cedula": "1098716990",
+      "nombre": "Diana",
+      "apellido": "Bohorquez Ordoñez",
+      "celular": "3002276752"
+    }
+  },
+  {
+    "fecha": "2026-02-02T11:30:00.000Z",
+    "summary": "11.00 JOHANA KARINA ROJAS 1 SESION",
+    "nombreExtraido": "JOHANA KARINA ROJAS",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "0e8af196-5a4b-49e8-b1ad-821f7217e2ea",
+      "cedula": "1098657791",
+      "nombre": "Johana Karina",
+      "apellido": "Rojas Corredor",
+      "celular": "3166173519"
+    }
+  },
+  {
+    "fecha": "2026-02-02T12:00:00.000Z",
+    "summary": "11.30 CARMEN CARRILLO CARRILLO  RETIRO DE PUNTOS",
+    "nombreExtraido": "CARMEN CARRILLO CARRILLO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "c4486f81-3a87-47b3-b18a-c80a00ca7a35",
+      "cedula": "63367884",
+      "nombre": "Carmen",
+      "apellido": "Carrillo Carrillo",
+      "celular": "3163367500"
+    }
+  },
+  {
+    "fecha": "2026-02-02T16:00:00.000Z",
+    "summary": "3.00  DORIS AMPARO JIMEZ DUARTE 1 SESION",
+    "nombreExtraido": "DORIS AMPARO JIMEZ DUARTE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "86c33d40-9087-4ceb-80d1-0e50fb19f251",
+      "cedula": "37552042",
+      "nombre": "Doris Amparo",
+      "apellido": "Jimenez Duarte",
+      "celular": "3105946633"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-02T16:30:00.000Z",
+    "summary": "3.30 MARIA TERESA CORREA 1 SESION C",
+    "nombreExtraido": "MARIA TERESA CORREA",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "cf619ee7-f8a4-44e7-9d8f-f8ec9e674c66",
+      "cedula": "28296805",
+      "nombre": "Maria Teresa",
+      "apellido": "Correa Reyes",
+      "celular": "3152029711"
+    }
+  },
+  {
+    "fecha": "2026-02-02T18:00:00.000Z",
+    "summary": "8.00 ALBA LUZ FONSECA",
+    "nombreExtraido": "ALBA LUZ FONSECA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "da5e4875-2aa0-41e3-96de-e47743741d35",
+      "cedula": "37897674",
+      "nombre": "Alba Luz",
+      "apellido": "Fonseca Chavez",
+      "celular": "3187488071"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-02T18:30:00.000Z",
+    "summary": "4.00 ERNESTINA GARCES RESIDUOS",
+    "nombreExtraido": "ERNESTINA GARCES",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "85d073e3-0a37-4f0c-8bc4-38c2e7499d62",
+      "cedula": "27952775",
+      "nombre": "Ernestina",
+      "apellido": "Garces de Grandas",
+      "celular": "3012413607"
+    }
+  },
+  {
+    "fecha": "2026-02-03T07:00:00.000Z",
+    "summary": "8.30  MARYOLI JOHANA LOPEZ ARDILA 1 SESION",
+    "nombreExtraido": "MARYOLI JOHANA LOPEZ ARDILA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "67526e5d-cecb-4f25-b765-ef833b18f6b4",
+      "cedula": "37862306",
+      "nombre": "Maryoli Johana",
+      "apellido": "Lopez Ardila",
+      "celular": "3167962011"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-03T09:00:00.000Z",
+    "summary": "9.30  MARIA ANGELICA CELIS MARTINEZ  2 sesiones",
+    "nombreExtraido": "MARIA ANGELICA CELIS MARTINEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "874620e1-fdb5-4cfc-85e2-34e33cdc40f3",
+      "cedula": "63534216",
+      "nombre": "Maria Angelica",
+      "apellido": "Celis Martinez",
+      "celular": "3166912906"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-03T09:30:00.000Z",
+    "summary": "9.45 GLORIA SANTAMARIA PEÑA  CEL . 318 4724755 1 VEZ",
+    "nombreExtraido": "GLORIA SANTAMARIA PEÑA",
+    "phone": "31847247551",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "7fb447e5-c6d1-4329-a489-57d79b8f67a9",
+        "cedula": "63540208",
+        "nombre": "Lory",
+        "apellido": "Angarita Peñaranda",
+        "celular": "3004934772"
+      },
+      {
+        "id": "b9513ce4-e321-4b29-8730-024fe16aaa1e",
+        "cedula": "63558107",
+        "nombre": "Gloria Edilia",
+        "apellido": "Luna",
+        "celular": "3165316827"
+      },
+      {
+        "id": "043b8bb9-17ef-4b58-bc22-4be2e5280f3a",
+        "cedula": "25100636",
+        "nombre": "Gloria Elena",
+        "apellido": "Adarve Gallego",
+        "celular": "3219287344"
+      },
+      {
+        "id": "14ff8f4b-de4a-482f-a761-9d561be3c0b8",
+        "cedula": "63355772",
+        "nombre": "Gloria Patricia",
+        "apellido": "Cortes Vega",
+        "celular": "3152971858"
+      },
+      {
+        "id": "e3eac511-58cb-4781-a048-9a824e7fdfbe",
+        "cedula": "37547512",
+        "nombre": "Gloria Janeth",
+        "apellido": "Vera Caballero",
+        "celular": "3143052832"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-03T11:00:00.000Z",
+    "summary": "11.00 MARIA ELCIDA VELANDIA  1 SESION",
+    "nombreExtraido": "MARIA ELCIDA VELANDIA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "17e84591-c5ab-452e-86b8-6610c29179e6",
+      "cedula": "63483031",
+      "nombre": "Maria Elcida",
+      "apellido": "Velandia Mayorga",
+      "celular": "3182745057"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-03T11:30:00.000Z",
+    "summary": "11.30 BLANCA DORIS RAMIREZ REVISION DR",
+    "nombreExtraido": "BLANCA DORIS RAMIREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3ad430f0-6421-4aef-be6c-c0e57e0714a7",
+      "cedula": "28333156",
+      "nombre": "Blanca Doris",
+      "apellido": "Ramirez Garcia",
+      "celular": "3209346774"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-03T16:30:00.000Z",
+    "summary": "3.30 ELSA RODRIGUEZ REYES REVISION",
+    "nombreExtraido": "ELSA RO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "377ce069-21a9-4785-9132-18955c61315b",
+      "cedula": "37655057",
+      "nombre": "Elsa",
+      "apellido": "Rodriguez Reyes",
+      "celular": "3004855079"
+    }
+  },
+  {
+    "fecha": "2026-02-03T18:30:00.000Z",
+    "summary": "4.00 EMILCE BAUTISTA TAMI",
+    "nombreExtraido": "EMILCE BAUTISTA TAMI",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "d6b05732-6331-462f-9631-7f2437a32e6f",
+      "cedula": "63526024",
+      "nombre": "Emilce",
+      "apellido": "Bautista Tami",
+      "celular": "3186020843"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-04T07:30:00.000Z",
+    "summary": "9.00 ESTHER JULIA CUJAR SCANEO",
+    "nombreExtraido": "ESTHER JULIA CUJAR",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "977043a6-2e91-4644-a808-44c606254de0",
+      "cedula": "21949406",
+      "nombre": "Esther Julia",
+      "apellido": "Cujar Rivera",
+      "celular": "3224295627"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-04T12:00:00.000Z",
+    "summary": "11.30 GLORIA ESPERANZA HERNANDEZ ROJAS REVISION",
+    "nombreExtraido": "GLORIA ESPERANZA HERNANDEZ ROJAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "eadcb92f-9a97-4d84-bc71-5ecec34a943e",
+      "cedula": "60246569",
+      "nombre": "Gloria Esperanza",
+      "apellido": "Hernadez Rojas",
+      "celular": "3182990876"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-04T15:30:00.000Z",
+    "summary": "3.00  ANA FLORALBA MARTINEZ VERA CONTROL",
+    "nombreExtraido": "ANA FLORALBA MARTINEZ VERA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5c3f68a4-fca2-4812-a9ca-4801705d1c3d",
+      "cedula": "41706955",
+      "nombre": "Ana Floralba",
+      "apellido": "Martinez Vera",
+      "celular": "3204838598"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-04T19:30:00.000Z",
+    "summary": "8.00 YAMILE BECERRA CARRASCAL  locion",
+    "nombreExtraido": "YAMILE BECERRA CARRASCAL",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "795d3cb9-c9de-496a-a4b9-c4b8c1a9db45",
+      "cedula": "37751318",
+      "nombre": "Yamile",
+      "apellido": "Becerra Carrascal",
+      "celular": "3134237594"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-04T20:00:00.000Z",
+    "summary": "4.00 YOLANDA CHAPARRO SILVA RESIDUOS",
+    "nombreExtraido": "YOLANDA CHAPARRO SILVA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "51079451-2544-4bbd-b4a9-724ed8b145a5",
+      "cedula": "63475026",
+      "nombre": "Yolanda",
+      "apellido": "Chaparro Silva",
+      "celular": "3224001822"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-05T06:00:00.000Z",
+    "summary": "8.00 LUZ HELENA SALINAS VACA CEL 3163139007 1 VEZ",
+    "nombreExtraido": "LUZ HELENA SALINAS VACA",
+    "phone": "31631390071",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "6863707b-d223-4221-82c7-5796ee9932d4",
+        "cedula": "63551548",
+        "nombre": "Ana Milena",
+        "apellido": "Ruiz Pineda",
+        "celular": "3184246607"
+      },
+      {
+        "id": "ad00ab42-43db-4fd4-a094-dc59c7d48023",
+        "cedula": "63528151",
+        "nombre": "Lina Maria",
+        "apellido": "Baez Luna",
+        "celular": "3175007077"
+      },
+      {
+        "id": "c0836d8a-0c26-4e37-afaf-0876c7e9453b",
+        "cedula": "27790436",
+        "nombre": "Ana Lucia",
+        "apellido": "Peña Silva",
+        "celular": "3003171910"
+      },
+      {
+        "id": "893cef8e-f3be-4ca9-8351-a1ac10a33d46",
+        "cedula": "27741100",
+        "nombre": "Lucy Helena",
+        "apellido": "Velasquez Vega",
+        "celular": "3126509097"
+      },
+      {
+        "id": "f6092f2c-723d-45a8-af8b-ccee1b7856b3",
+        "cedula": "36456893",
+        "nombre": "Blanca Lucia",
+        "apellido": "Osorio Luna",
+        "celular": "3153242589"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-05T07:30:00.000Z",
+    "summary": "9.00 EUGENIA OTALORA PACHECO  CONTROL",
+    "nombreExtraido": "EUGENIA OTALORA PACHECO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "25b95836-22fb-4bda-8c4d-ec41b45c81bc",
+      "cedula": "37922327",
+      "nombre": "Eugenia",
+      "apellido": "Otalora Pacheco",
+      "celular": "3163039321"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-05T08:00:00.000Z",
+    "summary": "9.15 LUZ MERY QUINCHIA CEL 3124924374 1 VEZ",
+    "nombreExtraido": "LUZ MERY QUINCHIA",
+    "phone": "31249243741",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "537a9971-e6e1-40fb-b547-8bf8c8ebd5e5",
+        "cedula": "37818288",
+        "nombre": "Nelly",
+        "apellido": "Rey de Cruz",
+        "celular": "3102758029"
+      },
+      {
+        "id": "161bc921-cc14-4772-a015-3e5748a51213",
+        "cedula": "22057799",
+        "nombre": "Maria Luz Cely",
+        "apellido": "Ruiz Morales",
+        "celular": "3166604574"
+      },
+      {
+        "id": "943b058c-61ba-4627-9550-c756f11b1fbd",
+        "cedula": "63369517",
+        "nombre": "Maria Luisa",
+        "apellido": "Hernandez Luna",
+        "celular": "3114751516"
+      },
+      {
+        "id": "38deaefa-e6a0-4201-85de-92387a4245a5",
+        "cedula": "63293080",
+        "nombre": "Luz Dary",
+        "apellido": "Ruiz Landazabal",
+        "celular": "3183478515"
+      },
+      {
+        "id": "a2161593-92fc-4d9d-821b-2c469401c899",
+        "cedula": "28437271",
+        "nombre": "Maria Eugenia",
+        "apellido": "Ruiz de Marin",
+        "celular": "3212083012"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-05T11:30:00.000Z",
+    "summary": "11.30 INGRID IVONNE PEREZ  1 SESION C",
+    "nombreExtraido": "INGRID IVONNE PEREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "104ff2f5-4227-41a5-a560-70d1b62b5db0",
+      "cedula": "1098734006",
+      "nombre": "Ingrid Ivonne",
+      "apellido": "Perez Tarazona",
+      "celular": "3182429725"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-05T15:00:00.000Z",
+    "summary": "3.00 ELIZABETH ORTEGA  PEREZ 1 SESION",
+    "nombreExtraido": "ELIZABETH ORTEGA PEREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "35ac3e3b-e5ac-4ab0-9608-5bc2379beb5a",
+      "cedula": "63526605",
+      "nombre": "Elizabeth",
+      "apellido": "Ortega Perez",
+      "celular": "3156255044"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-05T17:00:00.000Z",
+    "summary": "8.00 MARIA GLADYZ ESPINOZA",
+    "nombreExtraido": "MARIA GLADYZ ESPINOZA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c98770e2-0cf2-46db-9b3a-14c1dfce8e92",
+      "cedula": "28217807",
+      "nombre": "Maria Gladys",
+      "apellido": "Espinosa",
+      "celular": "3018430694"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-05T17:30:00.000Z",
+    "summary": "4.00 CRISOSTO PARDO",
+    "nombreExtraido": "CRISOSTO PARDO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c03d5527-1f86-440a-8705-908b7c582c90",
+      "cedula": "91254016",
+      "nombre": "Crisostomo",
+      "apellido": "Pardo Alarcon",
+      "celular": "3043174951"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-02-06T07:00:00.000Z",
+    "summary": "9.00 zoila rosa acosta control",
+    "nombreExtraido": "ZOILA ROSA ACOSTA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f9f41062-ecee-4fd8-ab76-80539a9c9d6c",
+      "cedula": "37540885",
+      "nombre": "Zoila Rosa",
+      "apellido": "Acosta Naranjo",
+      "celular": "3107847953"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-06T07:30:00.000Z",
+    "summary": "9.15 CARMEN CECILIA QIÑONES MENDOZA 2 SESIONES dra",
+    "nombreExtraido": "CARMEN CECILIA QIÑONES MENDOZA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "71c4768b-4b1b-4633-9c79-8f988e64aa5b",
+      "cedula": "63302678",
+      "nombre": "Carmen Cecilia",
+      "apellido": "Quiñonez Mendoza",
+      "celular": "3152162096"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-06T11:30:00.000Z",
+    "summary": "11.00 DIANA MARCELA MANTILLA ROJAS 1 VEZ CEL  +1 (954) 646-5671",
+    "nombreExtraido": "DIANA MARCELA MANTILLA ROJAS",
+    "phone": null,
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "87403646-80e4-4367-ab1e-2775cd0b9e97",
+        "cedula": "63276672",
+        "nombre": "Lina Rosa",
+        "apellido": "Pinzon de Mantilla",
+        "celular": "3148130229"
+      },
+      {
+        "id": "9a278667-692b-411b-bd5d-3bbe67471cc3",
+        "cedula": "1102715980",
+        "nombre": "Laura Marcela",
+        "apellido": "Rojas Diaz",
+        "celular": "3177095965"
+      },
+      {
+        "id": "5458f002-a2d2-4238-9c8b-74a5d664033a",
+        "cedula": "30503417",
+        "nombre": "Rosa Lina",
+        "apellido": "Diaz",
+        "celular": "3115098579"
+      },
+      {
+        "id": "12674557-5503-447b-af01-b356a53b539c",
+        "cedula": "36456102",
+        "nombre": "Ana Rosa",
+        "apellido": "Diaz",
+        "celular": "6954715"
+      },
+      {
+        "id": "ae8137fa-d387-4504-9b1e-6e01e7e3a1b4",
+        "cedula": "63315632",
+        "nombre": "Marisel",
+        "apellido": "Mantilla Mantilla",
+        "celular": "3134240944"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-02-06T12:00:00.000Z",
+    "summary": "11.30 ESPERANZA NIETO ALMEIDA  revision DRA",
+    "nombreExtraido": "ESPERANZA NIETO ALMEIDA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "955e5fd9-e2ae-480c-b76f-d0b44d35ed69",
+      "cedula": "27978289",
+      "nombre": "Esperanza",
+      "apellido": "Nieto Almeida",
+      "celular": "3144434060"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-06T17:30:00.000Z",
+    "summary": "2.30 MARTHA LILIANA AMAYA GUALDRON 2 sesiones",
+    "nombreExtraido": "MARTHA LILIANA AMAYA GUAL",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "385e7813-a659-4a38-bbeb-ee4b699a2653",
+      "cedula": "109866953",
+      "nombre": "Martha Liliana",
+      "apellido": "Amaya Gualdron",
+      "celular": "3022475902"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-06T18:00:00.000Z",
+    "summary": "2.45  RUTH YADIRA BRAVO SANCHEZ 3 SESIONES A FAVOR 15 MIL PESOS",
+    "nombreExtraido": "RUTH YADIRA BRAVO SANCHEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3a2121bb-873c-4e35-8901-13250dfcd213",
+      "cedula": "37651375",
+      "nombre": "Ruth Yadira",
+      "apellido": "Bravo Sanchez",
+      "celular": "3162064204"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-06T19:30:00.000Z",
+    "summary": "3.00 LENID PACHECO JIMENEZ 3 SESIONES",
+    "nombreExtraido": "LENID PACHECO JIMENEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5f3993dd-7545-4560-97ab-5abbe7cfc59b",
+      "cedula": "49759214",
+      "nombre": "Lenid",
+      "apellido": "Pacheco Jimenez",
+      "celular": "3006528605"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-06T21:30:00.000Z",
+    "summary": "4.00 FRANCELINA RANGEL",
+    "nombreExtraido": "FRANCELINA RANGEL",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "70f47c7a-5954-4712-aab6-cb0c3fd3cab4",
+      "cedula": "28410818",
+      "nombre": "Francelina",
+      "apellido": "Rangel Duarte",
+      "celular": "3133252989"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-02-07T06:30:00.000Z",
+    "summary": "8.45 LENID PACHECO JIMENEZ 3 SESIONES",
+    "nombreExtraido": "LENID PACHECO JIMENEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5f3993dd-7545-4560-97ab-5abbe7cfc59b",
+      "cedula": "49759214",
+      "nombre": "Lenid",
+      "apellido": "Pacheco Jimenez",
+      "celular": "3006528605"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-07T07:00:00.000Z",
+    "summary": "9.00 ANA VICTORIA QUINTERO CARRILLO    1 sesion",
+    "nombreExtraido": "ANA VICTORIA QUINTERO CARRILLO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "07b6f5dc-a1e0-4648-8f2f-b718e439d474",
+      "cedula": "28359718",
+      "nombre": "Ana Victoria",
+      "apellido": "Quintero Carrillo",
+      "celular": "3185729267"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-07T09:00:00.000Z",
+    "summary": "9.45 SARA EDITH FLOREZ 3 SESIONES",
+    "nombreExtraido": "SARA EDITH FLOREZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "97996517-4547-46fe-beab-f42526b6c7b7",
+      "cedula": "52397649",
+      "nombre": "Sara Edith",
+      "apellido": "Florez Parra",
+      "celular": "3166958391"
+    }
+  },
+  {
+    "fecha": "2026-02-07T12:00:00.000Z",
+    "summary": "11.30 SANDRA MILENA FIGUEROA SILVA  1 SESION",
+    "nombreExtraido": "SAN",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "06ecfa25-758b-4000-b130-46b9110ec7ce",
+      "cedula": "37753949",
+      "nombre": "Sandra Milena",
+      "apellido": "Figueroa",
+      "celular": "3004859763"
+    }
+  },
+  {
+    "fecha": "2026-02-09T12:30:00.000Z",
+    "summary": "10.00 MARIA DIAZ ALVAREZ 1 SESION",
+    "nombreExtraido": "MARIA DIAZ ALVAREZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "ca09ac7d-7e8b-4fd7-b400-a53342b43132",
+      "cedula": "63332314",
+      "nombre": "Maria",
+      "apellido": "Diaz Alvarez",
+      "celular": "3156656016"
+    }
+  },
+  {
+    "fecha": "2026-02-10T08:30:00.000Z",
+    "summary": "9.00 CLAUDIA  ALEJANDRA CORDERO  1 SESION + 1 SESION MANO",
+    "nombreExtraido": "CLAUDIA ALEJAN",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f713a786-9091-4612-a177-6d1e965b529a",
+      "cedula": "1101640497",
+      "nombre": "Claudia Alejandra",
+      "apellido": "Cordero Ardila",
+      "celular": "3204563806"
+    },
+    "status": "matched",
+    "score": 0.85
+  },
+  {
+    "fecha": "2026-02-10T20:30:00.000Z",
+    "summary": "8.00  EZID ADELA PEREZ",
+    "nombreExtraido": "EZID ADELA PEREZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "4ec10373-a38e-48d6-aa99-e54a9f7d8158",
+      "cedula": "37934951",
+      "nombre": "Ezid Adela",
+      "apellido": "Perez Delgado",
+      "celular": "3182462369"
+    }
+  },
+  {
+    "fecha": "2026-02-16T06:30:00.000Z",
+    "summary": "8.45 CLAUDIA MILENA DIAZ  CONTROL",
+    "nombreExtraido": "CLAUDIA MILENA DIAZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "4a93dd81-f9bd-4ab0-9b8a-64ccd7d2eabe",
+      "cedula": "37721170",
+      "nombre": "Claudia Milena",
+      "apellido": "Diaz Vargas",
+      "celular": "3152111474"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-16T12:30:00.000Z",
+    "summary": "11.30 LUZ MIREYA PORRAS REVISION",
+    "nombreExtraido": "LUZ MIREYA PORRAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "7d265052-b722-40a6-a039-bf974245e36d",
+      "cedula": "63295242",
+      "nombre": "Luz Mireya",
+      "apellido": "Porras Mariño",
+      "celular": "3156961829"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-16T17:30:00.000Z",
+    "summary": "3.30  JOHANA JANETH PEREZ FERNANDEZ 1 sesion c",
+    "nombreExtraido": "JOHANA JANETH PEREZ FERNANDEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c3ec9302-76f4-4fbe-9bd5-f0069d87d419",
+      "cedula": "37512545",
+      "nombre": "Johana Jeanet",
+      "apellido": "Perez Fernandez",
+      "celular": "3007432780"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-17T19:00:00.000Z",
+    "summary": "3.00  EZID ADELA PEREZ 1 sesion",
+    "nombreExtraido": "EZID ADELA PEREZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "4ec10373-a38e-48d6-aa99-e54a9f7d8158",
+      "cedula": "37934951",
+      "nombre": "Ezid Adela",
+      "apellido": "Perez Delgado",
+      "celular": "3182462369"
+    }
+  },
+  {
+    "fecha": "2026-02-18T12:30:00.000Z",
+    "summary": "11.30 ESTHER  AFANADOR PRADA revision",
+    "nombreExtraido": "ESTHER AFANADOR PRADA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "48a45f11-cc21-452f-99c4-9d834fa68439",
+      "cedula": "63361834",
+      "nombre": "Esther",
+      "apellido": "Afanador Prada",
+      "celular": "3162291629"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-18T15:00:00.000Z",
+    "summary": "3.30 MARIA ODILIA ARGUELLO CONTROL",
+    "nombreExtraido": "MARIA ODILIA ARGUELLO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "5e0d061a-cf54-4b50-860e-9328207cb996",
+      "cedula": "63511548",
+      "nombre": "Maria Odilia",
+      "apellido": "Arguello Vargas",
+      "celular": "3186011264"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-18T17:30:00.000Z",
+    "summary": "4.00 ANGELICA MARIA TAVERA",
+    "nombreExtraido": "ANGELICA MARIA TAVERA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "03a2088a-39c4-4224-a3a3-ff2c7809a406",
+      "cedula": "63530104",
+      "nombre": "Angelica Maria",
+      "apellido": "Tavera Chavarro",
+      "celular": "3108993751"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-21T07:30:00.000Z",
+    "summary": "9.00  MELVA SARMIENTO SEPULVEDA 1 SESION LASER",
+    "nombreExtraido": "MELVA SARMIENTO SEPULVEDA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c91695c0-71e6-455e-a97b-2968a0d135d8",
+      "cedula": "63509709",
+      "nombre": "Melba",
+      "apellido": "Sarmiento Sepulveda",
+      "celular": "3155760693"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-21T12:00:00.000Z",
+    "summary": "11.30  LUISA FERNANDA QUINTERO 1 SEION  LASER",
+    "nombreExtraido": "LUISA FERNANDA QUINTERO SEION",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "25afe083-7753-49fb-93eb-e4a432387690",
+      "cedula": "1105675738",
+      "nombre": "Luisa Fernanda",
+      "apellido": "Quintero",
+      "celular": "3118993337"
+    },
+    "status": "matched",
+    "score": 0.825
+  },
+  {
+    "fecha": "2026-02-23T05:00:00.000Z",
+    "summary": "8.00 VICKY PAOLA MAYORGA REVISION",
+    "nombreExtraido": "VICKY PAOLA MAYORGA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "b0c4ed51-81b0-42aa-ace0-888750e222af",
+      "cedula": "37722735",
+      "nombre": "Vicky Paula",
+      "apellido": "Mayorga Rodriguez",
+      "celular": "3046353003"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-23T10:00:00.000Z",
+    "summary": "11.00 CLAUDIA MARELLY AYALA CONTROL",
+    "nombreExtraido": "CLAUDIA MARELLY AYALA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3ede7276-baaf-4b8b-971a-8c133a3f3155",
+      "cedula": "28218689",
+      "nombre": "Claudia Marelly",
+      "apellido": "Ayala Ortiz",
+      "celular": "3162222977"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-23T15:00:00.000Z",
+    "summary": "2.30 ANA VICTORIA MERCHAN CONTROL",
+    "nombreExtraido": "ANA VICTORIA MERCHAN",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "547348ec-c4e7-45b8-ac9c-416be6b64720",
+      "cedula": "60250967",
+      "nombre": "Ana Victoria",
+      "apellido": "Merchan Merchan",
+      "celular": "3152240978"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-24T05:30:00.000Z",
+    "summary": "8.00YERLY NATHALY CELIS revision dra",
+    "nombreExtraido": "YERLY NATHALY CELIS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f360e0cf-d83c-4a78-9e49-2a243dcff619",
+      "cedula": "63560746",
+      "nombre": "Yerlith Natalie",
+      "apellido": "Celis Patiño",
+      "celular": "3208990774"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-24T12:30:00.000Z",
+    "summary": "11.30 LUZ EDITH MONTEZUMA REVISION",
+    "nombreExtraido": "LUZ EDITH MONTEZUMA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "0f87654a-a7f1-446c-942d-71e52b00769c",
+      "cedula": "27433884",
+      "nombre": "Luz Edith",
+      "apellido": "Montezuma Mera",
+      "celular": "3138725824"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-25T13:00:00.000Z",
+    "summary": "11.30 MARIA MARGARITA HERNANDEZ revision",
+    "nombreExtraido": "MARIA MARGARITA HERNANDEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "13fc34c4-5cbd-43c2-b1c7-d317efbb5f4e",
+      "cedula": "1005149985",
+      "nombre": "Maria Margarita",
+      "apellido": "Hernandez Santander",
+      "celular": "3164313314"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-27T11:00:00.000Z",
+    "summary": "10.00 LIRIS ESTHER CASTILLEJOS 2 sesiones",
+    "nombreExtraido": "LIRIS ESTHER CASTILLEJOS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c21b3fff-16fa-4ed6-b3fb-2af7b54449f7",
+      "cedula": "49744461",
+      "nombre": "Liris Esther",
+      "apellido": "Castillejo Mejia",
+      "celular": "3126879402"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-27T18:00:00.000Z",
+    "summary": "3.00   MARIA GLADYS PRADA DE AMADOR control",
+    "nombreExtraido": "MARIA GLADYS PRADA DE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "2356567c-3a82-4a07-a79b-02c1f85e8897",
+      "cedula": "37823196",
+      "nombre": "Maria Gladys",
+      "apellido": "Prada de Amador",
+      "celular": "3173959848"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-27T18:30:00.000Z",
+    "summary": "3.15 OLGA MERCEDES SERRANO  3 sesiones",
+    "nombreExtraido": "OLGA MERCEDES SERRANO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "9df17f6d-6a59-46c1-9613-1e7ae7eb93e0",
+      "cedula": "27790119",
+      "nombre": "Olga Mercedes",
+      "apellido": "Serrano",
+      "celular": "3166861860"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-02T08:00:00.000Z",
+    "summary": "10.00 BRICEIDA FLOREZ SUAREZ 314.410.0620 control",
+    "nombreExtraido": "BRICEIDA FLOREZ SUAREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "a31d6108-b6fd-4b0e-95bc-2f8e715d1ae7",
+      "cedula": "63287266",
+      "nombre": "Briceida",
+      "apellido": "Florez Suarez",
+      "celular": "3223626009"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-02T08:30:00.000Z",
+    "summary": "10.15 MARIELA URIBE VARGAS CONTROL",
+    "nombreExtraido": "MARIELA URIBE VARGAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "ad142988-f5bb-42fc-9be4-5544eb25688d",
+      "cedula": "37795988",
+      "nombre": "Mariela",
+      "apellido": "Uribe Vargas",
+      "celular": "3003611703"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-03T06:30:00.000Z",
+    "summary": "8.45 MARIA DEL CARMEN CAÑAS CONTROL",
+    "nombreExtraido": "MARIA DEL CARMEN CAÑAS",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "694ff8e0-d0cf-4672-a844-0f5e3523b2ab",
+      "cedula": "60258710",
+      "nombre": "Maria del Camen",
+      "apellido": "Cañas Parada",
+      "celular": "3143349754"
+    }
+  },
+  {
+    "fecha": "2026-03-04T13:00:00.000Z",
+    "summary": "2.30 GLORIA AMPARO VILLAMIZAR CONTROL",
+    "nombreExtraido": "GLORIA AMPARO VILLAMIZAR",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "d9b52ef2-d607-46bd-80ac-77d4a71ce1df",
+      "cedula": "63304462",
+      "nombre": "Gloria Amparo",
+      "apellido": "Villamizar Diaz",
+      "celular": "3105696162"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-03-09T07:30:00.000Z",
+    "summary": "9.30 SILVINA BERMUDEZ control",
+    "nombreExtraido": "SILVINA BERMUDEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "b921f515-e0e3-4d7b-aebb-1a4855c12e55",
+      "cedula": "28356739",
+      "nombre": "Silvina",
+      "apellido": "Bermudez Suarez",
+      "celular": "3153704829"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-03-10T14:30:00.000Z",
+    "summary": "2.45 LINA LUZ MARTINEZ  control",
+    "nombreExtraido": "LINA LUZ MARTINEZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "83f2c0fa-3ae7-428d-a370-654d55856817",
+      "cedula": "63511180",
+      "nombre": "Lina Luz",
+      "apellido": "Martinez Rojas",
+      "celular": "3182806254"
+    }
+  },
+  {
+    "fecha": "2026-03-12T10:00:00.000Z",
+    "summary": "11.00 JENNY KARINA GOMEZ CONTROL",
+    "nombreExtraido": "JENNY KARINA GOMEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "6ba24401-d43c-4af3-bcdd-cc520361b357",
+      "cedula": "63482166",
+      "nombre": "Jenny Karina",
+      "apellido": "Gomez Ferreira",
+      "celular": "3188267195"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-03-12T16:30:00.000Z",
+    "summary": "2.30 LUZ MERY TORREZ SALAMANCA CONTROL",
+    "nombreExtraido": "LUZ MERY TORREZ SALAMANCA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "6263cffd-50d5-42d1-b743-fd6421e88837",
+      "cedula": "45622667",
+      "nombre": "Luz Mery",
+      "apellido": "Torres Salamanca",
+      "celular": "3172364366"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-13T09:30:00.000Z",
+    "summary": "10.00 MAYSOREYE ARGUELLO control",
+    "nombreExtraido": "MAYSOREYE ARGUELLO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3b61b330-32f5-4681-b205-42ef4ac81317",
+      "cedula": "63252588",
+      "nombre": "Maysoreye",
+      "apellido": "Arguello Figueroa",
+      "celular": "3187815609"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-03-13T11:30:00.000Z",
+    "summary": "11.00 ISADORA VARGAS URREA CONTROL",
+    "nombreExtraido": "ISADORA VARGAS URREA",
+    "phone": null,
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "7d4df8d1-b43f-4c18-b3d5-4db751980282",
+        "cedula": "1098694851",
+        "nombre": "Leidy Isaura",
+        "apellido": "Wilches Correa",
+        "celular": "3183203301"
+      },
+      {
+        "id": "169e00a1-61f4-4fb0-949d-8a3d4920dfb7",
+        "cedula": "37257997",
+        "nombre": "Rosa Nelly",
+        "apellido": "Correa Vargas",
+        "celular": "3246229992"
+      },
+      {
+        "id": "a15958cf-d52f-4aea-a2c4-54c2213e31ae",
+        "cedula": "27879197",
+        "nombre": "Marisol",
+        "apellido": "Vargas Vargas",
+        "celular": "3162592110"
+      },
+      {
+        "id": "2d17cefb-6f18-4ef6-ae54-7235bf018bb1",
+        "cedula": "28295377",
+        "nombre": "Eulalia",
+        "apellido": "Vargas Barajas",
+        "celular": "3107979303"
+      },
+      {
+        "id": "45ae119e-851b-48cb-96de-af45ee468c6c",
+        "cedula": "63478456",
+        "nombre": "Nancy",
+        "apellido": "Vargas Arias",
+        "celular": "3164473013"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente nueva - no encontrada en BD"
+  },
+  {
+    "fecha": "2026-03-13T15:00:00.000Z",
+    "summary": "3.15 ALEXANDER MORA ESTUPIÑAN  CONTROL",
+    "nombreExtraido": "ALEXANDER MORA ESTUPIÑAN",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "790c3a56-dbce-470d-82cf-1c9b3413452f",
+      "cedula": "5457922",
+      "nombre": "Alexander",
+      "apellido": "Mora Estupiñan",
+      "celular": "3185479678"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-13T15:30:00.000Z",
+    "summary": "3.30 ANNY CECILIA GUEVARA  control",
+    "nombreExtraido": "ANNY CECILIA GUEVARA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "3e878638-49d2-4895-9400-ba1aee5b61f4",
+      "cedula": "63315121",
+      "nombre": "Fanny Cecilia",
+      "apellido": "Guevara Mendoza",
+      "celular": "3123125180"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-03-16T13:30:00.000Z",
+    "summary": "2.30 LUZ MERY TORRES CONTROL",
+    "nombreExtraido": "LUZ MERY TORRES",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "6263cffd-50d5-42d1-b743-fd6421e88837",
+      "cedula": "45622667",
+      "nombre": "Luz Mery",
+      "apellido": "Torres Salamanca",
+      "celular": "3172364366"
+    }
+  },
+  {
+    "fecha": "2026-03-17T08:30:00.000Z",
+    "summary": "10.15 ELSA BAYONA SERRANO CONTROL",
+    "nombreExtraido": "ELSA BAYONA SERRANO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "a8ecd02c-02d1-44b5-bc6f-9dd85bc450d8",
+      "cedula": "28211411",
+      "nombre": "Elsa",
+      "apellido": "Bayona Serrano",
+      "celular": "3153910499"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-17T12:00:00.000Z",
+    "summary": "11.30BERNARDA SANABRIA QUINTERO REVISION TROMBOS",
+    "nombreExtraido": "BERNARDA SANABRIA QUINTERO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "c41937f6-2348-4f8e-88ae-96ff3fe13aaa",
+      "cedula": "63290703",
+      "nombre": "Bernarda",
+      "apellido": "Sanabria Quintero",
+      "celular": "3123601045"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-03-18T12:00:00.000Z",
+    "summary": "3.30RUTH GARCIA GOMEZ CONTROL",
+    "nombreExtraido": "RUTH GARCIA GOMEZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "7df20dee-6f1e-4c02-b987-fbd207bd33c3",
+      "cedula": "28469826",
+      "nombre": "Ruth",
+      "apellido": "Garcia Gamez",
+      "celular": "3125732473"
+    }
+  },
+  {
+    "fecha": "2026-03-24T13:00:00.000Z",
+    "summary": "11.30 FRANCELINA RANGEL SCANEO C",
+    "nombreExtraido": "FRANCELINA RANGEL",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "70f47c7a-5954-4712-aab6-cb0c3fd3cab4",
+      "cedula": "28410818",
+      "nombre": "Francelina",
+      "apellido": "Rangel Duarte",
+      "celular": "3133252989"
+    },
+    "status": "matched",
+    "score": 0.8999999999999999
+  },
+  {
+    "fecha": "2026-03-25T06:30:00.000Z",
+    "summary": "10.00 LUZ STELLA CALVETE CONTROL",
+    "nombreExtraido": "LUZ STELLA CALVETE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "d343dff8-cc7e-465b-b84a-8bd3870b05e9",
+      "cedula": "63278465",
+      "nombre": "Luz Stella",
+      "apellido": "Calvete Angarita",
+      "celular": "3017455406"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-03-25T13:00:00.000Z",
+    "summary": "11.30 IRENE RUEDA MEDIA REVISION",
+    "nombreExtraido": "IRENE RUEDA",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "54718b98-806b-453c-ba1a-628f8e6c524c",
+      "cedula": "37510346",
+      "nombre": "Irene",
+      "apellido": "Rueda Medina",
+      "celular": "3175281512"
+    }
+  },
+  {
+    "fecha": "2026-03-26T11:00:00.000Z",
+    "summary": "10.00  MARIA EUGENIA RUIZ DE MARIN CONTROL",
+    "nombreExtraido": "MARIA EUGENIA RUIZ DE",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "a2161593-92fc-4d9d-821b-2c469401c899",
+      "cedula": "28437271",
+      "nombre": "Maria Eugenia",
+      "apellido": "Ruiz de Marin",
+      "celular": "3212083012"
+    }
+  },
+  {
+    "fecha": "2026-03-30T15:00:00.000Z",
+    "summary": "3.00 PATRICIA REYES GARCIA control",
+    "nombreExtraido": "PATRICIA REYES GARCIA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "4e39cc5a-c79e-4c70-a705-2b2f9fc8dadc",
+      "cedula": "63446922",
+      "nombre": "Patricia",
+      "apellido": "Reyes Garcia",
+      "celular": "3013609702"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-04-01T12:30:00.000Z",
+    "summary": "11.30 jenny gonzalez rodriguez 1 sesion c",
+    "nombreExtraido": "JENNY GONZALEZ RO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "758bc0be-bc69-4d6b-92bd-7408d76fd9a7",
+      "cedula": "63368830",
+      "nombre": "Jeny",
+      "apellido": "Gonzalez Rodriguez",
+      "celular": "3106808781"
+    }
+  },
+  {
+    "fecha": "2026-04-04T07:30:00.000Z",
+    "summary": "9.30 BERTHA BELTRAN MONSALVE  CONTROL",
+    "nombreExtraido": "BERTHA BELTRAN MONSALVE",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "28b0408a-aa17-4580-bb41-b0cf54a6138d",
+      "cedula": "28334222",
+      "nombre": "Bertha",
+      "apellido": "Beltran Monsalve",
+      "celular": "3165100869"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-04-04T08:30:00.000Z",
+    "summary": "10.00 YEISMITH VERA  CEL . 3172671932 CONTROL",
+    "nombreExtraido": "YEISMITH VERA",
+    "phone": "3172671932",
+    "cedula": null,
+    "patient": {
+      "id": "6eeb0e19-fd66-4818-924d-058b4f47cc50",
+      "cedula": "63472071",
+      "nombre": "Yeismith",
+      "apellido": "Vera Segura",
+      "celular": "3172671932"
+    },
+    "status": "matched",
+    "score": 0.95
+  },
+  {
+    "fecha": "2026-05-13T16:30:00.000Z",
+    "summary": "2.30 BLANCA LUCIA GRIMALDOS CONTROL",
+    "nombreExtraido": "BLANCA LUCIA GRIMALDOS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "a7e77f4a-fcee-4ca7-a3f7-e4e2522065e6",
+      "cedula": "63354515",
+      "nombre": "Blanca Lucia",
+      "apellido": "Grimaldos Murillo",
+      "celular": "3156271379"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-05-14T11:30:00.000Z",
+    "summary": "11.00 ANA DOLRES PEREZ  control",
+    "nombreExtraido": "ANA DOLRES PEREZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "a11d9dd9-3606-4f18-b796-f65976493df2",
+      "cedula": "27986759",
+      "nombre": "Ana Dolores",
+      "apellido": "Perez de Macias",
+      "celular": "3133359252"
+    }
+  },
+  {
+    "fecha": "2026-05-19T16:00:00.000Z",
+    "summary": "2.30 YESMITH HELENA ARIAZ  control",
+    "nombreExtraido": "YESMITH HELENA ARIAZ",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "d2dfceb1-fa2c-40bf-b1c6-5e06b79ed6a9",
+      "cedula": "63336293",
+      "nombre": "Yesmith Helena",
+      "apellido": "Arias Ramirez",
+      "celular": "3172443962"
+    }
+  },
+  {
+    "fecha": "2026-05-20T06:00:00.000Z",
+    "summary": "8.45 ANA CELIA SEPULVEDA CONTROL",
+    "nombreExtraido": "ANA CELIA SEPULVEDA",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "4e817764-6b35-40ab-a27d-b6e30466adfb",
+      "cedula": "63536264",
+      "nombre": "Anacelia",
+      "apellido": "Sepulveda Duran",
+      "celular": "3177902314"
+    }
+  },
+  {
+    "fecha": "2026-05-21T13:30:00.000Z",
+    "summary": "3.15 LILIANA FLOREZ  BAYONA control",
+    "nombreExtraido": "LILIANA FLOREZ BAYONA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "a4c0e718-5163-469d-8e97-9ecb65710a73",
+      "cedula": "63483840",
+      "nombre": "Liliana",
+      "apellido": "Florez Bayona",
+      "celular": "3176391672"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-05-22T06:00:00.000Z",
+    "summary": "8.45 MARIA DEL CARMEN CAÑAS CONTROL",
+    "nombreExtraido": "MARIA DEL CARMEN CAÑAS",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "694ff8e0-d0cf-4672-a844-0f5e3523b2ab",
+      "cedula": "60258710",
+      "nombre": "Maria del Camen",
+      "apellido": "Cañas Parada",
+      "celular": "3143349754"
+    }
+  },
+  {
+    "fecha": "2026-05-22T22:30:00.000Z",
+    "summary": "3.45 SAMUEL MEZA ROJAS CONTROL",
+    "nombreExtraido": "SAMUEL MEZA ROJAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "8a7538c8-1fca-4fe9-b0fb-cafa9ab22a80",
+      "cedula": "5714701",
+      "nombre": "Samuel",
+      "apellido": "Meza Rojas",
+      "celular": "3014638895"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-05-23T06:00:00.000Z",
+    "summary": "8.45 SAMUEL MEZA ROJAS CONTROL",
+    "nombreExtraido": "SAMUEL MEZA ROJAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "8a7538c8-1fca-4fe9-b0fb-cafa9ab22a80",
+      "cedula": "5714701",
+      "nombre": "Samuel",
+      "apellido": "Meza Rojas",
+      "celular": "3014638895"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-05-23T06:30:00.000Z",
+    "summary": "9.00 NELLY MORENO QUINTERO CONTROL",
+    "nombreExtraido": "NELLY MORENO QUINTERO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "b80b794b-a897-4220-bb10-ce7792915062",
+      "cedula": "63390484",
+      "nombre": "Nelly",
+      "apellido": "Moreno Quintero",
+      "celular": "3156616601"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-06-20T10:00:00.000Z",
+    "summary": "10.00 ESPERANZA RIVERA SUAREZ control",
+    "nombreExtraido": "ESPERANZA RIVERA SUAREZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "71915a1c-7bcc-4bc3-aae4-507b839af157",
+      "cedula": "63336104",
+      "nombre": "Esperanza",
+      "apellido": "Rivera Suarez",
+      "celular": "3138459177"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-06-22T08:30:00.000Z",
+    "summary": "9.30 ORFELINA JEJEN BRICEÑO  CONTROL",
+    "nombreExtraido": "ORFELINA JEJEN BRICEÑO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "226a1a67-ad48-44f7-a669-555f86f882cc",
+      "cedula": "1102378245",
+      "nombre": "Orfelina",
+      "apellido": "Jejen Briceño",
+      "celular": "3044426971"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-06-24T14:30:00.000Z",
+    "summary": "3.00 BLEIDY AMPARO CONTROL",
+    "nombreExtraido": "BLEIDY AMPARO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "9918b984-0b68-48e5-b966-2dad9836eabc",
+      "cedula": "37943980",
+      "nombre": "Bleydi Amparo",
+      "apellido": "Uribe",
+      "celular": "3132904644",
+      "email": null,
+      "fecha_nacimiento": "1969-08-26",
+      "direccion": "Carrera 29 Nª 35 - 30",
+      "contacto_emergencia_nombre": null,
+      "contacto_emergencia_telefono": null,
+      "contacto_emergencia_parentesco": null,
+      "created_by": null,
+      "created_at": "2026-01-28T22:11:53.210928+00:00",
+      "updated_at": "2026-01-28T22:11:53.210928+00:00",
+      "ocupacion": "Comercio",
+      "estado_civil": "Casada",
+      "ciudad": "Bucaramanga",
+      "pais": "Colombia",
+      "fecha_registro": "2024-12-11"
+    }
+  },
+  {
+    "fecha": "2026-07-22T15:00:00.000Z",
+    "summary": "3.15 BELQUES CALA CALA CONTROL",
+    "nombreExtraido": "BELQUES CALA CALA",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "7d501e13-bd0b-4b1e-950f-84443f3491f5",
+      "cedula": "28352881",
+      "nombre": "Belques",
+      "apellido": "Cala Cala",
+      "celular": "3183101965"
+    }
+  },
+  {
+    "fecha": "2026-09-03T10:30:00.000Z",
+    "summary": "11.00  GLORIA CAMACHO CONTROL",
+    "nombreExtraido": "GLORIA CAMACHO",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "1c80a586-74e2-48fc-a7a7-21acbf9326ab",
+      "cedula": "63283352",
+      "nombre": "Gloria",
+      "apellido": "Camacho Guerrero",
+      "celular": "3165369427"
+    }
+  },
+  {
+    "fecha": "2026-10-21T18:30:00.000Z",
+    "summary": "3.30 LUZ DARY PARADA  CONTROL",
+    "nombreExtraido": "LUZ DARY PARADA",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "752a2cdd-78f1-4c95-9ca9-e1c9684c6971",
+      "cedula": "37726899",
+      "nombre": "Luz Dary",
+      "apellido": "Parada Vargas",
+      "celular": "3167171770"
+    }
+  },
+  {
+    "fecha": "2026-12-15T07:00:00.000Z",
+    "summary": "9.00 TOÑA ROJAS DIAS  CONTROL",
+    "nombreExtraido": "TOÑA ROJAS DIAS",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "45de19df-76f5-4714-945a-fac8014de093",
+      "cedula": "63432119",
+      "nombre": "Toña",
+      "apellido": "Rojas Diaz",
+      "celular": "3228980912"
+    }
+  },
+  {
+    "fecha": "2026-01-29T05:30:00.000Z",
+    "summary": "8.00 YAMILE ZARATE CAMACHO  2 seiones",
+    "nombreExtraido": "YAMILE ZARATE CAMACHO SEIONES",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "bd44a80f-aae3-426b-a1c3-e25f4b19e9d6",
+      "cedula": "63443622",
+      "nombre": "Yamile",
+      "apellido": "Zarate Camacho",
+      "celular": "3154369358"
+    },
+    "status": "matched",
+    "score": 0.825
+  },
+  {
+    "fecha": "2026-01-31T08:30:00.000Z",
+    "summary": "10 00 Lady Joana Cortés Pinzon 1 vez cel 318 6069455",
+    "nombreExtraido": "LADY JOANA CORTÉS PINZON",
+    "phone": "3186069455",
+    "cedula": null,
+    "candidates": [
+      {
+        "id": "c8d0818f-6dd3-490f-b326-02be9b54382a",
+        "cedula": "28074598",
+        "nombre": "Mary",
+        "apellido": "Pinto de Ortiz",
+        "celular": "3152528678"
+      },
+      {
+        "id": "346f4c03-e0df-4639-bdf6-49666f6fbf29",
+        "cedula": "37722666",
+        "nombre": "Heidy Johanna",
+        "apellido": "Garrido Pinzon",
+        "celular": "3177140106"
+      },
+      {
+        "id": "de6f3af3-91da-4b8f-bc27-43dba6c99133",
+        "cedula": "27727296",
+        "nombre": "Ana Lid",
+        "apellido": "Torres de Galvis",
+        "celular": "3112332804"
+      },
+      {
+        "id": "9fa6a9da-ba4a-496f-8b52-1f61da845901",
+        "cedula": "37841448",
+        "nombre": "Lexi Johanna",
+        "apellido": "Silva Rincon",
+        "celular": "3178197822"
+      },
+      {
+        "id": "6d490ae7-691c-4c42-9f78-8e132b3377a2",
+        "cedula": "63506681",
+        "nombre": "Ana Ilce",
+        "apellido": "Ortiz Pinzon",
+        "celular": "3134183850"
+      }
+    ],
+    "status": "nuevo",
+    "nota": "Paciente probable nuevo - teléfono no en BD"
+  },
+  {
+    "fecha": "2026-01-31T10:30:00.000Z",
+    "summary": "11.00 MILDRED CASTILLO GONZALEZ CONTROL",
+    "nombreExtraido": "MIL",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "f31553b1-24c4-428b-9f46-b42e7802229b",
+      "cedula": "63537856",
+      "nombre": "Mildred",
+      "apellido": "Castillo Gonzalez",
+      "celular": "3213462121",
+      "email": "esjudi13@hotmail.com",
+      "fecha_nacimiento": "1983-08-14",
+      "direccion": "MANZ 29 CASA 9 RUITOQUE",
+      "contacto_emergencia_nombre": null,
+      "contacto_emergencia_telefono": null,
+      "contacto_emergencia_parentesco": null,
+      "created_by": null,
+      "created_at": "2026-01-28T22:11:39.632272+00:00",
+      "updated_at": "2026-01-28T22:11:39.632272+00:00",
+      "ocupacion": "Docente",
+      "estado_civil": "Casada",
+      "ciudad": "Bucaramanga",
+      "pais": "Colombia",
+      "fecha_registro": "2016-06-04"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-02T05:30:00.000Z",
+    "summary": "8.00  ALEXANDRA YANNETH MAYORGA  REVISION",
+    "nombreExtraido": "ALEXAN",
+    "phone": null,
+    "cedula": null,
+    "status": "matched",
+    "patient": {
+      "id": "b50d3284-1453-41e0-817e-1b6e00a2141c",
+      "cedula": "63512270",
+      "nombre": "Alexandra Yanneth",
+      "apellido": "Mayorga Rodriguez",
+      "celular": "3157926645"
+    }
+  },
+  {
+    "fecha": "2026-02-03T06:00:00.000Z",
+    "summary": "8.00 LILIAM SOFIA ZARATE CAMACHO CEL. 300.778.8423 2 sesiones",
+    "nombreExtraido": "LILIAM SOFIA ZARATE CAMACHO",
+    "phone": "30077884232",
+    "cedula": null,
+    "patient": {
+      "id": "009236f4-ea65-4b44-a7e4-5e0818a13b96",
+      "cedula": "1102348327",
+      "nombre": "Liliam Sofia",
+      "apellido": "Zarate Camacho",
+      "celular": "3007788423"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-03T06:30:00.000Z",
+    "summary": "8.15   SONIA MARINA ZARATE CAMACHO CONFIRMAR A LILIAM 2 sesiones",
+    "nombreExtraido": "SONIA MARINA ZARATE CAMACHO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "56c12111-c397-4790-8724-209bec2383d5",
+      "cedula": "37540874",
+      "nombre": "Sonia Marina",
+      "apellido": "Zarate Camacho",
+      "celular": "3163366425"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-03T15:30:00.000Z",
+    "summary": "3.00 YURY KATEHERINE URIBE JIMENEZ 1 SESION",
+    "nombreExtraido": "YURY KATEHERINE URIBE JIMENEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "a1bba74a-c51e-483d-a93b-fb44028ff546",
+      "cedula": "1100964496",
+      "nombre": "Yury Katherine",
+      "apellido": "Uribe Jimenez",
+      "celular": "3123653525"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-03T16:00:00.000Z",
+    "summary": "3.15 SONIA YOLANDA ARGUELLO CAMACHO 2 sesiones",
+    "nombreExtraido": "SONIA YOLANDA ARGUELLO CAMACHO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "32079b0f-5dd1-4d9d-8f24-0de0550ff851",
+      "cedula": "37541139",
+      "nombre": "Sonia Yolanda",
+      "apellido": "Arguello Camacho",
+      "celular": "3118994892"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-05T08:30:00.000Z",
+    "summary": "9.30  CLARA IBETH MOJICA ECOR",
+    "nombreExtraido": "CLARA IBETH MOJICA",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "6cb81ba7-5427-486c-b2f4-9f3631144c7a",
+      "cedula": "39140597",
+      "nombre": "Clara Ibeth",
+      "apellido": "Mujica Noriega",
+      "celular": "3145943410"
+    },
+    "status": "matched",
+    "score": 0.9249999999999999
+  },
+  {
+    "fecha": "2026-02-11T13:30:00.000Z",
+    "summary": "11.30 Stephanie Katherine Díaz Tanco revision",
+    "nombreExtraido": "STEPHANIE KATHERINE DÍAZ TANCO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "e09f96e3-f3ad-4201-88ba-bccb54aaefb4",
+      "cedula": "28215744",
+      "nombre": "Estephany Katherine",
+      "apellido": "Diaz Tanco",
+      "celular": "3132582343"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-02-12T17:30:00.000Z",
+    "summary": "8.00  MARTHA HERNANDEZ CACERES  RESISUOS",
+    "nombreExtraido": "MARTHA HERNANDEZ CACERES RESISUOS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "6f3cafc5-b42a-47ac-9358-39556a79e261",
+      "cedula": "63334847",
+      "nombre": "Martha",
+      "apellido": "Hernandez Caceres",
+      "celular": "3173490415"
+    },
+    "status": "matched",
+    "score": 0.825
+  },
+  {
+    "fecha": "2026-02-20T11:00:00.000Z",
+    "summary": "2.45 YENNY PAOLA MATEUS GONZALEZ  1 sesion",
+    "nombreExtraido": "YENNY PAOLA MATEUS GONZALEZ",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "7b7648cc-2fe3-43a3-8a06-3a4779e71c8e",
+      "cedula": "63551905",
+      "nombre": "Yenny Paola",
+      "apellido": "Mateus",
+      "celular": "3228963586"
+    },
+    "status": "matched",
+    "score": 0.825
+  },
+  {
+    "fecha": "2026-04-01T10:00:00.000Z",
+    "summary": ".10.00LUIS JESUS ORTIZ CONTROL CEL . 311.248.7885",
+    "nombreExtraido": ".10.00LUIS JESUS ORTIZ",
+    "phone": "3112487885",
+    "cedula": null,
+    "patient": {
+      "id": "ae645a46-f891-424f-928b-218e8370db36",
+      "cedula": "5612558",
+      "nombre": "Luis Jesus",
+      "apellido": "Ortiz",
+      "celular": "3112487885"
+    },
+    "status": "matched",
+    "score": 0.95
+  },
+  {
+    "fecha": "2026-04-11T07:30:00.000Z",
+    "summary": "9.00 JULIA CRISTINA COMBITA ARIAS CONTROL",
+    "nombreExtraido": "JULIA CRISTINA COMBITA ARIAS",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "2aedd1f4-7ca3-4d1f-84e4-568c54a2c748",
+      "cedula": "37937184",
+      "nombre": "Julia Cristina",
+      "apellido": "Combita Arias",
+      "celular": "3156772017"
+    },
+    "status": "matched",
+    "score": 1
+  },
+  {
+    "fecha": "2026-05-23T07:00:00.000Z",
+    "summary": "9.15 DORIS MIREYA MORENO QUINTERO CONTROL",
+    "nombreExtraido": "DORIS MIREYA MORENO QUINTERO",
+    "phone": null,
+    "cedula": null,
+    "patient": {
+      "id": "0c523265-83fe-4b07-a3d6-b82149cb0260",
+      "cedula": "63391812",
+      "nombre": "Dorys Mireya",
+      "apellido": "Moreno Quintero",
+      "celular": "3166233241"
+    },
+    "status": "matched",
+    "score": 1
+  }
+]

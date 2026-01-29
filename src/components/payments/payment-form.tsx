@@ -125,19 +125,38 @@ export function PaymentForm({
     }
   }, [state, router])
 
-  // Filter patients for search - search in cedula, nombre, apellido separately
+  // Normalize text for phonetic search (Spanish)
+  const normalizeForSearch = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[csz]/g, 's')          // S = C = Z
+      .replace(/[bv]/g, 'b')           // B = V
+      .replace(/[yi]/g, 'i')           // Y = I
+      .replace(/ñ/g, 'n')              // Ñ = N
+      .replace(/[^a-z0-9\s]/g, '')     // Remove special chars
+      .replace(/\s+/g, ' ')            // Normalize spaces
+      .trim()
+  }
+
+  // Filter patients for search - smart phonetic matching
   const filteredPatients = patientSearch.length >= 2
     ? patients.filter((p) => {
-        const search = patientSearch.toLowerCase().trim()
-        const cedula = (p.cedula || '').toLowerCase()
-        const nombre = (p.nombre || '').toLowerCase()
-        const apellido = (p.apellido || '').toLowerCase()
-        const fullName = `${nombre} ${apellido}`
+        const searchTerm = patientSearch.trim()
 
-        return cedula.includes(search) ||
-               nombre.includes(search) ||
-               apellido.includes(search) ||
-               fullName.includes(search)
+        // Numeric search (cedula)
+        if (/^\d+$/.test(searchTerm)) {
+          const cedula = (p.cedula || '').toLowerCase()
+          return cedula.includes(searchTerm)
+        }
+
+        // Name search with phonetic matching
+        const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
+        const normalizedWords = words.map(w => normalizeForSearch(w))
+        const fullName = normalizeForSearch(`${p.nombre || ''} ${p.apellido || ''}`)
+
+        return normalizedWords.every(word => fullName.includes(word))
       })
     : []
 

@@ -1,0 +1,314 @@
+[
+  {
+    "horaReal": "2:30",
+    "summary": "2.30 LINA MARCELA ZULUAGA CONTROL",
+    "nombreExtraido": "LINA MARCELA ZULUAGA",
+    "fecha": "2026-01-29T14:00:00.000Z",
+    "fechaFin": "2026-01-29T14:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "2:45",
+    "summary": "2.45 CAMILO ANDRES VILLABONA LOPEZ CEL .  300.417.5915 1 VEZ",
+    "nombreExtraido": "CAMILO ANDRES VILLABONA LOPEZ",
+    "fecha": "2026-01-29T14:30:00.000Z",
+    "fechaFin": "2026-01-29T15:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "3:00",
+    "summary": "3.00 LILIBETH BALDOBINO 2 SESIONES",
+    "nombreExtraido": "LILIBETH BALDOBINO",
+    "fecha": "2026-01-29T15:00:00.000Z",
+    "fechaFin": "2026-01-29T15:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "3:15",
+    "summary": "3.15 ALICIA RIVERO",
+    "nombreExtraido": "ALICIA RIVERO",
+    "fecha": "2026-01-29T15:30:00.000Z",
+    "fechaFin": "2026-01-29T16:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "3:30",
+    "summary": "3.30 CARMEN CECILIA PABON REVISION",
+    "nombreExtraido": "CARMEN CECILIA PABON",
+    "fecha": "2026-01-29T16:00:00.000Z",
+    "fechaFin": "2026-01-29T16:30:00.000Z",
+    "patient": {
+      "id": "d650e0b9-17a4-41a3-a0d0-61b09508e4fa",
+      "cedula": "37917030",
+      "nombre": "Carmen Cecilia",
+      "apellido": "Peña de Silva",
+      "celular": "6351817"
+    },
+    "candidates": [
+      {
+        "id": "d650e0b9-17a4-41a3-a0d0-61b09508e4fa",
+        "cedula": "37917030",
+        "nombre": "Carmen Cecilia",
+        "apellido": "Peña de Silva",
+        "celular": "6351817"
+      },
+      {
+        "id": "41260ead-8dd9-4f8e-af12-7df27e308482",
+        "cedula": "37543181",
+        "nombre": "Carmen Cecilia",
+        "apellido": "Bohorquez Gomez",
+        "celular": "3158842869"
+      }
+    ],
+    "status": "multiple"
+  },
+  {
+    "horaReal": "4:00",
+    "summary": "4.00 CENAIDA BLANCO RESIDUOS",
+    "nombreExtraido": "CENAIDA BLANCO",
+    "fecha": "2026-01-29T19:30:00.000Z",
+    "fechaFin": "2026-01-29T20:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "4:00",
+    "summary": "4.00 GLORIA PATRICIA CARDONA RESIDUOS",
+    "nombreExtraido": "GLORIA PATRICIA CARDONA",
+    "fecha": "2026-01-29T20:00:00.000Z",
+    "fechaFin": "2026-01-29T20:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "8:00",
+    "summary": "8.00 LEONOR LEON  1 VEZ CEL  316 4527002",
+    "nombreExtraido": "LEONOR LEON  1",
+    "fecha": "2026-01-30T05:30:00.000Z",
+    "fechaFin": "2026-01-30T06:00:00.000Z",
+    "patient": {
+      "id": "761d5573-d5a7-460f-a9a2-56cbf64d08eb",
+      "cedula": "63274901",
+      "nombre": "Leonor",
+      "apellido": "Rueda Jaimes",
+      "celular": "3163970436"
+    },
+    "candidates": [
+      {
+        "id": "761d5573-d5a7-460f-a9a2-56cbf64d08eb",
+        "cedula": "63274901",
+        "nombre": "Leonor",
+        "apellido": "Rueda Jaimes",
+        "celular": "3163970436"
+      },
+      {
+        "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+        "cedula": "63498517",
+        "nombre": "Leonor",
+        "apellido": "Paez Rojas",
+        "celular": "3175042685"
+      },
+      {
+        "id": "3dd4514d-c94d-48ab-80d9-527df7f76c44",
+        "cedula": "28404989",
+        "nombre": "Leonor",
+        "apellido": "Holguin Correa",
+        "celular": "3044041848"
+      }
+    ],
+    "status": "multiple"
+  },
+  {
+    "horaReal": "8:30",
+    "summary": "8.30 CAMILA RAMOS 1 SESION",
+    "nombreExtraido": "CAMILA RAMOS",
+    "fecha": "2026-01-30T06:00:00.000Z",
+    "fechaFin": "2026-01-30T06:30:00.000Z",
+    "patient": {
+      "id": "549fe4db-22f1-48b8-9bf6-9110c20de9e3",
+      "cedula": "37720916",
+      "nombre": "Camila",
+      "apellido": "Ramos Ortiz",
+      "celular": "3173105316"
+    },
+    "status": "exact"
+  },
+  {
+    "horaReal": "8:45",
+    "summary": "8.45  ESPERANZA MURILLO  2 SESIONES",
+    "nombreExtraido": "ESPERANZA MURILLO",
+    "fecha": "2026-01-30T06:30:00.000Z",
+    "fechaFin": "2026-01-30T07:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "9:00",
+    "summary": "9.00 NAYIBE AREVALO PEREZ CC. 63.536.236 CEL. 300.834.9980 1 sesion DRA",
+    "nombreExtraido": "NAYIBE AREVALO PEREZ",
+    "fecha": "2026-01-30T07:30:00.000Z",
+    "fechaFin": "2026-01-30T08:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "9:00",
+    "summary": "9.00 ISABEL ROMERO DURAN  2 SESIONES DRA",
+    "nombreExtraido": "ISABEL ROMERO DURAN",
+    "fecha": "2026-01-30T07:00:00.000Z",
+    "fechaFin": "2026-01-30T07:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "9:15",
+    "summary": "9.15 DORIZ ELENA RONDON URIBE 2 SESIONES",
+    "nombreExtraido": "DORIZ ELENA RONDON URIBE",
+    "fecha": "2026-01-30T08:00:00.000Z",
+    "fechaFin": "2026-01-30T08:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "9:30",
+    "summary": "9.30 OLGA MERCEDES SERRANO  3 sesiones  DRA",
+    "nombreExtraido": "OLGA MERCEDES SERRANO",
+    "fecha": "2026-01-29T18:00:00.000Z",
+    "fechaFin": "2026-01-29T18:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "9:30",
+    "summary": "9.30 ALBA DEL CARMEN HERNANDEZ 1 SESION",
+    "nombreExtraido": "ALBA DEL CARMEN HERNANDEZ",
+    "fecha": "2026-01-30T08:30:00.000Z",
+    "fechaFin": "2026-01-30T09:00:00.000Z",
+    "patient": {
+      "id": "b7840e90-5904-44eb-877c-1c0f5133311a",
+      "cedula": "63483884",
+      "nombre": "Edilma del Carmen",
+      "apellido": "Escobar Bohorquez",
+      "celular": "3212053902"
+    },
+    "candidates": [
+      {
+        "id": "b7840e90-5904-44eb-877c-1c0f5133311a",
+        "cedula": "63483884",
+        "nombre": "Edilma del Carmen",
+        "apellido": "Escobar Bohorquez",
+        "celular": "3212053902"
+      },
+      {
+        "id": "cdd774ba-1901-4af6-9b6a-d989583af4ad",
+        "cedula": "28013997",
+        "nombre": "Maria del Carmen",
+        "apellido": "Diaz Arenas",
+        "celular": "3012203862"
+      },
+      {
+        "id": "5e5d75ab-19b1-4af1-aa27-d3de48dc69bd",
+        "cedula": "37578198",
+        "nombre": "Maria del Carmen",
+        "apellido": "Escobar Duarte",
+        "celular": "3212165293"
+      }
+    ],
+    "status": "multiple"
+  },
+  {
+    "horaReal": "9:45",
+    "summary": "9.45  MARIA GLADYZ ESPINOZA   2 SESIONES",
+    "nombreExtraido": "MARIA GLADYZ ESPINOZA",
+    "fecha": "2026-01-30T09:00:00.000Z",
+    "fechaFin": "2026-01-30T09:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "10:00",
+    "summary": "10.00   BLANCA DORIS  RAMIREZ ECOR",
+    "nombreExtraido": "BLANCA DORIS  RAMIREZ",
+    "fecha": "2026-01-30T09:30:00.000Z",
+    "fechaFin": "2026-01-30T10:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "10:30",
+    "summary": "10.30 LILIANA NUÑEZ MUJICA 1 sesion",
+    "nombreExtraido": "LILIANA NUÑEZ MUJICA",
+    "fecha": "2026-01-29T10:00:00.000Z",
+    "fechaFin": "2026-01-29T10:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "10:45",
+    "summary": "10.45  SILVIA JULIANA PEÑUELA 2 SESIONES  DRA",
+    "nombreExtraido": "SILVIA JULIANA PEÑUELA",
+    "fecha": "2026-01-29T10:30:00.000Z",
+    "fechaFin": "2026-01-29T11:00:00.000Z",
+    "patient": {
+      "id": "612f5517-a8cc-4bff-86f9-9d8c10e4ad5b",
+      "cedula": "1098650257",
+      "nombre": "Silvia Juliana",
+      "apellido": "Rojas Contreras",
+      "celular": "3162550576"
+    },
+    "status": "exact"
+  },
+  {
+    "horaReal": "10:45",
+    "summary": "10.45 MARIA ELVIRA CORNEJO PEÑUELA ECOR VSI 1.700",
+    "nombreExtraido": "MARIA ELVIRA CORNEJO PEÑUELA",
+    "fecha": "2026-01-29T11:00:00.000Z",
+    "fechaFin": "2026-01-29T11:30:00.000Z",
+    "patient": {
+      "id": "58ecdd6f-4cf4-4db1-89f7-ed64431d8f13",
+      "cedula": "35461636",
+      "nombre": "Maria Elvira",
+      "apellido": "Ogliastri Gonzales",
+      "celular": "3004583762"
+    },
+    "candidates": [
+      {
+        "id": "58ecdd6f-4cf4-4db1-89f7-ed64431d8f13",
+        "cedula": "35461636",
+        "nombre": "Maria Elvira",
+        "apellido": "Ogliastri Gonzales",
+        "celular": "3004583762"
+      },
+      {
+        "id": "7e519999-a544-414b-b4f9-478636e43af3",
+        "cedula": "63273759",
+        "nombre": "Maria Elvira",
+        "apellido": "Mullerr de Salamanca",
+        "celular": "3112759798"
+      }
+    ],
+    "status": "multiple"
+  },
+  {
+    "horaReal": "11:00",
+    "summary": "11.00 REIMUNDO SUÑIGA CARDENAS CEL  .  316.484.1566 1 VEZ",
+    "nombreExtraido": "REIMUNDO SUÑIGA CARDENAS",
+    "fecha": "2026-01-29T11:30:00.000Z",
+    "fechaFin": "2026-01-29T12:00:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  },
+  {
+    "horaReal": "11:30",
+    "summary": "11.30  NELSY GUEVARA RODRIGUEZ  1 SESION C",
+    "nombreExtraido": "NELSY GUEVARA RODRIGUEZ",
+    "fecha": "2026-01-29T12:00:00.000Z",
+    "fechaFin": "2026-01-29T12:30:00.000Z",
+    "patient": null,
+    "status": "not_found"
+  }
+]

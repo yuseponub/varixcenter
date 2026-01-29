@@ -1,0 +1,4309 @@
+{
+  "exact": [
+    {
+      "fecha": "2026-01-29T06:30:00.000Z",
+      "summary": "8.45 Yezenia jaimes Hernandez ECOR 250",
+      "patient_id": "833e408d-e24a-4fb0-9083-8c43d1d4625b",
+      "patient_name": "Yezenia Jaimes Hernandez"
+    },
+    {
+      "fecha": "2026-01-29T07:00:00.000Z",
+      "summary": "9.00   MARLENE MARIA SOLANO GUERRERO 3 SESIONES  A FAVOR 1 SESION",
+      "patient_id": "86db1eb7-4e23-4fa0-acbb-9f789672557d",
+      "patient_name": "Marlene Maria Solano Guerrero"
+    },
+    {
+      "fecha": "2026-01-29T07:30:00.000Z",
+      "summary": "9.15 LILIANA PINTO SANCHEZ  2 ECOR 300",
+      "patient_id": "0b51da86-663a-4035-ba1b-2400049a7b68",
+      "patient_name": "Liliana Pinto Sanchez"
+    },
+    {
+      "fecha": "2026-01-30T05:30:00.000Z",
+      "summary": "8.00 LEONOR LEON  1 VEZ CEL  316 4527002",
+      "patient_id": "db9c3592-beb7-4c69-85b6-4a78a6ddeb69",
+      "patient_name": "Julisa Leon Hernandez"
+    },
+    {
+      "fecha": "2026-01-30T06:00:00.000Z",
+      "summary": "8.30 CAMILA RAMOS 1 SESION",
+      "patient_id": "549fe4db-22f1-48b8-9bf6-9110c20de9e3",
+      "patient_name": "Camila Ramos Ortiz"
+    },
+    {
+      "fecha": "2026-01-30T17:00:00.000Z",
+      "summary": "3.15 LAURA PATRICIA GARCIA RIAÑO CONTROL",
+      "patient_id": "8fcb84bd-c097-4b29-82e6-f776118ef526",
+      "patient_name": "Laura Patricia Garcia Riaño"
+    },
+    {
+      "fecha": "2026-01-30T18:00:00.000Z",
+      "summary": "3.30 LUCILA QUINTERO  RAMIREZ 1 SESION C",
+      "patient_id": "9ca1f9d2-ff5f-438b-a894-ee07f8bbba54",
+      "patient_name": "Lucila Quintero Ramirez"
+    },
+    {
+      "fecha": "2026-02-03T07:30:00.000Z",
+      "summary": "8.45  ANGELA RODRIGUEZ AMBROSIO 2 sesiones",
+      "patient_id": "f1a79ad4-06ef-4f08-b475-711eaab04795",
+      "patient_name": "Angel Ramon Rodriguez Capacho"
+    },
+    {
+      "fecha": "2026-02-03T08:00:00.000Z",
+      "summary": "9.00 ERIKA ANDREA  LEON REYES  CEL 311 8029924 1 VEZ",
+      "patient_id": "6e226670-1790-4e71-bf85-1572cc5e946c",
+      "patient_name": "Erika Andrea Florez Melendez"
+    },
+    {
+      "fecha": "2026-02-07T12:30:00.000Z",
+      "summary": "11.30 MARIA ISABEL PARRA GARCES REVISION DR",
+      "patient_id": "3e80966e-0082-49b3-b314-06249cd71e3a",
+      "patient_name": "Maria Isabel Parra Garces"
+    },
+    {
+      "fecha": "2026-02-12T14:30:00.000Z",
+      "summary": "3.45  INGRID SARMIENTO REYES SCANEO C",
+      "patient_id": "91ce8a1f-67d0-4b82-9a5f-98eeac5b5e1d",
+      "patient_name": "Ingrid Sarmiento Reyes"
+    },
+    {
+      "fecha": "2026-02-14T05:30:00.000Z",
+      "summary": "8.00 ERIKA JOHANA GAFARO control",
+      "patient_id": "4350e588-4aec-4144-8707-d5d20a7255a0",
+      "patient_name": "Erika Johana Gafaro Pabon"
+    },
+    {
+      "fecha": "2026-02-20T12:30:00.000Z",
+      "summary": "3.30OLGA LUCIA CACERES CARVAJAL control",
+      "patient_id": "8ef26aea-0837-43b6-94ce-a5255c59cee6",
+      "patient_name": "Olga Lucia Caceres Carvajal"
+    },
+    {
+      "fecha": "2026-05-23T07:30:00.000Z",
+      "summary": "9.30 NANCY RODRIGUEZ SEQUEDA CONTROL",
+      "patient_id": "8fe359d7-0ec2-4916-a7da-144cf071cd21",
+      "patient_name": "Nancy Rocio Peralta Hernandez"
+    },
+    {
+      "fecha": "2026-06-13T07:30:00.000Z",
+      "summary": "9.00 ROSALBA RODRIGUEZ CONTROL",
+      "patient_id": "8f619ca6-2428-4f5f-8d9e-df930958c8d8",
+      "patient_name": "Ilda Rosa Acevedo Lance"
+    },
+    {
+      "fecha": "2026-07-22T07:00:00.000Z",
+      "summary": "9.00 ESPERANZA QUINTANA SUAREZ CONTROL",
+      "patient_id": "7939ab19-3ea3-411d-aaeb-46e1b260c034",
+      "patient_name": "Esperanza Quintana Suarez"
+    }
+  ],
+  "probable": [
+    {
+      "fecha": "2026-01-29T06:00:00.000Z",
+      "summary": "8.30  PAOLA YANIRA DIAZ DAZA 2 SESIONES DRA",
+      "nombre_extraido": "PAOLA YANIRA DIAZ DAZA",
+      "candidates": [
+        {
+          "id": "2b7aa537-7ae7-45e3-81d9-d5e48d6c14c5",
+          "nombre": "Deysy Paola Diaz Chacon",
+          "cedula": "1032427265"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T08:00:00.000Z",
+      "summary": "9.30  YISELA NAVARRO VERGARA 2 SESIONES",
+      "nombre_extraido": "YISELA NAVARRO VERGARA",
+      "candidates": [
+        {
+          "id": "b8c08988-d62e-4d68-85ed-23c56b19d4dc",
+          "nombre": "Librada Navarro Cardenas",
+          "cedula": "63498725"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T08:30:00.000Z",
+      "summary": "9.45  CARMEN ATUESTA 2 SESIONES",
+      "nombre_extraido": "CARMEN ATUESTA",
+      "candidates": [
+        {
+          "id": "465a07f4-7ece-4269-9175-b0c1615d4424",
+          "nombre": "Lyda Atuesta Osorio",
+          "cedula": "1098607140"
+        },
+        {
+          "id": "515ebfc9-b329-41fb-8a9d-d4bdb7742349",
+          "nombre": "Carmen Johana Leal",
+          "cedula": "1094245082"
+        },
+        {
+          "id": "abcae21a-5445-4561-9f78-80b412408474",
+          "nombre": "Sonia Atuesta Garcia",
+          "cedula": "63363576"
+        },
+        {
+          "id": "0f8daa63-120a-4ff8-af89-70b9e502d3db",
+          "nombre": "Carmen Sofia Sisa",
+          "cedula": "63314754"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T09:00:00.000Z",
+      "summary": "10.00 SIRLEY JOHANA CARVAJAL DURAN  CEL  317.2885.769 1 VEZ",
+      "nombre_extraido": "SIRLEY JOHANA CARVAJAL DURAN",
+      "candidates": [
+        {
+          "id": "a2f17093-5770-4b6d-9db7-02f183c51de5",
+          "nombre": "Ana Dolores Duran Duran",
+          "cedula": "36455420"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T09:30:00.000Z",
+      "summary": "10.15 CLAUDIA LILIANA MORENO 1 SESION",
+      "nombre_extraido": "CLAUDIA LILIANA MORENO",
+      "candidates": [
+        {
+          "id": "e3b5f947-1066-40fb-8aa9-8a763c703675",
+          "nombre": "Claudia Liliana Mantilla Orejarena",
+          "cedula": "63343762"
+        },
+        {
+          "id": "0b51da86-663a-4035-ba1b-2400049a7b68",
+          "nombre": "Liliana Pinto Sanchez",
+          "cedula": "1100952147"
+        },
+        {
+          "id": "8f8dadad-6787-4c1e-b60c-e2646ff449a7",
+          "nombre": "Zaide Vesga Moreno",
+          "cedula": "63308286"
+        },
+        {
+          "id": "df6028c7-79fa-41d9-a204-05c349b955c0",
+          "nombre": "Liliana Montealegre",
+          "cedula": "39675886"
+        },
+        {
+          "id": "dea618a8-284c-4f6b-bc4d-732352cc80d0",
+          "nombre": "Azucena Barajas Moreno",
+          "cedula": "28359607"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T10:00:00.000Z",
+      "summary": "10.30 LILIANA NUÑEZ MUJICA 1 sesion",
+      "nombre_extraido": "LILIANA NUÑEZ MUJICA",
+      "candidates": [
+        {
+          "id": "0b51da86-663a-4035-ba1b-2400049a7b68",
+          "nombre": "Liliana Pinto Sanchez",
+          "cedula": "1100952147"
+        },
+        {
+          "id": "df6028c7-79fa-41d9-a204-05c349b955c0",
+          "nombre": "Liliana Montealegre",
+          "cedula": "39675886"
+        },
+        {
+          "id": "db871785-382c-4025-a6f9-09e6420ac6f0",
+          "nombre": "Liliana Rincon Barrios",
+          "cedula": "63484828"
+        },
+        {
+          "id": "8f1bebfe-f51c-429c-96d9-2d60afa99d39",
+          "nombre": "Milena Nuñez",
+          "cedula": "21549071"
+        },
+        {
+          "id": "dd25a20d-61ba-4ecb-8eb5-064220fec82b",
+          "nombre": "Liliana Fuentes Sanabria",
+          "cedula": "63480253"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T10:30:00.000Z",
+      "summary": "10.45  SILVIA JULIANA PEÑUELA 2 SESIONES  DRA",
+      "nombre_extraido": "SILVIA JULIANA PEÑUELA",
+      "candidates": [
+        {
+          "id": "612f5517-a8cc-4bff-86f9-9d8c10e4ad5b",
+          "nombre": "Silvia Juliana Rojas Contreras",
+          "cedula": "1098650257"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T11:00:00.000Z",
+      "summary": "10.45 MARIA ELVIRA CORNEJO PEÑUELA ECOR VSI 1.700",
+      "nombre_extraido": "MARIA ELVIRA CORNEJO PEÑUELA",
+      "candidates": [
+        {
+          "id": "58ecdd6f-4cf4-4db1-89f7-ed64431d8f13",
+          "nombre": "Maria Elvira Ogliastri Gonzales",
+          "cedula": "35461636"
+        },
+        {
+          "id": "7e519999-a544-414b-b4f9-478636e43af3",
+          "nombre": "Maria Elvira Mullerr de Salamanca",
+          "cedula": "63273759"
+        },
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T11:30:00.000Z",
+      "summary": "11.00 REIMUNDO SUÑIGA CARDENAS CEL  .  316.484.1566 1 VEZ",
+      "nombre_extraido": "REIMUNDO SUÑIGA CARDENAS",
+      "candidates": [
+        {
+          "id": "a8497afd-b502-41f8-8c7c-419c47495994",
+          "nombre": "Ernestina Diaz Cardenas",
+          "cedula": "63447935"
+        },
+        {
+          "id": "b8c08988-d62e-4d68-85ed-23c56b19d4dc",
+          "nombre": "Librada Navarro Cardenas",
+          "cedula": "63498725"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T12:00:00.000Z",
+      "summary": "11.30  NELSY GUEVARA RODRIGUEZ  1 SESION C",
+      "nombre_extraido": "NELSY GUEVARA RO",
+      "candidates": [
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "ebdcb0bb-22e3-4487-a200-6b310d3db7b3",
+          "nombre": "Berenice Rodriguez Otero",
+          "cedula": "37725948"
+        },
+        {
+          "id": "24bbba63-8b81-441b-b8df-288f8f3d16b0",
+          "nombre": "Elsy Robira Espinosa",
+          "cedula": "68292858"
+        },
+        {
+          "id": "61ce1d38-f798-46f9-8ce6-6f571beb0dfb",
+          "nombre": "Amparo Sanchez Rodriguez",
+          "cedula": "37827738"
+        },
+        {
+          "id": "51014ba6-71b4-4fcb-8db4-bb2cc4b154c3",
+          "nombre": "Amparo Sandoval Rodriguez",
+          "cedula": "63475884"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T14:00:00.000Z",
+      "summary": "2.30 LINA MARCELA ZULUAGA CONTROL",
+      "nombre_extraido": "LINA MARCELA ZULUAGA",
+      "candidates": [
+        {
+          "id": "20473155-e2b6-4807-ad39-becc1f19e23f",
+          "nombre": "Marcela Ariza Ariza",
+          "cedula": "28307632"
+        },
+        {
+          "id": "2b6430b4-c7d0-4713-a79f-53ce668dafa7",
+          "nombre": "Marcela Solano Patiño",
+          "cedula": "63517537"
+        },
+        {
+          "id": "62fb5d5d-f9c2-45ab-bd14-76539d004244",
+          "nombre": "Diana Marcela Marin",
+          "cedula": "1098655085"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T14:30:00.000Z",
+      "summary": "2.45 CAMILO ANDRES VILLABONA LOPEZ CEL .  300.417.5915 1 VEZ",
+      "nombre_extraido": "CAMILO AN",
+      "candidates": [
+        {
+          "id": "e77ea010-299f-472b-9566-1fda8cbc8e85",
+          "nombre": "Daniela Fernandez",
+          "cedula": "1095951689"
+        },
+        {
+          "id": "3f7eddb7-bc2a-4688-82cf-e866a787c641",
+          "nombre": "Blanca Manrrique",
+          "cedula": "63321720"
+        },
+        {
+          "id": "04d6d86c-cdab-485f-bc29-560ea9e05414",
+          "nombre": "Alexander Marulanda",
+          "cedula": "1098665223"
+        },
+        {
+          "id": "49e75cb3-b5e4-47ba-9f96-865d77d690d1",
+          "nombre": "Angela Cristancho Sanchez",
+          "cedula": "37728112"
+        },
+        {
+          "id": "721b0aa5-b682-4c72-9d07-2fbf0371b5cc",
+          "nombre": "Janeth Mantilla",
+          "cedula": "63309431"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T15:00:00.000Z",
+      "summary": "3.00 LILIBETH BALDOBINO 2 SESIONES",
+      "nombre_extraido": "LILIBETH BALDOBINO",
+      "candidates": [
+        {
+          "id": "16a12b3f-8846-4a94-b433-67ff9ac80089",
+          "nombre": "Lilibeth Bermudez Gomez",
+          "cedula": "49667128"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T15:30:00.000Z",
+      "summary": "3.15 ALICIA RIVERO",
+      "nombre_extraido": "ALICIA RIVERO",
+      "candidates": [
+        {
+          "id": "1fcf25e1-6ecf-4f81-973c-5f5af8bdf50a",
+          "nombre": "Alicia Cespedes Cabanzo",
+          "cedula": "28428034"
+        },
+        {
+          "id": "a65a0c3f-adf3-481c-bb25-16fa9352f1b6",
+          "nombre": "William Rivero Ramirez",
+          "cedula": "13543124"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T16:00:00.000Z",
+      "summary": "3.30 CARMEN CECILIA PABON REVISION",
+      "nombre_extraido": "CARMEN CECILIA PABON",
+      "candidates": [
+        {
+          "id": "41260ead-8dd9-4f8e-af12-7df27e308482",
+          "nombre": "Carmen Cecilia Bohorquez Gomez",
+          "cedula": "37543181"
+        },
+        {
+          "id": "d650e0b9-17a4-41a3-a0d0-61b09508e4fa",
+          "nombre": "Carmen Cecilia Peña de Silva",
+          "cedula": "37917030"
+        },
+        {
+          "id": "515ebfc9-b329-41fb-8a9d-d4bdb7742349",
+          "nombre": "Carmen Johana Leal",
+          "cedula": "1094245082"
+        },
+        {
+          "id": "0d6db27f-240c-406b-a38e-f2c436463f86",
+          "nombre": "Rosalba Pabon Garces",
+          "cedula": "1098630225"
+        },
+        {
+          "id": "0f8daa63-120a-4ff8-af89-70b9e502d3db",
+          "nombre": "Carmen Sofia Sisa",
+          "cedula": "63314754"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T18:00:00.000Z",
+      "summary": "9.30 OLGA MERCEDES SERRANO  3 sesiones  DRA",
+      "nombre_extraido": "OLGA MERCEDES SERRANO",
+      "candidates": [
+        {
+          "id": "b06c3db2-f2dc-4426-831f-6dd8d0d351a6",
+          "nombre": "Carolina Serrano Serrano",
+          "cedula": "1098655889"
+        },
+        {
+          "id": "3f93c6bc-39eb-46a4-b743-b4a675ecc163",
+          "nombre": "Gisela Serrano Duran",
+          "cedula": "1102351544"
+        },
+        {
+          "id": "58876781-35b6-4887-b472-9bf104b4527c",
+          "nombre": "Erika Tatiana Serrano",
+          "cedula": "102369573"
+        },
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T19:30:00.000Z",
+      "summary": "4.00 CENAIDA BLANCO RESIDUOS",
+      "nombre_extraido": "CENAIDA BLANCO",
+      "candidates": [
+        {
+          "id": "c74e2a80-39cc-4c3e-aa3b-fc478107ed28",
+          "nombre": "Zulay Andrea Blanco Blanco",
+          "cedula": "63535096"
+        },
+        {
+          "id": "1362b9d7-f478-433e-a0bd-f357b06fc9a1",
+          "nombre": "Claudia Cristancho Blanco",
+          "cedula": "28151815"
+        },
+        {
+          "id": "4614c562-5e4f-47e5-bc77-293a3d0ae405",
+          "nombre": "Yaelis Infante Blanco",
+          "cedula": "37726506"
+        },
+        {
+          "id": "b63ef560-ef89-4767-b8c9-c0b08a022aed",
+          "nombre": "Maritza Silva Blanco",
+          "cedula": "37727512"
+        },
+        {
+          "id": "f1261c62-626c-450d-9051-9f2b7332330c",
+          "nombre": "Alcira Blanco Mendez",
+          "cedula": "63439709"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-29T20:00:00.000Z",
+      "summary": "4.00 GLORIA PATRICIA CARDONA RESIDUOS",
+      "nombre_extraido": "GLORIA PATRICIA CARDONA",
+      "candidates": [
+        {
+          "id": "6ab727ee-09a2-4fe8-96bb-c0d042d6690c",
+          "nombre": "Gloria Montagut",
+          "cedula": "63283183"
+        },
+        {
+          "id": "f99d4393-e10a-4db6-9313-0ba4f18827ff",
+          "nombre": "Gloria Valencia Sanchez",
+          "cedula": "37917582"
+        },
+        {
+          "id": "18c748d5-8c2d-4bd7-a908-71fb2a6d7fd7",
+          "nombre": "Gloria Stella Duran",
+          "cedula": "63478452"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "390d11ae-6f39-46b4-9347-af46995a9531",
+          "nombre": "Gloria Plata Torres",
+          "cedula": "63353538"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T06:30:00.000Z",
+      "summary": "8.45  ESPERANZA MURILLO  2 SESIONES",
+      "nombre_extraido": "ESPERANZA MURILLO",
+      "candidates": [
+        {
+          "id": "cb57901b-5728-40fd-af1f-6f93d1938ed5",
+          "nombre": "Esperanza Mayorga",
+          "cedula": "36455838"
+        },
+        {
+          "id": "7939ab19-3ea3-411d-aaeb-46e1b260c034",
+          "nombre": "Esperanza Quintana Suarez",
+          "cedula": "28156306"
+        },
+        {
+          "id": "8497ac7b-d6fc-476f-a694-8212a3848d02",
+          "nombre": "Esperanza Florez Gomez",
+          "cedula": "63474553"
+        },
+        {
+          "id": "398c8af3-fbeb-4199-bb40-04fc8206773c",
+          "nombre": "Esperanza Garcia Rodriguez",
+          "cedula": "45621217"
+        },
+        {
+          "id": "78bb6d3f-ed16-44f2-af1c-278ac5d3385b",
+          "nombre": "Esperanza Arenas Lipez",
+          "cedula": "63323294"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T07:00:00.000Z",
+      "summary": "9.00 ISABEL ROMERO DURAN  2 SESIONES DRA",
+      "nombre_extraido": "ISABEL ROMERO DURAN",
+      "candidates": [
+        {
+          "id": "a2f17093-5770-4b6d-9db7-02f183c51de5",
+          "nombre": "Ana Dolores Duran Duran",
+          "cedula": "36455420"
+        },
+        {
+          "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+          "nombre": "Isabel Vargas",
+          "cedula": "37541427"
+        },
+        {
+          "id": "3f93c6bc-39eb-46a4-b743-b4a675ecc163",
+          "nombre": "Gisela Serrano Duran",
+          "cedula": "1102351544"
+        },
+        {
+          "id": "69c55381-08fd-402c-87b2-d5ba3549270a",
+          "nombre": "Monica Mantilla Romero",
+          "cedula": "63354105"
+        },
+        {
+          "id": "ab7096b2-6348-4e48-99d3-c0f7540f3ef7",
+          "nombre": "Ana Romero Duarte",
+          "cedula": "28236708"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T07:30:00.000Z",
+      "summary": "9.00 NAYIBE AREVALO PEREZ CC. 63.536.236 CEL. 300.834.9980 1 sesion DRA",
+      "nombre_extraido": "NAYIBE AREVALO PEREZ",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        },
+        {
+          "id": "1a6f4a3f-d2e7-4d02-95fa-90c893e73b37",
+          "nombre": "Dufays Gutierrez Perez",
+          "cedula": "63535883"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T08:00:00.000Z",
+      "summary": "9.15 DORIZ ELENA RONDON URIBE 2 SESIONES",
+      "nombre_extraido": "DORIZ ELENA RONDON URIBE",
+      "candidates": [
+        {
+          "id": "c3f0b194-4656-4e08-835c-32370b531885",
+          "nombre": "Maria Helena Uribe Toloza",
+          "cedula": "63272866"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T08:30:00.000Z",
+      "summary": "9.30 ALBA DEL CARMEN HERNANDEZ 1 SESION",
+      "nombre_extraido": "ALBA DEL CARMEN HERNANDEZ",
+      "candidates": [
+        {
+          "id": "c7c1bfea-1e9f-4eff-95dd-958240a57625",
+          "nombre": "Carmen Rosa Mogollon de Hernandez",
+          "cedula": "27786502"
+        },
+        {
+          "id": "b7840e90-5904-44eb-877c-1c0f5133311a",
+          "nombre": "Edilma del Carmen Escobar Bohorquez",
+          "cedula": "63483884"
+        },
+        {
+          "id": "cdd774ba-1901-4af6-9b6a-d989583af4ad",
+          "nombre": "Maria del Carmen Diaz Arenas",
+          "cedula": "28013997"
+        },
+        {
+          "id": "5e5d75ab-19b1-4af1-aa27-d3de48dc69bd",
+          "nombre": "Maria del Carmen Escobar Duarte",
+          "cedula": "37578198"
+        },
+        {
+          "id": "d650e0b9-17a4-41a3-a0d0-61b09508e4fa",
+          "nombre": "Carmen Cecilia Peña de Silva",
+          "cedula": "37917030"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T09:00:00.000Z",
+      "summary": "9.45  MARIA GLADYZ ESPINOZA   2 SESIONES",
+      "nombre_extraido": "MARIA GLADYZ ESPINOZA",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "5e031b02-d577-41f8-b200-6f6b8f417948",
+          "nombre": "Maria Consuelo Mejia",
+          "cedula": "28214076"
+        },
+        {
+          "id": "5be8587a-57a8-4185-a35e-4e0696db8015",
+          "nombre": "Maria Gladys Caicedo",
+          "cedula": "63306553"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T09:30:00.000Z",
+      "summary": "10.00   BLANCA DORIS  RAMIREZ ECOR",
+      "nombre_extraido": "BLANCA DORIS RAMIREZ",
+      "candidates": [
+        {
+          "id": "99a7ca66-2c41-4527-9cf0-7a4448c17245",
+          "nombre": "Angela Cecilia Ramirez Ramirez",
+          "cedula": "37807813"
+        },
+        {
+          "id": "9ca1f9d2-ff5f-438b-a894-ee07f8bbba54",
+          "nombre": "Lucila Quintero Ramirez",
+          "cedula": "37816099"
+        },
+        {
+          "id": "6c00ecdf-d537-443a-9c04-9f9a1601c793",
+          "nombre": "Floriney Mendez Ramirez",
+          "cedula": "5505163"
+        },
+        {
+          "id": "3f7eddb7-bc2a-4688-82cf-e866a787c641",
+          "nombre": "Blanca Manrrique",
+          "cedula": "63321720"
+        },
+        {
+          "id": "3448593e-3534-4e7b-92f4-1797f2043048",
+          "nombre": "Miriam Gonzalez Ramirez",
+          "cedula": "37542816"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T10:00:00.000Z",
+      "summary": "10.15 LUBBY ISABEL AGUILAR 1 SESION",
+      "nombre_extraido": "LUBBY ISABEL AGUILAR",
+      "candidates": [
+        {
+          "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+          "nombre": "Isabel Vargas",
+          "cedula": "37541427"
+        },
+        {
+          "id": "3eab3ad8-2e7f-4156-83e3-1b266dab8698",
+          "nombre": "Yurlenis Aguilar Guez",
+          "cedula": "1007934722"
+        },
+        {
+          "id": "2e4433d3-8b58-4a0a-ac08-10b936bb921f",
+          "nombre": "Martha Isabel Naranjo",
+          "cedula": "63312043"
+        },
+        {
+          "id": "6eb86016-6720-43e5-b8ec-fb1d551d0b02",
+          "nombre": "Isabel Rodriguez Prado",
+          "cedula": "63344473"
+        },
+        {
+          "id": "b56d7868-13c9-4b44-82bb-39edc8fca65d",
+          "nombre": "Yadibis Bastidas Aguilar",
+          "cedula": "23003651"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T10:30:00.000Z",
+      "summary": "10.30 BLANCA HELENA RODRIGUEZ COTE  2 SESIONES",
+      "nombre_extraido": "BLANCA HELENA RO",
+      "candidates": [
+        {
+          "id": "a9459637-d66d-40d6-a829-cde4df09e7bd",
+          "nombre": "Blanca Patricia Forero Oses",
+          "cedula": "1098604837"
+        },
+        {
+          "id": "95e4b8ea-828d-4d1a-8698-ac7ad75a2251",
+          "nombre": "Blanca Ruth Torrado Rodriguez",
+          "cedula": "52927965"
+        },
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "ebdcb0bb-22e3-4487-a200-6b310d3db7b3",
+          "nombre": "Berenice Rodriguez Otero",
+          "cedula": "37725948"
+        },
+        {
+          "id": "3f7eddb7-bc2a-4688-82cf-e866a787c641",
+          "nombre": "Blanca Manrrique",
+          "cedula": "63321720"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T11:00:00.000Z",
+      "summary": "10.45  DEISSY LILIANA MORENO 2 SESIONES",
+      "nombre_extraido": "DEISSY LILIANA MORENO",
+      "candidates": [
+        {
+          "id": "0b51da86-663a-4035-ba1b-2400049a7b68",
+          "nombre": "Liliana Pinto Sanchez",
+          "cedula": "1100952147"
+        },
+        {
+          "id": "8f8dadad-6787-4c1e-b60c-e2646ff449a7",
+          "nombre": "Zaide Vesga Moreno",
+          "cedula": "63308286"
+        },
+        {
+          "id": "df6028c7-79fa-41d9-a204-05c349b955c0",
+          "nombre": "Liliana Montealegre",
+          "cedula": "39675886"
+        },
+        {
+          "id": "dea618a8-284c-4f6b-bc4d-732352cc80d0",
+          "nombre": "Azucena Barajas Moreno",
+          "cedula": "28359607"
+        },
+        {
+          "id": "db871785-382c-4025-a6f9-09e6420ac6f0",
+          "nombre": "Liliana Rincon Barrios",
+          "cedula": "63484828"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T11:30:00.000Z",
+      "summary": "11.00 JINNETH ROCIO ESTUPIÑAN ECOR VSI + ECOR",
+      "nombre_extraido": "JINNETH ROCIO ESTUPIÑAN",
+      "candidates": [
+        {
+          "id": "57d3756b-728e-48aa-b857-af87e5e2ae45",
+          "nombre": "Rocio Bautista Reyes",
+          "cedula": "40506168"
+        },
+        {
+          "id": "f2beaa39-9151-4175-86ec-84eda48d7f68",
+          "nombre": "Rocio Osorio Almeida",
+          "cedula": "63537056"
+        },
+        {
+          "id": "83ffe25b-3b07-4ed2-8f47-4b6c6cc75a56",
+          "nombre": "Rocio Delgado Mendoza",
+          "cedula": "37893838"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T12:00:00.000Z",
+      "summary": "11.30 janeth chiquinquira salas revision",
+      "nombre_extraido": "JANETH CHIQUINQUIRA SALAS",
+      "candidates": [
+        {
+          "id": "75f22f12-a09c-4847-b5e3-1463ff94e2e7",
+          "nombre": "Ludys Salas Gil",
+          "cedula": "39015985"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        },
+        {
+          "id": "f9f11d56-bb39-4a4a-b6c1-d79ab6593754",
+          "nombre": "Janeth Silva Arias",
+          "cedula": "37886192"
+        },
+        {
+          "id": "a105684a-cbf8-47a2-8506-d577b2c90b72",
+          "nombre": "Janeth Perez Rivera",
+          "cedula": "63351493"
+        },
+        {
+          "id": "721b0aa5-b682-4c72-9d07-2fbf0371b5cc",
+          "nombre": "Janeth Mantilla",
+          "cedula": "63309431"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T15:30:00.000Z",
+      "summary": "2.30  LAURA BLANCO  1 VEZ CEL  3154149800",
+      "nombre_extraido": "LAURA BLANCO",
+      "candidates": [
+        {
+          "id": "c74e2a80-39cc-4c3e-aa3b-fc478107ed28",
+          "nombre": "Zulay Andrea Blanco Blanco",
+          "cedula": "63535096"
+        },
+        {
+          "id": "8850c804-ead4-4f06-ba7c-1196e89c5b80",
+          "nombre": "Laura Moreno Pedraza",
+          "cedula": "1098780605"
+        },
+        {
+          "id": "1362b9d7-f478-433e-a0bd-f357b06fc9a1",
+          "nombre": "Claudia Cristancho Blanco",
+          "cedula": "28151815"
+        },
+        {
+          "id": "4614c562-5e4f-47e5-bc77-293a3d0ae405",
+          "nombre": "Yaelis Infante Blanco",
+          "cedula": "37726506"
+        },
+        {
+          "id": "b63ef560-ef89-4767-b8c9-c0b08a022aed",
+          "nombre": "Maritza Silva Blanco",
+          "cedula": "37727512"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-30T16:30:00.000Z",
+      "summary": "3.00 ANA PATRICIA CARDENAS GUTIERREZ CEL. 3183761354 1 VEZ",
+      "nombre_extraido": "ANA PATRICIA CARDENAS GUTIERREZ",
+      "candidates": [
+        {
+          "id": "ee6f39c2-170a-4cc4-9a52-b2457dd78659",
+          "nombre": "Ana Dilfa Gutierrez Hoya",
+          "cedula": "45620964"
+        },
+        {
+          "id": "14702a4b-5140-46e7-b601-b954661562e8",
+          "nombre": "Viviana Suarez Gutierrez",
+          "cedula": "1099551257"
+        },
+        {
+          "id": "b15752d1-c4be-4555-8685-630f95436aaf",
+          "nombre": "Laura Patricia Hernandez Sanabria",
+          "cedula": "63487370"
+        },
+        {
+          "id": "976d90b2-f98a-457a-b6db-e6c3ef79cf0a",
+          "nombre": "Adriana Patricia Forero Espitia",
+          "cedula": "63510421"
+        },
+        {
+          "id": "e10e10d1-dfb8-4e38-bc95-3dc0d7c9a89e",
+          "nombre": "Liliana Patricia Martinez Gelvez",
+          "cedula": "63457864"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T05:30:00.000Z",
+      "summary": "8.30 DEICY GIL  DIAZ 2 SESIONes dra",
+      "nombre_extraido": "DEICY GIL DIAZ",
+      "candidates": [
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "75f22f12-a09c-4847-b5e3-1463ff94e2e7",
+          "nombre": "Ludys Salas Gil",
+          "cedula": "39015985"
+        },
+        {
+          "id": "e81d905d-e4ae-4c46-a61c-2bd25d4af263",
+          "nombre": "Raul Diaz Lagos",
+          "cedula": "91295372"
+        },
+        {
+          "id": "4b7c6544-3857-456e-8deb-704143bd2415",
+          "nombre": "Rosendo S Silvestre Diaz",
+          "cedula": "5787017"
+        },
+        {
+          "id": "25fa2971-b156-471c-9523-25895e778ed8",
+          "nombre": "Zoraida Diaz Florez",
+          "cedula": "37720677"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T06:00:00.000Z",
+      "summary": "8.45 YORLEDY ROJAS BARON 2 sesiones",
+      "nombre_extraido": "YORLEDY ROJAS BARON",
+      "candidates": [
+        {
+          "id": "a46349be-6437-4beb-a6d9-1a04b53fc8f9",
+          "nombre": "Yenny Landazabal Rojas",
+          "cedula": "63536123"
+        },
+        {
+          "id": "7ba11071-8de4-460b-a364-e83223374d9c",
+          "nombre": "Lucila Rojas Acevedo",
+          "cedula": "37804873"
+        },
+        {
+          "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+          "nombre": "Leonor Paez Rojas",
+          "cedula": "63498517"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T06:30:00.000Z",
+      "summary": "9.00 LISETH ALDANA LOPEZ 1 VEZ CEL . 316 4673216",
+      "nombre_extraido": "LISETH ALDANA LOPEZ",
+      "candidates": [
+        {
+          "id": "fe868473-947b-43c4-8ed2-86b070cff33e",
+          "nombre": "Ana Debora Lopez Vega",
+          "cedula": "63352609"
+        },
+        {
+          "id": "b3a1a361-8055-4341-9292-aaf0ecdd9e7d",
+          "nombre": "Luden Lopez Fuentes",
+          "cedula": "63315662"
+        },
+        {
+          "id": "6f75c655-9992-4fb8-9720-dd17efad49a7",
+          "nombre": "Eddy Delgado Lopez",
+          "cedula": "63317993"
+        },
+        {
+          "id": "f2bd0fe3-ecd2-4857-b8d9-ff37eb290222",
+          "nombre": "Marlene Castellanos Lopez",
+          "cedula": "28211813"
+        },
+        {
+          "id": "425c0aab-757e-4802-866f-284e25588273",
+          "nombre": "Gladis Aldana Hernandez",
+          "cedula": "63343514"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T07:00:00.000Z",
+      "summary": "9.15 ANGIE XIOMARA CRUZ SANTAMARIA 1 SESION",
+      "nombre_extraido": "ANGIE XIOMARA CRUZ SANTAMARIA",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T07:30:00.000Z",
+      "summary": "9.30   PATRICIA VALENZUELA NAVARRO 3 SESIONES DRA",
+      "nombre_extraido": "PATRICIA VALENZUELA NAVARRO",
+      "candidates": [
+        {
+          "id": "8ba75010-665e-412f-b1a4-6428371d9beb",
+          "nombre": "Patricia Sandoval Rodriguez",
+          "cedula": "37543331"
+        },
+        {
+          "id": "f7ff724b-9bdb-413d-aac4-47c70a375108",
+          "nombre": "Eddy Patricia Moreno",
+          "cedula": "63328137"
+        },
+        {
+          "id": "b8c08988-d62e-4d68-85ed-23c56b19d4dc",
+          "nombre": "Librada Navarro Cardenas",
+          "cedula": "63498725"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T08:00:00.000Z",
+      "summary": "9.45 CLAUDIA ROCIO QUIÑONEZ ECOR",
+      "nombre_extraido": "CLAUDIA ROCIO QUIÑONEZ",
+      "candidates": [
+        {
+          "id": "2e5a543d-d39c-41de-a413-7f3b8e4d4fda",
+          "nombre": "Claudia Rocio Portala Rincon",
+          "cedula": "63469591"
+        },
+        {
+          "id": "a09e62c2-e22c-4c41-995d-cc7b28ddce16",
+          "nombre": "Claudia Rocio Vasquez Rodriguez",
+          "cedula": "43523215"
+        },
+        {
+          "id": "57d3756b-728e-48aa-b857-af87e5e2ae45",
+          "nombre": "Rocio Bautista Reyes",
+          "cedula": "40506168"
+        },
+        {
+          "id": "f2beaa39-9151-4175-86ec-84eda48d7f68",
+          "nombre": "Rocio Osorio Almeida",
+          "cedula": "63537056"
+        },
+        {
+          "id": "1362b9d7-f478-433e-a0bd-f357b06fc9a1",
+          "nombre": "Claudia Cristancho Blanco",
+          "cedula": "28151815"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T09:00:00.000Z",
+      "summary": "10.15 OLGA MERCEDES SERRANO  3 sesiones retiro de puntos",
+      "nombre_extraido": "OLGA MERCEDES SERRANO",
+      "candidates": [
+        {
+          "id": "b06c3db2-f2dc-4426-831f-6dd8d0d351a6",
+          "nombre": "Carolina Serrano Serrano",
+          "cedula": "1098655889"
+        },
+        {
+          "id": "3f93c6bc-39eb-46a4-b743-b4a675ecc163",
+          "nombre": "Gisela Serrano Duran",
+          "cedula": "1102351544"
+        },
+        {
+          "id": "58876781-35b6-4887-b472-9bf104b4527c",
+          "nombre": "Erika Tatiana Serrano",
+          "cedula": "102369573"
+        },
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T09:30:00.000Z",
+      "summary": "10.30 XIOMARA ZORRO MANRIQUE 3 SESIONES",
+      "nombre_extraido": "XIOMARA ZORRO MANRIQUE",
+      "candidates": [
+        {
+          "id": "c68c5b89-c2f9-4001-95d0-67a509f741eb",
+          "nombre": "Maria Magdalena Zorro Manrique",
+          "cedula": "37729210"
+        },
+        {
+          "id": "33ec6d9d-fb77-4519-b298-f49bbcf904d5",
+          "nombre": "Xiomara Martinez",
+          "cedula": "63517329"
+        },
+        {
+          "id": "1894cf00-dc11-4716-96ed-139c70d96a0a",
+          "nombre": "Lady Manrique Moreno",
+          "cedula": "37748572"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T10:00:00.000Z",
+      "summary": "10.45 INGRID TATIANA CHACON",
+      "nombre_extraido": "INGRID TATIANA CHACON",
+      "candidates": [
+        {
+          "id": "91ce8a1f-67d0-4b82-9a5f-98eeac5b5e1d",
+          "nombre": "Ingrid Sarmiento Reyes",
+          "cedula": "63340589"
+        },
+        {
+          "id": "0ae2765a-b190-4e5c-af30-316a51ec9281",
+          "nombre": "Zoraida Chacon Florez",
+          "cedula": "63289371"
+        },
+        {
+          "id": "58876781-35b6-4887-b472-9bf104b4527c",
+          "nombre": "Erika Tatiana Serrano",
+          "cedula": "102369573"
+        },
+        {
+          "id": "de2591a0-2e70-4a56-a36e-400f74272c3c",
+          "nombre": "Yulieth Chacon Saens",
+          "cedula": "1098720609"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-01-31T11:00:00.000Z",
+      "summary": "11.45 JANETTE LUNA PINZON 1 SESION",
+      "nombre_extraido": "JANETTE LUNA PINZON",
+      "candidates": [
+        {
+          "id": "3eafe7f7-b63e-49e6-aa6e-915b6c68f25f",
+          "nombre": "Gabriel Pinzon Pinto",
+          "cedula": "5746358"
+        },
+        {
+          "id": "16d4e9fb-8365-4b3a-841f-b4eb9fa67dd3",
+          "nombre": "Olga Gomez Luna",
+          "cedula": "37655189"
+        },
+        {
+          "id": "98ed0a1c-9425-4b55-aaa0-c66487e769be",
+          "nombre": "Martha Martinez Pinzon",
+          "cedula": "63507527"
+        },
+        {
+          "id": "b1611225-5438-4038-bcba-cd4f7e0ea1d9",
+          "nombre": "Nubia Noriega Luna",
+          "cedula": "63349900"
+        },
+        {
+          "id": "5e250447-5f32-4343-badf-376e1f2545e0",
+          "nombre": "Stella Pinzon Perez",
+          "cedula": "37942090"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T06:00:00.000Z",
+      "summary": "8.30 Olga lucía Arévalo cel 300 7236809  2 sesiones DRA",
+      "nombre_extraido": "OLGA LUCÍA ARÉVALO",
+      "candidates": [
+        {
+          "id": "8ef26aea-0837-43b6-94ce-a5255c59cee6",
+          "nombre": "Olga Lucia Caceres Carvajal",
+          "cedula": "63356793"
+        },
+        {
+          "id": "94c45c0c-9fbc-460c-acbd-557ac92257ec",
+          "nombre": "Olga Lucia Sanchez Colmenares",
+          "cedula": "37657291"
+        },
+        {
+          "id": "94a32d23-e228-425e-ac8d-03d051086c1e",
+          "nombre": "Olga Lucia Camargo Mayorga",
+          "cedula": "63489887"
+        },
+        {
+          "id": "981c36d5-2d30-445b-8e1e-fb59ce7abe46",
+          "nombre": "Olga Lucia Juliao Florez",
+          "cedula": "327005412"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T07:00:00.000Z",
+      "summary": "9.00 ROSALBA PEREZ LEON 1 SESION",
+      "nombre_extraido": "ROSALBA PEREZ LEON",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "db9c3592-beb7-4c69-85b6-4a78a6ddeb69",
+          "nombre": "Julisa Leon Hernandez",
+          "cedula": "39015120"
+        },
+        {
+          "id": "856f20d5-dbc2-49ee-9f1c-a352e151b352",
+          "nombre": "Rosalba Lopera Bautista",
+          "cedula": "37876081"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T07:30:00.000Z",
+      "summary": "9.00    ROSA DELIA CARRILLO 2 SESIONES",
+      "nombre_extraido": "ROSA DELIA CARRILLO",
+      "candidates": [
+        {
+          "id": "2f90a3f8-539a-46f8-82d4-19bfada9d5ab",
+          "nombre": "Rosa Delia Pineda de Lizarazo",
+          "cedula": "27992334"
+        },
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "c7b66bd7-e16d-4342-85d3-8c461325bbda",
+          "nombre": "Rosa Gomez Alarcon",
+          "cedula": "37746154"
+        },
+        {
+          "id": "a5b9f2dd-0462-471a-ba62-4d4d3d5f242a",
+          "nombre": "Rosa Trespalacios Galindo",
+          "cedula": "36640618"
+        },
+        {
+          "id": "2018447f-8e5e-4c33-85b1-84bd2c8e561e",
+          "nombre": "Rosa Herlinda Torres",
+          "cedula": "63393098"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T08:00:00.000Z",
+      "summary": "9.15 CARMEN CARRILLO CARRILLO  RETIRO DE PUNTOS  + 2 SESIONES",
+      "nombre_extraido": "CARMEN CARRILLO CARRILLO",
+      "candidates": [
+        {
+          "id": "d1504928-b1ea-407d-b3d0-f7287fc9327f",
+          "nombre": "Ana Marlene Pedraza Carrillo",
+          "cedula": "28357895"
+        },
+        {
+          "id": "1361924d-7f1a-4bd2-b885-ee2f833fda93",
+          "nombre": "Yury Marleny Montolla Carrillo",
+          "cedula": "63559516"
+        },
+        {
+          "id": "45a265b3-771a-4b9c-a7a4-e26f31c86ecb",
+          "nombre": "Yury Marleny Montoya Carrillo",
+          "cedula": "63559513"
+        },
+        {
+          "id": "8c4bf40b-ada8-4a8a-825d-8b837845bd51",
+          "nombre": "Edgar Yain Carrillo Laguado",
+          "cedula": "13498403"
+        },
+        {
+          "id": "515ebfc9-b329-41fb-8a9d-d4bdb7742349",
+          "nombre": "Carmen Johana Leal",
+          "cedula": "1094245082"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T08:30:00.000Z",
+      "summary": "9.30 ANA RUTH MONSALVE PATIÑO  2 SESIONES",
+      "nombre_extraido": "ANA RUTH MONSALVE PATIÑO",
+      "candidates": [
+        {
+          "id": "892c2e67-c6ca-4c47-b193-300581fee2c3",
+          "nombre": "Adriana Janeth Chacon Patiño",
+          "cedula": "37861527"
+        },
+        {
+          "id": "857f89e5-da70-4e5b-904c-55a5015e2438",
+          "nombre": "Eliana Florez Patiño",
+          "cedula": "37754592"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T09:00:00.000Z",
+      "summary": "9.45 WILLIAM GOMEZ BUENO CEL. 313.362.3204 1 VEZ",
+      "nombre_extraido": "WILLIAM GOMEZ BUENO",
+      "candidates": [
+        {
+          "id": "3cb440bc-d1d1-4fb8-aa8a-4eb27579ba41",
+          "nombre": "Lucila Gomez Gomez",
+          "cedula": "63487456"
+        },
+        {
+          "id": "e561a122-62b2-4fef-bc71-9a77f8670f7f",
+          "nombre": "Martha Bueno Torres",
+          "cedula": "51626895"
+        },
+        {
+          "id": "94159526-6a7f-4cdc-a1e8-334bfa06ebf4",
+          "nombre": "Yenny Bueno Duarte",
+          "cedula": "63551083"
+        },
+        {
+          "id": "72312c80-982a-465b-9f18-4f3f15995913",
+          "nombre": "Herminda Pacheco Gomez",
+          "cedula": "63356564"
+        },
+        {
+          "id": "c7b66bd7-e16d-4342-85d3-8c461325bbda",
+          "nombre": "Rosa Gomez Alarcon",
+          "cedula": "37746154"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T09:30:00.000Z",
+      "summary": "10.00 ISABEL ANGARITA GAMBOA 1 VEZ CEL . 3008929461",
+      "nombre_extraido": "ISABEL ANGARITA GAMBOA",
+      "candidates": [
+        {
+          "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+          "nombre": "Isabel Vargas",
+          "cedula": "37541427"
+        },
+        {
+          "id": "2e4433d3-8b58-4a0a-ac08-10b936bb921f",
+          "nombre": "Martha Isabel Naranjo",
+          "cedula": "63312043"
+        },
+        {
+          "id": "6eb86016-6720-43e5-b8ec-fb1d551d0b02",
+          "nombre": "Isabel Rodriguez Prado",
+          "cedula": "63344473"
+        },
+        {
+          "id": "b96a89ff-c01a-4623-8cc9-06bcc21d627d",
+          "nombre": "Gloria Gamboa Lache",
+          "cedula": "28334098"
+        },
+        {
+          "id": "754dfcf2-5207-4206-9b91-8c05319fd225",
+          "nombre": "Stella Gamboa Carrascal",
+          "cedula": "63360343"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T10:00:00.000Z",
+      "summary": "10.15 Gladys Rodríguez  CEL . 315 8559315 1 VEZ",
+      "nombre_extraido": "GLADYS RO",
+      "candidates": [
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "ebdcb0bb-22e3-4487-a200-6b310d3db7b3",
+          "nombre": "Berenice Rodriguez Otero",
+          "cedula": "37725948"
+        },
+        {
+          "id": "61ce1d38-f798-46f9-8ce6-6f571beb0dfb",
+          "nombre": "Amparo Sanchez Rodriguez",
+          "cedula": "37827738"
+        },
+        {
+          "id": "c1afb535-c606-4816-8dc3-5ffbe3cbfb3b",
+          "nombre": "Gladys Duarte Hernandez",
+          "cedula": "28404034"
+        },
+        {
+          "id": "51014ba6-71b4-4fcb-8db4-bb2cc4b154c3",
+          "nombre": "Amparo Sandoval Rodriguez",
+          "cedula": "63475884"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T10:30:00.000Z",
+      "summary": "10.30   NIVIA STELLA SANABRIA 3 SESIONES",
+      "nombre_extraido": "NIVIA STELLA SANABRIA",
+      "candidates": [
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "dd25a20d-61ba-4ecb-8eb5-064220fec82b",
+          "nombre": "Liliana Fuentes Sanabria",
+          "cedula": "63480253"
+        },
+        {
+          "id": "c9441f59-b290-4521-9850-6f144fb55269",
+          "nombre": "Stella Rivera Gutierrez",
+          "cedula": "63500993"
+        },
+        {
+          "id": "18c748d5-8c2d-4bd7-a908-71fb2a6d7fd7",
+          "nombre": "Gloria Stella Duran",
+          "cedula": "63478452"
+        },
+        {
+          "id": "a63fd387-6323-4d55-bf75-d0e9d7ae89cc",
+          "nombre": "Stella Aparicio Lopez",
+          "cedula": "63500641"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T11:00:00.000Z",
+      "summary": "10.45  DIANA BOHORQUEZ CEL. 300.227.6752 1 SESION",
+      "nombre_extraido": "DIANA BOHORQUEZ",
+      "candidates": [
+        {
+          "id": "dbfcd6b9-0ea9-4f55-ae40-565d86f9e9fb",
+          "nombre": "Diana Fonseca Serrano",
+          "cedula": "63327955"
+        },
+        {
+          "id": "54e31e20-b6b1-4475-9fe2-bab32d303d05",
+          "nombre": "Diana Cristancho Cortes",
+          "cedula": "63486251"
+        },
+        {
+          "id": "62fb5d5d-f9c2-45ab-bd14-76539d004244",
+          "nombre": "Diana Marcela Marin",
+          "cedula": "1098655085"
+        },
+        {
+          "id": "6668a80c-cb26-43a8-9f20-66e5a245836f",
+          "nombre": "Diana Lemus Duran",
+          "cedula": "37319423"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T11:30:00.000Z",
+      "summary": "11.00 JOHANA KARINA ROJAS 1 SESION",
+      "nombre_extraido": "JOHANA KARINA ROJAS",
+      "candidates": [
+        {
+          "id": "fbbe5227-a323-4a4b-8938-2d5e8b0df128",
+          "nombre": "Ana Luz Rojas Rodriguez",
+          "cedula": "37918977"
+        },
+        {
+          "id": "515ebfc9-b329-41fb-8a9d-d4bdb7742349",
+          "nombre": "Carmen Johana Leal",
+          "cedula": "1094245082"
+        },
+        {
+          "id": "a46349be-6437-4beb-a6d9-1a04b53fc8f9",
+          "nombre": "Yenny Landazabal Rojas",
+          "cedula": "63536123"
+        },
+        {
+          "id": "7ba11071-8de4-460b-a364-e83223374d9c",
+          "nombre": "Lucila Rojas Acevedo",
+          "cedula": "37804873"
+        },
+        {
+          "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+          "nombre": "Leonor Paez Rojas",
+          "cedula": "63498517"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T12:00:00.000Z",
+      "summary": "11.30 CARMEN CARRILLO CARRILLO  RETIRO DE PUNTOS",
+      "nombre_extraido": "CARMEN CARRILLO CARRILLO",
+      "candidates": [
+        {
+          "id": "d1504928-b1ea-407d-b3d0-f7287fc9327f",
+          "nombre": "Ana Marlene Pedraza Carrillo",
+          "cedula": "28357895"
+        },
+        {
+          "id": "1361924d-7f1a-4bd2-b885-ee2f833fda93",
+          "nombre": "Yury Marleny Montolla Carrillo",
+          "cedula": "63559516"
+        },
+        {
+          "id": "45a265b3-771a-4b9c-a7a4-e26f31c86ecb",
+          "nombre": "Yury Marleny Montoya Carrillo",
+          "cedula": "63559513"
+        },
+        {
+          "id": "8c4bf40b-ada8-4a8a-825d-8b837845bd51",
+          "nombre": "Edgar Yain Carrillo Laguado",
+          "cedula": "13498403"
+        },
+        {
+          "id": "515ebfc9-b329-41fb-8a9d-d4bdb7742349",
+          "nombre": "Carmen Johana Leal",
+          "cedula": "1094245082"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T16:00:00.000Z",
+      "summary": "3.00  DORIS AMPARO JIMEZ DUARTE 1 SESION",
+      "nombre_extraido": "DORIS AMPARO JIMEZ DUARTE",
+      "candidates": [
+        {
+          "id": "cfdcc7f5-7fd6-4046-8290-a6d565763bec",
+          "nombre": "Luz Amparo Duarte Suarez",
+          "cedula": "63338679"
+        },
+        {
+          "id": "4cf955ad-4bec-4d93-8859-3f2adf11e2f4",
+          "nombre": "Alix Marina Duarte Duarte",
+          "cedula": "63446473"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T16:30:00.000Z",
+      "summary": "3.30 MARIA TERESA CORREA 1 SESION C",
+      "nombre_extraido": "MARIA TERESA CORREA",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "88aab998-d353-41e5-9491-5aba1d70302e",
+          "nombre": "Teresa Silva Bernal",
+          "cedula": "63342130"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "12f40875-2408-43af-8176-c6e7542fb4d0",
+          "nombre": "Alba Teresa Alvarez",
+          "cedula": "35415676"
+        },
+        {
+          "id": "f7f7c129-e7a6-4d2a-b4b1-1b6b7df3380f",
+          "nombre": "Teresa Carreño Capacho",
+          "cedula": "63302538"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T18:00:00.000Z",
+      "summary": "8.00 ALBA LUZ FONSECA",
+      "nombre_extraido": "ALBA LUZ FONSECA",
+      "candidates": [
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "2fc8ff57-65b1-424f-a450-c94fc2990b9a",
+          "nombre": "Luz Estela Torres",
+          "cedula": "63337770"
+        },
+        {
+          "id": "5f893c94-a958-484a-a7a6-6362e56bd3e6",
+          "nombre": "Luz Carmenza Amado",
+          "cedula": "27960710"
+        },
+        {
+          "id": "12f40875-2408-43af-8176-c6e7542fb4d0",
+          "nombre": "Alba Teresa Alvarez",
+          "cedula": "35415676"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-02T18:30:00.000Z",
+      "summary": "4.00 ERNESTINA GARCES RESIDUOS",
+      "nombre_extraido": "ERNESTINA GARCES",
+      "candidates": [
+        {
+          "id": "0d6db27f-240c-406b-a38e-f2c436463f86",
+          "nombre": "Rosalba Pabon Garces",
+          "cedula": "1098630225"
+        },
+        {
+          "id": "a8497afd-b502-41f8-8c7c-419c47495994",
+          "nombre": "Ernestina Diaz Cardenas",
+          "cedula": "63447935"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T07:00:00.000Z",
+      "summary": "8.30  MARYOLI JOHANA LOPEZ ARDILA 1 SESION",
+      "nombre_extraido": "MARYOLI JOHANA LOPEZ ARDILA",
+      "candidates": [
+        {
+          "id": "4c6ad5d9-0787-4bcd-844a-9538079b4ee1",
+          "nombre": "Johana Rosa Sampayo Ardila",
+          "cedula": "63511599"
+        },
+        {
+          "id": "5a10f9cf-19bb-4523-bac9-26b23cb944a8",
+          "nombre": "Ingrid Johana Bohorquez Ardila",
+          "cedula": "37541728"
+        },
+        {
+          "id": "3bf2ce7b-e413-4d67-afa9-5384c97e0201",
+          "nombre": "Mary Johana Guerrero Cristancho",
+          "cedula": "37541748"
+        },
+        {
+          "id": "fe868473-947b-43c4-8ed2-86b070cff33e",
+          "nombre": "Ana Debora Lopez Vega",
+          "cedula": "63352609"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T09:00:00.000Z",
+      "summary": "9.30  MARIA ANGELICA CELIS MARTINEZ  2 sesiones",
+      "nombre_extraido": "MARIA ANGELICA CELIS MARTINEZ",
+      "candidates": [
+        {
+          "id": "5836058d-7c64-4eb3-b8c9-5175767a7a98",
+          "nombre": "Angelica Maria Beltran Nuñez",
+          "cedula": "63559680"
+        },
+        {
+          "id": "4a44eea6-7dfb-41ea-8259-fdc4ef6d3fb5",
+          "nombre": "Maria Emperatriz Solano Martinez",
+          "cedula": "28272102"
+        },
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "0f9ec21b-01de-403c-916c-bf02363b777b",
+          "nombre": "Flor de Maria Martinez",
+          "cedula": "28418581"
+        },
+        {
+          "id": "f63b4e32-95c4-4794-bb07-dc08cc37a4c3",
+          "nombre": "Maria Angelica Salazar Riquet",
+          "cedula": "63494892"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T09:30:00.000Z",
+      "summary": "9.45 GLORIA SANTAMARIA PEÑA  CEL . 318 4724755 1 VEZ",
+      "nombre_extraido": "GLORIA SANTAMARIA PEÑA",
+      "candidates": [
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "6ab727ee-09a2-4fe8-96bb-c0d042d6690c",
+          "nombre": "Gloria Montagut",
+          "cedula": "63283183"
+        },
+        {
+          "id": "f99d4393-e10a-4db6-9313-0ba4f18827ff",
+          "nombre": "Gloria Valencia Sanchez",
+          "cedula": "37917582"
+        },
+        {
+          "id": "18c748d5-8c2d-4bd7-a908-71fb2a6d7fd7",
+          "nombre": "Gloria Stella Duran",
+          "cedula": "63478452"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T11:00:00.000Z",
+      "summary": "11.00 MARIA ELCIDA VELANDIA  1 SESION",
+      "nombre_extraido": "MARIA ELCIDA VELANDIA",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "5e031b02-d577-41f8-b200-6f6b8f417948",
+          "nombre": "Maria Consuelo Mejia",
+          "cedula": "28214076"
+        },
+        {
+          "id": "5be8587a-57a8-4185-a35e-4e0696db8015",
+          "nombre": "Maria Gladys Caicedo",
+          "cedula": "63306553"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T11:30:00.000Z",
+      "summary": "11.30 BLANCA DORIS RAMIREZ REVISION DR",
+      "nombre_extraido": "BLANCA DORIS RAMIREZ",
+      "candidates": [
+        {
+          "id": "99a7ca66-2c41-4527-9cf0-7a4448c17245",
+          "nombre": "Angela Cecilia Ramirez Ramirez",
+          "cedula": "37807813"
+        },
+        {
+          "id": "9ca1f9d2-ff5f-438b-a894-ee07f8bbba54",
+          "nombre": "Lucila Quintero Ramirez",
+          "cedula": "37816099"
+        },
+        {
+          "id": "6c00ecdf-d537-443a-9c04-9f9a1601c793",
+          "nombre": "Floriney Mendez Ramirez",
+          "cedula": "5505163"
+        },
+        {
+          "id": "3f7eddb7-bc2a-4688-82cf-e866a787c641",
+          "nombre": "Blanca Manrrique",
+          "cedula": "63321720"
+        },
+        {
+          "id": "3448593e-3534-4e7b-92f4-1797f2043048",
+          "nombre": "Miriam Gonzalez Ramirez",
+          "cedula": "37542816"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T16:30:00.000Z",
+      "summary": "3.30 ELSA RODRIGUEZ REYES REVISION",
+      "nombre_extraido": "ELSA RO",
+      "candidates": [
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "ebdcb0bb-22e3-4487-a200-6b310d3db7b3",
+          "nombre": "Berenice Rodriguez Otero",
+          "cedula": "37725948"
+        },
+        {
+          "id": "c77aa5fa-c656-4a22-9545-ad6ece526f76",
+          "nombre": "Elsa Barrera Fontecha",
+          "cedula": "37695879"
+        },
+        {
+          "id": "2f62b511-6ae6-4eda-9ac7-39289dd39b53",
+          "nombre": "Elsa Mendez Jaimes",
+          "cedula": "1090438668"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-03T18:30:00.000Z",
+      "summary": "4.00 EMILCE BAUTISTA TAMI",
+      "nombre_extraido": "EMILCE BAUTISTA TAMI",
+      "candidates": [
+        {
+          "id": "57d3756b-728e-48aa-b857-af87e5e2ae45",
+          "nombre": "Rocio Bautista Reyes",
+          "cedula": "40506168"
+        },
+        {
+          "id": "856f20d5-dbc2-49ee-9f1c-a352e151b352",
+          "nombre": "Rosalba Lopera Bautista",
+          "cedula": "37876081"
+        },
+        {
+          "id": "0f6e837c-019c-4abc-b593-532a1c04fe95",
+          "nombre": "Arturo Bautista Landazabal",
+          "cedula": "5474732"
+        },
+        {
+          "id": "441ce8b3-1f8f-439b-92b1-a07c10199ce2",
+          "nombre": "Magdalena Landinez Bautista",
+          "cedula": "63446706"
+        },
+        {
+          "id": "50817207-c71b-4769-a8d9-cc92a597ba07",
+          "nombre": "Elisa Bautista Useda",
+          "cedula": "28168632"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-04T07:30:00.000Z",
+      "summary": "9.00 ESTHER JULIA CUJAR SCANEO",
+      "nombre_extraido": "ESTHER JULIA CUJAR",
+      "candidates": [
+        {
+          "id": "fcede8dd-37aa-4d22-9420-b6bbf331ded3",
+          "nombre": "Esther Silva Gelvis",
+          "cedula": "37934766"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-04T12:00:00.000Z",
+      "summary": "11.30 GLORIA ESPERANZA HERNANDEZ ROJAS REVISION",
+      "nombre_extraido": "GLORIA ESPERANZA HERNANDEZ ROJAS",
+      "candidates": [
+        {
+          "id": "90445e2d-68e1-4ea4-9d8c-3ce1de249d96",
+          "nombre": "Esperanza Villamizar de Arenas",
+          "cedula": "63270443"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-04T15:30:00.000Z",
+      "summary": "3.00  ANA FLORALBA MARTINEZ VERA CONTROL",
+      "nombre_extraido": "ANA FLORALBA MARTINEZ VERA",
+      "candidates": [
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "a844fc03-2289-49e6-9b28-0c396e18bdce",
+          "nombre": "Ana Dioceida Mosquera Martinez",
+          "cedula": "63493643"
+        },
+        {
+          "id": "d7a4cc5b-0d64-43ca-8275-ef64e3340f47",
+          "nombre": "Johana Milena Blanco Martinez",
+          "cedula": "37559988"
+        },
+        {
+          "id": "0f9ec21b-01de-403c-916c-bf02363b777b",
+          "nombre": "Flor de Maria Martinez",
+          "cedula": "28418581"
+        },
+        {
+          "id": "66aea6fb-5df2-4bc8-a2a8-2708d5ec4cea",
+          "nombre": "Victoriana Martinez Sanchez",
+          "cedula": "37918398"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-04T19:30:00.000Z",
+      "summary": "8.00 YAMILE BECERRA CARRASCAL  locion",
+      "nombre_extraido": "YAMILE BECERRA CARRASCAL",
+      "candidates": [
+        {
+          "id": "f2841c23-463e-4970-a483-264b26c3036a",
+          "nombre": "Yamile Rubio Lynn",
+          "cedula": "63528730"
+        },
+        {
+          "id": "ad79eb1a-a649-445f-b71b-9205afcd9050",
+          "nombre": "Yamile Pereira Diaz",
+          "cedula": "63551509"
+        },
+        {
+          "id": "cbde3311-f4c5-4a92-b202-da204c885f0b",
+          "nombre": "Teresa Carrascal Santiago",
+          "cedula": "27765307"
+        },
+        {
+          "id": "754dfcf2-5207-4206-9b91-8c05319fd225",
+          "nombre": "Stella Gamboa Carrascal",
+          "cedula": "63360343"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-04T20:00:00.000Z",
+      "summary": "4.00 YOLANDA CHAPARRO SILVA RESIDUOS",
+      "nombre_extraido": "YOLANDA CHAPARRO SILVA",
+      "candidates": [
+        {
+          "id": "f0fd0a61-cf90-4005-81ee-6e55ca06b99f",
+          "nombre": "Sara Chaparro Jaimes",
+          "cedula": "52219324"
+        },
+        {
+          "id": "88aab998-d353-41e5-9491-5aba1d70302e",
+          "nombre": "Teresa Silva Bernal",
+          "cedula": "63342130"
+        },
+        {
+          "id": "975b7d89-93a2-47f8-b145-36f2507f4714",
+          "nombre": "Yolanda Lagos Villamizar",
+          "cedula": "63292973"
+        },
+        {
+          "id": "100f6667-9d3f-4d2a-afbc-7aee4bbecc86",
+          "nombre": "Yolanda Valencia Arango",
+          "cedula": "63332531"
+        },
+        {
+          "id": "cb971a3a-724a-48c0-a6af-0f8730b7758f",
+          "nombre": "Adriana Silva",
+          "cedula": "63556382"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T06:00:00.000Z",
+      "summary": "8.00 LUZ HELENA SALINAS VACA CEL 3163139007 1 VEZ",
+      "nombre_extraido": "LUZ HELENA SALINAS VACA",
+      "candidates": [
+        {
+          "id": "ff5f871c-1e35-4a24-9be4-0145be9a72cd",
+          "nombre": "Luz Helena Buenahora Peña",
+          "cedula": "63543942"
+        },
+        {
+          "id": "2a5436c3-7a2a-486c-8b7e-5890e36ebdda",
+          "nombre": "Luz Helena Sarmiento Vargas",
+          "cedula": "34993982"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T07:30:00.000Z",
+      "summary": "9.00 EUGENIA OTALORA PACHECO  CONTROL",
+      "nombre_extraido": "EUGENIA OTALORA PACHECO",
+      "candidates": [
+        {
+          "id": "72312c80-982a-465b-9f18-4f3f15995913",
+          "nombre": "Herminda Pacheco Gomez",
+          "cedula": "63356564"
+        },
+        {
+          "id": "028d26c7-8224-4646-b6f5-9d98d07dc217",
+          "nombre": "Maritza Pacheco Reyes",
+          "cedula": "49654064"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T08:00:00.000Z",
+      "summary": "9.15 LUZ MERY QUINCHIA CEL 3124924374 1 VEZ",
+      "nombre_extraido": "LUZ MERY QUINCHIA",
+      "candidates": [
+        {
+          "id": "17802e1a-0bae-4d45-ae5c-17ecdda61ce4",
+          "nombre": "Luz Mery Landinez Sanabria",
+          "cedula": "37652912"
+        },
+        {
+          "id": "d75cdf6d-a3e7-49b4-b953-0fe068fd056f",
+          "nombre": "Mery Villamizar Castellanos",
+          "cedula": "37799981"
+        },
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "2fc8ff57-65b1-424f-a450-c94fc2990b9a",
+          "nombre": "Luz Estela Torres",
+          "cedula": "63337770"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T11:30:00.000Z",
+      "summary": "11.30 INGRID IVONNE PEREZ  1 SESION C",
+      "nombre_extraido": "INGRID IVONNE PEREZ",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "91ce8a1f-67d0-4b82-9a5f-98eeac5b5e1d",
+          "nombre": "Ingrid Sarmiento Reyes",
+          "cedula": "63340589"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T15:00:00.000Z",
+      "summary": "3.00 ELIZABETH ORTEGA  PEREZ 1 SESION",
+      "nombre_extraido": "ELIZABETH ORTEGA PEREZ",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "eb0a33e2-7293-44a4-95cf-8a8b039d55d6",
+          "nombre": "Elizabeth Marin Arenas",
+          "cedula": "51661103"
+        },
+        {
+          "id": "b58e02d5-6d43-4792-aa1f-25c9440ac674",
+          "nombre": "Elizabeth Barragan Ardila",
+          "cedula": "63351281"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T17:00:00.000Z",
+      "summary": "8.00 MARIA GLADYZ ESPINOZA",
+      "nombre_extraido": "MARIA GLADYZ ESPINOZA",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "5e031b02-d577-41f8-b200-6f6b8f417948",
+          "nombre": "Maria Consuelo Mejia",
+          "cedula": "28214076"
+        },
+        {
+          "id": "5be8587a-57a8-4185-a35e-4e0696db8015",
+          "nombre": "Maria Gladys Caicedo",
+          "cedula": "63306553"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-05T17:30:00.000Z",
+      "summary": "4.00 CRISOSTO PARDO",
+      "nombre_extraido": "CRISOSTO PARDO",
+      "candidates": [
+        {
+          "id": "9772ef9f-11b8-49f8-8de7-91f09e647de0",
+          "nombre": "Celmira Pardo Solano",
+          "cedula": "63316824"
+        },
+        {
+          "id": "2562769b-95e7-4016-a3e8-cf383cc09484",
+          "nombre": "Patrocinio Saavedra Pardo",
+          "cedula": "5569982"
+        },
+        {
+          "id": "c90a5798-403b-4e50-b405-86e7b02d7889",
+          "nombre": "Deyanira Pardo Ariza",
+          "cedula": "1098710810"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T07:00:00.000Z",
+      "summary": "9.00 zoila rosa acosta control",
+      "nombre_extraido": "ZOILA ROSA ACOSTA",
+      "candidates": [
+        {
+          "id": "1d7c4775-aac5-49d7-a605-cda093efb43f",
+          "nombre": "Zoila Rosa Vallejo Mieles",
+          "cedula": "63489056"
+        },
+        {
+          "id": "fda013d4-f1db-43c6-9983-613b2a5ba57b",
+          "nombre": "Oscar Acevedo Acosta",
+          "cedula": "72154344"
+        },
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "c7b66bd7-e16d-4342-85d3-8c461325bbda",
+          "nombre": "Rosa Gomez Alarcon",
+          "cedula": "37746154"
+        },
+        {
+          "id": "a5b9f2dd-0462-471a-ba62-4d4d3d5f242a",
+          "nombre": "Rosa Trespalacios Galindo",
+          "cedula": "36640618"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T07:30:00.000Z",
+      "summary": "9.15 CARMEN CECILIA QIÑONES MENDOZA 2 SESIONES dra",
+      "nombre_extraido": "CARMEN CECILIA QIÑONES MENDOZA",
+      "candidates": [
+        {
+          "id": "41260ead-8dd9-4f8e-af12-7df27e308482",
+          "nombre": "Carmen Cecilia Bohorquez Gomez",
+          "cedula": "37543181"
+        },
+        {
+          "id": "d650e0b9-17a4-41a3-a0d0-61b09508e4fa",
+          "nombre": "Carmen Cecilia Peña de Silva",
+          "cedula": "37917030"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T11:30:00.000Z",
+      "summary": "11.00 DIANA MARCELA MANTILLA ROJAS 1 VEZ CEL  +1 (954) 646-5671",
+      "nombre_extraido": "DIANA MARCELA MANTILLA ROJAS",
+      "candidates": [
+        {
+          "id": "62fb5d5d-f9c2-45ab-bd14-76539d004244",
+          "nombre": "Diana Marcela Marin",
+          "cedula": "1098655085"
+        },
+        {
+          "id": "fbbe5227-a323-4a4b-8938-2d5e8b0df128",
+          "nombre": "Ana Luz Rojas Rodriguez",
+          "cedula": "37918977"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T12:00:00.000Z",
+      "summary": "11.30 ESPERANZA NIETO ALMEIDA  revision DRA",
+      "nombre_extraido": "ESPERANZA NIETO ALMEIDA",
+      "candidates": [
+        {
+          "id": "7939ab19-3ea3-411d-aaeb-46e1b260c034",
+          "nombre": "Esperanza Quintana Suarez",
+          "cedula": "28156306"
+        },
+        {
+          "id": "cb57901b-5728-40fd-af1f-6f93d1938ed5",
+          "nombre": "Esperanza Mayorga",
+          "cedula": "36455838"
+        },
+        {
+          "id": "8497ac7b-d6fc-476f-a694-8212a3848d02",
+          "nombre": "Esperanza Florez Gomez",
+          "cedula": "63474553"
+        },
+        {
+          "id": "398c8af3-fbeb-4199-bb40-04fc8206773c",
+          "nombre": "Esperanza Garcia Rodriguez",
+          "cedula": "45621217"
+        },
+        {
+          "id": "78bb6d3f-ed16-44f2-af1c-278ac5d3385b",
+          "nombre": "Esperanza Arenas Lipez",
+          "cedula": "63323294"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T17:30:00.000Z",
+      "summary": "2.30 MARTHA LILIANA AMAYA GUALDRON 2 sesiones",
+      "nombre_extraido": "MARTHA LILIANA AMAYA GUAL",
+      "candidates": [
+        {
+          "id": "350101d4-f77c-475d-9006-bfda5c43e3c6",
+          "nombre": "Martha Liliana Fernandez Rojas",
+          "cedula": "63533462"
+        },
+        {
+          "id": "700842bf-ee2a-4d8e-bc76-a40eaec202ea",
+          "nombre": "Martha Liliana Sarmiento Supelano",
+          "cedula": "63517686"
+        },
+        {
+          "id": "2332d9d0-4989-4b90-bfef-d3a655b3fec2",
+          "nombre": "Ana Luisa Amaya Orejarena",
+          "cedula": "63518518"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T18:00:00.000Z",
+      "summary": "2.45  RUTH YADIRA BRAVO SANCHEZ 3 SESIONES A FAVOR 15 MIL PESOS",
+      "nombre_extraido": "RUTH YADIRA BRAVO SANCHEZ",
+      "candidates": [
+        {
+          "id": "16370745-40eb-4cfc-a9d8-673cf1006bd5",
+          "nombre": "Deissy Johana Bravo Sanchez",
+          "cedula": "37659480"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T19:30:00.000Z",
+      "summary": "3.00 LENID PACHECO JIMENEZ 3 SESIONES",
+      "nombre_extraido": "LENID PACHECO JIMENEZ",
+      "candidates": [
+        {
+          "id": "72312c80-982a-465b-9f18-4f3f15995913",
+          "nombre": "Herminda Pacheco Gomez",
+          "cedula": "63356564"
+        },
+        {
+          "id": "028d26c7-8224-4646-b6f5-9d98d07dc217",
+          "nombre": "Maritza Pacheco Reyes",
+          "cedula": "49654064"
+        },
+        {
+          "id": "efa1462c-549d-46bc-8d3a-958075e7850b",
+          "nombre": "Bertha Jimenez",
+          "cedula": "28254379"
+        },
+        {
+          "id": "807c94d0-621c-4ee9-bad6-ee004acb2150",
+          "nombre": "Martha Jimenez Silva",
+          "cedula": "37940397"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-06T21:30:00.000Z",
+      "summary": "4.00 FRANCELINA RANGEL",
+      "nombre_extraido": "FRANCELINA RANGEL",
+      "candidates": [
+        {
+          "id": "fe572587-3769-4618-9a82-a50da660d00f",
+          "nombre": "Omaira Rangel Ortiz",
+          "cedula": "37939028"
+        },
+        {
+          "id": "06f04e89-64bf-425b-b79c-0a9680584bf3",
+          "nombre": "Francelina Fuentes Morales",
+          "cedula": "49666526"
+        },
+        {
+          "id": "cebde85e-1ccc-4e3a-b433-fa8e266ad9de",
+          "nombre": "Johanna Tores Rangel",
+          "cedula": "37754411"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-07T06:30:00.000Z",
+      "summary": "8.45 LENID PACHECO JIMENEZ 3 SESIONES",
+      "nombre_extraido": "LENID PACHECO JIMENEZ",
+      "candidates": [
+        {
+          "id": "72312c80-982a-465b-9f18-4f3f15995913",
+          "nombre": "Herminda Pacheco Gomez",
+          "cedula": "63356564"
+        },
+        {
+          "id": "028d26c7-8224-4646-b6f5-9d98d07dc217",
+          "nombre": "Maritza Pacheco Reyes",
+          "cedula": "49654064"
+        },
+        {
+          "id": "efa1462c-549d-46bc-8d3a-958075e7850b",
+          "nombre": "Bertha Jimenez",
+          "cedula": "28254379"
+        },
+        {
+          "id": "807c94d0-621c-4ee9-bad6-ee004acb2150",
+          "nombre": "Martha Jimenez Silva",
+          "cedula": "37940397"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-07T07:00:00.000Z",
+      "summary": "9.00 ANA VICTORIA QUINTERO CARRILLO    1 sesion",
+      "nombre_extraido": "ANA VICTORIA QUINTERO CARRILLO",
+      "candidates": [
+        {
+          "id": "d1504928-b1ea-407d-b3d0-f7287fc9327f",
+          "nombre": "Ana Marlene Pedraza Carrillo",
+          "cedula": "28357895"
+        },
+        {
+          "id": "78fb99eb-a7cc-4edd-a1f7-ebd75064d030",
+          "nombre": "Ana Aide Quintero Sepulveda",
+          "cedula": "49768210"
+        },
+        {
+          "id": "48daadd6-9545-4b41-9b93-1ee49888af39",
+          "nombre": "Andrea Liliana Ramirez Quintero",
+          "cedula": "28411807"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-07T09:00:00.000Z",
+      "summary": "9.45 SARA EDITH FLOREZ 3 SESIONES",
+      "nombre_extraido": "SARA EDITH FLOREZ",
+      "candidates": [
+        {
+          "id": "441b88df-4cc1-4039-8be7-9f98bd23deb6",
+          "nombre": "Erika Edith Florez",
+          "cedula": "63523520"
+        },
+        {
+          "id": "f0fd0a61-cf90-4005-81ee-6e55ca06b99f",
+          "nombre": "Sara Chaparro Jaimes",
+          "cedula": "52219324"
+        },
+        {
+          "id": "bc7adf76-e79e-48d2-a364-08d0b02149f0",
+          "nombre": "Edith Tobasia Quintero",
+          "cedula": "63479311"
+        },
+        {
+          "id": "0ae2765a-b190-4e5c-af30-316a51ec9281",
+          "nombre": "Zoraida Chacon Florez",
+          "cedula": "63289371"
+        },
+        {
+          "id": "716fbc69-a4e9-4941-b22a-10f4d4ae48f2",
+          "nombre": "Danilo Florez Alarcon",
+          "cedula": "1098814173"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-07T12:00:00.000Z",
+      "summary": "11.30 SANDRA MILENA FIGUEROA SILVA  1 SESION",
+      "nombre_extraido": "SAN",
+      "candidates": [
+        {
+          "id": "c2c9fbfe-cac1-4125-b486-9c21007afa35",
+          "nombre": "Gabriela Santos Sanchez",
+          "cedula": "1005346455"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-09T12:30:00.000Z",
+      "summary": "10.00 MARIA DIAZ ALVAREZ 1 SESION",
+      "nombre_extraido": "MARIA DIAZ ALVAREZ",
+      "candidates": [
+        {
+          "id": "11999b96-cdd6-4569-ac97-c7c1eb74da7b",
+          "nombre": "Ligia Ines Alvarez Diaz",
+          "cedula": "63318811"
+        },
+        {
+          "id": "8d84e616-9c61-4dbf-9a8a-d1e576767900",
+          "nombre": "Elida Maria Alvarez Navarro",
+          "cedula": "27762493"
+        },
+        {
+          "id": "cdd774ba-1901-4af6-9b6a-d989583af4ad",
+          "nombre": "Maria del Carmen Diaz Arenas",
+          "cedula": "28013997"
+        },
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "a5d274e8-74bc-4fc3-8db2-7b0cf5c17f03",
+          "nombre": "Jose Mariano Diaz Rodriguez",
+          "cedula": "1135752"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-10T08:30:00.000Z",
+      "summary": "9.00 CLAUDIA  ALEJANDRA CORDERO  1 SESION + 1 SESION MANO",
+      "nombre_extraido": "CLAUDIA ALEJAN",
+      "candidates": [
+        {
+          "id": "1362b9d7-f478-433e-a0bd-f357b06fc9a1",
+          "nombre": "Claudia Cristancho Blanco",
+          "cedula": "28151815"
+        },
+        {
+          "id": "d6161a32-45d3-48f7-9075-5dced24832c0",
+          "nombre": "Claudia Villareal Serrano",
+          "cedula": "63512756"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-10T20:30:00.000Z",
+      "summary": "8.00  EZID ADELA PEREZ",
+      "nombre_extraido": "EZID ADELA PEREZ",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        },
+        {
+          "id": "1a6f4a3f-d2e7-4d02-95fa-90c893e73b37",
+          "nombre": "Dufays Gutierrez Perez",
+          "cedula": "63535883"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-16T06:30:00.000Z",
+      "summary": "8.45 CLAUDIA MILENA DIAZ  CONTROL",
+      "nombre_extraido": "CLAUDIA MILENA DIAZ",
+      "candidates": [
+        {
+          "id": "66a93c79-60d0-4912-b34c-68e831037e93",
+          "nombre": "Claudia Milena Serrano Suarez",
+          "cedula": "37726865"
+        },
+        {
+          "id": "7a92c370-0818-4946-b7d8-e8d88d82ce35",
+          "nombre": "Claudia Marcela Diaz Marquez",
+          "cedula": "37725089"
+        },
+        {
+          "id": "912e8caf-90b4-4d21-92b8-319e2635a021",
+          "nombre": "Rosa Guerrero Diaz",
+          "cedula": "63487242"
+        },
+        {
+          "id": "e81d905d-e4ae-4c46-a61c-2bd25d4af263",
+          "nombre": "Raul Diaz Lagos",
+          "cedula": "91295372"
+        },
+        {
+          "id": "4b7c6544-3857-456e-8deb-704143bd2415",
+          "nombre": "Rosendo S Silvestre Diaz",
+          "cedula": "5787017"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-16T12:30:00.000Z",
+      "summary": "11.30 LUZ MIREYA PORRAS REVISION",
+      "nombre_extraido": "LUZ MIREYA PORRAS",
+      "candidates": [
+        {
+          "id": "364fdb12-3de5-4a86-b872-d327f91e381c",
+          "nombre": "Luz Mireya Muñoz Bueno",
+          "cedula": "63367409"
+        },
+        {
+          "id": "49b8662b-b77b-40ec-aaf8-d2e47e08e676",
+          "nombre": "Isabelina Rueda Porras",
+          "cedula": "37658759"
+        },
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "b842345d-7a10-4fe6-86d8-fd2592bfbed9",
+          "nombre": "Mireya Martinez Monroy",
+          "cedula": "37546045"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-16T17:30:00.000Z",
+      "summary": "3.30  JOHANA JANETH PEREZ FERNANDEZ 1 sesion c",
+      "nombre_extraido": "JOHANA JANETH PEREZ FERNANDEZ",
+      "candidates": [
+        {
+          "id": "a105684a-cbf8-47a2-8506-d577b2c90b72",
+          "nombre": "Janeth Perez Rivera",
+          "cedula": "63351493"
+        },
+        {
+          "id": "adaecc42-d01c-4b6b-b399-724819c9d262",
+          "nombre": "Nidia Johana Rodriguez Perez",
+          "cedula": "37842184"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-17T19:00:00.000Z",
+      "summary": "3.00  EZID ADELA PEREZ 1 sesion",
+      "nombre_extraido": "EZID ADELA PEREZ",
+      "candidates": [
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        },
+        {
+          "id": "af3bae41-7c81-4be8-b3c2-f0a72bc4d98c",
+          "nombre": "Rubi Perez Sanchez",
+          "cedula": "37329570"
+        },
+        {
+          "id": "1861f1e7-1497-4687-b852-327f7b8bc65c",
+          "nombre": "Socorro Perez",
+          "cedula": "28053290"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        },
+        {
+          "id": "1a6f4a3f-d2e7-4d02-95fa-90c893e73b37",
+          "nombre": "Dufays Gutierrez Perez",
+          "cedula": "63535883"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-18T12:30:00.000Z",
+      "summary": "11.30 ESTHER  AFANADOR PRADA revision",
+      "nombre_extraido": "ESTHER AFANADOR PRADA",
+      "candidates": [
+        {
+          "id": "7401587a-2504-4185-bf8c-bc4d50a4171d",
+          "nombre": "Myriam Cecilia Prada Afanador",
+          "cedula": "63455748"
+        },
+        {
+          "id": "eb09a1e0-adae-4aea-b886-32473309f756",
+          "nombre": "Norida Prada Armenta",
+          "cedula": "1063620349"
+        },
+        {
+          "id": "47656011-a848-44b5-89bc-a80210fac493",
+          "nombre": "Mary Prada Orejanera",
+          "cedula": "30209891"
+        },
+        {
+          "id": "fcede8dd-37aa-4d22-9420-b6bbf331ded3",
+          "nombre": "Esther Silva Gelvis",
+          "cedula": "37934766"
+        },
+        {
+          "id": "419f8e68-dc6f-4771-9082-f3dccd257dbb",
+          "nombre": "Milton Villamizar Afanador",
+          "cedula": "91154166"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-18T15:00:00.000Z",
+      "summary": "3.30 MARIA ODILIA ARGUELLO CONTROL",
+      "nombre_extraido": "MARIA ODILIA ARGUELLO",
+      "candidates": [
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "bd248ce7-75b5-44fe-a8ab-7cd0b54e5870",
+          "nombre": "Cristina Bolaño Arguello",
+          "cedula": "68305015"
+        },
+        {
+          "id": "134844f0-bb65-4ac2-9594-fdd81a7d7f11",
+          "nombre": "Fradider Arguello Garcia",
+          "cedula": "1100893323"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-18T17:30:00.000Z",
+      "summary": "4.00 ANGELICA MARIA TAVERA",
+      "nombre_extraido": "ANGELICA MARIA TAVERA",
+      "candidates": [
+        {
+          "id": "5836058d-7c64-4eb3-b8c9-5175767a7a98",
+          "nombre": "Angelica Maria Beltran Nuñez",
+          "cedula": "63559680"
+        },
+        {
+          "id": "f63b4e32-95c4-4794-bb07-dc08cc37a4c3",
+          "nombre": "Maria Angelica Salazar Riquet",
+          "cedula": "63494892"
+        },
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "e2137a85-b508-45d6-abaa-4de81f75d551",
+          "nombre": "Maria Valderrama Gallo",
+          "cedula": "60390071"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-21T07:30:00.000Z",
+      "summary": "9.00  MELVA SARMIENTO SEPULVEDA 1 SESION LASER",
+      "nombre_extraido": "MELVA SARMIENTO SEPULVEDA",
+      "candidates": [
+        {
+          "id": "91ce8a1f-67d0-4b82-9a5f-98eeac5b5e1d",
+          "nombre": "Ingrid Sarmiento Reyes",
+          "cedula": "63340589"
+        },
+        {
+          "id": "6c12d404-83d1-4f20-bcd6-46d949c78d75",
+          "nombre": "Hermencia Cepeda Sarmiento",
+          "cedula": "37891902"
+        },
+        {
+          "id": "b8fecb3f-56f0-449f-9875-4dfa208a9a72",
+          "nombre": "Olga Villamizar Sepulveda",
+          "cedula": "37826631"
+        },
+        {
+          "id": "6d44e941-b34f-42a4-b0b8-38a1cede78a0",
+          "nombre": "Ruth Esteban Sepulveda",
+          "cedula": "63364847"
+        },
+        {
+          "id": "6d35177a-b3c8-4e31-92f3-df5179460a6c",
+          "nombre": "Doreni Quintero Sepulveda",
+          "cedula": "37722827"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-21T12:00:00.000Z",
+      "summary": "11.30  LUISA FERNANDA QUINTERO 1 SEION  LASER",
+      "nombre_extraido": "LUISA FERNANDA QUINTERO SEION",
+      "candidates": [
+        {
+          "id": "22a64354-5f4e-42ea-b6d4-67432eb9db04",
+          "nombre": "Luisa Fernanda Cortes Sanchez",
+          "cedula": "51821633"
+        },
+        {
+          "id": "e30bba9c-b3e1-4b51-9eb9-c0054ad6dfb8",
+          "nombre": "Luisa Fernanda Llano Florez",
+          "cedula": "1036645462"
+        },
+        {
+          "id": "1d244fa5-fe48-47ad-a126-d7e03cf35cbe",
+          "nombre": "Luisa Fernanda Rueda Santos",
+          "cedula": "37558956"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-23T05:00:00.000Z",
+      "summary": "8.00 VICKY PAOLA MAYORGA REVISION",
+      "nombre_extraido": "VICKY PAOLA MAYORGA",
+      "candidates": [
+        {
+          "id": "cb57901b-5728-40fd-af1f-6f93d1938ed5",
+          "nombre": "Esperanza Mayorga",
+          "cedula": "36455838"
+        },
+        {
+          "id": "20ff0aa4-0890-4e04-b2fc-542ef1dc155f",
+          "nombre": "Carmenza Mayorga Pinto",
+          "cedula": "28427356"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-23T10:00:00.000Z",
+      "summary": "11.00 CLAUDIA MARELLY AYALA CONTROL",
+      "nombre_extraido": "CLAUDIA MARELLY AYALA",
+      "candidates": [
+        {
+          "id": "c6b52d36-2b0e-4dcd-8f45-191304d9422b",
+          "nombre": "Omaira Ayala Picon",
+          "cedula": "37895859"
+        },
+        {
+          "id": "1362b9d7-f478-433e-a0bd-f357b06fc9a1",
+          "nombre": "Claudia Cristancho Blanco",
+          "cedula": "28151815"
+        },
+        {
+          "id": "4e86c465-ab0c-4f57-990a-526f4d696445",
+          "nombre": "Rosaura Ayala Toloza",
+          "cedula": "63327439"
+        },
+        {
+          "id": "d6161a32-45d3-48f7-9075-5dced24832c0",
+          "nombre": "Claudia Villareal Serrano",
+          "cedula": "63512756"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-23T15:00:00.000Z",
+      "summary": "2.30 ANA VICTORIA MERCHAN CONTROL",
+      "nombre_extraido": "ANA VICTORIA MERCHAN",
+      "candidates": [
+        {
+          "id": "dd25a20d-61ba-4ecb-8eb5-064220fec82b",
+          "nombre": "Liliana Fuentes Sanabria",
+          "cedula": "63480253"
+        },
+        {
+          "id": "ab7096b2-6348-4e48-99d3-c0f7540f3ef7",
+          "nombre": "Ana Romero Duarte",
+          "cedula": "28236708"
+        },
+        {
+          "id": "66aea6fb-5df2-4bc8-a2a8-2708d5ec4cea",
+          "nombre": "Victoriana Martinez Sanchez",
+          "cedula": "37918398"
+        },
+        {
+          "id": "35276c6b-cd46-4351-a47e-53f6d449e04c",
+          "nombre": "Victoria Vesga Barajas",
+          "cedula": "41709642"
+        },
+        {
+          "id": "3507f377-b226-4d09-af93-74eba4715db7",
+          "nombre": "Ana Villamizar Casanova",
+          "cedula": "63299973"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-24T05:30:00.000Z",
+      "summary": "8.00YERLY NATHALY CELIS revision dra",
+      "nombre_extraido": "YERLY NATHALY CELIS",
+      "candidates": [
+        {
+          "id": "e12eae00-a725-4f75-a54e-ad0bf7a31b8f",
+          "nombre": "Alix Celis",
+          "cedula": "63298679"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-24T12:30:00.000Z",
+      "summary": "11.30 LUZ EDITH MONTEZUMA REVISION",
+      "nombre_extraido": "LUZ EDITH MONTEZUMA",
+      "candidates": [
+        {
+          "id": "bc7adf76-e79e-48d2-a364-08d0b02149f0",
+          "nombre": "Edith Tobasia Quintero",
+          "cedula": "63479311"
+        },
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "2fc8ff57-65b1-424f-a450-c94fc2990b9a",
+          "nombre": "Luz Estela Torres",
+          "cedula": "63337770"
+        },
+        {
+          "id": "7c574e1c-85a3-47b9-a2cc-a5a9815a87a8",
+          "nombre": "Tilcia Edith Salamanca",
+          "cedula": "45622159"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-25T13:00:00.000Z",
+      "summary": "11.30 MARIA MARGARITA HERNANDEZ revision",
+      "nombre_extraido": "MARIA MARGARITA HERNANDEZ",
+      "candidates": [
+        {
+          "id": "c69f8ec2-27e0-482b-8d0b-0509171642ba",
+          "nombre": "Maria Margarita Sarmiento Clevez",
+          "cedula": "37615381"
+        },
+        {
+          "id": "7432e499-a304-48ac-be02-465c0c2c28df",
+          "nombre": "Maria Esther Hernandez Carvajal",
+          "cedula": "37726375"
+        },
+        {
+          "id": "377b2356-c9d5-4040-9343-00350209e208",
+          "nombre": "Maria Nancy Santamaria Ariza",
+          "cedula": "63488550"
+        },
+        {
+          "id": "0f9ec21b-01de-403c-916c-bf02363b777b",
+          "nombre": "Flor de Maria Martinez",
+          "cedula": "28418581"
+        },
+        {
+          "id": "2e7c3130-0eaf-4a2c-a08b-bab2e207ad46",
+          "nombre": "Margarita Santos de Quesada",
+          "cedula": "28293549"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-27T11:00:00.000Z",
+      "summary": "10.00 LIRIS ESTHER CASTILLEJOS 2 sesiones",
+      "nombre_extraido": "LIRIS ESTHER CASTILLEJOS",
+      "candidates": [
+        {
+          "id": "fcede8dd-37aa-4d22-9420-b6bbf331ded3",
+          "nombre": "Esther Silva Gelvis",
+          "cedula": "37934766"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-27T18:00:00.000Z",
+      "summary": "3.00   MARIA GLADYS PRADA DE AMADOR control",
+      "nombre_extraido": "MARIA GLADYS PRADA DE",
+      "candidates": [
+        {
+          "id": "0f9ec21b-01de-403c-916c-bf02363b777b",
+          "nombre": "Flor de Maria Martinez",
+          "cedula": "28418581"
+        },
+        {
+          "id": "86fe6ab1-8113-448f-9723-278f088da42e",
+          "nombre": "Maria Delma Nuñez de Duarte",
+          "cedula": "20013167"
+        },
+        {
+          "id": "9a8ce42e-fdb2-42ea-8a97-0b4eb248e922",
+          "nombre": "Maria Edelmira Pinzon de Mora",
+          "cedula": "24040088"
+        },
+        {
+          "id": "5be8587a-57a8-4185-a35e-4e0696db8015",
+          "nombre": "Maria Gladys Caicedo",
+          "cedula": "63306553"
+        },
+        {
+          "id": "7e519999-a544-414b-b4f9-478636e43af3",
+          "nombre": "Maria Elvira Mullerr de Salamanca",
+          "cedula": "63273759"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-02-27T18:30:00.000Z",
+      "summary": "3.15 OLGA MERCEDES SERRANO  3 sesiones",
+      "nombre_extraido": "OLGA MERCEDES SERRANO",
+      "candidates": [
+        {
+          "id": "b06c3db2-f2dc-4426-831f-6dd8d0d351a6",
+          "nombre": "Carolina Serrano Serrano",
+          "cedula": "1098655889"
+        },
+        {
+          "id": "3f93c6bc-39eb-46a4-b743-b4a675ecc163",
+          "nombre": "Gisela Serrano Duran",
+          "cedula": "1102351544"
+        },
+        {
+          "id": "58876781-35b6-4887-b472-9bf104b4527c",
+          "nombre": "Erika Tatiana Serrano",
+          "cedula": "102369573"
+        },
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-02T08:00:00.000Z",
+      "summary": "10.00 BRICEIDA FLOREZ SUAREZ 314.410.0620 control",
+      "nombre_extraido": "BRICEIDA FLOREZ SUAREZ",
+      "candidates": [
+        {
+          "id": "b411d69f-00ad-4a00-b7da-d71163edc846",
+          "nombre": "Ines Suarez Abril",
+          "cedula": "37930532"
+        },
+        {
+          "id": "7939ab19-3ea3-411d-aaeb-46e1b260c034",
+          "nombre": "Esperanza Quintana Suarez",
+          "cedula": "28156306"
+        },
+        {
+          "id": "14702a4b-5140-46e7-b601-b954661562e8",
+          "nombre": "Viviana Suarez Gutierrez",
+          "cedula": "1099551257"
+        },
+        {
+          "id": "0ae2765a-b190-4e5c-af30-316a51ec9281",
+          "nombre": "Zoraida Chacon Florez",
+          "cedula": "63289371"
+        },
+        {
+          "id": "716fbc69-a4e9-4941-b22a-10f4d4ae48f2",
+          "nombre": "Danilo Florez Alarcon",
+          "cedula": "1098814173"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-02T08:30:00.000Z",
+      "summary": "10.15 MARIELA URIBE VARGAS CONTROL",
+      "nombre_extraido": "MARIELA URIBE VARGAS",
+      "candidates": [
+        {
+          "id": "2f4243ae-5b46-4c67-bc74-5a77ba163b0b",
+          "nombre": "Mariela Forero Olarte",
+          "cedula": "41448971"
+        },
+        {
+          "id": "485273f7-9262-4fc3-9266-baaf991dffeb",
+          "nombre": "Mariela Garcia Angel",
+          "cedula": "28212437"
+        },
+        {
+          "id": "7c40d22a-06c7-45f9-a6c0-2e2a5c3fb947",
+          "nombre": "Nancy Vargas Orduz",
+          "cedula": "63487570"
+        },
+        {
+          "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+          "nombre": "Isabel Vargas",
+          "cedula": "37541427"
+        },
+        {
+          "id": "b9e33cd4-2c72-4293-8e9f-498a88df936a",
+          "nombre": "Yamarli Obando Vargas",
+          "cedula": "1098722191"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-03T06:30:00.000Z",
+      "summary": "8.45 MARIA DEL CARMEN CAÑAS CONTROL",
+      "nombre_extraido": "MARIA DEL CARMEN CAÑAS",
+      "candidates": [
+        {
+          "id": "cdd774ba-1901-4af6-9b6a-d989583af4ad",
+          "nombre": "Maria del Carmen Diaz Arenas",
+          "cedula": "28013997"
+        },
+        {
+          "id": "5e5d75ab-19b1-4af1-aa27-d3de48dc69bd",
+          "nombre": "Maria del Carmen Escobar Duarte",
+          "cedula": "37578198"
+        },
+        {
+          "id": "a3d074af-ba1c-4fa9-a3af-f0f99b25b645",
+          "nombre": "Maria del Carmen Merchan Maldonado",
+          "cedula": "63346591"
+        },
+        {
+          "id": "6b3cee4f-dfe5-4340-8ca2-bc4c441685bf",
+          "nombre": "Maria del Pilar Salcedo",
+          "cedula": "1032379533"
+        },
+        {
+          "id": "b7840e90-5904-44eb-877c-1c0f5133311a",
+          "nombre": "Edilma del Carmen Escobar Bohorquez",
+          "cedula": "63483884"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-04T13:00:00.000Z",
+      "summary": "2.30 GLORIA AMPARO VILLAMIZAR CONTROL",
+      "nombre_extraido": "GLORIA AMPARO VILLAMIZAR",
+      "candidates": [
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        },
+        {
+          "id": "02fb99ae-caba-45af-8882-eda012ad91f2",
+          "nombre": "Judith Amparo Villamizar Jaimes",
+          "cedula": "27879458"
+        },
+        {
+          "id": "db38b5cd-368a-436e-8cd6-7613228d4f34",
+          "nombre": "Gloria Amparo Guarnizo Rangel",
+          "cedula": "37838947"
+        },
+        {
+          "id": "e2b9472d-6d74-481a-9434-2e8a0f84983f",
+          "nombre": "Gloria Amparo Duran Perez",
+          "cedula": "63361576"
+        },
+        {
+          "id": "d75cdf6d-a3e7-49b4-b953-0fe068fd056f",
+          "nombre": "Mery Villamizar Castellanos",
+          "cedula": "37799981"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-09T07:30:00.000Z",
+      "summary": "9.30 SILVINA BERMUDEZ control",
+      "nombre_extraido": "SILVINA BERMUDEZ",
+      "candidates": [
+        {
+          "id": "16a12b3f-8846-4a94-b433-67ff9ac80089",
+          "nombre": "Lilibeth Bermudez Gomez",
+          "cedula": "49667128"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-10T14:30:00.000Z",
+      "summary": "2.45 LINA LUZ MARTINEZ  control",
+      "nombre_extraido": "LINA LUZ MARTINEZ",
+      "candidates": [
+        {
+          "id": "63e08c71-a8eb-44fb-a382-24754349ab71",
+          "nombre": "Mercedes Martinez Martinez",
+          "cedula": "28295304"
+        },
+        {
+          "id": "d41062c4-0b3c-4953-a36d-6d48227b7452",
+          "nombre": "Luz Daly Forero Martinez",
+          "cedula": "63310375"
+        },
+        {
+          "id": "ba788db0-596c-4fcf-85cd-4e6e388ea6c2",
+          "nombre": "Mariluz Martinez Hernandez",
+          "cedula": "63537358"
+        },
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-12T10:00:00.000Z",
+      "summary": "11.00 JENNY KARINA GOMEZ CONTROL",
+      "nombre_extraido": "JENNY KARINA GOMEZ",
+      "candidates": [
+        {
+          "id": "3cb440bc-d1d1-4fb8-aa8a-4eb27579ba41",
+          "nombre": "Lucila Gomez Gomez",
+          "cedula": "63487456"
+        },
+        {
+          "id": "72312c80-982a-465b-9f18-4f3f15995913",
+          "nombre": "Herminda Pacheco Gomez",
+          "cedula": "63356564"
+        },
+        {
+          "id": "c7b66bd7-e16d-4342-85d3-8c461325bbda",
+          "nombre": "Rosa Gomez Alarcon",
+          "cedula": "37746154"
+        },
+        {
+          "id": "16a12b3f-8846-4a94-b433-67ff9ac80089",
+          "nombre": "Lilibeth Bermudez Gomez",
+          "cedula": "49667128"
+        },
+        {
+          "id": "8497ac7b-d6fc-476f-a694-8212a3848d02",
+          "nombre": "Esperanza Florez Gomez",
+          "cedula": "63474553"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-12T16:30:00.000Z",
+      "summary": "2.30 LUZ MERY TORREZ SALAMANCA CONTROL",
+      "nombre_extraido": "LUZ MERY TORREZ SALAMANCA",
+      "candidates": [
+        {
+          "id": "17802e1a-0bae-4d45-ae5c-17ecdda61ce4",
+          "nombre": "Luz Mery Landinez Sanabria",
+          "cedula": "37652912"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-13T09:30:00.000Z",
+      "summary": "10.00 MAYSOREYE ARGUELLO control",
+      "nombre_extraido": "MAYSOREYE ARGUELLO",
+      "candidates": [
+        {
+          "id": "bd248ce7-75b5-44fe-a8ab-7cd0b54e5870",
+          "nombre": "Cristina Bolaño Arguello",
+          "cedula": "68305015"
+        },
+        {
+          "id": "134844f0-bb65-4ac2-9594-fdd81a7d7f11",
+          "nombre": "Fradider Arguello Garcia",
+          "cedula": "1100893323"
+        },
+        {
+          "id": "5ab6f0a1-5c68-4875-a47e-a00157374d29",
+          "nombre": "Alida Arguello Silva",
+          "cedula": "28431703"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-13T11:30:00.000Z",
+      "summary": "11.00 ISADORA VARGAS URREA CONTROL",
+      "nombre_extraido": "ISADORA VARGAS URREA",
+      "candidates": [
+        {
+          "id": "7c40d22a-06c7-45f9-a6c0-2e2a5c3fb947",
+          "nombre": "Nancy Vargas Orduz",
+          "cedula": "63487570"
+        },
+        {
+          "id": "4c6ec5c2-eb71-4e5b-9bc3-502257b83c55",
+          "nombre": "Isabel Vargas",
+          "cedula": "37541427"
+        },
+        {
+          "id": "b9e33cd4-2c72-4293-8e9f-498a88df936a",
+          "nombre": "Yamarli Obando Vargas",
+          "cedula": "1098722191"
+        },
+        {
+          "id": "64749e6c-ccf8-409a-a248-1fc9743de3a8",
+          "nombre": "Adriana Vargas Delgado",
+          "cedula": "63337013"
+        },
+        {
+          "id": "cb074cdf-7b42-4bec-b681-c4f9a47ce595",
+          "nombre": "Marlene Vargas Ordoñez",
+          "cedula": "302083276"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-13T15:00:00.000Z",
+      "summary": "3.15 ALEXANDER MORA ESTUPIÑAN  CONTROL",
+      "nombre_extraido": "ALEXANDER MORA ESTUPIÑAN",
+      "candidates": [
+        {
+          "id": "04d6d86c-cdab-485f-bc29-560ea9e05414",
+          "nombre": "Alexander Marulanda",
+          "cedula": "1098665223"
+        },
+        {
+          "id": "bbb86a35-848e-4551-ac50-2f308c4f1a08",
+          "nombre": "Sonia Santamaria Mora",
+          "cedula": "63317260"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-13T15:30:00.000Z",
+      "summary": "3.30 ANNY CECILIA GUEVARA  control",
+      "nombre_extraido": "ANNY CECILIA GUEVARA",
+      "candidates": [
+        {
+          "id": "a8212fd4-5750-42ad-8aa1-460e37c1d72f",
+          "nombre": "Anny Gregoria Gonzales",
+          "cedula": "5082064"
+        },
+        {
+          "id": "365fab93-4f16-4fc6-8689-321632c9a603",
+          "nombre": "Cecilia Garavito Osorio",
+          "cedula": "60304886"
+        },
+        {
+          "id": "81b16563-426b-4409-abdb-8cd9a6d83704",
+          "nombre": "Cecilia Martinez Gonzalez",
+          "cedula": "28147861"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-16T13:30:00.000Z",
+      "summary": "2.30 LUZ MERY TORRES CONTROL",
+      "nombre_extraido": "LUZ MERY TORRES",
+      "candidates": [
+        {
+          "id": "2fc8ff57-65b1-424f-a450-c94fc2990b9a",
+          "nombre": "Luz Estela Torres",
+          "cedula": "63337770"
+        },
+        {
+          "id": "17802e1a-0bae-4d45-ae5c-17ecdda61ce4",
+          "nombre": "Luz Mery Landinez Sanabria",
+          "cedula": "37652912"
+        },
+        {
+          "id": "3e38b4ca-fa76-48ce-a731-10615bb555e0",
+          "nombre": "Luz Mila Torres Acuña",
+          "cedula": "60266461"
+        },
+        {
+          "id": "f273212a-b127-4b5d-b4b9-b2f19fd300e7",
+          "nombre": "Luz Marleni Torres Marin",
+          "cedula": "63319170"
+        },
+        {
+          "id": "e561a122-62b2-4fef-bc71-9a77f8670f7f",
+          "nombre": "Martha Bueno Torres",
+          "cedula": "51626895"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-17T08:30:00.000Z",
+      "summary": "10.15 ELSA BAYONA SERRANO CONTROL",
+      "nombre_extraido": "ELSA BAYONA SERRANO",
+      "candidates": [
+        {
+          "id": "b06c3db2-f2dc-4426-831f-6dd8d0d351a6",
+          "nombre": "Carolina Serrano Serrano",
+          "cedula": "1098655889"
+        },
+        {
+          "id": "3f93c6bc-39eb-46a4-b743-b4a675ecc163",
+          "nombre": "Gisela Serrano Duran",
+          "cedula": "1102351544"
+        },
+        {
+          "id": "c77aa5fa-c656-4a22-9545-ad6ece526f76",
+          "nombre": "Elsa Barrera Fontecha",
+          "cedula": "37695879"
+        },
+        {
+          "id": "2f62b511-6ae6-4eda-9ac7-39289dd39b53",
+          "nombre": "Elsa Mendez Jaimes",
+          "cedula": "1090438668"
+        },
+        {
+          "id": "34230252-4a7e-4f9e-8ba9-33032916285f",
+          "nombre": "Elsa Landasabal Perez",
+          "cedula": "63327804"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-17T12:00:00.000Z",
+      "summary": "11.30BERNARDA SANABRIA QUINTERO REVISION TROMBOS",
+      "nombre_extraido": "BERNARDA SANABRIA QUINTERO",
+      "candidates": [
+        {
+          "id": "78fb99eb-a7cc-4edd-a1f7-ebd75064d030",
+          "nombre": "Ana Aide Quintero Sepulveda",
+          "cedula": "49768210"
+        },
+        {
+          "id": "9ca1f9d2-ff5f-438b-a894-ee07f8bbba54",
+          "nombre": "Lucila Quintero Ramirez",
+          "cedula": "37816099"
+        },
+        {
+          "id": "bc7adf76-e79e-48d2-a364-08d0b02149f0",
+          "nombre": "Edith Tobasia Quintero",
+          "cedula": "63479311"
+        },
+        {
+          "id": "dd25a20d-61ba-4ecb-8eb5-064220fec82b",
+          "nombre": "Liliana Fuentes Sanabria",
+          "cedula": "63480253"
+        },
+        {
+          "id": "a8ac34bf-aacb-44c0-9cce-d961dfc225d8",
+          "nombre": "Olga Janeth Quintero",
+          "cedula": "63442957"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-18T12:00:00.000Z",
+      "summary": "3.30RUTH GARCIA GOMEZ CONTROL",
+      "nombre_extraido": "RUTH GARCIA GOMEZ",
+      "candidates": [
+        {
+          "id": "1e836c92-4863-43ce-9d3c-914df9717d27",
+          "nombre": "Sandra Garcia Garcia",
+          "cedula": "63489729"
+        },
+        {
+          "id": "3cb440bc-d1d1-4fb8-aa8a-4eb27579ba41",
+          "nombre": "Lucila Gomez Gomez",
+          "cedula": "63487456"
+        },
+        {
+          "id": "71c99748-3dbf-4e84-a672-8cd76e2333e6",
+          "nombre": "Carmenza Gomez de Garcia",
+          "cedula": "41541231"
+        },
+        {
+          "id": "0dceae53-1025-483b-b4e9-0c84bd255f57",
+          "nombre": "Lizardo Marin Garcia",
+          "cedula": "2193689"
+        },
+        {
+          "id": "485273f7-9262-4fc3-9266-baaf991dffeb",
+          "nombre": "Mariela Garcia Angel",
+          "cedula": "28212437"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-24T13:00:00.000Z",
+      "summary": "11.30 FRANCELINA RANGEL SCANEO C",
+      "nombre_extraido": "FRANCELINA RANGEL",
+      "candidates": [
+        {
+          "id": "fe572587-3769-4618-9a82-a50da660d00f",
+          "nombre": "Omaira Rangel Ortiz",
+          "cedula": "37939028"
+        },
+        {
+          "id": "06f04e89-64bf-425b-b79c-0a9680584bf3",
+          "nombre": "Francelina Fuentes Morales",
+          "cedula": "49666526"
+        },
+        {
+          "id": "cebde85e-1ccc-4e3a-b433-fa8e266ad9de",
+          "nombre": "Johanna Tores Rangel",
+          "cedula": "37754411"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-25T06:30:00.000Z",
+      "summary": "10.00 LUZ STELLA CALVETE CONTROL",
+      "nombre_extraido": "LUZ STELLA CALVETE",
+      "candidates": [
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "109201f0-de5f-4f9a-9325-911628cc69c7",
+          "nombre": "Luz Stella Bohorquez Rincon",
+          "cedula": "63452510"
+        },
+        {
+          "id": "40e005ee-0e33-4e91-876b-bbf73d96ba42",
+          "nombre": "Luz Stella Pacheco Cifuentes",
+          "cedula": "63495508"
+        },
+        {
+          "id": "4541a077-5b8a-4d59-a7dc-4dff6aaa8124",
+          "nombre": "Luz Estella Romero Oviedo",
+          "cedula": "63475496"
+        },
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-25T13:00:00.000Z",
+      "summary": "11.30 IRENE RUEDA MEDIA REVISION",
+      "nombre_extraido": "IRENE RUEDA",
+      "candidates": [
+        {
+          "id": "49b8662b-b77b-40ec-aaf8-d2e47e08e676",
+          "nombre": "Isabelina Rueda Porras",
+          "cedula": "37658759"
+        },
+        {
+          "id": "aad28a76-6020-47b1-825b-320a0c95a30f",
+          "nombre": "Raquel Rueda Rodriguez",
+          "cedula": "63342163"
+        },
+        {
+          "id": "761d5573-d5a7-460f-a9a2-56cbf64d08eb",
+          "nombre": "Leonor Rueda Jaimes",
+          "cedula": "63274901"
+        },
+        {
+          "id": "2a1d17de-149b-412d-acf0-7816d4bb1270",
+          "nombre": "Irene Arias Parada",
+          "cedula": "28049181"
+        },
+        {
+          "id": "11acd9a3-ef5e-486e-858c-0fa9cd7aad66",
+          "nombre": "Sonia Rueda Uribe",
+          "cedula": "63504533"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-26T11:00:00.000Z",
+      "summary": "10.00  MARIA EUGENIA RUIZ DE MARIN CONTROL",
+      "nombre_extraido": "MARIA EUGENIA RUIZ DE",
+      "candidates": [
+        {
+          "id": "e12be4bd-4889-4a38-8585-a6debba934fb",
+          "nombre": "Hilda Ruiz de Lozada",
+          "cedula": "37831901"
+        },
+        {
+          "id": "a592a238-dff8-4d58-9f6b-d49bf4c75630",
+          "nombre": "Anita Ruiz de Gomez",
+          "cedula": "28401391"
+        },
+        {
+          "id": "94ce360c-6b1d-4a75-a26e-630c1dbe1f81",
+          "nombre": "Maria Eugenia Suarez Pinto",
+          "cedula": "37920811"
+        },
+        {
+          "id": "7084b23c-1c12-4e78-8c9e-a9e10574730b",
+          "nombre": "Maria Eugenia Duarte Mancilla",
+          "cedula": "63357585"
+        },
+        {
+          "id": "0f9ec21b-01de-403c-916c-bf02363b777b",
+          "nombre": "Flor de Maria Martinez",
+          "cedula": "28418581"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-03-30T15:00:00.000Z",
+      "summary": "3.00 PATRICIA REYES GARCIA control",
+      "nombre_extraido": "PATRICIA REYES GARCIA",
+      "candidates": [
+        {
+          "id": "1e836c92-4863-43ce-9d3c-914df9717d27",
+          "nombre": "Sandra Garcia Garcia",
+          "cedula": "63489729"
+        },
+        {
+          "id": "8fcb84bd-c097-4b29-82e6-f776118ef526",
+          "nombre": "Laura Patricia Garcia Riaño",
+          "cedula": "1101206558"
+        },
+        {
+          "id": "ab98cc0e-0ff7-4383-b3f2-6a93f0f4723b",
+          "nombre": "Angela Patricia Garcia Mendoza",
+          "cedula": "1102348205"
+        },
+        {
+          "id": "0dceae53-1025-483b-b4e9-0c84bd255f57",
+          "nombre": "Lizardo Marin Garcia",
+          "cedula": "2193689"
+        },
+        {
+          "id": "57d3756b-728e-48aa-b857-af87e5e2ae45",
+          "nombre": "Rocio Bautista Reyes",
+          "cedula": "40506168"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-04-01T12:30:00.000Z",
+      "summary": "11.30 jenny gonzalez rodriguez 1 sesion c",
+      "nombre_extraido": "JENNY GONZALEZ RO",
+      "candidates": [
+        {
+          "id": "b1ac3c7b-85a8-47d3-a762-6d46794eeca8",
+          "nombre": "Charoll Nicole Herrera Gonzalez",
+          "cedula": "1109387374"
+        },
+        {
+          "id": "47e13579-332c-415f-b46d-8311ad43f972",
+          "nombre": "Alexa Carolina Orjuela Gonzalez",
+          "cedula": "65631363"
+        },
+        {
+          "id": "c2301959-ee79-4dea-8de1-cf1239ac5748",
+          "nombre": "Alba Rocio Gonzalez Galeano",
+          "cedula": "63539759"
+        },
+        {
+          "id": "e0e143e6-73f8-4048-88ab-16f0c738bbd8",
+          "nombre": "Yuli Esperanza Gonzalez Rodriguez",
+          "cedula": "1099364188"
+        },
+        {
+          "id": "3b41e484-71ac-45c6-a8fc-e9d970ba42bf",
+          "nombre": "Barbara Nova Gonzalez",
+          "cedula": "63359398"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-04-04T07:30:00.000Z",
+      "summary": "9.30 BERTHA BELTRAN MONSALVE  CONTROL",
+      "nombre_extraido": "BERTHA BELTRAN MONSALVE",
+      "candidates": [
+        {
+          "id": "6c142412-3a1a-44a0-8233-7ce90ef076ae",
+          "nombre": "Natalia Ortiz Monsalve",
+          "cedula": "7797870"
+        },
+        {
+          "id": "3a2e19d7-172b-4617-99f9-729758f759af",
+          "nombre": "Orfelina Badillo Beltran",
+          "cedula": "28007953"
+        },
+        {
+          "id": "38677af0-b799-4697-8347-09e807feb0d2",
+          "nombre": "Mabel Ortiz Beltran",
+          "cedula": "28352417"
+        },
+        {
+          "id": "b7c00811-a0cd-441e-aac4-9a0522d69246",
+          "nombre": "Graciela Monsalve Benitez",
+          "cedula": "63360239"
+        },
+        {
+          "id": "f0167356-19d3-44cc-a03f-66499d542fff",
+          "nombre": "Esperanza Monsalve Rincon",
+          "cedula": "37898646"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-04-04T08:30:00.000Z",
+      "summary": "10.00 YEISMITH VERA  CEL . 3172671932 CONTROL",
+      "nombre_extraido": "YEISMITH VERA",
+      "candidates": [
+        {
+          "id": "de9e7dea-7224-4abb-a81d-3caef37f14e5",
+          "nombre": "Gisela Gallardo Vera",
+          "cedula": "37826028"
+        },
+        {
+          "id": "e1d6e7cf-7066-4269-b3e5-406d2fc3f782",
+          "nombre": "Clementina Vera Useche",
+          "cedula": "63471567"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-13T16:30:00.000Z",
+      "summary": "2.30 BLANCA LUCIA GRIMALDOS CONTROL",
+      "nombre_extraido": "BLANCA LUCIA GRIMALDOS",
+      "candidates": [
+        {
+          "id": "3f7eddb7-bc2a-4688-82cf-e866a787c641",
+          "nombre": "Blanca Manrrique",
+          "cedula": "63321720"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-14T11:30:00.000Z",
+      "summary": "11.00 ANA DOLRES PEREZ  control",
+      "nombre_extraido": "ANA DOLRES PEREZ",
+      "candidates": [
+        {
+          "id": "82a7ab75-9690-4e4e-9576-c1aa22c8d47b",
+          "nombre": "Nicolh Adriana Chacon Perez",
+          "cedula": "1098816362"
+        },
+        {
+          "id": "349dd293-412e-4860-8a48-7373894fade8",
+          "nombre": "Diana Milena Perez Zuñiga",
+          "cedula": "37750090"
+        },
+        {
+          "id": "92d76d81-a625-46cd-bf52-83182a1b3407",
+          "nombre": "Karen Silvana Perez Vesga",
+          "cedula": "63498770"
+        },
+        {
+          "id": "adaecc42-d01c-4b6b-b399-724819c9d262",
+          "nombre": "Nidia Johana Rodriguez Perez",
+          "cedula": "37842184"
+        },
+        {
+          "id": "e4d77d05-a3e7-4394-9d9c-0f102e7ae68a",
+          "nombre": "Juan Perez",
+          "cedula": "1234567890"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-19T16:00:00.000Z",
+      "summary": "2.30 YESMITH HELENA ARIAZ  control",
+      "nombre_extraido": "YESMITH HELENA ARIAZ",
+      "candidates": [
+        {
+          "id": "e97126e5-0664-4219-9161-692155d49e36",
+          "nombre": "Helena Sierra Trujillo",
+          "cedula": "28357403"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-20T06:00:00.000Z",
+      "summary": "8.45 ANA CELIA SEPULVEDA CONTROL",
+      "nombre_extraido": "ANA CELIA SEPULVEDA",
+      "candidates": [
+        {
+          "id": "78fb99eb-a7cc-4edd-a1f7-ebd75064d030",
+          "nombre": "Ana Aide Quintero Sepulveda",
+          "cedula": "49768210"
+        },
+        {
+          "id": "486fb923-90f5-4757-b42b-ebd0e762400b",
+          "nombre": "Pilar Viviana Sepulveda Silva",
+          "cedula": "63343537"
+        },
+        {
+          "id": "dd25a20d-61ba-4ecb-8eb5-064220fec82b",
+          "nombre": "Liliana Fuentes Sanabria",
+          "cedula": "63480253"
+        },
+        {
+          "id": "ab7096b2-6348-4e48-99d3-c0f7540f3ef7",
+          "nombre": "Ana Romero Duarte",
+          "cedula": "28236708"
+        },
+        {
+          "id": "b8fecb3f-56f0-449f-9875-4dfa208a9a72",
+          "nombre": "Olga Villamizar Sepulveda",
+          "cedula": "37826631"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-21T13:30:00.000Z",
+      "summary": "3.15 LILIANA FLOREZ  BAYONA control",
+      "nombre_extraido": "LILIANA FLOREZ BAYONA",
+      "candidates": [
+        {
+          "id": "2d9a139d-a39c-480f-aa7b-7acb0b8c9185",
+          "nombre": "Ana Lucia Acosta Florez",
+          "cedula": "37833833"
+        },
+        {
+          "id": "0b51da86-663a-4035-ba1b-2400049a7b68",
+          "nombre": "Liliana Pinto Sanchez",
+          "cedula": "1100952147"
+        },
+        {
+          "id": "df6028c7-79fa-41d9-a204-05c349b955c0",
+          "nombre": "Liliana Montealegre",
+          "cedula": "39675886"
+        },
+        {
+          "id": "db871785-382c-4025-a6f9-09e6420ac6f0",
+          "nombre": "Liliana Rincon Barrios",
+          "cedula": "63484828"
+        },
+        {
+          "id": "0ae2765a-b190-4e5c-af30-316a51ec9281",
+          "nombre": "Zoraida Chacon Florez",
+          "cedula": "63289371"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-22T06:00:00.000Z",
+      "summary": "8.45 MARIA DEL CARMEN CAÑAS CONTROL",
+      "nombre_extraido": "MARIA DEL CARMEN CAÑAS",
+      "candidates": [
+        {
+          "id": "cdd774ba-1901-4af6-9b6a-d989583af4ad",
+          "nombre": "Maria del Carmen Diaz Arenas",
+          "cedula": "28013997"
+        },
+        {
+          "id": "5e5d75ab-19b1-4af1-aa27-d3de48dc69bd",
+          "nombre": "Maria del Carmen Escobar Duarte",
+          "cedula": "37578198"
+        },
+        {
+          "id": "a3d074af-ba1c-4fa9-a3af-f0f99b25b645",
+          "nombre": "Maria del Carmen Merchan Maldonado",
+          "cedula": "63346591"
+        },
+        {
+          "id": "6b3cee4f-dfe5-4340-8ca2-bc4c441685bf",
+          "nombre": "Maria del Pilar Salcedo",
+          "cedula": "1032379533"
+        },
+        {
+          "id": "b7840e90-5904-44eb-877c-1c0f5133311a",
+          "nombre": "Edilma del Carmen Escobar Bohorquez",
+          "cedula": "63483884"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-22T22:30:00.000Z",
+      "summary": "3.45 SAMUEL MEZA ROJAS CONTROL",
+      "nombre_extraido": "SAMUEL MEZA ROJAS",
+      "candidates": [
+        {
+          "id": "a46349be-6437-4beb-a6d9-1a04b53fc8f9",
+          "nombre": "Yenny Landazabal Rojas",
+          "cedula": "63536123"
+        },
+        {
+          "id": "7ba11071-8de4-460b-a364-e83223374d9c",
+          "nombre": "Lucila Rojas Acevedo",
+          "cedula": "37804873"
+        },
+        {
+          "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+          "nombre": "Leonor Paez Rojas",
+          "cedula": "63498517"
+        },
+        {
+          "id": "4758e9bd-7d3d-47c5-aee6-6853bb693510",
+          "nombre": "Samuel Montañez Cavarico",
+          "cedula": "225939"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-23T06:00:00.000Z",
+      "summary": "8.45 SAMUEL MEZA ROJAS CONTROL",
+      "nombre_extraido": "SAMUEL MEZA ROJAS",
+      "candidates": [
+        {
+          "id": "a46349be-6437-4beb-a6d9-1a04b53fc8f9",
+          "nombre": "Yenny Landazabal Rojas",
+          "cedula": "63536123"
+        },
+        {
+          "id": "7ba11071-8de4-460b-a364-e83223374d9c",
+          "nombre": "Lucila Rojas Acevedo",
+          "cedula": "37804873"
+        },
+        {
+          "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+          "nombre": "Leonor Paez Rojas",
+          "cedula": "63498517"
+        },
+        {
+          "id": "4758e9bd-7d3d-47c5-aee6-6853bb693510",
+          "nombre": "Samuel Montañez Cavarico",
+          "cedula": "225939"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-05-23T06:30:00.000Z",
+      "summary": "9.00 NELLY MORENO QUINTERO CONTROL",
+      "nombre_extraido": "NELLY MORENO QUINTERO",
+      "candidates": [
+        {
+          "id": "9ca1f9d2-ff5f-438b-a894-ee07f8bbba54",
+          "nombre": "Lucila Quintero Ramirez",
+          "cedula": "37816099"
+        },
+        {
+          "id": "8f8dadad-6787-4c1e-b60c-e2646ff449a7",
+          "nombre": "Zaide Vesga Moreno",
+          "cedula": "63308286"
+        },
+        {
+          "id": "dea618a8-284c-4f6b-bc4d-732352cc80d0",
+          "nombre": "Azucena Barajas Moreno",
+          "cedula": "28359607"
+        },
+        {
+          "id": "bc7adf76-e79e-48d2-a364-08d0b02149f0",
+          "nombre": "Edith Tobasia Quintero",
+          "cedula": "63479311"
+        },
+        {
+          "id": "ac0d9707-1b5e-4640-8c74-367915929498",
+          "nombre": "Nelly Robayo Arteaga",
+          "cedula": "3533153"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-06-20T10:00:00.000Z",
+      "summary": "10.00 ESPERANZA RIVERA SUAREZ control",
+      "nombre_extraido": "ESPERANZA RIVERA SUAREZ",
+      "candidates": [
+        {
+          "id": "7939ab19-3ea3-411d-aaeb-46e1b260c034",
+          "nombre": "Esperanza Quintana Suarez",
+          "cedula": "28156306"
+        },
+        {
+          "id": "c547cf2d-4de6-4312-bf4d-9d3ca6c2cd89",
+          "nombre": "Sarah Stephannya Rivera Rivera",
+          "cedula": "1005149603"
+        },
+        {
+          "id": "b411d69f-00ad-4a00-b7da-d71163edc846",
+          "nombre": "Ines Suarez Abril",
+          "cedula": "37930532"
+        },
+        {
+          "id": "14702a4b-5140-46e7-b601-b954661562e8",
+          "nombre": "Viviana Suarez Gutierrez",
+          "cedula": "1099551257"
+        },
+        {
+          "id": "cb57901b-5728-40fd-af1f-6f93d1938ed5",
+          "nombre": "Esperanza Mayorga",
+          "cedula": "36455838"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-06-22T08:30:00.000Z",
+      "summary": "9.30 ORFELINA JEJEN BRICEÑO  CONTROL",
+      "nombre_extraido": "ORFELINA JEJEN BRICEÑO",
+      "candidates": [
+        {
+          "id": "3a2e19d7-172b-4617-99f9-729758f759af",
+          "nombre": "Orfelina Badillo Beltran",
+          "cedula": "28007953"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-06-24T14:30:00.000Z",
+      "summary": "3.00 BLEIDY AMPARO CONTROL",
+      "nombre_extraido": "BLEIDY AMPARO",
+      "candidates": [
+        {
+          "id": "e7bad0eb-511e-4aa8-aadf-8e34bcea80c6",
+          "nombre": "Amparo Sanchez Morales",
+          "cedula": "28214854"
+        },
+        {
+          "id": "0403cdb0-af48-4034-9923-fe91b7bc138d",
+          "nombre": "Amparo Herrera Torres",
+          "cedula": "63508829"
+        },
+        {
+          "id": "61ce1d38-f798-46f9-8ce6-6f571beb0dfb",
+          "nombre": "Amparo Sanchez Rodriguez",
+          "cedula": "37827738"
+        },
+        {
+          "id": "51014ba6-71b4-4fcb-8db4-bb2cc4b154c3",
+          "nombre": "Amparo Sandoval Rodriguez",
+          "cedula": "63475884"
+        },
+        {
+          "id": "2143f1fd-e0af-4a5c-a3f6-494f947e16a7",
+          "nombre": "Amparo Zambrano Jaramillo",
+          "cedula": "63431891"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-07-22T15:00:00.000Z",
+      "summary": "3.15 BELQUES CALA CALA CONTROL",
+      "nombre_extraido": "BELQUES CALA CALA",
+      "candidates": [
+        {
+          "id": "8f4143e1-bef2-4e4e-b470-2b827e10e827",
+          "nombre": "Saida Catalina Cala Castillo",
+          "cedula": "1095924268"
+        },
+        {
+          "id": "24376b93-a251-48d0-a60b-43f42f97622e",
+          "nombre": "Carmen Sofia Cala Ariza",
+          "cedula": "1095793255"
+        },
+        {
+          "id": "2a052eac-ac6c-4aff-9096-8496f49005e5",
+          "nombre": "Evelia Cala de Uribe",
+          "cedula": "28421748"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-09-03T10:30:00.000Z",
+      "summary": "11.00  GLORIA CAMACHO CONTROL",
+      "nombre_extraido": "GLORIA CAMACHO",
+      "candidates": [
+        {
+          "id": "6ab727ee-09a2-4fe8-96bb-c0d042d6690c",
+          "nombre": "Gloria Montagut",
+          "cedula": "63283183"
+        },
+        {
+          "id": "c2123564-6f2d-48e6-9eb4-562eb684effb",
+          "nombre": "Ilbania Camacho Portilla",
+          "cedula": "63314906"
+        },
+        {
+          "id": "f99d4393-e10a-4db6-9313-0ba4f18827ff",
+          "nombre": "Gloria Valencia Sanchez",
+          "cedula": "37917582"
+        },
+        {
+          "id": "18c748d5-8c2d-4bd7-a908-71fb2a6d7fd7",
+          "nombre": "Gloria Stella Duran",
+          "cedula": "63478452"
+        },
+        {
+          "id": "20720457-1de0-43fe-a497-8c20e47cd082",
+          "nombre": "Gloria Maria Villamizar",
+          "cedula": "60258010"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-21T18:30:00.000Z",
+      "summary": "3.30 LUZ DARY PARADA  CONTROL",
+      "nombre_extraido": "LUZ DARY PARADA",
+      "candidates": [
+        {
+          "id": "3373a09b-cc68-4f61-ac17-b9bd59a8e5d8",
+          "nombre": "Luz Dary Gamarra",
+          "cedula": "28061180"
+        },
+        {
+          "id": "80514daa-45af-4811-95a4-7cd25f0fcb66",
+          "nombre": "Luz Dary Mendoza",
+          "cedula": "1102368486"
+        },
+        {
+          "id": "2a1d17de-149b-412d-acf0-7816d4bb1270",
+          "nombre": "Irene Arias Parada",
+          "cedula": "28049181"
+        },
+        {
+          "id": "97483452-b361-4e31-9650-33bc60334ecf",
+          "nombre": "Luz Stella Carreño",
+          "cedula": "63440088"
+        },
+        {
+          "id": "2fc8ff57-65b1-424f-a450-c94fc2990b9a",
+          "nombre": "Luz Estela Torres",
+          "cedula": "63337770"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-12-15T07:00:00.000Z",
+      "summary": "9.00 TOÑA ROJAS DIAS  CONTROL",
+      "nombre_extraido": "TOÑA ROJAS DIAS",
+      "candidates": [
+        {
+          "id": "a46349be-6437-4beb-a6d9-1a04b53fc8f9",
+          "nombre": "Yenny Landazabal Rojas",
+          "cedula": "63536123"
+        },
+        {
+          "id": "7ba11071-8de4-460b-a364-e83223374d9c",
+          "nombre": "Lucila Rojas Acevedo",
+          "cedula": "37804873"
+        },
+        {
+          "id": "ece7d7ce-342e-47df-9e9d-fe97b5a578f7",
+          "nombre": "Leonor Paez Rojas",
+          "cedula": "63498517"
+        }
+      ]
+    }
+  ],
+  "none": [
+    {
+      "fecha": "2026-01-29T05:30:00.000Z",
+      "summary": "8.00 YAMILE ZARATE CAMACHO  2 seiones",
+      "nombre_extraido": "YAMILE ZARATE CAMACHO SEIONES"
+    },
+    {
+      "fecha": "2026-01-30T20:30:00.000Z",
+      "summary": "4.00",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-01-31T08:30:00.000Z",
+      "summary": "10 00 Lady Joana Cortés Pinzon 1 vez cel 318 6069455",
+      "nombre_extraido": "LADY JOANA CORTÉS PINZON"
+    },
+    {
+      "fecha": "2026-01-31T10:30:00.000Z",
+      "summary": "11.00 MILDRED CASTILLO GONZALEZ CONTROL",
+      "nombre_extraido": "MIL"
+    },
+    {
+      "fecha": "2026-02-02T05:30:00.000Z",
+      "summary": "8.00  ALEXANDRA YANNETH MAYORGA  REVISION",
+      "nombre_extraido": "ALEXAN"
+    },
+    {
+      "fecha": "2026-02-03T06:00:00.000Z",
+      "summary": "8.00 LILIAM SOFIA ZARATE CAMACHO CEL. 300.778.8423 2 sesiones",
+      "nombre_extraido": "LILIAM SOFIA ZARATE CAMACHO"
+    },
+    {
+      "fecha": "2026-02-03T06:30:00.000Z",
+      "summary": "8.15   SONIA MARINA ZARATE CAMACHO CONFIRMAR A LILIAM 2 sesiones",
+      "nombre_extraido": "SONIA MARINA ZARATE CAMACHO"
+    },
+    {
+      "fecha": "2026-02-03T08:30:00.000Z",
+      "summary": "9.15",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-02-03T14:30:00.000Z",
+      "summary": "2.30",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-02-03T15:30:00.000Z",
+      "summary": "3.00 YURY KATEHERINE URIBE JIMENEZ 1 SESION",
+      "nombre_extraido": "YURY KATEHERINE URIBE JIMENEZ"
+    },
+    {
+      "fecha": "2026-02-03T16:00:00.000Z",
+      "summary": "3.15 SONIA YOLANDA ARGUELLO CAMACHO 2 sesiones",
+      "nombre_extraido": "SONIA YOLANDA ARGUELLO CAMACHO"
+    },
+    {
+      "fecha": "2026-02-05T08:30:00.000Z",
+      "summary": "9.30  CLARA IBETH MOJICA ECOR",
+      "nombre_extraido": "CLARA IBETH MOJICA"
+    },
+    {
+      "fecha": "2026-02-11T13:30:00.000Z",
+      "summary": "11.30 Stephanie Katherine Díaz Tanco revision",
+      "nombre_extraido": "STEPHANIE KATHERINE DÍAZ TANCO"
+    },
+    {
+      "fecha": "2026-02-12T17:30:00.000Z",
+      "summary": "8.00  MARTHA HERNANDEZ CACERES  RESISUOS",
+      "nombre_extraido": "MARTHA HERNANDEZ CACERES RESISUOS"
+    },
+    {
+      "fecha": "2026-02-13T12:30:00.000Z",
+      "summary": "3.00",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-02-14T12:00:00.000Z",
+      "summary": "11.30",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-02-20T11:00:00.000Z",
+      "summary": "2.45 YENNY PAOLA MATEUS GONZALEZ  1 sesion",
+      "nombre_extraido": "YENNY PAOLA MATEUS GONZALEZ"
+    },
+    {
+      "fecha": "2026-03-23T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-04-01T10:00:00.000Z",
+      "summary": ".10.00LUIS JESUS ORTIZ CONTROL CEL . 311.248.7885",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-04-02T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-04-03T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-04-11T07:30:00.000Z",
+      "summary": "9.00 JULIA CRISTINA COMBITA ARIAS CONTROL",
+      "nombre_extraido": "JULIA CRISTINA COMBITA ARIAS"
+    },
+    {
+      "fecha": "2026-05-01T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-05-18T06:30:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-05-23T07:00:00.000Z",
+      "summary": "9.15 DORIS MIREYA MORENO QUINTERO CONTROL",
+      "nombre_extraido": "DORIS MIREYA MORENO QUINTERO"
+    },
+    {
+      "fecha": "2026-06-08T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-06-15T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-06-20T09:00:00.000Z",
+      "summary": "9.00",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-06-29T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-07-20T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-08-07T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-08-17T07:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-10-12T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-11-02T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-11-16T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-12-08T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    },
+    {
+      "fecha": "2026-12-25T06:00:00.000Z",
+      "summary": ".",
+      "nombre_extraido": ""
+    }
+  ]
+}

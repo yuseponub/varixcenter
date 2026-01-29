@@ -198,24 +198,42 @@ export function AppointmentForm({
     }
   }, [state?.success, router, onSuccess])
 
+  // Normalize text for phonetic search (Spanish)
+  const normalizeForSearch = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[csz]/g, 's')          // S = C = Z
+      .replace(/[bv]/g, 'b')           // B = V
+      .replace(/[yi]/g, 'i')           // Y = I
+      .replace(/ñ/g, 'n')              // Ñ = N
+      .replace(/[^a-z0-9\s]/g, '')     // Remove special chars
+      .replace(/\s+/g, ' ')            // Normalize spaces
+      .trim()
+  }
+
   // Filter patients for dropdown search (always include currently selected patient)
   const currentPatientId = form.getValues('patient_id')
   const filteredPatients = patientSearch
     ? patients.filter((p) => {
         if (p.id === currentPatientId) return true // Always include current patient
 
-        const search = patientSearch.toLowerCase().trim()
-        const cedula = (p.cedula || '').toLowerCase()
-        const nombre = (p.nombre || '').toLowerCase()
-        const apellido = (p.apellido || '').toLowerCase()
-        const celular = (p.celular || '').toLowerCase()
-        const fullName = `${nombre} ${apellido}`
+        const searchTerm = patientSearch.trim()
 
-        return cedula.includes(search) ||
-               nombre.includes(search) ||
-               apellido.includes(search) ||
-               celular.includes(search) ||
-               fullName.includes(search)
+        // Numeric search (cedula/celular)
+        if (/^\d+$/.test(searchTerm)) {
+          const cedula = (p.cedula || '').toLowerCase()
+          const celular = (p.celular || '').toLowerCase()
+          return cedula.includes(searchTerm) || celular.includes(searchTerm)
+        }
+
+        // Name search with phonetic matching
+        const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
+        const normalizedWords = words.map(w => normalizeForSearch(w))
+        const fullName = normalizeForSearch(`${p.nombre || ''} ${p.apellido || ''}`)
+
+        return normalizedWords.every(word => fullName.includes(word))
       })
     : patients
 

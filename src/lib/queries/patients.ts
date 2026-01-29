@@ -2,12 +2,53 @@ import { createClient } from '@/lib/supabase/server'
 import { getPatientNotifications } from './notifications'
 
 /**
+ * Normalize text for phonetic search (Spanish)
+ * Handles: S/C/Z, B/V, Y/I, Ñ/N, accents, case
+ */
+function normalizeForSearch(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[csz]/g, 's')          // S = C = Z
+    .replace(/[bv]/g, 'b')           // B = V
+    .replace(/[yi]/g, 'i')           // Y = I
+    .replace(/ñ/g, 'n')              // Ñ = N
+    .replace(/[^a-z0-9\s]/g, '')     // Remove special chars
+    .replace(/\s+/g, ' ')            // Normalize spaces
+    .trim()
+}
+
+/**
+ * Check if patient matches search query
+ * Uses phonetic matching for Spanish names
+ */
+function patientMatchesSearch(
+  patient: { cedula: string | null; nombre: string | null; apellido: string | null; celular: string | null },
+  searchWords: string[]
+): boolean {
+  const cedula = (patient.cedula || '').toLowerCase()
+  const celular = (patient.celular || '').toLowerCase()
+  const fullName = normalizeForSearch(`${patient.nombre || ''} ${patient.apellido || ''}`)
+
+  // Check if search is a number (cedula/celular search)
+  const searchTerm = searchWords.join(' ')
+  if (/^\d+$/.test(searchTerm)) {
+    return cedula.includes(searchTerm) || celular.includes(searchTerm)
+  }
+
+  // For name search, all words must match in the full name
+  const normalizedWords = searchWords.map(w => normalizeForSearch(w))
+  return normalizedWords.every(word => fullName.includes(word))
+}
+
+/**
  * Search patients by cedula, nombre, apellido, or celular
- * Uses ILIKE for case-insensitive partial matching
+ * Smart search with phonetic matching for Spanish names
  *
  * @param query - Search term (partial match on multiple fields)
  * @param limit - Max results to return (default 50)
- * @returns Matching patients sorted by apellido
+ * @returns Matching patients sorted by relevance
  */
 export async function searchPatients(query: string, limit = 50) {
   const supabase = await createClient()
@@ -25,48 +66,64 @@ export async function searchPatients(query: string, limit = 50) {
   }
 
   const searchTerm = query.trim()
-  const searchPattern = `%${searchTerm}%`
-
-  // If search has multiple words, search each word separately
   const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
 
-  if (words.length > 1) {
-    // Multi-word search: all words must match somewhere in nombre or apellido
-    // Use raw SQL for more flexible matching
+  // For numeric search (cedula/celular), use direct query
+  if (/^\d+$/.test(searchTerm)) {
+    const pattern = `%${searchTerm}%`
     const { data, error } = await supabase
       .from('patients')
       .select('id, cedula, nombre, apellido, celular, created_at')
-      .or(
-        words.map(word => `nombre.ilike.%${word}%`).join(',') + ',' +
-        words.map(word => `apellido.ilike.%${word}%`).join(',') + ',' +
-        `cedula.ilike.${searchPattern},celular.ilike.${searchPattern}`
-      )
+      .or(`cedula.ilike.${pattern},celular.ilike.${pattern}`)
       .order('apellido', { ascending: true })
       .limit(limit)
 
     if (error) throw error
-
-    // Filter results to ensure ALL words match somewhere in nombre+apellido
-    const filtered = data?.filter(p => {
-      const fullName = `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase()
-      return words.every(word => fullName.includes(word.toLowerCase()))
-    })
-
-    return filtered || []
+    return data
   }
 
-  // Single word search - original behavior
+  // For name search, get candidates and filter with phonetic matching
+  // Get first word variants for initial query
+  const firstWord = normalizeForSearch(words[0])
+  const variants = [
+    firstWord,
+    firstWord.replace(/s/g, 'c'),
+    firstWord.replace(/s/g, 'z'),
+    firstWord.replace(/b/g, 'v'),
+    firstWord.replace(/i/g, 'y'),
+  ]
+
+  // Build OR query for all variants
+  const orFilters = variants
+    .flatMap(v => [`nombre.ilike.%${v}%`, `apellido.ilike.%${v}%`])
+    .join(',')
+
   const { data, error } = await supabase
     .from('patients')
     .select('id, cedula, nombre, apellido, celular, created_at')
-    .or(
-      `cedula.ilike.${searchPattern},nombre.ilike.${searchPattern},apellido.ilike.${searchPattern},celular.ilike.${searchPattern}`
-    )
-    .order('apellido', { ascending: true })
-    .limit(limit)
+    .or(orFilters)
+    .limit(500) // Get more candidates for filtering
 
   if (error) throw error
-  return data
+
+  // Filter with phonetic matching
+  const filtered = (data || []).filter(p => patientMatchesSearch(p, words))
+
+  // Sort by relevance (exact matches first)
+  filtered.sort((a, b) => {
+    const aName = `${a.nombre} ${a.apellido}`.toLowerCase()
+    const bName = `${b.nombre} ${b.apellido}`.toLowerCase()
+    const searchLower = searchTerm.toLowerCase()
+
+    // Exact match scores higher
+    const aExact = aName.includes(searchLower) ? 0 : 1
+    const bExact = bName.includes(searchLower) ? 0 : 1
+
+    if (aExact !== bExact) return aExact - bExact
+    return aName.localeCompare(bName)
+  })
+
+  return filtered.slice(0, limit)
 }
 
 /**

@@ -201,12 +201,22 @@ export function AppointmentForm({
   // Filter patients for dropdown search (always include currently selected patient)
   const currentPatientId = form.getValues('patient_id')
   const filteredPatients = patientSearch
-    ? patients.filter((p) =>
-        p.id === currentPatientId || // Always include current patient
-        `${p.cedula} ${p.nombre} ${p.apellido} ${p.celular}`
-          .toLowerCase()
-          .includes(patientSearch.toLowerCase())
-      )
+    ? patients.filter((p) => {
+        if (p.id === currentPatientId) return true // Always include current patient
+
+        const search = patientSearch.toLowerCase().trim()
+        const cedula = (p.cedula || '').toLowerCase()
+        const nombre = (p.nombre || '').toLowerCase()
+        const apellido = (p.apellido || '').toLowerCase()
+        const celular = (p.celular || '').toLowerCase()
+        const fullName = `${nombre} ${apellido}`
+
+        return cedula.includes(search) ||
+               nombre.includes(search) ||
+               apellido.includes(search) ||
+               celular.includes(search) ||
+               fullName.includes(search)
+      })
     : patients
 
   return (

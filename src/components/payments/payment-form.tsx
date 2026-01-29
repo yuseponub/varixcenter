@@ -125,13 +125,20 @@ export function PaymentForm({
     }
   }, [state, router])
 
-  // Filter patients for search
+  // Filter patients for search - search in cedula, nombre, apellido separately
   const filteredPatients = patientSearch.length >= 2
-    ? patients.filter((p) =>
-        `${p.cedula} ${p.nombre} ${p.apellido}`
-          .toLowerCase()
-          .includes(patientSearch.toLowerCase())
-      )
+    ? patients.filter((p) => {
+        const search = patientSearch.toLowerCase().trim()
+        const cedula = (p.cedula || '').toLowerCase()
+        const nombre = (p.nombre || '').toLowerCase()
+        const apellido = (p.apellido || '').toLowerCase()
+        const fullName = `${nombre} ${apellido}`
+
+        return cedula.includes(search) ||
+               nombre.includes(search) ||
+               apellido.includes(search) ||
+               fullName.includes(search)
+      })
     : []
 
   // Get selected patient display name

@@ -66,6 +66,7 @@ export function PaymentForm({
 
   // Form state
   const [patientId, setPatientId] = useState(defaultPatientId || '')
+  const [patientSearch, setPatientSearch] = useState('')
   const [directItems, setDirectItems] = useState<PaymentItemInput[]>([])
   const [pendingServiceItems, setPendingServiceItems] = useState<PaymentItemWithAppointmentService[]>([])
   const [pendingServicesGroups, setPendingServicesGroups] = useState<PendingServicesGroup[]>(initialPendingServices)
@@ -124,6 +125,21 @@ export function PaymentForm({
     }
   }, [state, router])
 
+  // Filter patients for search
+  const filteredPatients = patientSearch.length >= 2
+    ? patients.filter((p) =>
+        `${p.cedula} ${p.nombre} ${p.apellido}`
+          .toLowerCase()
+          .includes(patientSearch.toLowerCase())
+      )
+    : []
+
+  // Get selected patient display name
+  const selectedPatient = patients.find(p => p.id === patientId)
+  const selectedPatientName = selectedPatient
+    ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
+    : ''
+
   // Validation
   const canSubmit =
     patientId &&
@@ -158,18 +174,65 @@ export function PaymentForm({
           <CardTitle className="text-lg">Paciente</CardTitle>
         </CardHeader>
         <CardContent>
-          <Select value={patientId} onValueChange={setPatientId} disabled={isPending}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar paciente..." />
-            </SelectTrigger>
-            <SelectContent>
-              {patients.map(p => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.cedula} - {p.nombre} {p.apellido}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            {/* Selected patient display */}
+            {patientId && selectedPatient && (
+              <div className="flex items-center justify-between rounded-md border bg-gray-50 px-3 py-2">
+                <span className="text-sm font-medium">{selectedPatientName}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPatientId('')
+                    setPatientSearch('')
+                  }}
+                  className="text-gray-400 hover:text-gray-600 text-sm"
+                  disabled={isPending}
+                >
+                  Cambiar
+                </button>
+              </div>
+            )}
+
+            {/* Search input */}
+            {(!patientId || patientSearch) && (
+              <div className="relative">
+                <Input
+                  placeholder="Buscar paciente por nombre o cedula..."
+                  value={patientSearch}
+                  onChange={(e) => setPatientSearch(e.target.value)}
+                  className="w-full"
+                  autoComplete="off"
+                  disabled={isPending}
+                />
+
+                {/* Results dropdown */}
+                {patientSearch.length >= 2 && (
+                  <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-lg max-h-[200px] overflow-y-auto">
+                    {filteredPatients.length === 0 ? (
+                      <div className="p-3 text-center text-sm text-muted-foreground">
+                        No se encontraron pacientes
+                      </div>
+                    ) : (
+                      filteredPatients.slice(0, 20).map((patient) => (
+                        <button
+                          key={patient.id}
+                          type="button"
+                          className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
+                          onClick={() => {
+                            setPatientId(patient.id)
+                            setPatientSearch('')
+                          }}
+                        >
+                          <span className="font-medium">{patient.nombre} {patient.apellido}</span>
+                          <span className="ml-2 text-muted-foreground text-sm">({patient.cedula || 'Sin cedula'})</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           {state?.errors?.patient_id && (
             <p className="text-sm text-red-500 mt-1">{state.errors.patient_id[0]}</p>
           )}

@@ -21,7 +21,6 @@ export async function GET() {
   const { data: patients, error } = await supabase
     .from('patients')
     .select('id, cedula, nombre, apellido, celular')
-    .eq('activo', true)
     .order('nombre')
 
   if (error) {

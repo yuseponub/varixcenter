@@ -198,9 +198,11 @@ export function AppointmentForm({
     }
   }, [state?.success, router, onSuccess])
 
-  // Filter patients for dropdown search
+  // Filter patients for dropdown search (always include currently selected patient)
+  const currentPatientId = form.getValues('patient_id')
   const filteredPatients = patientSearch
     ? patients.filter((p) =>
+        p.id === currentPatientId || // Always include current patient
         `${p.cedula} ${p.nombre} ${p.apellido} ${p.celular}`
           .toLowerCase()
           .includes(patientSearch.toLowerCase())
@@ -250,46 +252,70 @@ export function AppointmentForm({
                   const selectedPatient = patients.find(p => p.id === field.value)
                   const displayName = selectedPatient
                     ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
-                    : defaultValues?.patientName || 'Seleccionar paciente'
+                    : defaultValues?.patientName || ''
+
+                  const showResults = patientSearch.length >= 2
+
                   return (
                     <FormItem>
                       <FormLabel>Paciente *</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar paciente">
-                              {displayName}
-                            </SelectValue>
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {/* Search input inside dropdown */}
-                          <div className="p-2">
+                      <div className="space-y-2">
+                        {/* Selected patient display */}
+                        {field.value && (
+                          <div className="flex items-center justify-between rounded-md border bg-gray-50 px-3 py-2">
+                            <span className="text-sm font-medium">{displayName}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                field.onChange('')
+                                setPatientSearch('')
+                              }}
+                              className="text-gray-400 hover:text-gray-600 text-sm"
+                            >
+                              Cambiar
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Search input - always visible when no patient or changing */}
+                        {(!field.value || patientSearch) && (
+                          <div className="relative">
                             <Input
-                              placeholder="Buscar por cedula, nombre..."
+                              placeholder="Buscar paciente por nombre o cedula..."
                               value={patientSearch}
                               onChange={(e) => setPatientSearch(e.target.value)}
-                              className="h-8"
-                              onClick={(e) => e.stopPropagation()}
+                              className="w-full"
+                              autoComplete="off"
                             />
+
+                            {/* Results dropdown */}
+                            {showResults && (
+                              <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-lg max-h-[200px] overflow-y-auto">
+                                {filteredPatients.length === 0 ? (
+                                  <div className="p-3 text-center text-sm text-muted-foreground">
+                                    No se encontraron pacientes
+                                  </div>
+                                ) : (
+                                  filteredPatients.slice(0, 20).map((patient) => (
+                                    <button
+                                      key={patient.id}
+                                      type="button"
+                                      className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
+                                      onClick={() => {
+                                        field.onChange(patient.id)
+                                        setPatientSearch('')
+                                      }}
+                                    >
+                                      <span className="font-medium">{patient.nombre} {patient.apellido}</span>
+                                      <span className="ml-2 text-muted-foreground text-sm">({patient.cedula || 'Sin cedula'})</span>
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            )}
                           </div>
-                          {filteredPatients.length === 0 ? (
-                            <div className="p-2 text-center text-sm text-muted-foreground">
-                              No se encontraron pacientes
-                            </div>
-                          ) : (
-                            filteredPatients.map((patient) => (
-                              <SelectItem key={patient.id} value={patient.id}>
-                                <span className="font-medium">{patient.nombre} {patient.apellido}</span>
-                                <span className="ml-2 text-muted-foreground">({patient.cedula || 'Sin cedula'})</span>
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
+                        )}
+                      </div>
                       {/* Hidden input for form submission */}
                       <input type="hidden" name="patient_id" value={field.value} />
                       <FormMessage />

@@ -17,16 +17,31 @@ export async function GET() {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
-  // Fetch patients
-  const { data: patients, error } = await supabase
-    .from('patients')
-    .select('id, cedula, nombre, apellido, celular')
-    .order('nombre')
+  // Fetch all patients (Supabase default limit is 1000)
+  // Use pagination to get all
+  const allPatients: Array<{ id: string; cedula: string | null; nombre: string; apellido: string; celular: string | null }> = []
+  let page = 0
+  const pageSize = 1000
 
-  if (error) {
-    console.error('Error fetching patients:', error)
-    return NextResponse.json({ error: 'Error al cargar pacientes' }, { status: 500 })
+  while (true) {
+    const { data, error } = await supabase
+      .from('patients')
+      .select('id, cedula, nombre, apellido, celular')
+      .order('nombre')
+      .range(page * pageSize, (page + 1) * pageSize - 1)
+
+    if (error) {
+      console.error('Error fetching patients:', error)
+      return NextResponse.json({ error: 'Error al cargar pacientes' }, { status: 500 })
+    }
+
+    if (!data || data.length === 0) break
+
+    allPatients.push(...data)
+
+    if (data.length < pageSize) break // Last page
+    page++
   }
 
-  return NextResponse.json({ patients: patients || [] })
+  return NextResponse.json({ patients: allPatients })
 }

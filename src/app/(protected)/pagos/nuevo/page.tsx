@@ -20,12 +20,29 @@ interface NewPaymentPageProps {
  */
 async function getPatients() {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('patients')
-    .select('id, cedula, nombre, apellido')
-    .order('nombre')
 
-  return data || []
+  // Fetch all patients (Supabase default limit is 1000)
+  // Use pagination to get all
+  const allPatients: Array<{ id: string; cedula: string | null; nombre: string; apellido: string }> = []
+  let page = 0
+  const pageSize = 1000
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('patients')
+      .select('id, cedula, nombre, apellido')
+      .order('nombre')
+      .range(page * pageSize, (page + 1) * pageSize - 1)
+
+    if (error || !data || data.length === 0) break
+
+    allPatients.push(...data)
+
+    if (data.length < pageSize) break // Last page
+    page++
+  }
+
+  return allPatients
 }
 
 /**

@@ -24,8 +24,38 @@ export async function searchPatients(query: string, limit = 50) {
     return data
   }
 
-  const searchPattern = `%${query.trim()}%`
+  const searchTerm = query.trim()
+  const searchPattern = `%${searchTerm}%`
 
+  // If search has multiple words, search each word separately
+  const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
+
+  if (words.length > 1) {
+    // Multi-word search: all words must match somewhere in nombre or apellido
+    // Use raw SQL for more flexible matching
+    const { data, error } = await supabase
+      .from('patients')
+      .select('id, cedula, nombre, apellido, celular, created_at')
+      .or(
+        words.map(word => `nombre.ilike.%${word}%`).join(',') + ',' +
+        words.map(word => `apellido.ilike.%${word}%`).join(',') + ',' +
+        `cedula.ilike.${searchPattern},celular.ilike.${searchPattern}`
+      )
+      .order('apellido', { ascending: true })
+      .limit(limit)
+
+    if (error) throw error
+
+    // Filter results to ensure ALL words match somewhere in nombre+apellido
+    const filtered = data?.filter(p => {
+      const fullName = `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase()
+      return words.every(word => fullName.includes(word.toLowerCase()))
+    })
+
+    return filtered || []
+  }
+
+  // Single word search - original behavior
   const { data, error } = await supabase
     .from('patients')
     .select('id, cedula, nombre, apellido, celular, created_at')

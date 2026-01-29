@@ -249,58 +249,49 @@ export function AppointmentForm({
                 render={({ field }) => {
                   const selectedPatient = patients.find(p => p.id === field.value)
                   const displayName = selectedPatient
-                    ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula})`
-                    : defaultValues?.patientName || 'Cargando...'
+                    ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
+                    : defaultValues?.patientName || 'Seleccionar paciente'
                   return (
                     <FormItem>
                       <FormLabel>Paciente *</FormLabel>
-                      {mode === 'edit' ? (
-                        <>
-                          <div className="rounded-md border px-3 py-2 bg-gray-50 text-sm font-medium">
-                            {displayName}
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar paciente">
+                              {displayName}
+                            </SelectValue>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {/* Search input inside dropdown */}
+                          <div className="p-2">
+                            <Input
+                              placeholder="Buscar por cedula, nombre..."
+                              value={patientSearch}
+                              onChange={(e) => setPatientSearch(e.target.value)}
+                              className="h-8"
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </div>
-                          <input type="hidden" name="patient_id" value={field.value} />
-                        </>
-                      ) : (
-                        <>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Seleccionar paciente" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {/* Search input inside dropdown */}
-                              <div className="p-2">
-                                <Input
-                                  placeholder="Buscar por cedula, nombre..."
-                                  value={patientSearch}
-                                  onChange={(e) => setPatientSearch(e.target.value)}
-                                  className="h-8"
-                                  onClick={(e) => e.stopPropagation()}
-                                />
-                              </div>
-                              {filteredPatients.length === 0 ? (
-                                <div className="p-2 text-center text-sm text-muted-foreground">
-                                  No se encontraron pacientes
-                                </div>
-                              ) : (
-                                filteredPatients.map((patient) => (
-                                  <SelectItem key={patient.id} value={patient.id}>
-                                    <span className="font-medium">{patient.nombre} {patient.apellido}</span>
-                                    <span className="ml-2 text-muted-foreground">({patient.cedula})</span>
-                                  </SelectItem>
-                                ))
-                              )}
-                            </SelectContent>
-                          </Select>
-                          {/* Hidden input for form submission */}
-                          <input type="hidden" name="patient_id" value={field.value} />
-                        </>
-                      )}
+                          {filteredPatients.length === 0 ? (
+                            <div className="p-2 text-center text-sm text-muted-foreground">
+                              No se encontraron pacientes
+                            </div>
+                          ) : (
+                            filteredPatients.map((patient) => (
+                              <SelectItem key={patient.id} value={patient.id}>
+                                <span className="font-medium">{patient.nombre} {patient.apellido}</span>
+                                <span className="ml-2 text-muted-foreground">({patient.cedula || 'Sin cedula'})</span>
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      {/* Hidden input for form submission */}
+                      <input type="hidden" name="patient_id" value={field.value} />
                       <FormMessage />
                       {state?.errors?.patient_id && (
                         <p className="text-sm text-red-600">{state.errors.patient_id[0]}</p>

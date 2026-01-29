@@ -82,19 +82,34 @@ export async function searchPatients(query: string, limit = 50) {
     return data
   }
 
-  // For name search, get candidates and filter with phonetic matching
-  // Get first word variants for initial query
-  const firstWord = normalizeForSearch(words[0])
-  const variants = [
-    firstWord,
-    firstWord.replace(/s/g, 'c'),
-    firstWord.replace(/s/g, 'z'),
-    firstWord.replace(/b/g, 'v'),
-    firstWord.replace(/i/g, 'y'),
-  ]
+  // For name search, search with original terms AND phonetic variants
+  // Generate variants for each word
+  const generateVariants = (word: string): string[] => {
+    const lower = word.toLowerCase()
+    const variants = new Set<string>([lower])
 
-  // Build OR query for all variants
-  const orFilters = variants
+    // Add common Spanish phonetic variants
+    variants.add(lower.replace(/s/g, 'c'))
+    variants.add(lower.replace(/s/g, 'z'))
+    variants.add(lower.replace(/c/g, 's'))
+    variants.add(lower.replace(/c/g, 'z'))
+    variants.add(lower.replace(/z/g, 's'))
+    variants.add(lower.replace(/z/g, 'c'))
+    variants.add(lower.replace(/b/g, 'v'))
+    variants.add(lower.replace(/v/g, 'b'))
+    variants.add(lower.replace(/y/g, 'i'))
+    variants.add(lower.replace(/i/g, 'y'))
+    variants.add(lower.replace(/ñ/g, 'n'))
+    variants.add(lower.replace(/n/g, 'ñ'))
+
+    return Array.from(variants).filter(v => v.length > 0)
+  }
+
+  // Get variants for first word only (to limit query size)
+  const firstWordVariants = generateVariants(words[0])
+
+  // Build OR query - search in nombre and apellido for all variants
+  const orFilters = firstWordVariants
     .flatMap(v => [`nombre.ilike.%${v}%`, `apellido.ilike.%${v}%`])
     .join(',')
 
@@ -106,7 +121,7 @@ export async function searchPatients(query: string, limit = 50) {
 
   if (error) throw error
 
-  // Filter with phonetic matching
+  // Filter with phonetic matching for multi-word searches
   const filtered = (data || []).filter(p => patientMatchesSearch(p, words))
 
   // Sort by relevance (exact matches first)

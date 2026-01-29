@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
+import { Loader2 } from 'lucide-react'
 import { appointmentSchema, type AppointmentFormData } from '@/lib/validations/appointment'
 import { createAppointment, updateAppointment, createAppointmentWithNewPatient, type ActionState } from '@/app/(protected)/citas/actions'
 import {
@@ -33,10 +34,10 @@ import { Label } from '@/components/ui/label'
 /** Patient type for dropdown */
 interface Patient {
   id: string
-  cedula: string
+  cedula: string | null
   nombre: string
   apellido: string
-  celular: string
+  celular: string | null
 }
 
 /** Doctor type for dropdown */
@@ -48,12 +49,14 @@ interface Doctor {
 }
 
 interface AppointmentFormProps {
-  patients: Patient[]
+  patients?: Patient[]
   doctors: Doctor[]
   /** Mode: create or edit */
   mode?: 'create' | 'edit'
   /** Appointment ID for edit mode */
   appointmentId?: string
+  /** Default patient for edit mode */
+  defaultPatient?: Patient | null
   /** Pre-fill values from URL params (calendar click) or existing appointment */
   defaultValues?: {
     start?: string
@@ -139,20 +142,50 @@ function calculateDuration(start?: string, end?: string): number {
 }
 
 export function AppointmentForm({
-  patients,
+  patients = [],
   doctors,
   mode = 'create',
   appointmentId,
+  defaultPatient,
   defaultValues,
   onSuccess,
   onCancel,
 }: AppointmentFormProps) {
   const router = useRouter()
   const [patientSearch, setPatientSearch] = useState('')
+  const [searchResults, setSearchResults] = useState<Patient[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
+    defaultPatient || patients.find(p => p.id === defaultValues?.patient) || null
+  )
   const [patientMode, setPatientMode] = useState<PatientMode>('existing')
   const [duration, setDuration] = useState<number>(() =>
     calculateDuration(defaultValues?.start, defaultValues?.end)
   )
+
+  // Debounced API search for patients
+  useEffect(() => {
+    if (patientSearch.length < 2) {
+      setSearchResults([])
+      return
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true)
+      try {
+        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientSearch)}`)
+        const data = await res.json()
+        setSearchResults(data.patients || [])
+      } catch (error) {
+        console.error('Error searching patients:', error)
+        setSearchResults([])
+      } finally {
+        setIsSearching(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [patientSearch])
 
   // Bound action for edit mode or new patient mode
   const boundAction = useCallback(
@@ -198,44 +231,6 @@ export function AppointmentForm({
     }
   }, [state?.success, router, onSuccess])
 
-  // Normalize text for phonetic search (Spanish)
-  const normalizeForSearch = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove accents
-      .replace(/[csz]/g, 's')          // S = C = Z
-      .replace(/[bv]/g, 'b')           // B = V
-      .replace(/[yi]/g, 'i')           // Y = I
-      .replace(/ñ/g, 'n')              // Ñ = N
-      .replace(/[^a-z0-9\s]/g, '')     // Remove special chars
-      .replace(/\s+/g, ' ')            // Normalize spaces
-      .trim()
-  }
-
-  // Filter patients for dropdown search (always include currently selected patient)
-  const currentPatientId = form.getValues('patient_id')
-  const filteredPatients = patientSearch
-    ? patients.filter((p) => {
-        if (p.id === currentPatientId) return true // Always include current patient
-
-        const searchTerm = patientSearch.trim()
-
-        // Numeric search (cedula/celular)
-        if (/^\d+$/.test(searchTerm)) {
-          const cedula = (p.cedula || '').toLowerCase()
-          const celular = (p.celular || '').toLowerCase()
-          return cedula.includes(searchTerm) || celular.includes(searchTerm)
-        }
-
-        // Name search with phonetic matching
-        const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
-        const normalizedWords = words.map(w => normalizeForSearch(w))
-        const fullName = normalizeForSearch(`${p.nombre || ''} ${p.apellido || ''}`)
-
-        return normalizedWords.every(word => fullName.includes(word))
-      })
-    : patients
 
   return (
     <Form {...form}>
@@ -277,7 +272,6 @@ export function AppointmentForm({
                 control={form.control}
                 name="patient_id"
                 render={({ field }) => {
-                  const selectedPatient = patients.find(p => p.id === field.value)
                   const displayName = selectedPatient
                     ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
                     : defaultValues?.patientName || ''
@@ -289,13 +283,14 @@ export function AppointmentForm({
                       <FormLabel>Paciente *</FormLabel>
                       <div className="space-y-2">
                         {/* Selected patient display */}
-                        {field.value && (
+                        {field.value && selectedPatient && (
                           <div className="flex items-center justify-between rounded-md border bg-gray-50 px-3 py-2">
                             <span className="text-sm font-medium">{displayName}</span>
                             <button
                               type="button"
                               onClick={() => {
                                 field.onChange('')
+                                setSelectedPatient(null)
                                 setPatientSearch('')
                               }}
                               className="text-gray-400 hover:text-gray-600 text-sm"
@@ -319,19 +314,26 @@ export function AppointmentForm({
                             {/* Results dropdown */}
                             {showResults && (
                               <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-lg max-h-[200px] overflow-y-auto">
-                                {filteredPatients.length === 0 ? (
+                                {isSearching ? (
+                                  <div className="p-3 text-center text-sm text-muted-foreground flex items-center justify-center">
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    Buscando...
+                                  </div>
+                                ) : searchResults.length === 0 ? (
                                   <div className="p-3 text-center text-sm text-muted-foreground">
                                     No se encontraron pacientes
                                   </div>
                                 ) : (
-                                  filteredPatients.slice(0, 20).map((patient) => (
+                                  searchResults.map((patient) => (
                                     <button
                                       key={patient.id}
                                       type="button"
                                       className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
                                       onClick={() => {
                                         field.onChange(patient.id)
+                                        setSelectedPatient(patient)
                                         setPatientSearch('')
+                                        setSearchResults([])
                                       }}
                                     >
                                       <span className="font-medium">{patient.nombre} {patient.apellido}</span>

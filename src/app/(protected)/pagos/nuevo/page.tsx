@@ -15,34 +15,19 @@ interface NewPaymentPageProps {
 }
 
 /**
- * Fetch all patients for the payment form dropdown
- * Sorted by name for easy selection
+ * Fetch a single patient by ID (for pre-selection)
  */
-async function getPatients() {
+async function getPatientById(id: string) {
   const supabase = await createClient()
 
-  // Fetch all patients (Supabase default limit is 1000)
-  // Use pagination to get all
-  const allPatients: Array<{ id: string; cedula: string | null; nombre: string; apellido: string }> = []
-  let page = 0
-  const pageSize = 1000
+  const { data, error } = await supabase
+    .from('patients')
+    .select('id, cedula, nombre, apellido')
+    .eq('id', id)
+    .single()
 
-  while (true) {
-    const { data, error } = await supabase
-      .from('patients')
-      .select('id, cedula, nombre, apellido')
-      .order('nombre')
-      .range(page * pageSize, (page + 1) * pageSize - 1)
-
-    if (error || !data || data.length === 0) break
-
-    allPatients.push(...data)
-
-    if (data.length < pageSize) break // Last page
-    page++
-  }
-
-  return allPatients
+  if (error) return null
+  return data
 }
 
 /**
@@ -55,10 +40,10 @@ async function getPatients() {
 export default async function NewPaymentPage({ searchParams }: NewPaymentPageProps) {
   const params = await searchParams
 
-  // Fetch services and patients in parallel
-  const [services, patients] = await Promise.all([
+  // Fetch services (patients are loaded via API search)
+  const [services, defaultPatient] = await Promise.all([
     getActiveServices(),
-    getPatients()
+    params.patient ? getPatientById(params.patient) : Promise.resolve(null)
   ])
 
   return (
@@ -92,8 +77,7 @@ export default async function NewPaymentPage({ searchParams }: NewPaymentPagePro
       <div className="max-w-3xl">
         <PaymentForm
           services={services}
-          patients={patients}
-          defaultPatientId={params.patient}
+          defaultPatient={defaultPatient}
         />
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { searchPatients } from '@/lib/queries/patients'
 import { getDoctors } from '@/lib/queries/appointments'
 import { AppointmentForm } from '@/components/appointments/appointment-form'
 
@@ -14,7 +13,7 @@ interface NuevaCitaPageProps {
  * New Appointment Page
  *
  * Creates a new appointment with:
- * - Patient selection (searchable dropdown)
+ * - Patient selection (API-based search)
  * - Doctor selection
  * - Date/time inputs (prefilled from URL params)
  * - Notes and reason
@@ -27,12 +26,8 @@ interface NuevaCitaPageProps {
 export default async function NuevaCitaPage({ searchParams }: NuevaCitaPageProps) {
   const params = await searchParams
 
-  // Fetch data in parallel
-  // IMPORTANT: searchPatients takes (query, limit) NOT object
-  const [patients, doctors] = await Promise.all([
-    searchPatients('', 100), // Empty string = recent patients, limit 100
-    getDoctors(),
-  ])
+  // Fetch doctors (patients are searched via API)
+  const doctors = await getDoctors()
 
   return (
     <div className="container mx-auto py-6">
@@ -45,7 +40,6 @@ export default async function NuevaCitaPage({ searchParams }: NuevaCitaPageProps
 
       <div className="max-w-2xl">
         <AppointmentForm
-          patients={patients}
           doctors={doctors}
           defaultValues={{
             start: params.start,

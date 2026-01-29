@@ -29,15 +29,14 @@ import type { PendingServicesGroup, PaymentItemWithAppointmentService } from '@/
 
 interface Patient {
   id: string
-  cedula: string
+  cedula: string | null
   nombre: string
   apellido: string
 }
 
 interface PaymentFormProps {
   services: ServiceOption[]
-  patients: Patient[]
-  defaultPatientId?: string
+  defaultPatient?: Patient | null
   initialPendingServices?: PendingServicesGroup[]
 }
 
@@ -53,8 +52,7 @@ interface PaymentFormProps {
  */
 export function PaymentForm({
   services,
-  patients,
-  defaultPatientId,
+  defaultPatient,
   initialPendingServices = [],
 }: PaymentFormProps) {
   const router = useRouter()
@@ -65,8 +63,11 @@ export function PaymentForm({
   const [isLoadingPending, startLoadingTransition] = useTransition()
 
   // Form state
-  const [patientId, setPatientId] = useState(defaultPatientId || '')
+  const [patientId, setPatientId] = useState(defaultPatient?.id || '')
   const [patientSearch, setPatientSearch] = useState('')
+  const [searchResults, setSearchResults] = useState<Patient[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(defaultPatient || null)
   const [directItems, setDirectItems] = useState<PaymentItemInput[]>([])
   const [pendingServiceItems, setPendingServiceItems] = useState<PaymentItemWithAppointmentService[]>([])
   const [pendingServicesGroups, setPendingServicesGroups] = useState<PendingServicesGroup[]>(initialPendingServices)
@@ -125,43 +126,31 @@ export function PaymentForm({
     }
   }, [state, router])
 
-  // Normalize text for phonetic search (Spanish)
-  const normalizeForSearch = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove accents
-      .replace(/[csz]/g, 's')          // S = C = Z
-      .replace(/[bv]/g, 'b')           // B = V
-      .replace(/[yi]/g, 'i')           // Y = I
-      .replace(/ñ/g, 'n')              // Ñ = N
-      .replace(/[^a-z0-9\s]/g, '')     // Remove special chars
-      .replace(/\s+/g, ' ')            // Normalize spaces
-      .trim()
-  }
+  // Debounced search via API
+  useEffect(() => {
+    if (patientSearch.length < 2) {
+      setSearchResults([])
+      return
+    }
 
-  // Filter patients for search - smart phonetic matching
-  const filteredPatients = patientSearch.length >= 2
-    ? patients.filter((p) => {
-        const searchTerm = patientSearch.trim()
+    const timer = setTimeout(async () => {
+      setIsSearching(true)
+      try {
+        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientSearch)}`)
+        const data = await res.json()
+        setSearchResults(data.patients || [])
+      } catch (error) {
+        console.error('Error searching patients:', error)
+        setSearchResults([])
+      } finally {
+        setIsSearching(false)
+      }
+    }, 300)
 
-        // Numeric search (cedula)
-        if (/^\d+$/.test(searchTerm)) {
-          const cedula = (p.cedula || '').toLowerCase()
-          return cedula.includes(searchTerm)
-        }
-
-        // Name search with phonetic matching
-        const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
-        const normalizedWords = words.map(w => normalizeForSearch(w))
-        const fullName = normalizeForSearch(`${p.nombre || ''} ${p.apellido || ''}`)
-
-        return normalizedWords.every(word => fullName.includes(word))
-      })
-    : []
+    return () => clearTimeout(timer)
+  }, [patientSearch])
 
   // Get selected patient display name
-  const selectedPatient = patients.find(p => p.id === patientId)
   const selectedPatientName = selectedPatient
     ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
     : ''
@@ -234,19 +223,26 @@ export function PaymentForm({
                 {/* Results dropdown */}
                 {patientSearch.length >= 2 && (
                   <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-lg max-h-[200px] overflow-y-auto">
-                    {filteredPatients.length === 0 ? (
+                    {isSearching ? (
+                      <div className="p-3 text-center text-sm text-muted-foreground flex items-center justify-center">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Buscando...
+                      </div>
+                    ) : searchResults.length === 0 ? (
                       <div className="p-3 text-center text-sm text-muted-foreground">
                         No se encontraron pacientes
                       </div>
                     ) : (
-                      filteredPatients.slice(0, 20).map((patient) => (
+                      searchResults.map((patient) => (
                         <button
                           key={patient.id}
                           type="button"
                           className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
                           onClick={() => {
                             setPatientId(patient.id)
+                            setSelectedPatient(patient)
                             setPatientSearch('')
+                            setSearchResults([])
                           }}
                         >
                           <span className="font-medium">{patient.nombre} {patient.apellido}</span>

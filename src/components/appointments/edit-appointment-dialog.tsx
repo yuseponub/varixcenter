@@ -20,10 +20,10 @@ import { AppointmentForm } from '@/components/appointments/appointment-form'
 /** Patient type for form */
 interface Patient {
   id: string
-  cedula: string
+  cedula: string | null
   nombre: string
   apellido: string
-  celular: string
+  celular: string | null
 }
 
 /** Doctor type for form */
@@ -67,21 +67,21 @@ export function EditAppointmentDialog({
   appointment,
   onSuccess,
 }: EditAppointmentDialogProps) {
-  const [patients, setPatients] = useState<Patient[]>([])
+  const [currentPatient, setCurrentPatient] = useState<Patient | null>(null)
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // Fetch patients and doctors when dialog opens
+  // Fetch current patient and doctors when dialog opens
   useEffect(() => {
     if (open && appointment) {
       setIsLoading(true)
 
       Promise.all([
-        fetch('/api/patients').then(r => r.json()),
+        fetch(`/api/patients/${appointment.patientId}`).then(r => r.json()),
         fetch('/api/doctors').then(r => r.json()),
       ])
-        .then(([patientsData, doctorsData]) => {
-          setPatients(patientsData.patients || [])
+        .then(([patientData, doctorsData]) => {
+          setCurrentPatient(patientData.patient || null)
           setDoctors(doctorsData.doctors || [])
         })
         .catch((error) => {
@@ -97,7 +97,7 @@ export function EditAppointmentDialog({
   // Reset state when dialog closes
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setPatients([])
+      setCurrentPatient(null)
       setDoctors([])
     }
     onOpenChange(newOpen)
@@ -131,7 +131,7 @@ export function EditAppointmentDialog({
           <AppointmentForm
             mode="edit"
             appointmentId={appointment.appointmentId}
-            patients={patients}
+            defaultPatient={currentPatient}
             doctors={doctors}
             defaultValues={{
               patient: appointment.patientId,

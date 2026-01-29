@@ -88,7 +88,7 @@ export function ServiceForm({ service, onSuccess }: ServiceFormProps) {
           name="precio_base"
           type="number"
           min={0}
-          step={1000}
+          step="any"
           placeholder="0"
           value={precioBase}
           onChange={(e) => setPrecioBase(parseFloat(e.target.value) || 0)}
@@ -128,7 +128,7 @@ export function ServiceForm({ service, onSuccess }: ServiceFormProps) {
               name="precio_minimo"
               type="number"
               min={0}
-              step={1000}
+              step="any"
               placeholder="0"
               defaultValue={service?.precio_minimo || ''}
               required={precioVariable}
@@ -141,7 +141,7 @@ export function ServiceForm({ service, onSuccess }: ServiceFormProps) {
               name="precio_maximo"
               type="number"
               min={0}
-              step={1000}
+              step="any"
               placeholder="0"
               defaultValue={service?.precio_maximo || ''}
               required={precioVariable}

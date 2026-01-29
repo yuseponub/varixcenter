@@ -168,7 +168,7 @@ export function ProductForm({ product, onSuccess }: ProductFormProps) {
           name="precio"
           type="number"
           min={1}
-          step={1000}
+          step="any"
           placeholder="0"
           value={precio}
           onChange={(e) => setPrecio(parseFloat(e.target.value) || 0)}

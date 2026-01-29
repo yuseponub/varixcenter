@@ -78,17 +78,32 @@ export function ServiceSelector({
     const service = services.find(s => s.id === serviceId)
     if (!service?.precio_variable) return
 
-    // Clamp to min/max range
+    // Allow free typing - validation happens on blur
+    onChange(items.map(item =>
+      item.service_id === serviceId
+        ? { ...item, unit_price: price }
+        : item
+    ))
+  }, [services, items, onChange])
+
+  const handlePriceBlur = useCallback((serviceId: string) => {
+    const service = services.find(s => s.id === serviceId)
+    const item = items.find(i => i.service_id === serviceId)
+    if (!service?.precio_variable || !item) return
+
+    // Clamp to min/max range only on blur
     const clampedPrice = Math.min(
-      Math.max(price, service.precio_minimo || 0),
+      Math.max(item.unit_price, service.precio_minimo || 0),
       service.precio_maximo || Infinity
     )
 
-    onChange(items.map(item =>
-      item.service_id === serviceId
-        ? { ...item, unit_price: clampedPrice }
-        : item
-    ))
+    if (clampedPrice !== item.unit_price) {
+      onChange(items.map(i =>
+        i.service_id === serviceId
+          ? { ...i, unit_price: clampedPrice }
+          : i
+      ))
+    }
   }, [services, items, onChange])
 
   const getService = (serviceId: string) => services.find(s => s.id === serviceId)
@@ -151,10 +166,12 @@ export function ServiceSelector({
                       type="number"
                       value={item.unit_price}
                       onChange={e => handlePriceChange(item.service_id, parseFloat(e.target.value) || 0)}
+                      onBlur={() => handlePriceBlur(item.service_id)}
                       disabled={disabled || !isVariable}
                       className="text-right"
                       min={service?.precio_minimo || 0}
                       max={service?.precio_maximo || undefined}
+                      step="any"
                     />
                   </div>
 

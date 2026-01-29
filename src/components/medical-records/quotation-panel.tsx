@@ -179,7 +179,7 @@ export function QuotationPanel({
                       <Input
                         type="number"
                         min="0"
-                        step="1000"
+                        step="any"
                         value={item.precio}
                         onChange={(e) => handlePriceChange(index, parseFloat(e.target.value) || 0)}
                         disabled={isPending}

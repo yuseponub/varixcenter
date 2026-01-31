@@ -57,8 +57,8 @@ export function PaymentReceipt({ payment }: PaymentReceiptProps) {
             <span>{formatDate(payment.created_at)}</span>
           </div>
           <div className="flex justify-between">
-            <span>Paciente:</span>
-            <span className="truncate ml-2 max-w-[60%] text-right">
+            <span className="shrink-0">Paciente:</span>
+            <span className="ml-2 text-right break-words" style={{ maxWidth: '60%' }}>
               {payment.patients.nombre} {payment.patients.apellido}
             </span>
           </div>
@@ -122,9 +122,6 @@ export function PaymentReceipt({ payment }: PaymentReceiptProps) {
         {/* Footer */}
         <div className="text-center text-xs">
           <p>Gracias por su visita</p>
-          <p className="mt-1 text-[10px] text-gray-600">
-            Este documento no es factura legal
-          </p>
         </div>
       </div>
     </>

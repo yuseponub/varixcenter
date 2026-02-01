@@ -481,3 +481,56 @@ export const MEDICO_ONLY_FIELDS = [
   'tratamiento_ids',
   'estado',
 ] as const
+
+// ============================================
+// LEGACY HISTORY PHOTOS
+// ============================================
+
+/**
+ * Types of legacy history photos
+ */
+export const LEGACY_PHOTO_TYPES = ['historia', 'evolucion', 'plan_tratamiento'] as const
+
+/**
+ * Legacy photo type
+ */
+export type LegacyPhotoType = (typeof LEGACY_PHOTO_TYPES)[number]
+
+/**
+ * Labels for legacy photo types
+ */
+export const LEGACY_PHOTO_TYPE_LABELS: Record<LegacyPhotoType, string> = {
+  historia: 'Historia Clinica',
+  evolucion: 'Evolucion',
+  plan_tratamiento: 'Plan de Tratamiento',
+}
+
+/**
+ * Legacy history photo from database
+ */
+export interface LegacyHistoryPhoto {
+  id: string
+  medical_record_id: string
+  tipo: LegacyPhotoType
+  storage_path: string
+  orden: number
+  created_by: string | null
+  created_at: string
+}
+
+/**
+ * Legacy history photo with signed URL for display
+ */
+export interface LegacyHistoryPhotoWithUrl extends LegacyHistoryPhoto {
+  url: string | null
+}
+
+/**
+ * Input for creating a legacy history photo
+ */
+export interface CreateLegacyPhotoInput {
+  medical_record_id: string
+  tipo: LegacyPhotoType
+  storage_path: string
+  orden?: number
+}

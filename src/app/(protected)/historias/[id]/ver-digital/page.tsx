@@ -1,15 +1,15 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
   getMedicalRecordById,
   getQuotationByMedicalRecord,
   getProgressNotes,
 } from '@/lib/queries/medical-records'
-import { hasLegacyPhotos } from '@/lib/queries/legacy-photos'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   ArrowLeft,
   Edit,
@@ -42,18 +42,12 @@ interface PageProps {
   params: Promise<{ id: string }>
 }
 
-export default async function HistoriaDetailPage({ params }: PageProps) {
+export default async function VerDigitalPage({ params }: PageProps) {
   const { id } = await params
   const record = await getMedicalRecordById(id)
 
   if (!record) {
     notFound()
-  }
-
-  // Check if has legacy photos - if so, redirect to historia-antigua page
-  const hasLegacy = await hasLegacyPhotos(id)
-  if (hasLegacy) {
-    redirect(`/historias/${id}/historia-antigua`)
   }
 
   const quotation = await getQuotationByMedicalRecord(id)
@@ -117,15 +111,15 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
       <div className="flex items-start justify-between">
         <div>
           <Link
-            href="/historias"
+            href={`/historias/${id}/historia-antigua`}
             className="flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a Historias
+            Volver a Historia Antigua
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <FileText className="h-6 w-6" />
-            Historia Clinica
+            Datos Digitales
             <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
               {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
             </Badge>
@@ -138,7 +132,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           <Link href={`/historias/${id}/historia-antigua`}>
             <Button variant="outline">
               <Camera className="mr-2 h-4 w-4" />
-              Añadir Historia Antigua
+              Ver Historia Antigua
             </Button>
           </Link>
           {record.estado === 'borrador' && (
@@ -151,6 +145,17 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {/* Alert about legacy photos */}
+      <Alert>
+        <Camera className="h-4 w-4" />
+        <AlertDescription>
+          Esta historia tiene fotos de historia antigua asociadas.{' '}
+          <Link href={`/historias/${id}/historia-antigua`} className="font-medium underline">
+            Ver fotos
+          </Link>
+        </AlertDescription>
+      </Alert>
 
       {/* Navigation Tabs */}
       <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />

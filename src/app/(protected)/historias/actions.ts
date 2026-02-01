@@ -546,3 +546,105 @@ export async function generateQuotationFromTreatments(
 
   return { items, total }
 }
+
+/**
+ * Create a minimal medical record for legacy photo upload
+ * Creates an empty historia clinica and redirects to the foto upload page
+ */
+export async function createLegacyMedicalRecord(
+  appointmentId: string
+): Promise<{ error: string } | never> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Check user role
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData || !['admin', 'medico', 'enfermera'].includes(roleData.role)) {
+    return { error: 'No tiene permisos para crear historias clinicas' }
+  }
+
+  // Get appointment data
+  const { data: appointment, error: aptError } = await supabase
+    .from('appointments')
+    .select('id, patient_id, doctor_id')
+    .eq('id', appointmentId)
+    .single()
+
+  if (aptError || !appointment) {
+    return { error: 'Cita no encontrada' }
+  }
+
+  // Check if medical record already exists
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: existing } = await (supabase as any)
+    .from('medical_records')
+    .select('id')
+    .eq('appointment_id', appointmentId)
+    .single()
+
+  if (existing) {
+    // If record exists, just redirect to historia-antigua
+    redirect(`/historias/${existing.id}/historia-antigua`)
+  }
+
+  // Create minimal medical record
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('medical_records')
+    .insert({
+      patient_id: appointment.patient_id,
+      appointment_id: appointmentId,
+      doctor_id: appointment.doctor_id,
+      sintomas: {},
+      signos: {},
+      inicio_relacionado: {},
+      antecedentes: {},
+      laboratorio_vascular: {},
+      tratamiento_ids: [],
+      estado: 'borrador',
+      created_by: user.id,
+      updated_by: user.id,
+    })
+    .select('id')
+    .single()
+
+  if (error) {
+    console.error('Create legacy medical record error:', error)
+
+    if (error.code === '23505' && error.message.includes('appointment_id')) {
+      // Race condition - record was created by another user
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: existingRecord } = await (supabase as any)
+        .from('medical_records')
+        .select('id')
+        .eq('appointment_id', appointmentId)
+        .single()
+
+      if (existingRecord) {
+        redirect(`/historias/${existingRecord.id}/historia-antigua`)
+      }
+    }
+
+    return { error: 'Error al crear la historia clinica' }
+  }
+
+  // Revalidate affected pages
+  revalidatePath('/historias')
+  revalidatePath('/citas')
+
+  // Redirect to legacy photo upload page
+  redirect(`/historias/${data.id}/historia-antigua`)
+}

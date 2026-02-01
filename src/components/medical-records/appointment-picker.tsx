@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useTransition } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { CalendarDays, Search, Loader2 } from 'lucide-react'
+import { CalendarDays, Search, Loader2, Camera } from 'lucide-react'
+import { createLegacyMedicalRecord } from '@/app/(protected)/historias/actions'
 
 interface Appointment {
   id: string
@@ -36,6 +37,19 @@ export function AppointmentPicker({ appointments }: AppointmentPickerProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null)
+
+  const handleLegacyClick = (appointmentId: string) => {
+    setLoadingAppointmentId(appointmentId)
+    startTransition(async () => {
+      const result = await createLegacyMedicalRecord(appointmentId)
+      if (result?.error) {
+        alert(result.error)
+        setLoadingAppointmentId(null)
+      }
+    })
+  }
 
   // Debounce search query (300ms)
   useEffect(() => {
@@ -164,9 +178,26 @@ export function AppointmentPicker({ appointments }: AppointmentPickerProps) {
                         {apt.motivo_consulta || '-'}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/historias/nueva?appointment_id=${apt.id}`}>
-                          <Button size="sm">Crear Historia</Button>
-                        </Link>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleLegacyClick(apt.id)}
+                            disabled={isPending && loadingAppointmentId === apt.id}
+                          >
+                            {isPending && loadingAppointmentId === apt.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Camera className="h-4 w-4 mr-1" />
+                                Fotos
+                              </>
+                            )}
+                          </Button>
+                          <Link href={`/historias/nueva?appointment_id=${apt.id}`}>
+                            <Button size="sm">Crear Historia</Button>
+                          </Link>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

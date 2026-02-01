@@ -10,7 +10,8 @@ interface UpdateResult {
 }
 
 /**
- * Update diagram and diagnosis for a medical record.
+ * Update diagram and/or diagnosis for a medical record.
+ * Only updates fields that are provided (not null).
  * Also finalizes the quotation if treatments exist.
  */
 export async function updateDiagramAndDiagnosis(
@@ -29,15 +30,25 @@ export async function updateDiagramAndDiagnosis(
     return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
   }
 
+  // Build update object with only provided fields
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: Record<string, any> = {
+    updated_by: user.id,
+  }
+
+  if (diagramaPiernas !== null) {
+    updateData.diagrama_piernas = diagramaPiernas
+  }
+
+  if (diagnostico !== null) {
+    updateData.diagnostico = diagnostico
+  }
+
   // Update medical record
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from('medical_records')
-    .update({
-      diagrama_piernas: diagramaPiernas,
-      diagnostico: diagnostico,
-      updated_by: user.id,
-    })
+    .update(updateData)
     .eq('id', medicalRecordId)
 
   if (error) {

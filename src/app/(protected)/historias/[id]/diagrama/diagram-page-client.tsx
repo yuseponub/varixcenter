@@ -10,10 +10,9 @@
  * - Auto-save functionality
  */
 
-import { useState, useCallback, useTransition, useRef } from 'react'
-import { Button } from '@/components/ui/button'
+import { useState, useCallback, useRef } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Save, CheckCircle2, ChevronDown, ChevronRight, Pencil } from 'lucide-react'
+import { Loader2, CheckCircle2, ChevronDown, ChevronRight, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { VeinDiagramCanvas } from '@/components/medical-records/vein-diagram-canvas'
 import { VoiceDictation } from '@/components/medical-records/voice-dictation'
@@ -56,10 +55,10 @@ export function DiagramPageClient({
   const [diagnostico, setDiagnostico] = useState<string | null>(initialDiagnostico)
   const [treatmentItems, setTreatmentItems] = useState<TreatmentItem[]>(initialTreatmentItems)
   const [audios, setAudios] = useState<AudioRecording[]>(initialAudios)
-  const [hasChanges, setHasChanges] = useState(false)
+  const [hasDiagramChanges, setHasDiagramChanges] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
-  const [isPending, startTransition] = useTransition()
   const [isSavingTreatments, setIsSavingTreatments] = useState(false)
+  const [isSavingDiagnosis, setIsSavingDiagnosis] = useState(false)
 
   // Diagram collapse state
   const [isDiagramExpanded, setIsDiagramExpanded] = useState(false)
@@ -72,20 +71,58 @@ export function DiagramPageClient({
     setIsDiagramExpanded(!isDiagramExpanded)
   }, [isDiagramExpanded, hasDiagramBeenExpanded])
 
-  // Debounce timer for treatment updates
+  // Debounce timers
   const treatmentDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const diagnosisDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const diagramDebounceRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Handle diagram change
+  // Handle diagram change with auto-save
   const handleDiagramChange = useCallback((data: string) => {
     setDiagramData(data)
-    setHasChanges(true)
-  }, [])
+    setHasDiagramChanges(true)
 
-  // Handle diagnosis change
+    // Clear previous debounce
+    if (diagramDebounceRef.current) {
+      clearTimeout(diagramDebounceRef.current)
+    }
+
+    // Debounce the save (longer delay for diagram since it changes frequently)
+    diagramDebounceRef.current = setTimeout(async () => {
+      const result = await updateDiagramAndDiagnosis(medicalRecordId, data, null)
+
+      if (result.success) {
+        setHasDiagramChanges(false)
+        setLastSaved(new Date())
+        toast.success('Diagrama guardado')
+      } else {
+        toast.error(result.error || 'Error al guardar diagrama')
+      }
+    }, 2000)
+  }, [medicalRecordId])
+
+  // Handle diagnosis change with auto-save
   const handleDiagnosticoChange = useCallback((value: string) => {
     setDiagnostico(value)
-    setHasChanges(true)
-  }, [])
+
+    // Clear previous debounce
+    if (diagnosisDebounceRef.current) {
+      clearTimeout(diagnosisDebounceRef.current)
+    }
+
+    // Debounce the save
+    diagnosisDebounceRef.current = setTimeout(async () => {
+      setIsSavingDiagnosis(true)
+      const result = await updateDiagramAndDiagnosis(medicalRecordId, null, value)
+      setIsSavingDiagnosis(false)
+
+      if (result.success) {
+        setLastSaved(new Date())
+        toast.success('Diagnóstico guardado')
+      } else {
+        toast.error(result.error || 'Error al guardar diagnóstico')
+      }
+    }, 1500)
+  }, [medicalRecordId])
 
   // Handle audio saved
   const handleAudioSaved = useCallback(async (audio: AudioRecording) => {
@@ -122,52 +159,25 @@ export function DiagramPageClient({
     }, 800)
   }, [medicalRecordId])
 
-  // Save diagram and diagnosis changes
-  const handleSave = useCallback(() => {
-    startTransition(async () => {
-      const result = await updateDiagramAndDiagnosis(
-        medicalRecordId,
-        diagramData,
-        diagnostico
-      )
-
-      if (result.success) {
-        setHasChanges(false)
-        setLastSaved(new Date())
-        toast.success('Cambios guardados exitosamente')
-      } else {
-        toast.error(result.error || 'Error al guardar')
-      }
-    })
-  }, [medicalRecordId, diagramData, diagnostico])
-
   return (
     <div className="space-y-6">
-      {/* Save bar */}
-      <div className="flex items-center justify-between p-4 bg-muted rounded-lg sticky top-0 z-10">
+      {/* Auto-save status bar */}
+      <div className="flex items-center justify-center p-3 bg-muted rounded-lg sticky top-0 z-10">
         <div className="text-sm text-muted-foreground">
-          {hasChanges ? (
-            <span className="text-amber-600 font-medium">Hay cambios sin guardar</span>
+          {isSavingDiagnosis || hasDiagramChanges ? (
+            <span className="text-blue-600 flex items-center gap-1">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Guardando cambios...
+            </span>
           ) : lastSaved ? (
             <span className="text-green-600 flex items-center gap-1">
               <CheckCircle2 className="h-4 w-4" />
-              Guardado a las {lastSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+              Guardado automáticamente a las {lastSaved.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
             </span>
           ) : (
-            <span>Sin cambios</span>
+            <span>Los cambios se guardan automáticamente</span>
           )}
         </div>
-        <Button
-          onClick={handleSave}
-          disabled={isPending || !hasChanges || isReadOnly}
-        >
-          {isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          Guardar Cambios
-        </Button>
       </div>
 
       {/* Read-only warning */}

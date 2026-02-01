@@ -9,11 +9,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Camera, Trash2, ZoomIn, Loader2 } from 'lucide-react'
+import { Camera, Trash2, ZoomIn, Loader2, Plus, Upload, X } from 'lucide-react'
 import { createLegacyPhotoUploadUrl } from '@/lib/storage/receipts'
 import { createLegacyPhoto, deleteLegacyPhoto } from '@/lib/queries/legacy-photos'
 import type { LegacyPhotoType, LegacyHistoryPhotoWithUrl } from '@/types'
 import { LEGACY_PHOTO_TYPE_LABELS } from '@/types'
+
+interface PendingPhoto {
+  id: string
+  file: File
+  preview: string
+}
 
 interface LegacyPhotoCaptureProps {
   medicalRecordId: string
@@ -30,75 +36,118 @@ export function LegacyPhotoCapture({
   onPhotoAdded,
   onPhotoDeleted,
 }: LegacyPhotoCaptureProps) {
+  const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([])
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<LegacyHistoryPhotoWithUrl | null>(null)
+  const [selectedPending, setSelectedPending] = useState<PendingPhoto | null>(null)
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Handle file selection (from native camera)
-  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    setIsUploading(true)
+    // Create preview URL
+    const preview = URL.createObjectURL(file)
+    const id = `pending-${Date.now()}`
+
+    setPendingPhotos(prev => [...prev, { id, file, preview }])
     setError(null)
 
-    try {
-      // Get upload URL
-      const uploadResult = await createLegacyPhotoUploadUrl(medicalRecordId, tipo)
-
-      if ('error' in uploadResult) {
-        setError(uploadResult.error)
-        setIsUploading(false)
-        return
-      }
-
-      // Upload to storage
-      const uploadResponse = await fetch(uploadResult.signedUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type || 'image/jpeg',
-        },
-      })
-
-      if (!uploadResponse.ok) {
-        throw new Error('Error al subir la imagen')
-      }
-
-      // Create database record
-      const photo = await createLegacyPhoto({
-        medical_record_id: medicalRecordId,
-        tipo,
-        storage_path: uploadResult.path,
-      })
-
-      if (!photo) {
-        throw new Error('Error al guardar la referencia de la imagen')
-      }
-
-      // Success - notify parent
-      onPhotoAdded?.()
-    } catch (err) {
-      console.error('Error uploading photo:', err)
-      setError('Error al subir la foto. Intenta de nuevo.')
-    } finally {
-      setIsUploading(false)
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
-  }, [medicalRecordId, tipo, onPhotoAdded])
+  }, [])
 
   // Trigger native camera
   const openCamera = useCallback(() => {
     fileInputRef.current?.click()
   }, [])
 
-  // Delete photo
+  // Remove pending photo
+  const removePendingPhoto = useCallback((id: string) => {
+    setPendingPhotos(prev => {
+      const photo = prev.find(p => p.id === id)
+      if (photo) {
+        URL.revokeObjectURL(photo.preview)
+      }
+      return prev.filter(p => p.id !== id)
+    })
+    setSelectedPending(null)
+  }, [])
+
+  // Upload all pending photos
+  const uploadAllPhotos = useCallback(async () => {
+    if (pendingPhotos.length === 0) return
+
+    setIsUploading(true)
+    setError(null)
+    setUploadProgress(0)
+
+    const total = pendingPhotos.length
+    let uploaded = 0
+
+    try {
+      for (const pending of pendingPhotos) {
+        // Get upload URL
+        const uploadResult = await createLegacyPhotoUploadUrl(medicalRecordId, tipo)
+
+        if ('error' in uploadResult) {
+          throw new Error(uploadResult.error)
+        }
+
+        // Upload to storage
+        const uploadResponse = await fetch(uploadResult.signedUrl, {
+          method: 'PUT',
+          body: pending.file,
+          headers: {
+            'Content-Type': pending.file.type || 'image/jpeg',
+          },
+        })
+
+        if (!uploadResponse.ok) {
+          throw new Error('Error al subir la imagen')
+        }
+
+        // Create database record
+        const photo = await createLegacyPhoto({
+          medical_record_id: medicalRecordId,
+          tipo,
+          storage_path: uploadResult.path,
+        })
+
+        if (!photo) {
+          throw new Error('Error al guardar la referencia de la imagen')
+        }
+
+        // Update progress
+        uploaded++
+        setUploadProgress(Math.round((uploaded / total) * 100))
+
+        // Revoke preview URL
+        URL.revokeObjectURL(pending.preview)
+      }
+
+      // Clear pending photos
+      setPendingPhotos([])
+
+      // Notify parent
+      onPhotoAdded?.()
+    } catch (err) {
+      console.error('Error uploading photos:', err)
+      setError(err instanceof Error ? err.message : 'Error al subir las fotos')
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
+    }
+  }, [pendingPhotos, medicalRecordId, tipo, onPhotoAdded])
+
+  // Delete existing photo
   const handleDeletePhoto = useCallback(async (photoId: string) => {
     setDeletingPhotoId(photoId)
     try {
@@ -116,12 +165,19 @@ export function LegacyPhotoCapture({
     }
   }, [onPhotoDeleted])
 
+  const hasPendingPhotos = pendingPhotos.length > 0
+
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Camera className="h-4 w-4" />
           {LEGACY_PHOTO_TYPE_LABELS[tipo]}
+          {hasPendingPhotos && (
+            <span className="text-sm font-normal text-muted-foreground">
+              ({pendingPhotos.length} pendiente{pendingPhotos.length !== 1 ? 's' : ''})
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -135,25 +191,77 @@ export function LegacyPhotoCapture({
           className="hidden"
         />
 
-        {/* Take photo button */}
-        <Button
-          variant="outline"
-          className="w-full h-24 border-dashed"
-          onClick={openCamera}
-          disabled={isUploading}
-        >
-          {isUploading ? (
-            <>
-              <Loader2 className="h-6 w-6 mr-2 animate-spin" />
-              Subiendo...
-            </>
-          ) : (
-            <>
-              <Camera className="h-6 w-6 mr-2" />
-              Tomar Foto
-            </>
-          )}
-        </Button>
+        {/* Pending photos preview */}
+        {hasPendingPhotos && (
+          <div className="space-y-3 p-4 bg-muted/50 rounded-lg border-2 border-dashed">
+            <p className="text-sm font-medium">Fotos por subir:</p>
+            <div className="grid grid-cols-4 gap-2">
+              {pendingPhotos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="relative aspect-square bg-muted rounded-md overflow-hidden group"
+                >
+                  <img
+                    src={photo.preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={() => setSelectedPending(photo)}
+                  />
+                  {/* Remove button */}
+                  <button
+                    className="absolute top-1 right-1 p-1 bg-black/60 rounded-full text-white hover:bg-black/80"
+                    onClick={() => removePendingPhoto(photo.id)}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={openCamera}
+                disabled={isUploading}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Otra Foto
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={uploadAllPhotos}
+                disabled={isUploading}
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {uploadProgress}%
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Subir {pendingPhotos.length} foto{pendingPhotos.length !== 1 ? 's' : ''}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Take first photo button (only when no pending) */}
+        {!hasPendingPhotos && (
+          <Button
+            variant="outline"
+            className="w-full h-24 border-dashed"
+            onClick={openCamera}
+            disabled={isUploading}
+          >
+            <Camera className="h-6 w-6 mr-2" />
+            Tomar Foto
+          </Button>
+        )}
 
         {/* Error message */}
         {error && (
@@ -164,7 +272,7 @@ export function LegacyPhotoCapture({
         {existingPhotos.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              Fotos tomadas: {existingPhotos.length}
+              Fotos guardadas: {existingPhotos.length}
             </p>
             <div className="grid grid-cols-4 gap-2">
               {existingPhotos.map((photo) => (
@@ -215,7 +323,7 @@ export function LegacyPhotoCapture({
           </div>
         )}
 
-        {/* Photo viewer dialog */}
+        {/* Photo viewer dialog - existing photos */}
         <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
@@ -230,6 +338,45 @@ export function LegacyPhotoCapture({
                   alt={`Foto ${selectedPhoto.orden + 1}`}
                   className="w-full h-full object-contain"
                 />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Photo viewer dialog - pending photos */}
+        <Dialog open={!!selectedPending} onOpenChange={() => setSelectedPending(null)}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>
+                Vista previa
+              </DialogTitle>
+            </DialogHeader>
+            {selectedPending && (
+              <div className="space-y-4">
+                <div className="relative aspect-[4/3] bg-black rounded-lg overflow-hidden">
+                  <img
+                    src={selectedPending.preview}
+                    alt="Preview"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => removePendingPhoto(selectedPending.id)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Eliminar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setSelectedPending(null)}
+                  >
+                    Cerrar
+                  </Button>
+                </div>
               </div>
             )}
           </DialogContent>

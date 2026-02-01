@@ -13,13 +13,13 @@
 import { useState, useCallback, useTransition, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Save, CheckCircle2 } from 'lucide-react'
+import { Loader2, Save, CheckCircle2, ChevronDown, ChevronRight, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { VeinDiagramCanvas } from '@/components/medical-records/vein-diagram-canvas'
 import { VoiceDictation } from '@/components/medical-records/voice-dictation'
 import { TreatmentSelector, type TreatmentItem } from '@/components/medical-records/treatment-selector'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Pencil } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { updateDiagramAndDiagnosis, updateTreatments, addAudioRecording } from './actions'
 
 interface TreatmentOption {
@@ -60,6 +60,17 @@ export function DiagramPageClient({
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isPending, startTransition] = useTransition()
   const [isSavingTreatments, setIsSavingTreatments] = useState(false)
+
+  // Diagram collapse state
+  const [isDiagramExpanded, setIsDiagramExpanded] = useState(false)
+  const [hasDiagramBeenExpanded, setHasDiagramBeenExpanded] = useState(false)
+
+  const handleDiagramToggle = useCallback(() => {
+    if (!isDiagramExpanded && !hasDiagramBeenExpanded) {
+      setHasDiagramBeenExpanded(true)
+    }
+    setIsDiagramExpanded(!isDiagramExpanded)
+  }, [isDiagramExpanded, hasDiagramBeenExpanded])
 
   // Debounce timer for treatment updates
   const treatmentDebounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -168,32 +179,10 @@ export function DiagramPageClient({
         </Alert>
       )}
 
-      {/* Two-column layout */}
+      {/* Two-column layout - On mobile, diagnosis first, diagram second */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left: Vein Diagram */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Pencil className="h-5 w-5" />
-              Diagrama de Piernas
-            </CardTitle>
-            <CardDescription>
-              Marque las zonas afectadas por varices en el diagrama
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <VeinDiagramCanvas
-              initialData={diagramData}
-              onChange={handleDiagramChange}
-              disabled={isReadOnly}
-              width={550}
-              height={700}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Right: Voice Dictation + Treatment Selector */}
-        <div className="space-y-6">
+        {/* Diagnosis + Treatment (appears first on mobile) */}
+        <div className="space-y-6 order-1 lg:order-2">
           <VoiceDictation
             value={diagnostico}
             onChange={handleDiagnosticoChange}
@@ -210,6 +199,55 @@ export function DiagramPageClient({
             disabled={isReadOnly}
             isSaving={isSavingTreatments}
           />
+        </div>
+
+        {/* Vein Diagram (Collapsible - appears second on mobile) */}
+        <div
+          className={cn(
+            "border rounded-lg bg-card select-none order-2 lg:order-1",
+            !isDiagramExpanded && "p-4 cursor-pointer"
+          )}
+          onClick={!isDiagramExpanded ? handleDiagramToggle : undefined}
+        >
+          {!isDiagramExpanded ? (
+            /* Collapsed: minimal bar */
+            <div className="flex items-center gap-2 text-card-foreground">
+              <ChevronRight className="h-5 w-5" />
+              <Pencil className="h-5 w-5" />
+              <span className="font-semibold">Diagrama de Piernas</span>
+              <span className="text-xs text-muted-foreground ml-auto">
+                Toque para expandir
+              </span>
+            </div>
+          ) : (
+            /* Expanded: full card */
+            <Card className="border-0">
+              <CardHeader
+                className="cursor-pointer select-none"
+                onClick={handleDiagramToggle}
+              >
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ChevronDown className="h-5 w-5" />
+                  <Pencil className="h-5 w-5" />
+                  Diagrama de Piernas
+                  <span className="text-xs font-normal text-muted-foreground ml-auto">
+                    Toque para colapsar
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              {hasDiagramBeenExpanded && (
+                <CardContent>
+                  <VeinDiagramCanvas
+                    initialData={diagramData}
+                    onChange={handleDiagramChange}
+                    disabled={isReadOnly}
+                    width={550}
+                    height={700}
+                  />
+                </CardContent>
+              )}
+            </Card>
+          )}
         </div>
       </div>
     </div>

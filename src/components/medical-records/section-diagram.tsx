@@ -5,11 +5,14 @@
  *
  * Section for the leg diagram where doctors mark vein locations.
  * Uses fabric.js canvas for drawing.
+ * Collapsible by default to save space.
  */
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { VeinDiagramCanvas } from './vein-diagram-canvas'
-import { Pencil } from 'lucide-react'
+import { Pencil, ChevronDown, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface SectionDiagramProps {
   /** Current diagram data (JSON string) */
@@ -20,6 +23,8 @@ interface SectionDiagramProps {
   disabled?: boolean
   /** Whether this is medico-only (shown but disabled for enfermera) */
   isMedicoOnly?: boolean
+  /** Whether the section starts expanded */
+  defaultExpanded?: boolean
 }
 
 /**
@@ -30,11 +35,31 @@ export function SectionDiagram({
   onChange,
   disabled = false,
   isMedicoOnly = false,
+  defaultExpanded = false,
 }: SectionDiagramProps) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  // Track if canvas has been mounted (once expanded, keep it mounted)
+  const [hasBeenExpanded, setHasBeenExpanded] = useState(defaultExpanded)
+
+  const handleToggle = () => {
+    if (!isExpanded && !hasBeenExpanded) {
+      setHasBeenExpanded(true)
+    }
+    setIsExpanded(!isExpanded)
+  }
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader
+        className="cursor-pointer select-none"
+        onClick={handleToggle}
+      >
         <CardTitle className="text-lg flex items-center gap-2">
+          {isExpanded ? (
+            <ChevronDown className="h-5 w-5" />
+          ) : (
+            <ChevronRight className="h-5 w-5" />
+          )}
           <Pencil className="h-5 w-5" />
           Diagrama de Piernas
           {isMedicoOnly && (
@@ -42,20 +67,24 @@ export function SectionDiagram({
               (Solo medico)
             </span>
           )}
+          {!isExpanded && (
+            <span className="text-xs font-normal text-muted-foreground ml-auto">
+              Toque para expandir
+            </span>
+          )}
         </CardTitle>
-        <CardDescription>
-          Marque las zonas afectadas por varices en el diagrama
-        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <VeinDiagramCanvas
-          initialData={diagramData}
-          onChange={onChange}
-          disabled={disabled || isMedicoOnly}
-          width={300}
-          height={500}
-        />
-      </CardContent>
+      {hasBeenExpanded && (
+        <CardContent className={cn(!isExpanded && 'hidden')}>
+          <VeinDiagramCanvas
+            initialData={diagramData}
+            onChange={onChange}
+            disabled={disabled || isMedicoOnly}
+            width={300}
+            height={500}
+          />
+        </CardContent>
+      )}
     </Card>
   )
 }

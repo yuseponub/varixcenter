@@ -16,7 +16,7 @@ import { APPOINTMENT_STATES } from '@/types/appointments'
  * Map of current state -> allowed next states.
  *
  * Workflow:
- * programada -> confirmada -> en_sala -> en_atencion -> completada
+ * programada -> confirmada -> en_atencion -> completada
  *
  * Special rules:
  * - Any state -> cancelada (anyone can cancel)
@@ -28,14 +28,14 @@ const TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
   // Initial state
   programada: ['confirmada', 'cancelada'],
 
-  // Patient confirmed - can proceed or revert
-  confirmada: ['en_sala', 'programada', 'cancelada'],
+  // Patient confirmed - can proceed directly to attention or revert
+  confirmada: ['en_atencion', 'programada', 'cancelada', 'no_asistio'],
 
-  // Patient in waiting room - can proceed or revert
+  // Legacy state - kept for backwards compatibility with existing data
   en_sala: ['en_atencion', 'confirmada', 'cancelada', 'no_asistio'],
 
   // Currently being attended - can complete, revert, or mark no-show
-  en_atencion: ['completada', 'en_sala', 'cancelada', 'no_asistio'],
+  en_atencion: ['completada', 'confirmada', 'cancelada', 'no_asistio'],
 
   // Terminal state - no further transitions (except reschedule via new appointment)
   completada: ['cancelada'],

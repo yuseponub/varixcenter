@@ -20,6 +20,8 @@ import {
   Trash2,
   RotateCcw,
   Download,
+  Lock,
+  Unlock,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -66,6 +68,7 @@ export function VeinDiagramCanvas({
   const [color, setColor] = useState(COLORS[0].value)
   const [brushSize, setBrushSize] = useState(3)
   const [isReady, setIsReady] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   // Initialize canvas
   useEffect(() => {
@@ -75,8 +78,8 @@ export function VeinDiagramCanvas({
       width,
       height,
       backgroundColor: 'transparent',
-      isDrawingMode: true,
-      selection: true,
+      isDrawingMode: false,
+      selection: false,
     })
 
     // Set up pencil brush
@@ -97,8 +100,7 @@ export function VeinDiagramCanvas({
           canvas.loadFromJSON({ objects }).then(() => {
             canvas.renderAll()
             canvas.requestRenderAll()
-            // Re-enable drawing mode after loading
-            canvas.isDrawingMode = true
+            // Keep canvas locked after loading (user must click edit to enable)
           })
         }
       } catch (e) {
@@ -133,25 +135,63 @@ export function VeinDiagramCanvas({
     fabricRef.current.freeDrawingBrush.width = brushSize
   }, [color, brushSize])
 
-  // Update tool mode
+  // Update editing mode - lock/unlock canvas
   useEffect(() => {
     if (!fabricRef.current) return
 
-    switch (tool) {
-      case 'draw':
-        fabricRef.current.isDrawingMode = true
-        fabricRef.current.selection = false
-        break
-      case 'select':
-        fabricRef.current.isDrawingMode = false
-        fabricRef.current.selection = true
-        break
-      case 'erase':
-        fabricRef.current.isDrawingMode = false
-        fabricRef.current.selection = true
-        break
+    if (!isEditing) {
+      // Lock canvas
+      fabricRef.current.isDrawingMode = false
+      fabricRef.current.selection = false
+      fabricRef.current.discardActiveObject()
+      fabricRef.current.renderAll()
+    } else {
+      // Apply current tool mode when editing is enabled
+      switch (tool) {
+        case 'draw':
+          fabricRef.current.isDrawingMode = true
+          fabricRef.current.selection = false
+          break
+        case 'select':
+        case 'erase':
+          fabricRef.current.isDrawingMode = false
+          fabricRef.current.selection = true
+          break
+      }
     }
-  }, [tool])
+  }, [isEditing, tool])
+
+  // Auto-delete on selection in erase mode (fixes tablet touch)
+  useEffect(() => {
+    if (!fabricRef.current) return
+
+    const canvas = fabricRef.current
+
+    const handleSelection = () => {
+      if (tool !== 'erase' || !isEditing) return
+
+      const activeObject = canvas.getActiveObject()
+      if (activeObject) {
+        canvas.remove(activeObject)
+        canvas.discardActiveObject()
+        canvas.renderAll()
+
+        if (onChange) {
+          const objects = canvas.getObjects()
+          const json = JSON.stringify(objects.map((obj) => obj.toJSON()))
+          onChange(json)
+        }
+      }
+    }
+
+    canvas.on('selection:created', handleSelection)
+    canvas.on('selection:updated', handleSelection)
+
+    return () => {
+      canvas.off('selection:created', handleSelection)
+      canvas.off('selection:updated', handleSelection)
+    }
+  }, [tool, isEditing, onChange])
 
   // Handle delete selected object (for erase mode)
   const handleCanvasClick = useCallback(() => {
@@ -247,104 +287,133 @@ export function VeinDiagramCanvas({
 
   return (
     <div className={cn('space-y-4', disabled && 'opacity-50 pointer-events-none')}>
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-4 p-3 bg-muted rounded-lg">
-        {/* Tool selection */}
-        <div className="flex gap-1">
-          <Button
-            type="button"
-            variant={tool === 'draw' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTool('draw')}
-            title="Dibujar"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant={tool === 'select' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTool('select')}
-            title="Seleccionar"
-          >
-            <MousePointer2 className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant={tool === 'erase' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setTool('erase')}
-            title="Borrar trazo"
-          >
-            <Eraser className="h-4 w-4" />
-          </Button>
-        </div>
+      {/* Edit toggle button */}
+      <div className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant={isEditing ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          {isEditing ? (
+            <>
+              <Unlock className="h-4 w-4 mr-2" />
+              Editando - Clic para bloquear
+            </>
+          ) : (
+            <>
+              <Lock className="h-4 w-4 mr-2" />
+              Bloqueado - Clic para editar
+            </>
+          )}
+        </Button>
+        {!isEditing && (
+          <span className="text-sm text-muted-foreground">
+            Toque el boton para habilitar la edicion del diagrama
+          </span>
+        )}
+      </div>
 
-        {/* Color selection */}
-        <div className="flex items-center gap-2">
-          <Label className="text-sm">Color:</Label>
+      {/* Toolbar - only visible when editing */}
+      {isEditing && (
+        <div className="flex flex-wrap items-center gap-4 p-3 bg-muted rounded-lg">
+          {/* Tool selection */}
           <div className="flex gap-1">
-            {COLORS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => setColor(c.value)}
-                className={cn(
-                  'w-6 h-6 rounded-full border-2 transition-transform',
-                  color === c.value ? 'border-foreground scale-110' : 'border-transparent'
-                )}
-                style={{ backgroundColor: c.value }}
-                title={c.name}
-              />
-            ))}
+            <Button
+              type="button"
+              variant={tool === 'draw' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTool('draw')}
+              title="Dibujar"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant={tool === 'select' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTool('select')}
+              title="Seleccionar"
+            >
+              <MousePointer2 className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant={tool === 'erase' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTool('erase')}
+              title="Borrar trazo"
+            >
+              <Eraser className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Color selection */}
+          <div className="flex items-center gap-2">
+            <Label className="text-sm">Color:</Label>
+            <div className="flex gap-1">
+              {COLORS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setColor(c.value)}
+                  className={cn(
+                    'w-6 h-6 rounded-full border-2 transition-transform',
+                    color === c.value ? 'border-foreground scale-110' : 'border-transparent'
+                  )}
+                  style={{ backgroundColor: c.value }}
+                  title={c.name}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Brush size */}
+          <div className="flex items-center gap-2 min-w-32">
+            <Label className="text-sm">Grosor:</Label>
+            <Slider
+              value={[brushSize]}
+              onValueChange={([value]: number[]) => setBrushSize(value)}
+              min={1}
+              max={10}
+              step={1}
+              className="w-20"
+            />
+            <span className="text-sm w-4">{brushSize}</span>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-1 ml-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={deleteSelected}
+              title="Eliminar seleccion"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={clearAll}
+              title="Limpiar todo"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={exportImage}
+              title="Descargar imagen"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-
-        {/* Brush size */}
-        <div className="flex items-center gap-2 min-w-32">
-          <Label className="text-sm">Grosor:</Label>
-          <Slider
-            value={[brushSize]}
-            onValueChange={([value]: number[]) => setBrushSize(value)}
-            min={1}
-            max={10}
-            step={1}
-            className="w-20"
-          />
-          <span className="text-sm w-4">{brushSize}</span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-1 ml-auto">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={deleteSelected}
-            title="Eliminar seleccion"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={clearAll}
-            title="Limpiar todo"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={exportImage}
-            title="Descargar imagen"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      )}
 
       {/* Canvas with background image */}
       <div
@@ -374,11 +443,13 @@ export function VeinDiagramCanvas({
       </div>
 
       {/* Instructions */}
-      <p className="text-sm text-muted-foreground">
-        {tool === 'draw' && 'Dibuje sobre el diagrama para marcar las zonas afectadas'}
-        {tool === 'select' && 'Haga clic en un trazo para seleccionarlo y moverlo'}
-        {tool === 'erase' && 'Haga clic en un trazo para eliminarlo'}
-      </p>
+      {isEditing && (
+        <p className="text-sm text-muted-foreground">
+          {tool === 'draw' && 'Dibuje sobre el diagrama para marcar las zonas afectadas'}
+          {tool === 'select' && 'Toque un trazo para seleccionarlo y moverlo'}
+          {tool === 'erase' && 'Toque un trazo para eliminarlo'}
+        </p>
+      )}
     </div>
   )
 }

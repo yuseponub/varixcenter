@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,34 @@ export function HistoriaAntiguaClient({
   const router = useRouter()
   const [photos, setPhotos] = useState<LegacyHistoryPhotoWithUrl[]>(initialPhotos)
   const [activeCapture, setActiveCapture] = useState<LegacyPhotoType | null>(null)
+
+  // Try to lock screen orientation to portrait
+  useEffect(() => {
+    const lockOrientation = async () => {
+      try {
+        // Try to lock orientation (works on some mobile browsers)
+        if (screen.orientation && 'lock' in screen.orientation) {
+          await screen.orientation.lock('portrait')
+        }
+      } catch (err) {
+        // Orientation lock not supported or not allowed - that's ok
+        console.log('Orientation lock not available')
+      }
+    }
+
+    lockOrientation()
+
+    // Cleanup - unlock when leaving the page
+    return () => {
+      try {
+        if (screen.orientation && 'unlock' in screen.orientation) {
+          screen.orientation.unlock()
+        }
+      } catch {
+        // Ignore errors on cleanup
+      }
+    }
+  }, [])
 
   // Refresh the page to get updated photos from server
   const refreshPhotos = useCallback(() => {

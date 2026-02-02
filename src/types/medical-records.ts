@@ -489,7 +489,7 @@ export const MEDICO_ONLY_FIELDS = [
 /**
  * Types of legacy history photos
  */
-export const LEGACY_PHOTO_TYPES = ['historia', 'evolucion', 'plan_tratamiento'] as const
+export const LEGACY_PHOTO_TYPES = ['historia', 'evolucion', 'plan_tratamiento', 'consentimiento'] as const
 
 /**
  * Legacy photo type
@@ -503,6 +503,7 @@ export const LEGACY_PHOTO_TYPE_LABELS: Record<LegacyPhotoType, string> = {
   historia: 'Historia Clinica',
   evolucion: 'Evolucion',
   plan_tratamiento: 'Plan de Tratamiento',
+  consentimiento: 'Consentimiento',
 }
 
 /**

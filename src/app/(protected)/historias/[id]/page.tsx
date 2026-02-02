@@ -1,11 +1,11 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
   getMedicalRecordById,
   getQuotationByMedicalRecord,
   getProgressNotes,
 } from '@/lib/queries/medical-records'
-import { hasLegacyPhotos } from '@/lib/queries/legacy-photos'
+import { getLegacyPhotosByType } from '@/lib/queries/legacy-photos'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,7 @@ import {
   ClipboardList,
   Briefcase,
   Camera,
+  ChevronDown,
 } from 'lucide-react'
 import {
   MEDICAL_RECORD_STATUS_LABELS,
@@ -35,7 +36,7 @@ import {
   VASCULAR_LAB_LABELS,
 } from '@/types'
 import type { CeapClassification } from '@/types'
-import { ProgressNotes } from '@/components/medical-records'
+import { ProgressNotes, LegacyPhotosGallery } from '@/components/medical-records'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 
 interface PageProps {
@@ -50,14 +51,14 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // Check if has legacy photos - if so, redirect to historia-antigua page
-  const hasLegacy = await hasLegacyPhotos(id)
-  if (hasLegacy) {
-    redirect(`/historias/${id}/historia-antigua`)
-  }
+  // Fetch data in parallel
+  const [quotation, progressNotes, legacyPhotos] = await Promise.all([
+    getQuotationByMedicalRecord(id),
+    getProgressNotes(id),
+    getLegacyPhotosByType(id, 'historia'),
+  ])
 
-  const quotation = await getQuotationByMedicalRecord(id)
-  const progressNotes = await getProgressNotes(id)
+  const hasLegacyPhotos = legacyPhotos.length > 0
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CO', {
@@ -111,50 +112,9 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
     )
   }
 
-  return (
-    <div className="container mx-auto py-6 max-w-4xl space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <Link
-            href="/historias"
-            className="flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a Historias
-          </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-3">
-            <FileText className="h-6 w-6" />
-            Historia Clinica
-            <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
-              {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
-            </Badge>
-          </h1>
-          <p className="text-muted-foreground">
-            {record.patient?.nombre} {record.patient?.apellido} - CC: {record.patient?.cedula}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link href={`/historias/${id}/historia-antigua`}>
-            <Button variant="outline">
-              <Camera className="mr-2 h-4 w-4" />
-              Añadir Historia Antigua
-            </Button>
-          </Link>
-          {record.estado === 'borrador' && (
-            <Link href={`/historias/${id}/editar`}>
-              <Button>
-                <Edit className="mr-2 h-4 w-4" />
-                Editar
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
-
+  // Digital content cards - used in both cases
+  const DigitalContentCards = () => (
+    <>
       {/* Patient Info */}
       <Card>
         <CardHeader>
@@ -435,6 +395,77 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           </div>
         </CardContent>
       </Card>
+    </>
+  )
+
+  return (
+    <div className="container mx-auto py-6 max-w-4xl space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <Link
+            href="/historias"
+            className="flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver a Historias
+          </Link>
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+            <FileText className="h-6 w-6" />
+            Historia Clinica
+            <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
+              {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
+            </Badge>
+          </h1>
+          <p className="text-muted-foreground">
+            {record.patient?.nombre} {record.patient?.apellido} - CC: {record.patient?.cedula}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href={`/historias/${id}/historia-antigua`}>
+            <Button variant="outline">
+              <Camera className="mr-2 h-4 w-4" />
+              {hasLegacyPhotos ? 'Gestionar Fotos' : 'Añadir Historia Antigua'}
+            </Button>
+          </Link>
+          {record.estado === 'borrador' && (
+            <Link href={`/historias/${id}/editar`}>
+              <Button>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+
+      {/* Legacy Photos Section - shown at top when photos exist */}
+      {hasLegacyPhotos && (
+        <LegacyPhotosGallery
+          tipo="historia"
+          photos={legacyPhotos}
+        />
+      )}
+
+      {/* Digital Content - in collapsible when legacy photos exist, otherwise show directly */}
+      {hasLegacyPhotos ? (
+        <details className="group">
+          <summary className="flex items-center gap-2 cursor-pointer p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors list-none [&::-webkit-details-marker]:hidden">
+            <FileText className="h-5 w-5" />
+            <span className="font-medium">Ver Historia Digital</span>
+            <span className="text-muted-foreground text-sm ml-2">(datos del formulario)</span>
+            <ChevronDown className="ml-auto h-5 w-5 transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="space-y-6 mt-4">
+            <DigitalContentCards />
+          </div>
+        </details>
+      ) : (
+        <DigitalContentCards />
+      )}
     </div>
   )
 }

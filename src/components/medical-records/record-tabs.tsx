@@ -3,13 +3,13 @@
 /**
  * Medical Record Navigation Tabs
  *
- * Provides seamless navigation between Historia, Diagnóstico, and Cotización
+ * Provides navigation between Historia, Diagnóstico, Evolución, Plan de Tratamiento, and Consentimiento
  */
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { FileText, Pencil, Receipt } from 'lucide-react'
+import { FileText, Pencil, ClipboardList, TrendingUp, FileCheck } from 'lucide-react'
 
 interface RecordTabsProps {
   /** Medical record ID */
@@ -23,7 +23,7 @@ const tabs = [
     name: 'Historia',
     href: (id: string) => `/historias/${id}`,
     icon: FileText,
-    match: (path: string, id: string) => path === `/historias/${id}`,
+    match: (path: string, id: string) => path === `/historias/${id}` || path === `/historias/${id}/historia-antigua` || path === `/historias/${id}/ver-digital`,
   },
   {
     name: 'Diagnostico',
@@ -32,10 +32,22 @@ const tabs = [
     match: (path: string, id: string) => path === `/historias/${id}/diagrama`,
   },
   {
-    name: 'Cotizacion',
+    name: 'Evolucion',
+    href: (id: string) => `/historias/${id}/evolucion`,
+    icon: TrendingUp,
+    match: (path: string, id: string) => path === `/historias/${id}/evolucion`,
+  },
+  {
+    name: 'Plan de Tratamiento',
     href: (id: string) => `/historias/${id}/cotizacion`,
-    icon: Receipt,
+    icon: ClipboardList,
     match: (path: string, id: string) => path === `/historias/${id}/cotizacion`,
+  },
+  {
+    name: 'Consentimiento',
+    href: (id: string) => `/historias/${id}/consentimiento`,
+    icon: FileCheck,
+    match: (path: string, id: string) => path === `/historias/${id}/consentimiento`,
   },
 ]
 
@@ -43,8 +55,8 @@ export function RecordTabs({ recordId, isReadOnly }: RecordTabsProps) {
   const pathname = usePathname()
 
   return (
-    <div className="border-b">
-      <nav className="flex gap-1" aria-label="Tabs">
+    <div className="border-b overflow-x-auto">
+      <nav className="flex gap-1 min-w-max" aria-label="Tabs">
         {tabs.map((tab) => {
           const isActive = tab.match(pathname, recordId)
           const Icon = tab.icon
@@ -54,7 +66,7 @@ export function RecordTabs({ recordId, isReadOnly }: RecordTabsProps) {
               key={tab.name}
               href={tab.href(recordId)}
               className={cn(
-                'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                'flex items-center gap-2 px-3 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 isActive
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'

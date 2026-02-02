@@ -186,7 +186,7 @@ export async function createInvoiceUploadUrl(
  */
 export async function createLegacyPhotoUploadUrl(
   medicalRecordId: string,
-  tipo: 'historia' | 'evolucion' | 'plan_tratamiento'
+  tipo: 'historia' | 'evolucion' | 'plan_tratamiento' | 'consentimiento'
 ): Promise<{ signedUrl: string; path: string } | { error: string }> {
   const supabase = await createClient()
 

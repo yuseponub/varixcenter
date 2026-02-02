@@ -106,13 +106,14 @@ export async function getLegacyPhotosCounts(
 
   if (error) {
     console.error('Error fetching legacy photos counts:', error)
-    return { historia: 0, evolucion: 0, plan_tratamiento: 0 }
+    return { historia: 0, evolucion: 0, plan_tratamiento: 0, consentimiento: 0 }
   }
 
   const counts: Record<LegacyPhotoType, number> = {
     historia: 0,
     evolucion: 0,
     plan_tratamiento: 0,
+    consentimiento: 0,
   }
 
   for (const photo of data as { tipo: LegacyPhotoType }[]) {

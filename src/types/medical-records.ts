@@ -515,6 +515,7 @@ export interface LegacyHistoryPhoto {
   tipo: LegacyPhotoType
   storage_path: string
   orden: number
+  rotation: number // 0, 90, 180, 270 degrees
   created_by: string | null
   created_at: string
 }

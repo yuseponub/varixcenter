@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,9 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Camera, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Camera, ZoomIn, ChevronLeft, ChevronRight, RotateCw } from 'lucide-react'
 import type { LegacyPhotoType, LegacyHistoryPhotoWithUrl } from '@/types'
 import { LEGACY_PHOTO_TYPE_LABELS } from '@/types'
+import { rotateLegacyPhoto } from '@/app/(protected)/historias/actions'
 
 interface LegacyPhotosGalleryProps {
   tipo: LegacyPhotoType
@@ -21,10 +22,12 @@ interface LegacyPhotosGalleryProps {
 
 export function LegacyPhotosGallery({
   tipo,
-  photos,
+  photos: initialPhotos,
   onAddMore,
 }: LegacyPhotosGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [photos, setPhotos] = useState(initialPhotos)
+  const [isPending, startTransition] = useTransition()
 
   const openViewer = (index: number) => {
     setSelectedIndex(index)
@@ -44,7 +47,32 @@ export function LegacyPhotosGallery({
     setSelectedIndex(selectedIndex === photos.length - 1 ? 0 : selectedIndex + 1)
   }
 
+  const handleRotate = (photoId: string, currentIndex: number) => {
+    // Optimistic update
+    setPhotos(prev => prev.map((p, i) =>
+      i === currentIndex
+        ? { ...p, rotation: ((p.rotation || 0) + 90) % 360 }
+        : p
+    ))
+
+    startTransition(async () => {
+      const result = await rotateLegacyPhoto(photoId)
+      if ('error' in result) {
+        // Revert on error
+        setPhotos(prev => prev.map((p, i) =>
+          i === currentIndex
+            ? { ...p, rotation: ((p.rotation || 0) - 90 + 360) % 360 }
+            : p
+        ))
+      }
+    })
+  }
+
   const selectedPhoto = selectedIndex !== null ? photos[selectedIndex] : null
+
+  const getRotationStyle = (rotation: number | undefined) => ({
+    transform: `rotate(${rotation || 0}deg)`,
+  })
 
   if (photos.length === 0) {
     return (
@@ -85,7 +113,7 @@ export function LegacyPhotosGallery({
             {onAddMore && (
               <Button variant="outline" size="sm" onClick={onAddMore}>
                 <Camera className="h-4 w-4 mr-2" />
-                Añadir
+                Anadir
               </Button>
             )}
           </div>
@@ -102,7 +130,8 @@ export function LegacyPhotosGallery({
                   <img
                     src={photo.url}
                     alt={`${LEGACY_PHOTO_TYPE_LABELS[tipo]} foto ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform"
+                    style={getRotationStyle(photo.rotation)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -122,16 +151,33 @@ export function LegacyPhotosGallery({
       <Dialog open={selectedIndex !== null} onOpenChange={closeViewer}>
         <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>
-              {LEGACY_PHOTO_TYPE_LABELS[tipo]} - Foto {selectedIndex !== null ? selectedIndex + 1 : ''} de {photos.length}
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>
+                {LEGACY_PHOTO_TYPE_LABELS[tipo]} - Foto {selectedIndex !== null ? selectedIndex + 1 : ''} de {photos.length}
+              </DialogTitle>
+              {selectedPhoto && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleRotate(selectedPhoto.id, selectedIndex!)
+                  }}
+                  disabled={isPending}
+                >
+                  <RotateCw className={`h-4 w-4 mr-2 ${isPending ? 'animate-spin' : ''}`} />
+                  Rotar
+                </Button>
+              )}
+            </div>
           </DialogHeader>
-          <div className="relative flex-1 bg-black rounded-lg overflow-hidden">
+          <div className="relative flex-1 bg-black rounded-lg overflow-hidden flex items-center justify-center">
             {selectedPhoto?.url && (
               <img
                 src={selectedPhoto.url}
                 alt={`${LEGACY_PHOTO_TYPE_LABELS[tipo]} foto ${selectedIndex !== null ? selectedIndex + 1 : ''}`}
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-full object-contain transition-transform duration-200"
+                style={getRotationStyle(selectedPhoto.rotation)}
               />
             )}
 
@@ -181,7 +227,8 @@ export function LegacyPhotosGallery({
                     <img
                       src={photo.url}
                       alt={`Miniatura ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform"
+                      style={getRotationStyle(photo.rotation)}
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">

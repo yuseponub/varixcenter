@@ -158,6 +158,7 @@ export async function createLegacyPhoto(
       tipo: input.tipo,
       storage_path: input.storage_path,
       orden: input.orden ?? nextOrden,
+      rotation: 0,
       created_by: user.id,
     })
     .select()

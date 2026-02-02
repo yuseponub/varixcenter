@@ -648,3 +648,54 @@ export async function createLegacyMedicalRecord(
   // Redirect to legacy photo upload page
   redirect(`/historias/${data.id}/historia-antigua`)
 }
+
+/**
+ * Rotate a legacy photo by 90 degrees clockwise
+ */
+export async function rotateLegacyPhoto(
+  photoId: string
+): Promise<{ success: boolean; rotation: number } | { error: string }> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado' }
+  }
+
+  // Get current rotation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: photo, error: fetchError } = await (supabase as any)
+    .from('legacy_history_photos')
+    .select('rotation, medical_record_id')
+    .eq('id', photoId)
+    .single()
+
+  if (fetchError || !photo) {
+    return { error: 'Foto no encontrada' }
+  }
+
+  // Calculate new rotation (add 90, wrap at 360)
+  const currentRotation = photo.rotation || 0
+  const newRotation = (currentRotation + 90) % 360
+
+  // Update rotation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: updateError } = await (supabase as any)
+    .from('legacy_history_photos')
+    .update({ rotation: newRotation })
+    .eq('id', photoId)
+
+  if (updateError) {
+    console.error('Rotate photo error:', updateError)
+    return { error: 'Error al rotar la foto' }
+  }
+
+  // Revalidate the page
+  revalidatePath(`/historias/${photo.medical_record_id}`)
+
+  return { success: true, rotation: newRotation }
+}

@@ -28,6 +28,9 @@ export * from './medical-records'
 // Re-export notification types
 export * from './notifications'
 
+// Re-export attendance types
+export * from './attendances'
+
 // NOTE: Medias types (products, sales, cierres) are NOT re-exported here
 // to avoid conflicts with clinic types (PAYMENT_METHODS, CierreEstado, etc.)
 // Import directly from @/types/medias/products, @/types/medias/sales, @/types/medias/cierres

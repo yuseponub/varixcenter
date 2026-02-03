@@ -58,8 +58,8 @@ export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintRepor
         <style>
           body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 900px;
+            padding: 15mm;
+            max-width: 100%;
             margin: 0 auto;
             font-size: 13px;
           }
@@ -124,8 +124,17 @@ export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintRepor
           .signature-line hr {
             margin-bottom: 5px;
           }
+          @page {
+            size: A4;
+            margin: 20mm 15mm;
+          }
           @media print {
-            body { padding: 0; }
+            body {
+              padding: 0;
+              margin: 0;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
           }
         </style>
       </head>

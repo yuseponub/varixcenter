@@ -26,6 +26,7 @@ import {
   FileText,
   Bell,
   Vault,
+  UserCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -64,6 +65,7 @@ const mainNavItems: NavItem[] = [
   { href: "/historias", label: "Historias", icon: <FileText className="h-5 w-5 shrink-0" /> },
   { href: "/citas", label: "Citas", icon: <CalendarDays className="h-5 w-5 shrink-0" /> },
   { href: "/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5 shrink-0" /> },
+  { href: "/atendidos", label: "Atendidos", icon: <UserCheck className="h-5 w-5 shrink-0" /> },
 ]
 
 const adminNavItems: NavItem[] = [

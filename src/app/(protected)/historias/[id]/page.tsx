@@ -6,6 +6,8 @@ import {
   getProgressNotes,
 } from '@/lib/queries/medical-records'
 import { getLegacyPhotosByType } from '@/lib/queries/legacy-photos'
+import { getPatientAttendance } from '@/lib/queries/attendances'
+import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -36,7 +38,7 @@ import {
   VASCULAR_LAB_LABELS,
 } from '@/types'
 import type { CeapClassification } from '@/types'
-import { ProgressNotes, LegacyPhotosGallery } from '@/components/medical-records'
+import { ProgressNotes, LegacyPhotosGallery, MarkAttendedButton } from '@/components/medical-records'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 
 interface PageProps {
@@ -51,11 +53,27 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // Get user role from JWT
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  let userRole = 'none'
+  if (session?.access_token) {
+    try {
+      const payload = JSON.parse(Buffer.from(session.access_token.split('.')[1], 'base64').toString())
+      userRole = payload.app_metadata?.role ?? 'none'
+    } catch {
+      userRole = 'none'
+    }
+  }
+
+  const isMedico = userRole === 'medico' || userRole === 'admin'
+
   // Fetch data in parallel
-  const [quotation, progressNotes, legacyPhotos] = await Promise.all([
+  const [quotation, progressNotes, legacyPhotos, attendance] = await Promise.all([
     getQuotationByMedicalRecord(id),
     getProgressNotes(id),
     getLegacyPhotosByType(id, 'historia'),
+    record.patient?.id ? getPatientAttendance(record.patient.id) : Promise.resolve(null),
   ])
 
   const hasLegacyPhotos = legacyPhotos.length > 0
@@ -421,7 +439,13 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
             {record.patient?.nombre} {record.patient?.apellido} - CC: {record.patient?.cedula}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-start">
+          {isMedico && record.patient?.id && (
+            <MarkAttendedButton
+              patientId={record.patient.id}
+              initialAttendance={attendance}
+            />
+          )}
           <Link href={`/historias/${id}/historia-antigua`}>
             <Button variant="outline">
               <Camera className="mr-2 h-4 w-4" />

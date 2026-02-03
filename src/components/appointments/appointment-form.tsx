@@ -163,6 +163,24 @@ export function AppointmentForm({
     calculateDuration(defaultValues?.start, defaultValues?.end)
   )
 
+  // State for new patient fields (to preserve on validation errors)
+  const [newPatientData, setNewPatientData] = useState({
+    cedula: '',
+    celular: '',
+    nombre: '',
+    apellido: '',
+    email: '',
+    fecha_nacimiento: '',
+    direccion: '',
+    contacto_emergencia_nombre: '',
+    contacto_emergencia_telefono: '',
+    contacto_emergencia_parentesco: '',
+  })
+
+  const updateNewPatientField = (field: keyof typeof newPatientData, value: string) => {
+    setNewPatientData(prev => ({ ...prev, [field]: value }))
+  }
+
   // Debounced API search for patients
   useEffect(() => {
     if (patientSearch.length < 2) {
@@ -370,6 +388,8 @@ export function AppointmentForm({
                       name="cedula"
                       placeholder="1234567890"
                       maxLength={10}
+                      value={newPatientData.cedula}
+                      onChange={(e) => updateNewPatientField('cedula', e.target.value)}
                     />
                     {state?.errors?.cedula && (
                       <p className="text-sm text-red-600">{state.errors.cedula[0]}</p>
@@ -384,6 +404,8 @@ export function AppointmentForm({
                       name="celular"
                       placeholder="3001234567"
                       maxLength={10}
+                      value={newPatientData.celular}
+                      onChange={(e) => updateNewPatientField('celular', e.target.value)}
                     />
                     {state?.errors?.celular && (
                       <p className="text-sm text-red-600">{state.errors.celular[0]}</p>
@@ -397,6 +419,8 @@ export function AppointmentForm({
                       id="nombre"
                       name="nombre"
                       placeholder="Juan"
+                      value={newPatientData.nombre}
+                      onChange={(e) => updateNewPatientField('nombre', e.target.value)}
                     />
                     {state?.errors?.nombre && (
                       <p className="text-sm text-red-600">{state.errors.nombre[0]}</p>
@@ -410,6 +434,8 @@ export function AppointmentForm({
                       id="apellido"
                       name="apellido"
                       placeholder="Perez"
+                      value={newPatientData.apellido}
+                      onChange={(e) => updateNewPatientField('apellido', e.target.value)}
                     />
                     {state?.errors?.apellido && (
                       <p className="text-sm text-red-600">{state.errors.apellido[0]}</p>
@@ -424,13 +450,19 @@ export function AppointmentForm({
                       name="email"
                       type="email"
                       placeholder="juan@ejemplo.com"
+                      value={newPatientData.email}
+                      onChange={(e) => updateNewPatientField('email', e.target.value)}
                     />
                   </div>
 
                   {/* Fecha de Nacimiento */}
                   <div className="space-y-2">
                     <Label>Fecha de Nacimiento</Label>
-                    <DateOfBirthInput name="fecha_nacimiento" />
+                    <DateOfBirthInput
+                      name="fecha_nacimiento"
+                      value={newPatientData.fecha_nacimiento}
+                      onChange={(value) => updateNewPatientField('fecha_nacimiento', value)}
+                    />
                   </div>
 
                   {/* Direccion */}
@@ -440,6 +472,8 @@ export function AppointmentForm({
                       id="direccion"
                       name="direccion"
                       placeholder="Calle 123 #45-67, Bucaramanga"
+                      value={newPatientData.direccion}
+                      onChange={(e) => updateNewPatientField('direccion', e.target.value)}
                     />
                   </div>
                 </div>
@@ -454,6 +488,8 @@ export function AppointmentForm({
                         id="contacto_emergencia_nombre"
                         name="contacto_emergencia_nombre"
                         placeholder="Maria Perez"
+                        value={newPatientData.contacto_emergencia_nombre}
+                        onChange={(e) => updateNewPatientField('contacto_emergencia_nombre', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_nombre && (
                         <p className="text-sm text-red-600">{state.errors.contacto_emergencia_nombre[0]}</p>
@@ -467,6 +503,8 @@ export function AppointmentForm({
                         name="contacto_emergencia_telefono"
                         placeholder="3009876543"
                         maxLength={10}
+                        value={newPatientData.contacto_emergencia_telefono}
+                        onChange={(e) => updateNewPatientField('contacto_emergencia_telefono', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_telefono && (
                         <p className="text-sm text-red-600">{state.errors.contacto_emergencia_telefono[0]}</p>
@@ -479,6 +517,8 @@ export function AppointmentForm({
                         id="contacto_emergencia_parentesco"
                         name="contacto_emergencia_parentesco"
                         placeholder="Esposa"
+                        value={newPatientData.contacto_emergencia_parentesco}
+                        onChange={(e) => updateNewPatientField('contacto_emergencia_parentesco', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_parentesco && (
                         <p className="text-sm text-red-600">{state.errors.contacto_emergencia_parentesco[0]}</p>

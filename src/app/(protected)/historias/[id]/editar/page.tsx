@@ -70,7 +70,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
           <AlertTitle>Historia completada</AlertTitle>
           <AlertDescription>
             Esta historia clinica ya ha sido completada y no puede ser editada.
-            Solo se pueden agregar notas de evolucion.
+            Solo se pueden agregar registros de evolucion.
           </AlertDescription>
         </Alert>
         <div className="mt-4">

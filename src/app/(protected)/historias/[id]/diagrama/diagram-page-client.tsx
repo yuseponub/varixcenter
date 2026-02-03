@@ -121,7 +121,7 @@ export function DiagramPageClient({
     const result = await addProgressNoteFromDictation(medicalRecordId, pendingText.trim())
     if (result.success) {
       setPendingText('')
-      toast.success('Agregado a Notas de Evolucion')
+      toast.success('Agregado a Evolucion')
       // Optimistically add to local state
       setProgressNotes(prev => [{
         id: crypto.randomUUID(),
@@ -268,7 +268,12 @@ export function DiagramPageClient({
           {/* Pending text preview and destination choice */}
           {pendingText && (
             <div className="p-3 bg-muted rounded-lg space-y-2">
-              <p className="text-sm">{pendingText}</p>
+              <Textarea
+                value={pendingText}
+                onChange={(e) => setPendingText(e.target.value)}
+                className="min-h-[80px] resize-y text-sm"
+                placeholder="Edite el texto antes de enviarlo..."
+              />
               <div className="flex gap-2">
                 {canEditDiagnosis && (
                   <Button
@@ -288,7 +293,7 @@ export function DiagramPageClient({
                   disabled={isReadOnly}
                 >
                   <ScrollText className="h-3 w-3 mr-1" />
-                  A Notas
+                  A Evolucion
                 </Button>
                 <Button
                   size="sm"
@@ -351,9 +356,9 @@ export function DiagramPageClient({
         </div>
       </CollapsibleSection>
 
-      {/* 4. Progress Notes */}
+      {/* 4. Evolucion */}
       <CollapsibleSection
-        title="Notas de Evolucion"
+        title="Evolucion"
         icon={<ScrollText className="h-5 w-5" />}
         badge={progressNotes.length > 0 ? `${progressNotes.length}` : undefined}
         hasContent={progressNotes.length > 0}
@@ -371,7 +376,7 @@ export function DiagramPageClient({
                         type="button"
                         onClick={() => handleDeleteNote(note.id)}
                         className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity"
-                        title="Eliminar nota"
+                        title="Eliminar"
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
@@ -384,7 +389,7 @@ export function DiagramPageClient({
           </div>
         ) : (
           <p className="text-sm text-muted-foreground text-center py-4">
-            No hay notas de evolucion
+            No hay registros de evolucion
           </p>
         )}
       </CollapsibleSection>

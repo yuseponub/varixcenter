@@ -88,10 +88,10 @@ export function ProgressNotes({
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <ScrollText className="h-5 w-5" />
-              Notas de Evolucion
+              Evolucion
             </CardTitle>
             <CardDescription>
-              Registro de seguimiento del paciente
+              Registro de evolucion del paciente
             </CardDescription>
           </div>
           <Button
@@ -157,7 +157,7 @@ export function ProgressNotes({
         {/* Notes list */}
         {notes.length === 0 ? (
           <p className="text-muted-foreground text-center py-8">
-            No hay notas de evolucion registradas
+            No hay registros de evolucion
           </p>
         ) : (
           <div className="space-y-4">

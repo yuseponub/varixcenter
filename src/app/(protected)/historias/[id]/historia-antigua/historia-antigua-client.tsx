@@ -173,7 +173,7 @@ export function HistoriaAntiguaClient({
                   <div className="space-y-3">
                     <div>
                       <Label htmlFor="procedimiento" className="text-sm text-muted-foreground">
-                        Ingrese el procedimiento que se realizara hoy (se guardara en Notas de Evolucion)
+                        Ingrese el procedimiento que se realizara hoy (se guardara en Evolucion)
                       </Label>
                       <Input
                         id="procedimiento"

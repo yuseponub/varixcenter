@@ -288,7 +288,7 @@ export function VoiceDictation({
     if (value && onAddAsProgressNote) {
       onAddAsProgressNote(value)
       onChange('')
-      toast.success('Agregado a Notas de Evolucion')
+      toast.success('Agregado a Evolucion')
     }
   }
 

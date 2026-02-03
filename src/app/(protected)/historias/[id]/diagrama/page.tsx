@@ -1,9 +1,12 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getMedicalRecordById, getQuotationByMedicalRecord } from '@/lib/queries/medical-records'
+import { createClient } from '@/lib/supabase/server'
+import { getMedicalRecordById, getQuotationByMedicalRecord, getProgressNotes } from '@/lib/queries/medical-records'
+import { getLegacyPhotosByType } from '@/lib/queries/legacy-photos'
 import { getActiveServices } from '@/lib/queries/services'
-import { ArrowLeft, Pencil } from 'lucide-react'
+import { ArrowLeft, Pencil, Camera } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { MEDICAL_RECORD_STATUS_LABELS, MEDICAL_RECORD_STATUS_VARIANTS } from '@/types'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 import { DiagramPageClient } from './diagram-page-client'
@@ -15,10 +18,27 @@ interface PageProps {
 
 export default async function DiagramaPage({ params }: PageProps) {
   const { id } = await params
-  const [record, services, quotation] = await Promise.all([
+
+  // Get user role
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  let userRole: 'admin' | 'medico' | 'enfermera' = 'enfermera'
+
+  if (user) {
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+    userRole = (roleData?.role as 'admin' | 'medico' | 'enfermera') || 'enfermera'
+  }
+
+  const [record, services, quotation, evolutionPhotos, progressNotes] = await Promise.all([
     getMedicalRecordById(id),
     getActiveServices(),
     getQuotationByMedicalRecord(id),
+    getLegacyPhotosByType(id, 'evolucion'),
+    getProgressNotes(id),
   ])
 
   if (!record) {
@@ -38,6 +58,7 @@ export default async function DiagramaPage({ params }: PageProps) {
     service_nombre: item.nombre,
     cantidad: item.cantidad,
     nota: item.nota || '',
+    zona: item.zona || 'pierna_derecha',
   })) || []
 
   // Get saved audios (cast as any since field may not be in types yet)
@@ -58,7 +79,7 @@ export default async function DiagramaPage({ params }: PageProps) {
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <Pencil className="h-6 w-6" />
-            Diagnostico
+            Diagnostico y Evolucion
             <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
               {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
             </Badge>
@@ -67,12 +88,18 @@ export default async function DiagramaPage({ params }: PageProps) {
             {record.patient?.nombre} {record.patient?.apellido} - CC: {record.patient?.cedula}
           </p>
         </div>
+        <Link href={`/historias/${id}/historia-antigua`}>
+          <Button variant="outline">
+            <Camera className="mr-2 h-4 w-4" />
+            Gestionar Fotos
+          </Button>
+        </Link>
       </div>
 
       {/* Navigation Tabs */}
       <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
 
-      {/* Client component with diagram, voice dictation, and treatment selector */}
+      {/* All content in client component with collapsible sections */}
       <DiagramPageClient
         medicalRecordId={id}
         initialDiagramData={record.diagrama_piernas}
@@ -80,7 +107,10 @@ export default async function DiagramaPage({ params }: PageProps) {
         initialTreatmentItems={initialTreatmentItems}
         initialAudios={initialAudios}
         treatmentOptions={treatmentOptions}
+        evolutionPhotos={evolutionPhotos}
+        progressNotes={progressNotes}
         isReadOnly={record.estado === 'completado'}
+        userRole={userRole}
       />
     </div>
   )

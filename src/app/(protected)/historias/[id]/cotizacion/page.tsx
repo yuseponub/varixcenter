@@ -1,19 +1,19 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 import {
   getMedicalRecordById,
   getQuotationByMedicalRecord,
 } from '@/lib/queries/medical-records'
 import { getLegacyPhotosByType } from '@/lib/queries/legacy-photos'
-import { generateQuotationFromTreatments } from '@/app/(protected)/historias/actions'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getActiveServices } from '@/lib/queries/services'
 import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, FileText, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, User, ClipboardList, Camera } from 'lucide-react'
-import { QuotationPanel, LegacyPhotosGallery } from '@/components/medical-records'
+import { LegacyPhotosGallery } from '@/components/medical-records'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 import { MEDICAL_RECORD_STATUS_LABELS, MEDICAL_RECORD_STATUS_VARIANTS } from '@/types'
-import type { QuotationItem } from '@/types'
+import { TreatmentPlanDocument } from './treatment-plan-document'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -21,42 +21,59 @@ interface PageProps {
 
 export default async function PlanTratamientoPage({ params }: PageProps) {
   const { id } = await params
-  const record = await getMedicalRecordById(id)
+
+  // Get user info for doctor name
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  let doctorName = 'Dr.'
+  if (user) {
+    // Try to get user profile from auth metadata or users table
+    const { data: authUser } = await supabase.auth.getUser()
+    const metadata = authUser?.user?.user_metadata
+    if (metadata?.nombre) {
+      doctorName = `Dr. ${metadata.nombre} ${metadata.apellido || ''}`.trim()
+    }
+  }
+
+  // Get medical record with patient data
+  const [record, quotation, legacyPhotos, services] = await Promise.all([
+    getMedicalRecordById(id),
+    getQuotationByMedicalRecord(id),
+    getLegacyPhotosByType(id, 'plan_tratamiento'),
+    getActiveServices(),
+  ])
 
   if (!record) {
     notFound()
   }
 
-  // Get existing quotation if any
-  const existingQuotation = await getQuotationByMedicalRecord(id)
-
-  // Get legacy photos
-  const legacyPhotos = await getLegacyPhotosByType(id, 'plan_tratamiento')
-
-  // Generate quotation items from treatments if no existing quotation
-  let quotationItems: QuotationItem[] = []
-
-  if (existingQuotation) {
-    quotationItems = existingQuotation.items
-  } else if (record.tratamiento_ids && record.tratamiento_ids.length > 0) {
-    const result = await generateQuotationFromTreatments(id, record.tratamiento_ids)
-    if ('items' in result) {
-      quotationItems = result.items
+  // Calculate patient age
+  let patientAge: number | null = null
+  if (record.patient?.fecha_nacimiento) {
+    const birthDate = new Date(record.patient.fecha_nacimiento)
+    const today = new Date()
+    patientAge = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      patientAge--
     }
   }
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+  // Create service info map (id -> {nombre, categoria, precio})
+  const serviceInfo = new Map<string, { nombre: string; categoria: string; precio: number }>()
+  services.forEach(s => {
+    serviceInfo.set(s.id, {
+      nombre: s.nombre,
+      categoria: (s as { categoria?: string }).categoria || 'procedimiento',
+      precio: s.precio_base,
     })
-  }
+  })
 
   return (
     <div className="container mx-auto py-6 max-w-4xl space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between print:hidden">
         <div>
           <Link
             href="/historias"
@@ -66,7 +83,7 @@ export default async function PlanTratamientoPage({ params }: PageProps) {
             Volver a Historias
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-3">
-            <ClipboardList className="h-6 w-6" />
+            <FileText className="h-6 w-6" />
             Plan de Tratamiento
             <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
               {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
@@ -85,59 +102,31 @@ export default async function PlanTratamientoPage({ params }: PageProps) {
       </div>
 
       {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      <div className="print:hidden">
+        <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      </div>
 
       {/* Legacy Photos Section */}
       {legacyPhotos.length > 0 && (
-        <LegacyPhotosGallery
-          tipo="plan_tratamiento"
-          photos={legacyPhotos}
-        />
+        <div className="print:hidden">
+          <LegacyPhotosGallery
+            tipo="plan_tratamiento"
+            photos={legacyPhotos}
+          />
+        </div>
       )}
 
-      {/* Patient Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Paciente
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {record.patient ? (
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-semibold">
-                  {record.patient.nombre} {record.patient.apellido}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  CC: {record.patient.cedula}
-                </p>
-              </div>
-              <div className="text-right text-sm text-muted-foreground">
-                <p>Fecha cita: {record.appointment ? formatDate(record.appointment.fecha_hora_inicio) : '-'}</p>
-                <p>Historia creada: {formatDate(record.created_at)}</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-muted-foreground">Paciente no encontrado</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Quotation Panel */}
-      <QuotationPanel
-        medicalRecordId={id}
-        items={quotationItems}
-        existingQuotation={existingQuotation}
+      {/* Treatment Plan Document */}
+      <TreatmentPlanDocument
+        patientName={`${record.patient?.nombre || ''} ${record.patient?.apellido || ''}`.trim()}
+        patientAge={patientAge}
+        patientCedula={record.patient?.cedula || ''}
+        doctorName={doctorName}
+        diagnostico={record.diagnostico}
+        quotation={quotation}
+        serviceInfo={serviceInfo}
+        createdAt={quotation?.updated_at || record.created_at}
       />
-
-      {/* Print-only patient info */}
-      <div className="hidden print:block mt-8 pt-8 border-t">
-        <p className="text-sm text-muted-foreground">
-          Plan de tratamiento generado por Varix Clinic - {formatDate(new Date().toISOString())}
-        </p>
-      </div>
     </div>
   )
 }

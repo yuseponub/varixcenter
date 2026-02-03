@@ -365,6 +365,19 @@ export interface UpdateMedicalRecordInput {
 // ============================================
 
 /**
+ * Body zones for treatment
+ */
+export const BODY_ZONES = [
+  { id: 'pierna_derecha', label: 'Pierna Derecha', short: 'MID' },
+  { id: 'pierna_izquierda', label: 'Pierna Izquierda', short: 'MII' },
+  { id: 'mano_derecha', label: 'Mano Derecha', short: 'MD' },
+  { id: 'mano_izquierda', label: 'Mano Izquierda', short: 'MI' },
+  { id: 'cara', label: 'Cara', short: 'Cara' },
+] as const
+
+export type BodyZone = typeof BODY_ZONES[number]['id']
+
+/**
  * Single item in a quotation
  */
 export interface QuotationItem {
@@ -373,7 +386,8 @@ export interface QuotationItem {
   nombre: string
   precio: number
   cantidad: number
-  nota?: string // e.g., "Pierna izquierda"
+  nota?: string // e.g., "5 ECOR de 250,000 cada una"
+  zona?: BodyZone // body zone for treatment
   subtotal?: number // precio * cantidad (calculated)
 }
 

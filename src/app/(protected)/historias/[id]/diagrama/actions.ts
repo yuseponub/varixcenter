@@ -81,6 +81,11 @@ export async function updateDiagramAndDiagnosis(
 }
 
 /**
+ * Body zone type
+ */
+export type BodyZone = 'pierna_derecha' | 'pierna_izquierda' | 'mano_derecha' | 'mano_izquierda' | 'cara'
+
+/**
  * Treatment item input from the selector
  */
 export interface TreatmentItemInput {
@@ -89,6 +94,7 @@ export interface TreatmentItemInput {
   service_nombre: string
   cantidad: number
   nota: string
+  zona: BodyZone
 }
 
 /**
@@ -150,7 +156,7 @@ export async function updateTreatments(
         priceMap.set(s.id, s.precio_base)
       })
 
-      // Create quotation items with quantity, notes, and subtotals
+      // Create quotation items with quantity, notes, zone, and subtotals
       const items: QuotationItem[] = treatmentItems.map(item => {
         const precio = priceMap.get(item.service_id) || 0
         const subtotal = precio * item.cantidad
@@ -161,6 +167,7 @@ export async function updateTreatments(
           precio,
           cantidad: item.cantidad,
           nota: item.nota || undefined,
+          zona: item.zona,
           subtotal,
         }
       })
@@ -278,6 +285,100 @@ export async function addAudioRecording(
 
   // Revalidate
   revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+
+  return { success: true }
+}
+
+/**
+ * Add a progress note from voice dictation
+ */
+export async function addProgressNoteFromDictation(
+  medicalRecordId: string,
+  text: string
+): Promise<UpdateResult> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  if (!text || text.trim().length < 3) {
+    return { success: false, error: 'El texto es muy corto.' }
+  }
+
+  // Insert progress note
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('progress_notes')
+    .insert({
+      medical_record_id: medicalRecordId,
+      nota: text.trim(),
+      created_by: user.id,
+    })
+
+  if (error) {
+    console.error('Error adding progress note:', error)
+    return { success: false, error: 'Error al agregar nota.' }
+  }
+
+  // Revalidate
+  revalidatePath(`/historias/${medicalRecordId}`)
+  revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+  revalidatePath(`/historias/${medicalRecordId}/evolucion`)
+
+  return { success: true }
+}
+
+/**
+ * Delete a progress note (medico/admin only)
+ */
+export async function deleteProgressNote(
+  noteId: string,
+  medicalRecordId: string
+): Promise<UpdateResult> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado.' }
+  }
+
+  // Check user role
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData || !['admin', 'medico'].includes(roleData.role)) {
+    return { success: false, error: 'Solo el medico o admin puede borrar notas.' }
+  }
+
+  // Delete the note
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('progress_notes')
+    .delete()
+    .eq('id', noteId)
+
+  if (error) {
+    console.error('Error deleting progress note:', error)
+    return { success: false, error: 'Error al borrar la nota.' }
+  }
+
+  // Revalidate
+  revalidatePath(`/historias/${medicalRecordId}`)
+  revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+  revalidatePath(`/historias/${medicalRecordId}/evolucion`)
 
   return { success: true }
 }

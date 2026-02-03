@@ -7,7 +7,7 @@ import { MedicalRecordForm, AppointmentPicker } from '@/components/medical-recor
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { AlertTriangle, ArrowLeft } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Camera } from 'lucide-react'
 
 interface PageProps {
   searchParams: Promise<{
@@ -161,14 +161,28 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
   return (
     <div className="container mx-auto py-6 max-w-4xl">
       <div className="mb-6">
-        <Link href="/citas" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver a Citas
-        </Link>
-        <h1 className="text-2xl font-bold mt-4">Nueva Historia Clinica</h1>
-        <p className="text-muted-foreground">
-          Crear historia clinica para el paciente desde la cita
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <Link href="/citas" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver a Citas
+            </Link>
+            <h1 className="text-2xl font-bold mt-4">Nueva Historia Clinica</h1>
+            <p className="text-muted-foreground">
+              Crear historia clinica para el paciente desde la cita
+            </p>
+          </div>
+          <form action={async () => {
+            'use server'
+            const { createLegacyMedicalRecord } = await import('@/app/(protected)/historias/actions')
+            await createLegacyMedicalRecord(appointmentId!)
+          }}>
+            <Button type="submit" variant="outline">
+              <Camera className="mr-2 h-4 w-4" />
+              Solo Adjuntar Fotos
+            </Button>
+          </form>
+        </div>
       </div>
 
       <MedicalRecordForm

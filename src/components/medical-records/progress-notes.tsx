@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { ScrollText, Plus, Loader2, AlertTriangle, User, Calendar } from 'lucide-react'
+import { ScrollText, Plus, Loader2, AlertTriangle, User, Calendar, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { addProgressNote, type ProgressNoteActionState } from '@/app/(protected)/historias/actions'
+import { deleteProgressNote } from '@/app/(protected)/historias/[id]/diagrama/actions'
 import type { ProgressNoteWithDetails } from '@/types'
 
 interface ProgressNotesProps {
@@ -23,16 +24,30 @@ interface ProgressNotesProps {
  */
 export function ProgressNotes({
   medicalRecordId,
-  notes,
+  notes: initialNotes,
   onNoteAdded,
 }: ProgressNotesProps) {
   const [showForm, setShowForm] = useState(false)
   const [nota, setNota] = useState('')
+  const [notes, setNotes] = useState(initialNotes)
 
   const [state, formAction, isPending] = useActionState<ProgressNoteActionState | null, FormData>(
     addProgressNote,
     null
   )
+
+  // Handle delete note
+  const handleDeleteNote = useCallback(async (noteId: string) => {
+    if (!confirm('¿Eliminar esta nota?')) return
+
+    const result = await deleteProgressNote(noteId, medicalRecordId)
+    if (result.success) {
+      setNotes(prev => prev.filter(n => n.id !== noteId))
+      toast.success('Nota eliminada')
+    } else {
+      toast.error(result.error || 'Error al eliminar')
+    }
+  }, [medicalRecordId])
 
   // Handle success/error
   useEffect(() => {
@@ -104,7 +119,7 @@ export function ProgressNotes({
             <Textarea
               value={nota}
               onChange={(e) => setNota(e.target.value)}
-              placeholder="Escriba la nota de evolucion (minimo 10 caracteres)..."
+              placeholder="Escriba la nota de evolucion..."
               rows={4}
               disabled={isPending}
             />
@@ -128,7 +143,7 @@ export function ProgressNotes({
               <Button
                 type="submit"
                 size="sm"
-                disabled={isPending || nota.length < 10}
+                disabled={isPending || nota.trim().length < 3}
               >
                 {isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-1" />
@@ -149,7 +164,7 @@ export function ProgressNotes({
             {notes.map((note) => (
               <div
                 key={note.id}
-                className="p-4 border rounded-lg bg-background"
+                className="p-4 border rounded-lg bg-background group"
               >
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -163,6 +178,14 @@ export function ProgressNotes({
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     <span>{formatDate(note.created_at)}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteNote(note.id)}
+                      className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity ml-2"
+                      title="Eliminar nota"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
                 {note.appointment && (

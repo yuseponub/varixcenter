@@ -8,11 +8,11 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Mic, MicOff, Trash2, Copy, Check, Loader2, Play, Pause, Volume2 } from 'lucide-react'
+import { Mic, MicOff, Trash2, Copy, Check, Loader2, Play, Pause, Volume2, FileText, ScrollText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createAudioUploadUrl, getAudioSignedUrl } from '@/lib/storage/receipts'
@@ -34,6 +34,8 @@ interface VoiceDictationProps {
   savedAudios?: AudioRecording[]
   /** Callback when new audio is saved */
   onAudioSaved?: (audio: AudioRecording) => void
+  /** Callback to add text as progress note */
+  onAddAsProgressNote?: (text: string) => void
   /** Whether the component is disabled */
   disabled?: boolean
 }
@@ -47,6 +49,7 @@ export function VoiceDictation({
   medicalRecordId,
   savedAudios = [],
   onAudioSaved,
+  onAddAsProgressNote,
   disabled = false,
 }: VoiceDictationProps) {
   const [isRecording, setIsRecording] = useState(false)
@@ -280,12 +283,21 @@ export function VoiceDictation({
     })
   }
 
+  // Add text to progress notes
+  const handleAddToProgressNotes = () => {
+    if (value && onAddAsProgressNote) {
+      onAddAsProgressNote(value)
+      onChange('')
+      toast.success('Agregado a Notas de Evolucion')
+    }
+  }
+
   return (
     <Card className={cn(disabled && 'opacity-50 pointer-events-none')}>
-      <CardHeader>
+      <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Mic className="h-5 w-5" />
-          Diagnostico por Voz
+          Dictado de Voz
           {isRecording && (
             <Badge variant="destructive" className="animate-pulse">
               Grabando...
@@ -300,38 +312,34 @@ export function VoiceDictation({
           {isUploading && (
             <Badge variant="outline">
               <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-              Guardando audio...
+              Guardando...
             </Badge>
           )}
         </CardTitle>
-        <CardDescription>
-          Presione el microfono para dictar. El audio se guarda como respaldo.
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {/* Controls */}
         <div className="flex items-center gap-2">
           <Button
             type="button"
             variant={isRecording ? 'destructive' : 'default'}
-            size="lg"
             onClick={toggleRecording}
             disabled={disabled || isTranscribing || isUploading}
             className="gap-2"
           >
             {isRecording ? (
               <>
-                <MicOff className="h-5 w-5" />
+                <MicOff className="h-4 w-4" />
                 Detener
               </>
             ) : isTranscribing || isUploading ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Procesando...
               </>
             ) : (
               <>
-                <Mic className="h-5 w-5" />
+                <Mic className="h-4 w-4" />
                 Dictar
               </>
             )}
@@ -342,7 +350,7 @@ export function VoiceDictation({
             size="icon"
             onClick={handleClear}
             disabled={disabled || !value || isRecording || isTranscribing}
-            title="Limpiar texto"
+            title="Limpiar"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -352,7 +360,7 @@ export function VoiceDictation({
             size="icon"
             onClick={handleCopy}
             disabled={disabled || !value}
-            title="Copiar texto"
+            title="Copiar"
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-500" />
@@ -366,66 +374,71 @@ export function VoiceDictation({
         <Textarea
           value={value || ''}
           onChange={handleTextChange}
-          placeholder="El diagnostico aparecera aqui al dictar, o puede escribir manualmente..."
-          className="min-h-[200px] resize-y"
+          placeholder="Dicte o escriba aqui..."
+          className="min-h-[120px] resize-y"
           disabled={disabled || isRecording || isTranscribing}
         />
 
-        {/* Word count */}
-        <div className="text-xs text-muted-foreground text-right">
-          {value ? value.split(/\s+/).filter(Boolean).length : 0} palabras
-        </div>
+        {/* Action buttons - where to add the text */}
+        {value && value.trim().length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2 border-t">
+            <span className="text-xs text-muted-foreground self-center">Guardar en:</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              disabled={disabled}
+              title="El texto ya se guarda automaticamente en Diagnostico"
+            >
+              <FileText className="h-3 w-3" />
+              Diagnostico
+              <Check className="h-3 w-3 text-green-500" />
+            </Button>
+            {onAddAsProgressNote && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddToProgressNotes}
+                disabled={disabled}
+                className="gap-1"
+              >
+                <ScrollText className="h-3 w-3" />
+                Nota de Evolucion
+              </Button>
+            )}
+          </div>
+        )}
 
-        {/* Saved Audios */}
+        {/* Saved Audios - compact */}
         {savedAudios.length > 0 && (
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Volume2 className="h-4 w-4" />
-              Audios guardados ({savedAudios.length})
+          <div className="border-t pt-3">
+            <p className="text-xs font-medium mb-2 flex items-center gap-1 text-muted-foreground">
+              <Volume2 className="h-3 w-3" />
+              Audios ({savedAudios.length})
             </p>
-            <div className="space-y-2">
+            <div className="flex flex-wrap gap-1">
               {savedAudios.map((audio, index) => (
-                <div
+                <Button
                   key={audio.path}
-                  className="flex items-center gap-2 p-2 bg-muted rounded text-sm"
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={() => togglePlayAudio(audio.path)}
                 >
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => togglePlayAudio(audio.path)}
-                  >
-                    {playingAudio === audio.path ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <span className="text-muted-foreground">
-                    Audio {index + 1} - {formatTimestamp(audio.timestamp)}
-                  </span>
-                  {audio.transcription && (
-                    <span className="text-xs text-muted-foreground truncate max-w-[200px]" title={audio.transcription}>
-                      &quot;{audio.transcription.substring(0, 50)}...&quot;
-                    </span>
+                  {playingAudio === audio.path ? (
+                    <Pause className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Play className="h-3 w-3 mr-1" />
                   )}
-                </div>
+                  {formatTimestamp(audio.timestamp)}
+                </Button>
               ))}
             </div>
           </div>
         )}
-
-        {/* Instructions */}
-        <div className="text-sm text-muted-foreground space-y-1">
-          <p className="font-medium">Instrucciones:</p>
-          <ul className="list-disc list-inside space-y-0.5 text-xs">
-            <li>Presione &quot;Dictar&quot; y hable claramente</li>
-            <li>Presione &quot;Detener&quot; cuando termine</li>
-            <li>El texto se transcribira automaticamente</li>
-            <li>El audio se guarda como respaldo medico</li>
-          </ul>
-        </div>
       </CardContent>
     </Card>
   )

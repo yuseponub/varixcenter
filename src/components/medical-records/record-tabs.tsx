@@ -26,16 +26,16 @@ const tabs = [
     match: (path: string, id: string) => path === `/historias/${id}` || path === `/historias/${id}/historia-antigua` || path === `/historias/${id}/ver-digital`,
   },
   {
-    name: 'Dx y Evolucion',
-    href: (id: string) => `/historias/${id}/diagrama`,
-    icon: Pencil,
-    match: (path: string, id: string) => path === `/historias/${id}/diagrama` || path === `/historias/${id}/evolucion`,
-  },
-  {
     name: 'Plan de Tratamiento',
     href: (id: string) => `/historias/${id}/cotizacion`,
     icon: ClipboardList,
     match: (path: string, id: string) => path === `/historias/${id}/cotizacion`,
+  },
+  {
+    name: 'Dx y Evolucion',
+    href: (id: string) => `/historias/${id}/diagrama`,
+    icon: Pencil,
+    match: (path: string, id: string) => path === `/historias/${id}/diagrama` || path === `/historias/${id}/evolucion`,
   },
   {
     name: 'Consentimiento',

@@ -4,12 +4,17 @@ import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, FileText, RefreshCw } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ArrowLeft, FileText, RefreshCw, Save, Loader2, Stethoscope } from 'lucide-react'
 import { LegacyPhotoCapture, LegacyPhotosGallery } from '@/components/medical-records'
+import { toast } from 'sonner'
 import type { LegacyHistoryPhotoWithUrl, LegacyPhotoType, MedicalRecordWithDetails } from '@/types'
 import { LEGACY_PHOTO_TYPES } from '@/types'
+import { addProcedimientoDelDia } from './actions'
 
 interface HistoriaAntiguaClientProps {
   medicalRecordId: string
@@ -26,13 +31,17 @@ export function HistoriaAntiguaClient({
   const [photos, setPhotos] = useState<LegacyHistoryPhotoWithUrl[]>(initialPhotos)
   const [activeCapture, setActiveCapture] = useState<LegacyPhotoType | null>(null)
 
+  // Procedimiento del día state
+  const [procedimientoDelDia, setProcedimientoDelDia] = useState('')
+  const [isSavingProcedimiento, setIsSavingProcedimiento] = useState(false)
+
   // Try to lock screen orientation to portrait
   useEffect(() => {
     const lockOrientation = async () => {
       try {
         // Try to lock orientation (works on some mobile browsers)
         if (screen.orientation && 'lock' in screen.orientation) {
-          await screen.orientation.lock('portrait')
+          await (screen.orientation as any).lock('portrait')
         }
       } catch (err) {
         // Orientation lock not supported or not allowed - that's ok
@@ -46,7 +55,7 @@ export function HistoriaAntiguaClient({
     return () => {
       try {
         if (screen.orientation && 'unlock' in screen.orientation) {
-          screen.orientation.unlock()
+          (screen.orientation as any).unlock()
         }
       } catch {
         // Ignore errors on cleanup
@@ -59,6 +68,26 @@ export function HistoriaAntiguaClient({
     router.refresh()
     setActiveCapture(null)
   }, [router])
+
+  // Save procedimiento del día as progress note
+  const handleSaveProcedimiento = useCallback(async () => {
+    if (!procedimientoDelDia.trim()) {
+      toast.error('Ingrese el procedimiento del día')
+      return
+    }
+
+    setIsSavingProcedimiento(true)
+    const result = await addProcedimientoDelDia(medicalRecordId, procedimientoDelDia.trim())
+    setIsSavingProcedimiento(false)
+
+    if (result.success) {
+      toast.success('Procedimiento del día guardado')
+      setProcedimientoDelDia('')
+      router.refresh()
+    } else {
+      toast.error(result.error || 'Error al guardar')
+    }
+  }, [medicalRecordId, procedimientoDelDia, router])
 
   // Group photos by type
   const photosByType = LEGACY_PHOTO_TYPES.reduce((acc, tipo) => {
@@ -129,6 +158,46 @@ export function HistoriaAntiguaClient({
                 photos={photosByType[tipo]}
                 onAddMore={() => setActiveCapture(tipo)}
               />
+            )}
+
+            {/* Procedimiento del día - después de Evolución */}
+            {tipo === 'evolucion' && (
+              <Card className="mt-4">
+                <CardHeader className="py-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Stethoscope className="h-4 w-4" />
+                    Procedimiento del Dia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="procedimiento" className="text-sm text-muted-foreground">
+                        Ingrese el procedimiento que se realizara hoy (se guardara en Notas de Evolucion)
+                      </Label>
+                      <Input
+                        id="procedimiento"
+                        value={procedimientoDelDia}
+                        onChange={(e) => setProcedimientoDelDia(e.target.value)}
+                        placeholder="Ej: Escleroterapia pierna derecha, Laser endovascular..."
+                        className="mt-1"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleSaveProcedimiento}
+                      disabled={isSavingProcedimiento || !procedimientoDelDia.trim()}
+                      size="sm"
+                    >
+                      {isSavingProcedimiento ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      Guardar Procedimiento
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         ))}

@@ -177,7 +177,7 @@ export function AppointmentCalendar({
         // Time configuration - Extended hours with larger slots
         slotMinTime="07:00:00"
         slotMaxTime="20:00:00"
-        slotDuration="00:30:00"
+        slotDuration="00:15:00"
         slotLabelInterval="01:00:00"
         // Business hours (visual indicator)
         businessHours={{

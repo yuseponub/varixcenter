@@ -115,10 +115,10 @@ type PatientMode = 'existing' | 'new'
 /** Duration options in minutes (20 to 180, increments of 5) */
 const DURATION_OPTIONS = Array.from({ length: 33 }, (_, i) => 20 + i * 5)
 
-/** Time options from 8:00 to 20:00 in 10-minute intervals */
+/** Time options from 8:00 to 20:00 in 15-minute intervals */
 const TIME_OPTIONS: string[] = []
 for (let hour = 8; hour <= 20; hour++) {
-  for (let min = 0; min < 60; min += 10) {
+  for (let min = 0; min < 60; min += 15) {
     if (hour === 20 && min > 0) break // Stop at 20:00
     const h = hour.toString().padStart(2, '0')
     const m = min.toString().padStart(2, '0')
@@ -608,7 +608,7 @@ export function AppointmentForm({
                   if (!isoString) return '08:00'
                   const date = new Date(isoString)
                   const hours = String(date.getHours()).padStart(2, '0')
-                  const minutes = String(Math.floor(date.getMinutes() / 10) * 10).padStart(2, '0')
+                  const minutes = String(Math.floor(date.getMinutes() / 15) * 15).padStart(2, '0')
                   return `${hours}:${minutes}`
                 }
 

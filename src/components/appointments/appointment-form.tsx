@@ -113,7 +113,7 @@ function toIsoString(localDatetime: string): string {
 type PatientMode = 'existing' | 'new'
 
 /** Duration options in minutes (20 to 180, increments of 5) */
-const DURATION_OPTIONS = Array.from({ length: 33 }, (_, i) => 20 + i * 5)
+const DURATION_OPTIONS = Array.from({ length: 34 }, (_, i) => 15 + i * 5)
 
 /** Time options from 8:00 to 20:00 in 15-minute intervals */
 const TIME_OPTIONS: string[] = []
@@ -135,7 +135,7 @@ function calculateDuration(start?: string, end?: string): number {
   const endDate = new Date(end)
   const diffMinutes = Math.round((endDate.getTime() - startDate.getTime()) / 60000)
   // Return closest valid duration or default to 30
-  if (diffMinutes >= 20 && diffMinutes <= 180) {
+  if (diffMinutes >= 15 && diffMinutes <= 180) {
     return Math.round(diffMinutes / 5) * 5
   }
   return 30

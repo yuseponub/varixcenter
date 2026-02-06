@@ -65,6 +65,10 @@ export default async function DiagramaPage({ params }: PageProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialAudios = ((record as any).audios as { path: string; timestamp: string; transcription?: string }[]) || []
 
+  // Get programa terapeutico texto (cast as any since field may not be in types yet)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const initialProgramaTexto = ((record as any).programa_terapeutico_texto as string) || ''
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
@@ -104,6 +108,7 @@ export default async function DiagramaPage({ params }: PageProps) {
         medicalRecordId={id}
         initialDiagramData={record.diagrama_piernas}
         initialDiagnostico={record.diagnostico}
+        initialProgramaTexto={initialProgramaTexto}
         initialTreatmentItems={initialTreatmentItems}
         initialAudios={initialAudios}
         treatmentOptions={treatmentOptions}

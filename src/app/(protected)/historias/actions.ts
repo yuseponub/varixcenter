@@ -650,6 +650,120 @@ export async function createLegacyMedicalRecord(
 }
 
 /**
+ * Update medical record doctor
+ */
+export async function updateMedicalRecordDoctor(
+  medicalRecordId: string,
+  doctorId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Check user role - only admin, medico can change doctor
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData || !['admin', 'medico'].includes(roleData.role)) {
+    return { success: false, error: 'No tiene permisos para cambiar el medico.' }
+  }
+
+  // Update medical record
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('medical_records')
+    .update({
+      doctor_id: doctorId,
+      updated_by: user.id,
+    })
+    .eq('id', medicalRecordId)
+
+  if (error) {
+    console.error('Update medical record doctor error:', error)
+    return { success: false, error: 'Error al actualizar el medico.' }
+  }
+
+  // Revalidate affected pages
+  revalidatePath('/historias')
+  revalidatePath(`/historias/${medicalRecordId}`)
+  revalidatePath(`/historias/${medicalRecordId}/cotizacion`)
+
+  return { success: true }
+}
+
+/**
+ * Update patient data from medical record view
+ */
+export async function updatePatient(
+  patientId: string,
+  data: {
+    nombre?: string
+    apellido?: string
+    cedula?: string
+    celular?: string
+    fecha_nacimiento?: string
+  }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Check user role - only admin, medico, enfermera can edit patients
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData || !['admin', 'medico', 'enfermera'].includes(roleData.role)) {
+    return { success: false, error: 'No tiene permisos para editar pacientes.' }
+  }
+
+  // Update patient
+  const { error } = await supabase
+    .from('patients')
+    .update({
+      nombre: data.nombre,
+      apellido: data.apellido,
+      cedula: data.cedula,
+      celular: data.celular,
+      fecha_nacimiento: data.fecha_nacimiento || null,
+    })
+    .eq('id', patientId)
+
+  if (error) {
+    console.error('Update patient error:', error)
+    if (error.code === '23505') {
+      return { success: false, error: 'Ya existe un paciente con esa cedula.' }
+    }
+    return { success: false, error: 'Error al actualizar el paciente.' }
+  }
+
+  // Revalidate affected pages
+  revalidatePath('/pacientes')
+  revalidatePath('/historias')
+
+  return { success: true }
+}
+
+/**
  * Rotate a legacy photo by 90 degrees clockwise
  */
 export async function rotateLegacyPhoto(

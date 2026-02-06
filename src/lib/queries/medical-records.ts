@@ -393,6 +393,31 @@ export async function getQuotationByAppointment(appointmentId: string): Promise<
 }
 
 /**
+ * Get list of doctors for selection
+ */
+export async function getDoctors(): Promise<{
+  id: string
+  email: string
+  nombre: string | null
+  apellido: string | null
+}[]> {
+  const supabase = await createClient()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('doctors_view')
+    .select('id, email, nombre, apellido')
+    .order('nombre')
+
+  if (error) {
+    console.error('Error fetching doctors:', error)
+    return []
+  }
+
+  return data || []
+}
+
+/**
  * Get active services for treatment selection
  */
 export async function getActiveServices(): Promise<{

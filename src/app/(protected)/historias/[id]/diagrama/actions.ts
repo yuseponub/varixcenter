@@ -337,6 +337,55 @@ export async function addProgressNoteFromDictation(
 /**
  * Delete a progress note (medico/admin only)
  */
+/**
+ * Update programa terapeutico texto for a medical record
+ */
+export async function updateProgramaTerapeuticoTexto(
+  medicalRecordId: string,
+  texto: string
+): Promise<UpdateResult> {
+  const supabase = await createClient()
+
+  // Verify user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  // Update medical record
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('medical_records')
+    .update({
+      programa_terapeutico_texto: texto,
+      updated_by: user.id,
+    })
+    .eq('id', medicalRecordId)
+
+  if (error) {
+    console.error('Update programa terapeutico texto error:', error)
+
+    if (error.message?.includes('Enfermera no puede modificar')) {
+      return { success: false, error: error.message }
+    }
+
+    return { success: false, error: 'Error al guardar. Por favor intente de nuevo.' }
+  }
+
+  // Revalidate affected pages
+  revalidatePath(`/historias/${medicalRecordId}`)
+  revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+  revalidatePath(`/historias/${medicalRecordId}/cotizacion`)
+
+  return { success: true }
+}
+
+/**
+ * Delete a progress note (medico/admin only)
+ */
 export async function deleteProgressNote(
   noteId: string,
   medicalRecordId: string

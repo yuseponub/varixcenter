@@ -4,6 +4,7 @@ import {
   getMedicalRecordById,
   getQuotationByMedicalRecord,
   getProgressNotes,
+  getDoctors,
 } from '@/lib/queries/medical-records'
 import { getLegacyPhotosByType } from '@/lib/queries/legacy-photos'
 import { getPatientAttendance } from '@/lib/queries/attendances'
@@ -25,6 +26,9 @@ import {
   Briefcase,
   Camera,
   ChevronDown,
+  ScrollText,
+  Info,
+  AlertTriangle,
 } from 'lucide-react'
 import {
   MEDICAL_RECORD_STATUS_LABELS,
@@ -38,7 +42,8 @@ import {
   VASCULAR_LAB_LABELS,
 } from '@/types'
 import type { CeapClassification } from '@/types'
-import { ProgressNotes, LegacyPhotosGallery, MarkAttendedButton } from '@/components/medical-records'
+import { LegacyPhotosGallery, MarkAttendedButton, PatientInfoCard, DoctorSelector } from '@/components/medical-records'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 
 interface PageProps {
@@ -69,14 +74,20 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
   const isMedico = userRole === 'medico' || userRole === 'admin'
 
   // Fetch data in parallel
-  const [quotation, progressNotes, legacyPhotos, attendance] = await Promise.all([
+  const [quotation, progressNotes, legacyPhotos, evolutionPhotos, attendance, doctors] = await Promise.all([
     getQuotationByMedicalRecord(id),
     getProgressNotes(id),
     getLegacyPhotosByType(id, 'historia'),
+    getLegacyPhotosByType(id, 'evolucion'),
     record.patient?.id ? getPatientAttendance(record.patient.id) : Promise.resolve(null),
+    getDoctors(),
   ])
 
   const hasLegacyPhotos = legacyPhotos.length > 0
+
+  // Get programa_terapeutico_texto (cast as any since field may not be in types yet)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const programaTerapeuticoTexto = ((record as any).programa_terapeutico_texto as string) || ''
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CO', {
@@ -133,39 +144,36 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
   // Digital content cards - used in both cases
   const DigitalContentCards = () => (
     <>
-      {/* Patient Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Paciente
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {record.patient ? (
-            <div className="space-y-2">
-              <p className="text-xl font-semibold">
-                {record.patient.nombre} {record.patient.apellido}
-              </p>
-              <p className="text-muted-foreground">CC: {record.patient.cedula}</p>
-              {record.patient.celular && (
-                <p className="text-sm">Tel: {record.patient.celular}</p>
-              )}
-              {record.appointment && (
-                <p className="text-sm">
-                  <span className="font-medium">Cita:</span>{' '}
-                  {formatDate(record.appointment.fecha_hora_inicio)}
-                  {record.appointment.motivo_consulta && (
-                    <> - {record.appointment.motivo_consulta}</>
-                  )}
-                </p>
-              )}
-            </div>
-          ) : (
+      {/* Patient Info - Editable Card */}
+      {record.patient ? (
+        <PatientInfoCard
+          patientId={record.patient.id}
+          patient={{
+            nombre: record.patient.nombre,
+            apellido: record.patient.apellido,
+            cedula: record.patient.cedula,
+            celular: record.patient.celular,
+            fecha_nacimiento: record.patient.fecha_nacimiento,
+          }}
+          appointment={record.appointment ? {
+            fecha_hora_inicio: record.appointment.fecha_hora_inicio,
+            motivo_consulta: record.appointment.motivo_consulta,
+          } : undefined}
+          canEdit={isMedico}
+        />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Paciente
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             <p className="text-muted-foreground">Paciente no encontrado</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Symptoms and Signs */}
       <Card>
@@ -255,9 +263,17 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
       {/* Diagnosis */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" />
-            Diagnostico
+          <CardTitle className="text-lg flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ClipboardList className="h-5 w-5" />
+              Diagnostico
+            </div>
+            <Link href={`/historias/${id}/diagrama`}>
+              <Badge variant="outline" className="text-xs font-normal cursor-pointer hover:bg-muted">
+                <Info className="h-3 w-3 mr-1" />
+                Para editar ve a Dx y Evolucion
+              </Badge>
+            </Link>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -306,12 +322,29 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
       {/* Treatment */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Briefcase className="h-5 w-5" />
-            Programa Terapeutico
+          <CardTitle className="text-lg flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5" />
+              Programa Terapeutico
+            </div>
+            <Link href={`/historias/${id}/diagrama`}>
+              <Badge variant="outline" className="text-xs font-normal cursor-pointer hover:bg-muted">
+                <Info className="h-3 w-3 mr-1" />
+                Para editar ve a Dx y Evolucion
+              </Badge>
+            </Link>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Programa Terapeutico Texto */}
+          {programaTerapeuticoTexto && (
+            <div className="p-3 bg-muted rounded-lg">
+              <p className="text-sm font-medium mb-1">Notas del Programa:</p>
+              <p className="text-sm whitespace-pre-wrap">{programaTerapeuticoTexto}</p>
+            </div>
+          )}
+
+          {/* Treatments List */}
           {record.treatments && record.treatments.length > 0 ? (
             <div className="space-y-2">
               {record.treatments.map((treatment) => (
@@ -335,7 +368,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
                 </span>
               </div>
             </div>
-          ) : (
+          ) : !programaTerapeuticoTexto && (
             <p className="text-muted-foreground text-sm">
               No se han seleccionado tratamientos
             </p>
@@ -357,11 +390,67 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
         </CardContent>
       </Card>
 
-      {/* Progress Notes */}
-      <ProgressNotes
-        medicalRecordId={id}
-        notes={progressNotes}
-      />
+      {/* Evolution Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ScrollText className="h-5 w-5" />
+              Evolucion
+              {(evolutionPhotos.length > 0 || progressNotes.length > 0) && (
+                <Badge variant="secondary" className="ml-2">
+                  {evolutionPhotos.length > 0 && `${evolutionPhotos.length} foto${evolutionPhotos.length !== 1 ? 's' : ''}`}
+                  {evolutionPhotos.length > 0 && progressNotes.length > 0 && ', '}
+                  {progressNotes.length > 0 && `${progressNotes.length} nota${progressNotes.length !== 1 ? 's' : ''}`}
+                </Badge>
+              )}
+            </div>
+            <Link href={`/historias/${id}/diagrama`}>
+              <Badge variant="outline" className="text-xs font-normal cursor-pointer hover:bg-muted">
+                <Info className="h-3 w-3 mr-1" />
+                Para editar ve a Dx y Evolucion
+              </Badge>
+            </Link>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Evolution Photos */}
+          {evolutionPhotos.length > 0 && (
+            <div>
+              <p className="text-sm font-medium mb-2">Fotos de Evolucion:</p>
+              <LegacyPhotosGallery tipo="evolucion" photos={evolutionPhotos} />
+            </div>
+          )}
+
+          {/* Progress Notes (read-only list) */}
+          {progressNotes.length > 0 ? (
+            <div>
+              <p className="text-sm font-medium mb-2">Notas de Evolucion:</p>
+              <div className="space-y-2">
+                {progressNotes.map((note) => (
+                  <div key={note.id} className="p-3 bg-muted rounded text-sm">
+                    <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                      <span>{note.created_by_user?.nombre || 'Usuario'}</span>
+                      <span>
+                        {new Date(note.created_at).toLocaleDateString('es-CO', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-wrap">{note.nota}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : evolutionPhotos.length === 0 && (
+            <p className="text-muted-foreground text-sm">No hay registros de evolucion</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Audit Info */}
       <Card>
@@ -396,16 +485,15 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
               <p className="text-muted-foreground">Fecha de creacion</p>
               <p className="font-medium">{formatDate(record.created_at)}</p>
             </div>
-            {record.doctor && (
-              <div>
-                <p className="text-muted-foreground">Medico asignado</p>
-                <p className="font-medium">
-                  {record.doctor.nombre && record.doctor.apellido
-                    ? `${record.doctor.nombre} ${record.doctor.apellido}`
-                    : record.doctor.email}
-                </p>
-              </div>
-            )}
+            <div>
+              <p className="text-muted-foreground mb-1">Medico asignado</p>
+              <DoctorSelector
+                medicalRecordId={id}
+                currentDoctorId={record.doctor?.id || null}
+                doctors={doctors}
+                canEdit={isMedico}
+              />
+            </div>
             <div>
               <p className="text-muted-foreground">Ultima actualizacion</p>
               <p className="font-medium">{formatDate(record.updated_at)}</p>
@@ -462,6 +550,17 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {/* Alert for missing doctor */}
+      {!record.doctor && (
+        <Alert variant="destructive" className="border-yellow-500 bg-yellow-50 text-yellow-900">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertTitle className="text-yellow-800">Medico no asignado</AlertTitle>
+          <AlertDescription className="text-yellow-700">
+            Esta historia clinica no tiene un medico asignado. Asigne un medico en la seccion &quot;Informacion de Registro&quot; para que aparezca en el Plan de Tratamiento.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Navigation Tabs */}
       <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />

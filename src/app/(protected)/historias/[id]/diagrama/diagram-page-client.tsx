@@ -24,7 +24,7 @@ import { VoiceRecorder } from '@/components/medical-records/voice-recorder'
 import { VeinDiagramCanvas } from '@/components/medical-records/vein-diagram-canvas'
 import { TreatmentSelector, type TreatmentItem } from '@/components/medical-records/treatment-selector'
 import { LegacyPhotosGallery } from '@/components/medical-records'
-import { updateDiagramAndDiagnosis, updateTreatments, addAudioRecording, addProgressNoteFromDictation, deleteProgressNote } from './actions'
+import { updateDiagramAndDiagnosis, updateTreatments, addAudioRecording, addProgressNoteFromDictation, deleteProgressNote, updateProgramaTerapeuticoTexto } from './actions'
 import type { LegacyHistoryPhotoWithUrl, ProgressNoteWithDetails } from '@/types'
 
 interface TreatmentOption {
@@ -42,6 +42,7 @@ interface DiagramPageClientProps {
   medicalRecordId: string
   initialDiagramData: string | null
   initialDiagnostico: string | null
+  initialProgramaTexto: string
   initialTreatmentItems: TreatmentItem[]
   initialAudios: AudioRecording[]
   treatmentOptions: TreatmentOption[]
@@ -55,6 +56,7 @@ export function DiagramPageClient({
   medicalRecordId,
   initialDiagramData,
   initialDiagnostico,
+  initialProgramaTexto,
   initialTreatmentItems,
   initialAudios,
   treatmentOptions,
@@ -67,6 +69,7 @@ export function DiagramPageClient({
   // State
   const [diagramData, setDiagramData] = useState<string | null>(initialDiagramData)
   const [diagnostico, setDiagnostico] = useState<string>(initialDiagnostico || '')
+  const [programaTexto, setProgramaTexto] = useState<string>(initialProgramaTexto)
   const [treatmentItems, setTreatmentItems] = useState<TreatmentItem[]>(initialTreatmentItems)
   const [audios, setAudios] = useState<AudioRecording[]>(initialAudios)
   const [progressNotes, setProgressNotes] = useState(initialProgressNotes)
@@ -77,11 +80,13 @@ export function DiagramPageClient({
   // Saving states
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isSavingDiagnosis, setIsSavingDiagnosis] = useState(false)
+  const [isSavingProgramaTexto, setIsSavingProgramaTexto] = useState(false)
   const [isSavingTreatments, setIsSavingTreatments] = useState(false)
 
   // Debounce timers
   const treatmentDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const diagnosisDebounceRef = useRef<NodeJS.Timeout | null>(null)
+  const programaTextoDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const diagramDebounceRef = useRef<NodeJS.Timeout | null>(null)
 
   // Handle transcription from voice recorder
@@ -145,6 +150,21 @@ export function DiagramPageClient({
       setIsSavingDiagnosis(true)
       const result = await updateDiagramAndDiagnosis(medicalRecordId, null, value)
       setIsSavingDiagnosis(false)
+      if (result.success) {
+        setLastSaved(new Date())
+      }
+    }, 1500)
+  }, [medicalRecordId])
+
+  // Handle programa terapeutico text change with auto-save
+  const handleProgramaTextoChange = useCallback((value: string) => {
+    setProgramaTexto(value)
+
+    if (programaTextoDebounceRef.current) clearTimeout(programaTextoDebounceRef.current)
+    programaTextoDebounceRef.current = setTimeout(async () => {
+      setIsSavingProgramaTexto(true)
+      const result = await updateProgramaTerapeuticoTexto(medicalRecordId, value)
+      setIsSavingProgramaTexto(false)
       if (result.success) {
         setLastSaved(new Date())
       }
@@ -219,7 +239,7 @@ export function DiagramPageClient({
     <div className="space-y-4">
       {/* Auto-save status */}
       <div className="flex items-center justify-center p-2 bg-muted rounded-lg text-sm text-muted-foreground">
-        {isSavingDiagnosis ? (
+        {isSavingDiagnosis || isSavingProgramaTexto ? (
           <span className="text-blue-600 flex items-center gap-1">
             <Loader2 className="h-4 w-4 animate-spin" />
             Guardando...
@@ -414,15 +434,43 @@ export function DiagramPageClient({
         title="Programa Terapeutico"
         icon={<Briefcase className="h-5 w-5" />}
         badge={treatmentItems.length > 0 ? `${treatmentItems.length}` : undefined}
-        hasContent={treatmentItems.length > 0}
+        hasContent={treatmentItems.length > 0 || !!programaTexto}
       >
-        <TreatmentSelector
-          items={treatmentItems}
-          services={treatmentOptions}
-          onChange={handleTreatmentChange}
-          disabled={isReadOnly}
-          isSaving={isSavingTreatments}
-        />
+        <div className="space-y-4">
+          {/* Programa Terapeutico Texto - above selector */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Notas del Programa Terapeutico</label>
+            {canEditDiagnosis ? (
+              <Textarea
+                value={programaTexto}
+                onChange={(e) => handleProgramaTextoChange(e.target.value)}
+                placeholder="Escriba notas adicionales del programa terapeutico..."
+                className="min-h-[80px] resize-y"
+                disabled={isReadOnly}
+              />
+            ) : (
+              <div className="p-3 bg-muted rounded-lg min-h-[80px]">
+                {programaTexto ? (
+                  <p className="text-sm whitespace-pre-wrap">{programaTexto}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Sin notas</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Treatment Selector */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Tratamientos</label>
+            <TreatmentSelector
+              items={treatmentItems}
+              services={treatmentOptions}
+              onChange={handleTreatmentChange}
+              disabled={isReadOnly}
+              isSaving={isSavingTreatments}
+            />
+          </div>
+        </div>
       </CollapsibleSection>
     </div>
   )

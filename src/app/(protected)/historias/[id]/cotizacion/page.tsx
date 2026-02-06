@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
 import {
   getMedicalRecordById,
   getQuotationByMedicalRecord,
@@ -21,20 +20,6 @@ interface PageProps {
 
 export default async function PlanTratamientoPage({ params }: PageProps) {
   const { id } = await params
-
-  // Get user info for doctor name
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  let doctorName = 'Dr.'
-  if (user) {
-    // Try to get user profile from auth metadata or users table
-    const { data: authUser } = await supabase.auth.getUser()
-    const metadata = authUser?.user?.user_metadata
-    if (metadata?.nombre) {
-      doctorName = `Dr. ${metadata.nombre} ${metadata.apellido || ''}`.trim()
-    }
-  }
 
   // Get medical record with patient data
   const [record, quotation, legacyPhotos, services] = await Promise.all([
@@ -57,6 +42,14 @@ export default async function PlanTratamientoPage({ params }: PageProps) {
     const monthDiff = today.getMonth() - birthDate.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       patientAge--
+    }
+  }
+
+  // Get doctor name from the assigned doctor in the medical record
+  let doctorName = 'Dr.'
+  if (record.doctor) {
+    if (record.doctor.nombre || record.doctor.apellido) {
+      doctorName = `Dr. ${record.doctor.nombre || ''} ${record.doctor.apellido || ''}`.trim()
     }
   }
 

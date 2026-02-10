@@ -14,10 +14,10 @@
  * All sections: collapsed if empty, open if has content
  */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useActionState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, CheckCircle2, Camera, Mic, FileText, ScrollText, Pencil, Briefcase, Trash2 } from 'lucide-react'
+import { Loader2, CheckCircle2, Camera, Mic, FileText, ScrollText, Pencil, Briefcase, Trash2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { CollapsibleSection } from '@/components/ui/collapsible-section'
 import { VoiceRecorder } from '@/components/medical-records/voice-recorder'
@@ -25,6 +25,7 @@ import { VeinDiagramCanvas } from '@/components/medical-records/vein-diagram-can
 import { TreatmentSelector, type TreatmentItem } from '@/components/medical-records/treatment-selector'
 import { LegacyPhotosGallery } from '@/components/medical-records'
 import { updateDiagramAndDiagnosis, updateTreatments, addAudioRecording, addProgressNoteFromDictation, deleteProgressNote, updateProgramaTerapeuticoTexto } from './actions'
+import { addProgressNote, type ProgressNoteActionState } from '@/app/(protected)/historias/actions'
 import type { LegacyHistoryPhotoWithUrl, ProgressNoteWithDetails } from '@/types'
 
 interface TreatmentOption {
@@ -77,6 +78,14 @@ export function DiagramPageClient({
   // Pending transcription (before user chooses destination)
   const [pendingText, setPendingText] = useState('')
 
+  // New evolution note form state
+  const [showNoteForm, setShowNoteForm] = useState(false)
+  const [newNota, setNewNota] = useState('')
+  const [noteState, noteFormAction, isNotePending] = useActionState<ProgressNoteActionState | null, FormData>(
+    addProgressNote,
+    null
+  )
+
   // Saving states
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [isSavingDiagnosis, setIsSavingDiagnosis] = useState(false)
@@ -88,6 +97,37 @@ export function DiagramPageClient({
   const diagnosisDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const programaTextoDebounceRef = useRef<NodeJS.Timeout | null>(null)
   const diagramDebounceRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Handle note form success/error
+  useEffect(() => {
+    if (noteState?.success) {
+      toast.success('Nota agregada exitosamente')
+      // Add to local state optimistically
+      setProgressNotes(prev => [{
+        id: noteState.data?.id || crypto.randomUUID(),
+        medical_record_id: medicalRecordId,
+        appointment_id: null,
+        nota: newNota,
+        created_by: '',
+        created_at: new Date().toISOString(),
+      }, ...prev])
+      setNewNota('')
+      setShowNoteForm(false)
+    } else if (noteState?.error) {
+      toast.error(noteState.error)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noteState])
+
+  // Handle note form submission
+  const handleNoteSubmit = useCallback(
+    (formData: FormData) => {
+      formData.set('medical_record_id', medicalRecordId)
+      formData.set('nota', newNota)
+      noteFormAction(formData)
+    },
+    [medicalRecordId, newNota, noteFormAction]
+  )
 
   // Handle transcription from voice recorder
   const handleTranscription = useCallback((text: string) => {
@@ -383,35 +423,89 @@ export function DiagramPageClient({
         badge={progressNotes.length > 0 ? `${progressNotes.length}` : undefined}
         hasContent={progressNotes.length > 0}
       >
-        {progressNotes.length > 0 ? (
-          <div className="space-y-2">
-            {progressNotes.map((note) => (
-              <div key={note.id} className="p-3 bg-muted rounded text-sm group">
-                <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                  <span>{note.created_by_user?.nombre || 'Usuario'}</span>
-                  <div className="flex items-center gap-2">
-                    <span>{formatDate(note.created_at)}</span>
-                    {!isReadOnly && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    )}
+        <div className="space-y-3">
+          {/* Add note button and form */}
+          {!isReadOnly && (
+            <div>
+              {!showNoteForm ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowNoteForm(true)}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Agregar Nota
+                </Button>
+              ) : (
+                <form action={handleNoteSubmit} className="space-y-3 p-3 border rounded-lg bg-muted/50">
+                  <Textarea
+                    value={newNota}
+                    onChange={(e) => setNewNota(e.target.value)}
+                    placeholder="Escriba la nota de evolucion..."
+                    rows={4}
+                    disabled={isNotePending}
+                  />
+                  {noteState?.errors?.nota && (
+                    <p className="text-sm text-red-500">{noteState.errors.nota[0]}</p>
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setShowNoteForm(false)
+                        setNewNota('')
+                      }}
+                      disabled={isNotePending}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={isNotePending || newNota.trim().length < 3}
+                    >
+                      {isNotePending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                      Guardar Nota
+                    </Button>
                   </div>
+                </form>
+              )}
+            </div>
+          )}
+
+          {/* Notes list */}
+          {progressNotes.length > 0 ? (
+            <div className="space-y-2">
+              {progressNotes.map((note) => (
+                <div key={note.id} className="p-3 bg-muted rounded text-sm group">
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                    <span>{note.created_by_user?.nombre || 'Usuario'}</span>
+                    <div className="flex items-center gap-2">
+                      <span>{formatDate(note.created_at)}</span>
+                      {!isReadOnly && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteNote(note.id)}
+                          className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <p className="whitespace-pre-wrap">{note.nota}</p>
                 </div>
-                <p className="whitespace-pre-wrap">{note.nota}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No hay registros de evolucion
-          </p>
-        )}
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No hay registros de evolucion
+            </p>
+          )}
+        </div>
       </CollapsibleSection>
 
       {/* 5. Leg Diagram */}

@@ -141,6 +141,7 @@ export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintRepor
       <body>
         <div class="header">
           <h1>VARIX CENTER</h1>
+          <p style="font-size:10px;margin:2px 0;">Cra 34 #52-125 Piso 2</p>
           <h2 style="margin:4px 0;">CIERRE DE CAJA</h2>
           <p><strong>${closing.cierre_numero}</strong></p>
           <p>${formatDate(closing.fecha_cierre)}</p>

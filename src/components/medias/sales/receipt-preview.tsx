@@ -49,6 +49,7 @@ export function ReceiptPreview({ sale }: ReceiptPreviewProps) {
         <div className="text-center mb-3">
           <h1 className="text-lg font-bold">VARIX MEDIAS</h1>
           <p className="text-xs">Medias de Compresion</p>
+          <p className="text-xs">Cra 34 #52-125 Piso 2</p>
         </div>
 
         {/* Separator */}

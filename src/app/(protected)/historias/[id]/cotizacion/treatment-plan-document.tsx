@@ -137,7 +137,7 @@ export function TreatmentPlanDocument({
           <div className="text-center mb-6 print:mb-4">
             <h1 className="text-2xl font-bold text-primary print:text-black">VARIXCENTER</h1>
             <p className="text-sm text-muted-foreground">Centro Medico Flebologico</p>
-            <p className="text-xs text-muted-foreground">Cra. 34 N 53-125 Piso 2</p>
+            <p className="text-xs text-muted-foreground">Cra 34 #52-125 Piso 2</p>
           </div>
 
           <Separator className="my-4" />

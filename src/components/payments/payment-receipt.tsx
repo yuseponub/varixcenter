@@ -41,6 +41,7 @@ export function PaymentReceipt({ payment }: PaymentReceiptProps) {
         <div className="text-center mb-3">
           <h1 className="text-lg font-bold">VARIX CENTER</h1>
           <p className="text-xs">Centro de Flebologia</p>
+          <p className="text-xs">Cra 34 #52-125 Piso 2</p>
         </div>
 
         {/* Separator */}

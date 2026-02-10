@@ -1,6 +1,6 @@
 {
-  "name": "morfx - Sistema de Gestion",
-  "short_name": "morfx",
+  "name": "VarixClinic - Sistema de Gestion",
+  "short_name": "VarixClinic",
   "description": "Sistema de gestion para clinica de varices",
   "start_url": "/",
   "display": "standalone",

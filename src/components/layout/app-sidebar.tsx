@@ -2,7 +2,6 @@
 
 import { useState, useEffect, type ReactNode } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
@@ -260,23 +259,8 @@ export function AppSidebar({
           collapsed ? "justify-center" : "justify-between"
         )}>
           {!collapsed && (
-            <Link href="/dashboard">
-              <Image
-                src="/images/morfx-logo-light.png"
-                alt="morfx"
-                width={100}
-                height={30}
-                className="hidden dark:block"
-                priority
-              />
-              <Image
-                src="/images/morfx-logo-dark.png"
-                alt="morfx"
-                width={100}
-                height={30}
-                className="block dark:hidden"
-                priority
-              />
+            <Link href="/dashboard" className="text-lg font-bold text-sidebar-primary">
+              VarixCenter
             </Link>
           )}
           <button
@@ -357,23 +341,8 @@ export function AppSidebar({
         >
           <Menu className="h-5 w-5" />
         </button>
-        <Link href="/dashboard">
-          <Image
-            src="/images/morfx-logo-light.png"
-            alt="morfx"
-            width={100}
-            height={30}
-            className="hidden dark:block"
-            priority
-          />
-          <Image
-            src="/images/morfx-logo-dark.png"
-            alt="morfx"
-            width={100}
-            height={30}
-            className="block dark:hidden"
-            priority
-          />
+        <Link href="/dashboard" className="text-lg font-bold text-sidebar-primary">
+          VarixCenter
         </Link>
         {showAlertBadge && (
           <Link href="/dashboard" className="ml-auto hover:opacity-80">

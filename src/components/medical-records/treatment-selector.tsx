@@ -181,10 +181,10 @@ export function TreatmentSelector({
 
     setZones(newZones)
 
-    // Check if item has service selected
+    // Check if item has service selected and valid cantidad (skip save while user is clearing the field)
     const updatedZone = newZones.find(z => z.zona === zoneId)
     const updatedItem = updatedZone?.items.find(i => i.id === itemId)
-    if (updatedItem?.service_id) {
+    if (updatedItem?.service_id && updatedItem.cantidad > 0) {
       onChange(getAllItems(newZones))
     }
   }
@@ -268,7 +268,7 @@ export function TreatmentSelector({
                   >
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-12 gap-2">
                       {/* Service selector */}
-                      <div className="sm:col-span-5">
+                      <div className="sm:col-span-4">
                         <Label className="text-xs text-muted-foreground mb-1 block">
                           Tratamiento
                         </Label>
@@ -291,25 +291,65 @@ export function TreatmentSelector({
                       </div>
 
                       {/* Quantity */}
-                      <div className="sm:col-span-2">
+                      <div className="sm:col-span-4">
                         <Label className="text-xs text-muted-foreground mb-1 block">
                           Cant.
                         </Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={99}
-                          value={item.cantidad}
-                          onChange={(e) => handleUpdateItem(zone.zona, item.id, {
-                            cantidad: Math.max(1, parseInt(e.target.value) || 1)
-                          })}
-                          disabled={disabled}
-                          className="text-center h-9"
-                        />
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9 shrink-0"
+                            disabled={disabled || item.cantidad <= 1}
+                            onClick={() => handleUpdateItem(zone.zona, item.id, {
+                              cantidad: Math.max(1, item.cantidad - 1)
+                            })}
+                          >
+                            -
+                          </Button>
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={item.cantidad}
+                            onFocus={(e) => e.target.select()}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/[^0-9]/g, '')
+                              if (val === '') {
+                                handleUpdateItem(zone.zona, item.id, { cantidad: 0 })
+                              } else {
+                                handleUpdateItem(zone.zona, item.id, {
+                                  cantidad: Math.min(99, parseInt(val))
+                                })
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseInt(e.target.value)
+                              if (!val || val < 1) {
+                                handleUpdateItem(zone.zona, item.id, { cantidad: 1 })
+                              }
+                            }}
+                            disabled={disabled}
+                            className="text-center h-9"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9 shrink-0"
+                            disabled={disabled || item.cantidad >= 99}
+                            onClick={() => handleUpdateItem(zone.zona, item.id, {
+                              cantidad: Math.min(99, item.cantidad + 1)
+                            })}
+                          >
+                            +
+                          </Button>
+                        </div>
                       </div>
 
                       {/* Notes */}
-                      <div className="sm:col-span-5">
+                      <div className="sm:col-span-4">
                         <Label className="text-xs text-muted-foreground mb-1 block">
                           Observaciones
                         </Label>

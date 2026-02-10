@@ -2,6 +2,7 @@
 
 import { signIn } from './actions'
 import { useActionState } from 'react'
+import Image from 'next/image'
 
 const initialState = { error: null as string | null }
 
@@ -17,7 +18,14 @@ export default function LoginPage() {
   return (
     <div className="bg-white rounded-lg shadow-md p-8">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">VarixClinic</h1>
+        <Image
+            src="/images/morfx-logo-dark.png"
+            alt="morfx"
+            width={150}
+            height={45}
+            className="mx-auto"
+            priority
+          />
         <p className="text-gray-600 mt-2">Iniciar sesion</p>
       </div>
 

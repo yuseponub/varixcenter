@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VarixClinic - Sistema de Gestion",
+  title: "morfx - Sistema de Gestion",
   description: "Sistema de gestion para clinica de varices",
   manifest: "/manifest.json",
   viewport: {

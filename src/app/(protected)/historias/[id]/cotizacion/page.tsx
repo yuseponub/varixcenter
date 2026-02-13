@@ -49,7 +49,10 @@ export default async function PlanTratamientoPage({ params }: PageProps) {
   let doctorName = 'Dr.'
   if (record.doctor) {
     if (record.doctor.nombre || record.doctor.apellido) {
-      doctorName = `Dr. ${record.doctor.nombre || ''} ${record.doctor.apellido || ''}`.trim()
+      const nombre = (record.doctor.nombre || '').trim()
+      const primerNombre = nombre.split(' ')[0].toLowerCase()
+      const titulo = primerNombre.endsWith('a') ? 'Dra.' : 'Dr.'
+      doctorName = `${titulo} ${nombre} ${record.doctor.apellido || ''}`.trim()
     }
   }
 

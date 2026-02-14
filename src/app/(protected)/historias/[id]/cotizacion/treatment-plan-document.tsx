@@ -131,7 +131,7 @@ export function TreatmentPlanDocument({
       </div>
 
       {/* Document */}
-      <Card className="print:shadow-none print:border-none">
+      <Card id="treatment-plan-print" className="print:shadow-none print:border-none">
         <CardContent className="p-6 print:p-0" ref={documentRef}>
           {/* Header with logo */}
           <div className="text-center mb-6 print:mb-4">
@@ -265,24 +265,15 @@ export function TreatmentPlanDocument({
           body * {
             visibility: hidden;
           }
-          .print\\:hidden {
-            display: none !important;
-          }
-          #__next {
+          #treatment-plan-print,
+          #treatment-plan-print * {
             visibility: visible;
           }
-          #__next > * {
-            visibility: visible;
-          }
-          [class*="CardContent"] {
-            visibility: visible;
+          #treatment-plan-print {
             position: absolute;
             left: 0;
             top: 0;
             width: 100%;
-          }
-          [class*="CardContent"] * {
-            visibility: visible;
           }
         }
       `}</style>

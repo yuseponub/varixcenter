@@ -250,6 +250,17 @@
     margin: 15mm;
   }
 
+  /* Reset main content margin when sidebar is hidden in print */
+  main {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  #treatment-plan-print {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
   /* Receipt-specific: when .receipt exists, hide everything else */
   body:has(.receipt) *:not(.receipt):not(.receipt *) {
     visibility: hidden !important;

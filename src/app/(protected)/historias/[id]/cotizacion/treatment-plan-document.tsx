@@ -8,7 +8,6 @@
  * sclerotherapy treatments, supplies, and totals.
  */
 
-import { useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -72,8 +71,6 @@ export function TreatmentPlanDocument({
   serviceInfo,
   createdAt,
 }: TreatmentPlanDocumentProps) {
-  const documentRef = useRef<HTMLDivElement>(null)
-
   // Group items by zone
   const itemsByZone = new Map<BodyZone, QuotationItem[]>()
   const items = quotation?.items || []
@@ -103,15 +100,149 @@ export function TreatmentPlanDocument({
   // Grand total
   const grandTotal = quotation?.total || Array.from(totalsByZone.values()).reduce((a, b) => a + b, 0)
 
-  // Handle print
   const handlePrint = () => {
-    window.print()
+    // Build procedure tables HTML
+    let proceduresHtml = ''
+    if (items.length > 0) {
+      zones.forEach(zona => {
+        const zoneItems = itemsByZone.get(zona) || []
+        const zoneTotal = totalsByZone.get(zona) || 0
+        const rows = zoneItems.map(item => `
+          <tr>
+            <td style="padding:6px 8px;border-bottom:1px dashed #ccc;">${item.nombre}</td>
+            <td style="padding:6px 8px;border-bottom:1px dashed #ccc;text-align:center;">${item.cantidad}</td>
+            <td style="padding:6px 8px;border-bottom:1px dashed #ccc;color:#666;">${item.nota || '-'}</td>
+            <td style="padding:6px 8px;border-bottom:1px dashed #ccc;text-align:right;font-weight:500;">${formatCurrency(item.subtotal || item.precio * item.cantidad)}</td>
+          </tr>
+        `).join('')
+
+        proceduresHtml += `
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:13px;font-weight:600;background:#f3f4f6;padding:8px;border-radius:4px;margin:0 0 8px 0;">
+              PROCEDIMIENTOS - ${ZONE_LABELS[zona]}
+            </h3>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead>
+                <tr style="border-bottom:2px solid #333;">
+                  <th style="text-align:left;padding:6px 8px;">Procedimiento</th>
+                  <th style="text-align:center;padding:6px 8px;width:60px;">Cant.</th>
+                  <th style="text-align:left;padding:6px 8px;">Observaciones</th>
+                  <th style="text-align:right;padding:6px 8px;width:120px;">Valor</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" style="padding:6px 8px;text-align:right;font-weight:600;">Subtotal ${ZONE_SHORT_LABELS[zona]}:</td>
+                  <td style="padding:6px 8px;text-align:right;font-weight:600;">${formatCurrency(zoneTotal)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        `
+      })
+
+      proceduresHtml += `
+        <hr style="margin:16px 0;" />
+        <div style="text-align:right;">
+          <div style="display:inline-block;background:#f3f4f6;padding:12px 20px;border-radius:4px;">
+            <strong style="font-size:16px;">TOTAL COSTOS: ${formatCurrency(grandTotal)}</strong>
+          </div>
+        </div>
+      `
+    } else {
+      proceduresHtml = '<p style="text-align:center;color:#666;padding:30px 0;">No hay procedimientos registrados en el programa terapeutico.</p>'
+    }
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Plan de Tratamiento - ${patientName}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 15mm;
+            max-width: 100%;
+            margin: 0 auto;
+            font-size: 13px;
+            color: #000;
+          }
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+          @media print {
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div style="text-align:center;margin-bottom:20px;">
+          <h1 style="margin:0;font-size:22px;">VARIXCENTER</h1>
+          <p style="margin:4px 0;color:#666;font-size:13px;">Centro Medico Flebologico</p>
+          <p style="margin:2px 0;color:#666;font-size:11px;">Cra 34 #52-125 Piso 2</p>
+        </div>
+
+        <hr style="margin:16px 0;" />
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <p style="margin:4px 0;"><strong>FECHA:</strong> ${formatDate(createdAt)}</p>
+            <p style="margin:4px 0;"><strong>NOMBRE DEL PACIENTE:</strong> ${patientName}</p>
+            <p style="margin:4px 0;"><strong>NOMBRE DEL MEDICO:</strong> ${doctorName}</p>
+          </div>
+          <div style="text-align:right;">
+            <p style="margin:4px 0;"><strong>EDAD:</strong> ${patientAge ?? '-'} a\u00f1os</p>
+            <p style="margin:4px 0;"><strong>CC:</strong> ${patientCedula}</p>
+          </div>
+        </div>
+
+        ${diagnostico ? `
+        <div style="margin-bottom:20px;">
+          <p style="font-weight:600;margin:0 0 4px 0;">DIAGNOSTICO:</p>
+          <p style="margin:0;white-space:pre-wrap;">${diagnostico}</p>
+        </div>
+        <hr style="margin:16px 0;" />
+        ` : ''}
+
+        <div style="border:1px solid #ccc;padding:12px;border-radius:4px;margin-bottom:20px;">
+          <p style="font-weight:600;margin:0 0 4px 0;">COSTOS DE PROCEDIMIENTOS</p>
+          <p style="font-size:11px;color:#666;margin:0;">
+            <strong>LEA CUIDADOSAMENTE:</strong> Recuerde que todo procedimiento requiere cita previa.
+            Este plan de costos tiene validez de 6 meses. Cualquier duda gustosamente le atenderemos.
+          </p>
+        </div>
+
+        ${proceduresHtml}
+
+        <hr style="margin:24px 0 12px 0;" />
+        <div style="font-size:11px;color:#666;">
+          <p style="font-weight:600;margin:0 0 4px 0;">*Nota importante:</p>
+          <p style="margin:0;">
+            Generalmente despues de realizados los procedimientos de Cirugia, Laser Endovascular o
+            Eco-reabsorcion Guia Duplex, se debe realizar el tratamiento Flebologico para las varices
+            pequenas y vasitos (Laser Superficial, Escleroterapia). Cuando al paciente se le realiza
+            cirugia, Laser Endovascular o Eco-reabsorcion Guia Duplex, debe asistir a un control anual
+            en el cual se le realiza un escaneo venoso Duplex de las zonas tratadas anteriormente.
+          </p>
+        </div>
+
+        <div style="margin-top:30px;padding-top:12px;border-top:1px solid #ccc;text-align:center;font-size:11px;color:#666;">
+          <p>Documento generado el ${formatDate(new Date().toISOString())}</p>
+        </div>
+      </body>
+      </html>
+    `)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
   }
 
-  // Handle PDF download (uses print dialog with PDF option)
-  const handleDownloadPDF = () => {
-    window.print()
-  }
+  const handleDownloadPDF = handlePrint
 
   // Check if there are any items
   const hasItems = items.length > 0
@@ -132,7 +263,7 @@ export function TreatmentPlanDocument({
 
       {/* Document */}
       <Card id="treatment-plan-print" className="print:shadow-none print:border-none">
-        <CardContent className="p-6 print:p-0" ref={documentRef}>
+        <CardContent className="p-6">
           {/* Header with logo */}
           <div className="text-center mb-6 print:mb-4">
             <h1 className="text-2xl font-bold text-primary print:text-black">VARIXCENTER</h1>
@@ -259,24 +390,6 @@ export function TreatmentPlanDocument({
         </CardContent>
       </Card>
 
-      {/* Print styles */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #treatment-plan-print,
-          #treatment-plan-print * {
-            visibility: visible;
-          }
-          #treatment-plan-print {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   )
 }

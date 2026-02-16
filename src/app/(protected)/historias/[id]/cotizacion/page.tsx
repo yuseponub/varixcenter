@@ -99,7 +99,7 @@ export default async function PlanTratamientoPage({ params }: PageProps) {
 
       {/* Navigation Tabs */}
       <div className="print:hidden">
-        <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+        <RecordTabs recordId={id} isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'} />
       </div>
 
       {/* Legacy Photos Section */}

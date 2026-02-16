@@ -61,8 +61,8 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
     notFound()
   }
 
-  // Check if record can be edited (only drafts)
-  if (record.estado === 'completado') {
+  // Check if record can be edited (only drafts, but legacy records are always editable)
+  if (record.estado === 'completado' && record.source !== 'legacy_access') {
     return (
       <div className="container mx-auto py-6 max-w-4xl">
         <Alert>
@@ -117,7 +117,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
     fecha_hora_inicio: record.appointment.fecha_hora_inicio,
     motivo_consulta: record.appointment.motivo_consulta,
   } : {
-    id: record.appointment_id,
+    id: record.appointment_id || record.id,
     fecha_hora_inicio: record.created_at,
     motivo_consulta: null,
   }
@@ -142,7 +142,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
         mode="edit"
         patientData={patientData}
         appointmentData={appointmentData}
-        doctorId={record.doctor_id}
+        doctorId={record.doctor_id || ''}
         services={services}
         initialData={record}
         userRole={userRole as 'admin' | 'medico' | 'enfermera'}

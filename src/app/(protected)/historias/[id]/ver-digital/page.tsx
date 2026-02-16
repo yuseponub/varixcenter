@@ -158,7 +158,7 @@ export default async function VerDigitalPage({ params }: PageProps) {
       </Alert>
 
       {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'} />
 
       {/* Patient Info */}
       <Card>

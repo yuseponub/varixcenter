@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { FileText, Eye, Edit, ChevronLeft, ChevronRight } from 'lucide-react'
+import { FileText, Eye, Edit, ChevronLeft, ChevronRight, Database } from 'lucide-react'
 import { MEDICAL_RECORD_STATUS_LABELS, MEDICAL_RECORD_STATUS_VARIANTS } from '@/types'
 import { MedicalRecordSearch } from '@/components/medical-records'
 
@@ -150,12 +150,22 @@ export default async function HistoriasPage({ searchParams }: PageProps) {
                         <TableCell>
                           {record.appointment?.fecha_hora_inicio
                             ? formatDate(record.appointment.fecha_hora_inicio)
-                            : '-'}
+                            : record.source === 'legacy_access'
+                              ? formatDate(record.created_at)
+                              : '-'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
-                            {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
-                          </Badge>
+                          <div className="flex items-center gap-1.5">
+                            <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
+                              {MEDICAL_RECORD_STATUS_LABELS[record.estado]}
+                            </Badge>
+                            {record.source === 'legacy_access' && (
+                              <Badge variant="outline" className="text-xs gap-1">
+                                <Database className="h-3 w-3" />
+                                Migrada
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>{formatDate(record.created_at)}</TableCell>
                         <TableCell className="text-right">
@@ -165,7 +175,7 @@ export default async function HistoriasPage({ searchParams }: PageProps) {
                                 <Eye className="h-4 w-4" />
                               </Button>
                             </Link>
-                            {record.estado === 'borrador' && (
+                            {(record.estado === 'borrador' || record.source === 'legacy_access') && (
                               <Link href={`/historias/${record.id}/editar`}>
                                 <Button variant="ghost" size="icon">
                                   <Edit className="h-4 w-4" />

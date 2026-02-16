@@ -101,7 +101,7 @@ export default async function DiagramaPage({ params }: PageProps) {
       </div>
 
       {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'} />
 
       {/* All content in client component with collapsible sections */}
       <DiagramPageClient
@@ -114,7 +114,7 @@ export default async function DiagramaPage({ params }: PageProps) {
         treatmentOptions={treatmentOptions}
         evolutionPhotos={evolutionPhotos}
         progressNotes={progressNotes}
-        isReadOnly={record.estado === 'completado'}
+        isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'}
         userRole={userRole}
       />
     </div>

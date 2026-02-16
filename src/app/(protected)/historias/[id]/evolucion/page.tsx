@@ -59,7 +59,7 @@ export default async function EvolucionPage({ params }: PageProps) {
       </div>
 
       {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'} />
 
       {/* Legacy Photos Section */}
       {legacyPhotos.length > 0 && (

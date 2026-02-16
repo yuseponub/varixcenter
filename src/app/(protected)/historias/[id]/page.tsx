@@ -29,6 +29,8 @@ import {
   ScrollText,
   Info,
   AlertTriangle,
+  Database,
+  Pill,
 } from 'lucide-react'
 import {
   MEDICAL_RECORD_STATUS_LABELS,
@@ -260,6 +262,21 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
         </CardContent>
       </Card>
 
+      {/* Medicamentos - shown when field has data */}
+      {record.medicamentos && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Pill className="h-5 w-5" />
+              Medicamentos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm whitespace-pre-wrap">{record.medicamentos}</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Diagnosis */}
       <Card>
         <CardHeader>
@@ -487,12 +504,19 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-muted-foreground mb-1">Medico asignado</p>
-              <DoctorSelector
-                medicalRecordId={id}
-                currentDoctorId={record.doctor?.id || null}
-                doctors={doctors}
-                canEdit={isMedico}
-              />
+              {record.source === 'legacy_access' && !record.doctor && record.nombre_medico_legacy ? (
+                <p className="font-medium text-sm">
+                  {record.nombre_medico_legacy}
+                  <Badge variant="outline" className="ml-2 text-xs">Legacy</Badge>
+                </p>
+              ) : (
+                <DoctorSelector
+                  medicalRecordId={id}
+                  currentDoctorId={record.doctor?.id || null}
+                  doctors={doctors}
+                  canEdit={isMedico}
+                />
+              )}
             </div>
             <div>
               <p className="text-muted-foreground">Ultima actualizacion</p>
@@ -540,7 +564,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
               {hasLegacyPhotos ? 'Gestionar Fotos' : 'Añadir Historia Antigua'}
             </Button>
           </Link>
-          {record.estado === 'borrador' && (
+          {(record.estado === 'borrador' || record.source === 'legacy_access') && (
             <Link href={`/historias/${id}/editar`}>
               <Button>
                 <Edit className="mr-2 h-4 w-4" />
@@ -551,8 +575,22 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Legacy record banner */}
+      {record.source === 'legacy_access' && (
+        <Alert className="border-blue-300 bg-blue-50 text-blue-900">
+          <Database className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-800">Historia migrada del sistema anterior</AlertTitle>
+          <AlertDescription className="text-blue-700">
+            Esta historia fue migrada automaticamente desde el sistema Access.
+            {record.nombre_medico_legacy && !record.doctor && (
+              <span className="block mt-1">Medico original: <strong>{record.nombre_medico_legacy}</strong></span>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Alert for missing doctor */}
-      {!record.doctor && (
+      {!record.doctor && record.source !== 'legacy_access' && (
         <Alert variant="destructive" className="border-yellow-500 bg-yellow-50 text-yellow-900">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <AlertTitle className="text-yellow-800">Medico no asignado</AlertTitle>
@@ -563,7 +601,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
       )}
 
       {/* Navigation Tabs */}
-      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado'} />
+      <RecordTabs recordId={id} isReadOnly={record.estado === 'completado' && record.source !== 'legacy_access'} />
 
       {/* Legacy Photos Section - shown at top when photos exist */}
       {hasLegacyPhotos && (

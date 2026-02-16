@@ -39,13 +39,17 @@ export async function getMedicalRecordById(id: string): Promise<MedicalRecordWit
     return null
   }
 
-  // Fetch doctor info separately (from doctors_view)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: doctorData } = await (supabase as any)
-    .from('doctors_view')
-    .select('id, email, nombre, apellido')
-    .eq('id', data.doctor_id)
-    .single()
+  // Fetch doctor info separately (from doctors_view) - only if doctor_id exists
+  let doctorData = null
+  if (data.doctor_id) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dr } = await (supabase as any)
+      .from('doctors_view')
+      .select('id, email, nombre, apellido')
+      .eq('id', data.doctor_id)
+      .single()
+    doctorData = dr
+  }
 
   // Fetch treatments if tratamiento_ids has values
   let treatments: MedicalRecordWithDetails['treatments'] = []
@@ -170,6 +174,21 @@ export async function getMedicalRecords(options: {
 
   const supabase = await createClient()
 
+  // If search is provided, first find matching patient IDs at DB level
+  let matchingPatientIds: string[] | null = null
+  if (search) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: matchingPatients } = await (supabase as any)
+      .from('patients')
+      .select('id')
+      .or(`nombre.ilike.%${search}%,apellido.ilike.%${search}%,cedula.ilike.%${search}%`)
+
+    if (!matchingPatients || matchingPatients.length === 0) {
+      return { records: [], total: 0 }
+    }
+    matchingPatientIds = matchingPatients.map((p: { id: string }) => p.id)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase as any)
     .from('medical_records')
@@ -193,6 +212,10 @@ export async function getMedicalRecords(options: {
     query = query.eq('doctor_id', doctorId)
   }
 
+  if (matchingPatientIds) {
+    query = query.in('patient_id', matchingPatientIds)
+  }
+
   const { data, error, count } = await query
 
   if (error) {
@@ -200,24 +223,9 @@ export async function getMedicalRecords(options: {
     return { records: [], total: 0 }
   }
 
-  // Filter by search if provided (patient name or cedula)
-  let filteredData = data || []
-  if (search && filteredData.length > 0) {
-    const searchLower = search.toLowerCase()
-    filteredData = filteredData.filter((record: MedicalRecordWithDetails) => {
-      const patient = record.patient
-      if (!patient) return false
-      return (
-        patient.nombre?.toLowerCase().includes(searchLower) ||
-        patient.apellido?.toLowerCase().includes(searchLower) ||
-        patient.cedula?.includes(search)
-      )
-    })
-  }
-
   return {
-    records: filteredData as MedicalRecordWithDetails[],
-    total: search ? filteredData.length : (count || 0),
+    records: (data || []) as MedicalRecordWithDetails[],
+    total: count || 0,
   }
 }
 

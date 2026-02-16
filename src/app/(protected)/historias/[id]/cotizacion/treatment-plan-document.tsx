@@ -165,7 +165,7 @@ export function TreatmentPlanDocument({
         <style>
           body {
             font-family: Arial, sans-serif;
-            padding: 15mm;
+            padding: 0;
             max-width: 100%;
             margin: 0 auto;
             font-size: 13px;
@@ -173,10 +173,7 @@ export function TreatmentPlanDocument({
           }
           @page {
             size: A4;
-            margin: 15mm;
-          }
-          @media print {
-            body { padding: 0; }
+            margin: 20mm;
           }
         </style>
       </head>

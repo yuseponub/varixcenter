@@ -24,7 +24,6 @@ import { createPayment, type PaymentActionState } from '@/app/(protected)/pagos/
 import { getPendingServicesGroupedAction } from '@/app/(protected)/pagos/pending-services-action'
 import type { ServiceOption } from '@/types/services'
 import type { PaymentItemInput, PaymentMethodInput } from '@/types/payments'
-import { requiresComprobante } from '@/types/payments'
 import type { PendingServicesGroup, PaymentItemWithAppointmentService } from '@/types/appointment-services'
 
 interface Patient {
@@ -161,8 +160,7 @@ export function PaymentForm({
     allItems.length > 0 &&
     methods.length > 0 &&
     isBalanced &&
-    (descuento === 0 || descuentoJustificacion.length >= 5) &&
-    methods.every(m => !requiresComprobante(m.metodo) || m.comprobante_path)
+    (descuento === 0 || descuentoJustificacion.length >= 5)
 
   const handleSubmit = (formData: FormData) => {
     // Add JSON data to form

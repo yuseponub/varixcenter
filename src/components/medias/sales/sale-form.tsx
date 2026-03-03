@@ -70,11 +70,8 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
   // Validation
   const methodsTotal = methods.reduce((sum, m) => sum + m.monto, 0)
   const hasValidTotal = Math.abs(total - methodsTotal) < 0.01
-  const hasComprobantes = methods.every(
-    (m) => m.metodo === 'efectivo' || m.comprobante_path
-  )
   const canSubmit =
-    cart.length > 0 && methods.length > 0 && hasValidTotal && hasComprobantes
+    cart.length > 0 && methods.length > 0 && hasValidTotal
 
   const handleSubmit = (formData: FormData) => {
     // Add cart items as JSON
@@ -229,9 +226,6 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
           {!canSubmit && cart.length > 0 && (
             <p className="text-sm text-muted-foreground mt-2 text-center">
               {!hasValidTotal && 'El monto de pago debe coincidir con el total'}
-              {hasValidTotal &&
-                !hasComprobantes &&
-                'Suba comprobante para pagos electronicos'}
             </p>
           )}
         </div>

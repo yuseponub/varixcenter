@@ -167,17 +167,13 @@ export function SaleMethodForm({
               </div>
             </div>
 
-            {/* VTA-05: Receipt upload for electronic methods */}
+            {/* Receipt upload for electronic methods (optional) */}
             {requiresComprobante(method.metodo) && (
               <ReceiptUpload
                 onUploadComplete={(path) => handleComprobanteChange(index, path)}
                 onRemove={() => handleComprobanteChange(index, null)}
                 initialPath={method.comprobante_path}
                 disabled={disabled}
-                required
-                error={
-                  !method.comprobante_path ? 'Comprobante requerido' : undefined
-                }
               />
             )}
           </CardContent>

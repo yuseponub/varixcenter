@@ -33,10 +33,6 @@ interface ReceiptUploadProps {
   initialPath?: string | null
   /** Disable input */
   disabled?: boolean
-  /** Show required indicator */
-  required?: boolean
-  /** Error message from parent form */
-  error?: string
 }
 
 export function ReceiptUpload({
@@ -44,8 +40,6 @@ export function ReceiptUpload({
   onRemove,
   initialPath,
   disabled,
-  required,
-  error
 }: ReceiptUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -118,16 +112,14 @@ export function ReceiptUpload({
     onRemove()
   }, [preview, onRemove])
 
-  const displayError = uploadError || error
-
   return (
     <div className="space-y-2">
-      <Label className={required ? "after:content-['*'] after:ml-0.5 after:text-red-500" : ''}>
-        Foto del comprobante
+      <Label>
+        Foto del comprobante (opcional)
       </Label>
 
       {!preview && !uploadedPath ? (
-        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${displayError ? 'border-red-500' : 'border-muted'}`}>
+        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${uploadError ? 'border-red-500' : 'border-muted'}`}>
           <Input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic"
@@ -196,8 +188,8 @@ export function ReceiptUpload({
         </div>
       )}
 
-      {displayError && (
-        <p className="text-sm text-red-500">{displayError}</p>
+      {uploadError && (
+        <p className="text-sm text-red-500">{uploadError}</p>
       )}
     </div>
   )

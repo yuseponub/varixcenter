@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { ScrollText, Plus, Loader2, AlertTriangle, User, Calendar, Trash2 } from 'lucide-react'
+import { ScrollText, Plus, Loader2, AlertTriangle, User, Calendar, Trash2, Pencil, Check, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { addProgressNote, type ProgressNoteActionState } from '@/app/(protected)/historias/actions'
-import { deleteProgressNote } from '@/app/(protected)/historias/[id]/diagrama/actions'
+import { deleteProgressNote, updateProgressNote } from '@/app/(protected)/historias/[id]/diagrama/actions'
 import type { ProgressNoteWithDetails } from '@/types'
 
 interface ProgressNotesProps {
@@ -20,7 +20,7 @@ interface ProgressNotesProps {
 
 /**
  * Progress notes component
- * Shows list of notes and form to add new ones
+ * Shows list of notes and form to add new ones. Supports inline editing.
  */
 export function ProgressNotes({
   medicalRecordId,
@@ -31,12 +31,16 @@ export function ProgressNotes({
   const [nota, setNota] = useState('')
   const [notes, setNotes] = useState(initialNotes)
 
+  // Edit state: noteId -> draft text (null = not editing)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState('')
+  const [isSavingEdit, setIsSavingEdit] = useState(false)
+
   const [state, formAction, isPending] = useActionState<ProgressNoteActionState | null, FormData>(
     addProgressNote,
     null
   )
 
-  // Handle delete note
   const handleDeleteNote = useCallback(async (noteId: string) => {
     if (!confirm('¿Eliminar esta nota?')) return
 
@@ -49,7 +53,31 @@ export function ProgressNotes({
     }
   }, [medicalRecordId])
 
-  // Handle success/error
+  const handleStartEdit = useCallback((noteId: string, currentText: string) => {
+    setEditingId(noteId)
+    setEditDraft(currentText)
+  }, [])
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingId(null)
+    setEditDraft('')
+  }, [])
+
+  const handleSaveEdit = useCallback(async (noteId: string) => {
+    setIsSavingEdit(true)
+    const result = await updateProgressNote(noteId, medicalRecordId, editDraft)
+    setIsSavingEdit(false)
+
+    if (result.success) {
+      setNotes(prev => prev.map(n => n.id === noteId ? { ...n, nota: editDraft.trim() } : n))
+      setEditingId(null)
+      setEditDraft('')
+      toast.success('Nota actualizada')
+    } else {
+      toast.error(result.error || 'Error al guardar')
+    }
+  }, [medicalRecordId, editDraft])
+
   useEffect(() => {
     if (state?.success) {
       toast.success('Nota agregada exitosamente')
@@ -61,7 +89,6 @@ export function ProgressNotes({
     }
   }, [state, onNoteAdded])
 
-  // Handle form submission
   const handleSubmit = useCallback(
     (formData: FormData) => {
       formData.set('medical_record_id', medicalRecordId)
@@ -178,14 +205,26 @@ export function ProgressNotes({
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     <span>{formatDate(note.created_at)}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteNote(note.id)}
-                      className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity ml-2"
-                      title="Eliminar nota"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {editingId !== note.id && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleStartEdit(note.id, note.nota)}
+                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-opacity ml-2"
+                          title="Editar nota"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteNote(note.id)}
+                          className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity"
+                          title="Eliminar nota"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
                 {note.appointment && (
@@ -194,7 +233,45 @@ export function ProgressNotes({
                     {note.appointment.motivo_consulta && ` - ${note.appointment.motivo_consulta}`}
                   </p>
                 )}
-                <p className="text-sm whitespace-pre-wrap">{note.nota}</p>
+
+                {editingId === note.id ? (
+                  <div className="space-y-2 mt-1">
+                    <Textarea
+                      value={editDraft}
+                      onChange={(e) => setEditDraft(e.target.value)}
+                      rows={4}
+                      disabled={isSavingEdit}
+                      autoFocus
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        disabled={isSavingEdit}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => handleSaveEdit(note.id)}
+                        disabled={isSavingEdit || editDraft.trim().length < 3}
+                      >
+                        {isSavingEdit ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                        ) : (
+                          <Check className="h-4 w-4 mr-1" />
+                        )}
+                        Guardar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm whitespace-pre-wrap">{note.nota}</p>
+                )}
               </div>
             ))}
           </div>

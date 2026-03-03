@@ -384,6 +384,56 @@ export async function updateProgramaTerapeuticoTexto(
 }
 
 /**
+ * Update a progress note (medico/admin only)
+ */
+export async function updateProgressNote(
+  noteId: string,
+  medicalRecordId: string,
+  nota: string
+): Promise<UpdateResult> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'No autorizado.' }
+  }
+
+  if (!nota || nota.trim().length < 3) {
+    return { success: false, error: 'La nota debe tener al menos 3 caracteres.' }
+  }
+
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!roleData || !['admin', 'medico'].includes(roleData.role)) {
+    return { success: false, error: 'Solo el medico o admin puede editar notas.' }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('progress_notes')
+    .update({ nota: nota.trim() })
+    .eq('id', noteId)
+
+  if (error) {
+    console.error('Error updating progress note:', error)
+    return { success: false, error: 'Error al editar la nota.' }
+  }
+
+  revalidatePath(`/historias/${medicalRecordId}`)
+  revalidatePath(`/historias/${medicalRecordId}/diagrama`)
+  revalidatePath(`/historias/${medicalRecordId}/evolucion`)
+
+  return { success: true }
+}
+
+/**
  * Delete a progress note (medico/admin only)
  */
 export async function deleteProgressNote(

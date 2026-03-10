@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { AnulacionDialog } from '@/components/payments/anulacion-dialog'
 import { PaymentReceipt } from '@/components/payments/payment-receipt'
+import { PaymentNota } from '@/components/payments/payment-nota'
 import { PAYMENT_METHOD_LABELS } from '@/types/payments'
 import {
   Breadcrumb,
@@ -187,6 +188,13 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
           </div>
         </CardContent>
       </Card>
+
+      {/* Nota */}
+      <PaymentNota
+        paymentId={payment.id}
+        initialNota={payment.nota}
+        disabled={payment.estado === 'anulado'}
+      />
 
       {/* Payment methods */}
       <Card>

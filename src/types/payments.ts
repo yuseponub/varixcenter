@@ -87,6 +87,7 @@ export interface Payment {
   anulado_por: string | null
   anulado_at: string | null
   anulacion_justificacion: string | null
+  nota: string | null
   created_by: string
   created_at: string
 }

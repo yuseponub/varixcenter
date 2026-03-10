@@ -54,6 +54,7 @@ export async function createPayment(
     descuento: parseFloat((formData.get('descuento') as string) || '0'),
     descuento_justificacion:
       (formData.get('descuento_justificacion') as string) || null,
+    nota: (formData.get('nota') as string) || null,
   }
 
   // Validate with Zod
@@ -87,7 +88,8 @@ export async function createPayment(
       p_items: validated.data.items,
       p_methods: validated.data.methods,
       p_appointment_service_ids: appointmentServiceIds.length > 0 ? appointmentServiceIds : undefined,
-      p_appointment_id: undefined, // Can be set if paying for a specific appointment
+      p_appointment_id: undefined,
+      p_nota: validated.data.nota ?? null,
     }
   )
 
@@ -195,5 +197,32 @@ export async function anularPayment(
   revalidatePath('/pagos')
   revalidatePath('/pacientes')
 
+  return { success: true }
+}
+
+/**
+ * Update the nota of an existing payment
+ */
+export async function updatePaymentNota(
+  paymentId: string,
+  nota: string | null
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'No autorizado.' }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
+    .from('payments')
+    .update({ nota: nota?.trim() || null })
+    .eq('id', paymentId)
+
+  if (error) {
+    console.error('Update payment nota error:', error)
+    return { success: false, error: 'Error al guardar la nota.' }
+  }
+
+  revalidatePath(`/pagos/${paymentId}`)
   return { success: true }
 }

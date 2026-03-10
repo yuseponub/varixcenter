@@ -77,6 +77,7 @@ export function PaymentForm({
   }])
   const [descuento, setDescuento] = useState(0)
   const [descuentoJustificacion, setDescuentoJustificacion] = useState('')
+  const [nota, setNota] = useState('')
 
   // Combine all items for calculations and display
   const allItems: PaymentItemWithAppointmentService[] = [
@@ -169,6 +170,7 @@ export function PaymentForm({
     formData.set('methods', JSON.stringify(methods))
     formData.set('descuento', descuento.toString())
     formData.set('descuento_justificacion', descuentoJustificacion)
+    formData.set('nota', nota)
 
     // Extract appointment_service_ids for the RPC
     const appointmentServiceIds = pendingServiceItems
@@ -354,6 +356,23 @@ export function PaymentForm({
           {state?.errors?.methods && (
             <p className="text-sm text-red-500 mt-2">{state.errors.methods[0]}</p>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Nota */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Nota (opcional)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            value={nota}
+            onChange={e => setNota(e.target.value)}
+            placeholder="Descripcion o comentario del pago..."
+            rows={2}
+            disabled={isPending}
+            maxLength={1000}
+          />
         </CardContent>
       </Card>
 

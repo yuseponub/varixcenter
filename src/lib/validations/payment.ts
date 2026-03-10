@@ -14,8 +14,8 @@ export const paymentItemSchema = z.object({
 })
 
 /**
- * Payment method schema with comprobante validation
- * ANTI-FRAUD: Electronic payments (tarjeta, transferencia, nequi) require photo proof
+ * Payment method schema
+ * Comprobante photo is optional for all payment methods
  */
 export const paymentMethodSchema = z.object({
   metodo: z.enum(['efectivo', 'tarjeta', 'transferencia', 'nequi'], {
@@ -24,10 +24,6 @@ export const paymentMethodSchema = z.object({
   monto: z.number().positive('El monto debe ser positivo'),
   comprobante_path: z.string().nullable(),
 })
-.refine(
-  data => data.metodo === 'efectivo' || (data.comprobante_path !== null && data.comprobante_path !== ''),
-  { message: 'Los pagos electronicos requieren foto del comprobante', path: ['comprobante_path'] }
-)
 
 /**
  * Payment creation schema
@@ -54,6 +50,12 @@ export const paymentSchema = z.object({
   descuento_justificacion: z
     .string()
     .max(500, 'La justificacion es muy larga')
+    .nullable()
+    .optional(),
+
+  nota: z
+    .string()
+    .max(1000, 'La nota es muy larga')
     .nullable()
     .optional(),
 })

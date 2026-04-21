@@ -54,8 +54,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Error en la busqueda' }, { status: 500 })
   }
 
-  // Fetch doctor info for each appointment
-  const doctorIds = [...new Set(appointments?.map(a => a.doctor_id) || [])]
+  // Fetch doctor info for each appointment (skip null doctor_ids)
+  const doctorIds = [...new Set(
+    (appointments || []).map(a => a.doctor_id).filter((id): id is string => !!id)
+  )]
 
   let doctorsMap = new Map()
   if (doctorIds.length > 0) {
@@ -70,7 +72,9 @@ export async function GET(request: Request) {
   // Combine data
   const results = (appointments || []).map(apt => ({
     ...apt,
-    doctor: doctorsMap.get(apt.doctor_id) || { nombre: null, apellido: null, email: 'Desconocido' },
+    doctor: apt.doctor_id
+      ? doctorsMap.get(apt.doctor_id) || { nombre: null, apellido: null, email: 'Desconocido' }
+      : { nombre: null, apellido: null, email: 'Sin asignar' },
   }))
 
   return NextResponse.json({ appointments: results })

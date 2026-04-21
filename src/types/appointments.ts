@@ -44,7 +44,7 @@ export function isValidAppointmentStatus(status: unknown): status is Appointment
 export interface Appointment {
   id: string
   patient_id: string
-  doctor_id: string
+  doctor_id: string | null
   fecha_hora_inicio: string
   fecha_hora_fin: string
   estado: AppointmentStatus
@@ -98,7 +98,7 @@ export interface CalendarEvent {
     patientName: string
     patientCedula: string
     patientCelular: string
-    doctorId: string
+    doctorId: string | null
     estado: AppointmentStatus
     motivoConsulta: string | null
     notas: string | null
@@ -110,7 +110,7 @@ export interface CalendarEvent {
  */
 export interface AppointmentInsert {
   patient_id: string
-  doctor_id: string
+  doctor_id?: string | null
   fecha_hora_inicio: string
   fecha_hora_fin: string
   estado?: AppointmentStatus
@@ -124,7 +124,7 @@ export interface AppointmentInsert {
  */
 export interface AppointmentUpdate {
   patient_id?: string
-  doctor_id?: string
+  doctor_id?: string | null
   fecha_hora_inicio?: string
   fecha_hora_fin?: string
   estado?: AppointmentStatus

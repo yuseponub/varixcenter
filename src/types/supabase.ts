@@ -88,7 +88,7 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
-          doctor_id: string
+          doctor_id: string | null
           estado: Database["public"]["Enums"]["appointment_status"]
           fecha_hora_fin: string
           fecha_hora_inicio: string
@@ -101,7 +101,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
-          doctor_id: string
+          doctor_id?: string | null
           estado?: Database["public"]["Enums"]["appointment_status"]
           fecha_hora_fin: string
           fecha_hora_inicio: string
@@ -114,7 +114,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
-          doctor_id?: string
+          doctor_id?: string | null
           estado?: Database["public"]["Enums"]["appointment_status"]
           fecha_hora_fin?: string
           fecha_hora_inicio?: string

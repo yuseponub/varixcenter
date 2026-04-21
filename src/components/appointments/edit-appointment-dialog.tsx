@@ -39,7 +39,7 @@ interface AppointmentData {
   appointmentId: string
   patientId: string
   patientName?: string
-  doctorId: string
+  doctorId: string | null
   start: string
   end: string
   motivoConsulta?: string | null
@@ -136,7 +136,7 @@ export function EditAppointmentDialog({
             defaultValues={{
               patient: appointment.patientId,
               patientName: appointment.patientName,
-              doctor: appointment.doctorId,
+              doctor: appointment.doctorId || '',
               start: appointment.start,
               end: appointment.end,
               motivo_consulta: appointment.motivoConsulta || '',

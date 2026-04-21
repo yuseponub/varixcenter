@@ -14,8 +14,8 @@ export const appointmentSchema = z.object({
     .uuid('ID de paciente invalido'),
 
   doctor_id: z
-    .string()
-    .uuid('ID de doctor invalido'),
+    .union([z.string().uuid('ID de doctor invalido'), z.literal('')])
+    .optional(),
 
   // Time range (ISO 8601 format)
   fecha_hora_inicio: z

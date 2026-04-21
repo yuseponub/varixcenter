@@ -531,30 +531,29 @@ export function AppointmentForm({
           </CardContent>
         </Card>
 
-        {/* Doctor Selection */}
+        {/* Doctor Selection (optional) */}
         <Card>
           <CardHeader>
             <CardTitle>Doctor</CardTitle>
           </CardHeader>
           <CardContent>
-
-            {/* Doctor Selection */}
             <FormField
               control={form.control}
               name="doctor_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Doctor *</FormLabel>
+                  <FormLabel>Doctor (opcional)</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
+                    onValueChange={(v) => field.onChange(v === '__none__' ? '' : v)}
+                    value={field.value || '__none__'}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccionar doctor" />
+                        <SelectValue placeholder="Sin asignar" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="__none__">Sin asignar</SelectItem>
                       {doctors.length === 0 ? (
                         <div className="p-2 text-center text-sm text-muted-foreground">
                           No hay doctores disponibles
@@ -571,7 +570,7 @@ export function AppointmentForm({
                     </SelectContent>
                   </Select>
                   {/* Hidden input for form submission */}
-                  <input type="hidden" name="doctor_id" value={field.value} />
+                  <input type="hidden" name="doctor_id" value={field.value || ''} />
                   <FormMessage />
                   {state?.errors?.doctor_id && (
                     <p className="text-sm text-red-600">{state.errors.doctor_id[0]}</p>

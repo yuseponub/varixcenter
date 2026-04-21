@@ -66,7 +66,7 @@ export async function createAppointment(
   // Prepare data for insert (handle empty strings -> null)
   const insertData = {
     patient_id: validated.data.patient_id,
-    doctor_id: validated.data.doctor_id,
+    doctor_id: validated.data.doctor_id || null,
     fecha_hora_inicio: validated.data.fecha_hora_inicio,
     fecha_hora_fin: validated.data.fecha_hora_fin,
     motivo_consulta: validated.data.motivo_consulta || null,
@@ -75,7 +75,8 @@ export async function createAppointment(
   }
 
   // Insert into database
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('appointments')
     .insert(insertData)
     .select('id')
@@ -310,7 +311,7 @@ export async function updateAppointment(
   // Prepare data for update (handle empty strings -> null)
   const updateData = {
     patient_id: validated.data.patient_id,
-    doctor_id: validated.data.doctor_id,
+    doctor_id: validated.data.doctor_id || null,
     fecha_hora_inicio: validated.data.fecha_hora_inicio,
     fecha_hora_fin: validated.data.fecha_hora_fin,
     motivo_consulta: validated.data.motivo_consulta || null,
@@ -318,7 +319,8 @@ export async function updateAppointment(
   }
 
   // Update in database
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('appointments')
     .update(updateData)
     .eq('id', appointmentId)
@@ -512,7 +514,7 @@ export async function createAppointmentWithNewPatient(
   // Prepare appointment data for insert
   const appointmentInsertData = {
     patient_id: patientData.id,
-    doctor_id: validatedAppointment.data.doctor_id,
+    doctor_id: validatedAppointment.data.doctor_id || null,
     fecha_hora_inicio: validatedAppointment.data.fecha_hora_inicio,
     fecha_hora_fin: validatedAppointment.data.fecha_hora_fin,
     motivo_consulta: validatedAppointment.data.motivo_consulta || null,
@@ -521,7 +523,8 @@ export async function createAppointmentWithNewPatient(
   }
 
   // Create appointment
-  const { data: appointmentData, error: appointmentError } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: appointmentData, error: appointmentError } = await (supabase as any)
     .from('appointments')
     .insert(appointmentInsertData)
     .select('id')

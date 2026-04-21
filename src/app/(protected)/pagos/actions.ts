@@ -94,29 +94,45 @@ export async function createPayment(
   )
 
   if (paymentError) {
-    console.error('Payment creation error:', paymentError)
+    console.error('Payment creation error:', {
+      message: paymentError.message,
+      code: paymentError.code,
+      details: paymentError.details,
+      hint: paymentError.hint,
+    })
 
-    // Map database errors to user-friendly Spanish messages
-    if (paymentError.message.includes('comprobante')) {
+    const msg = paymentError.message || ''
+
+    // Match exact RPC exception phrases (anchored to the start of the message
+    // raised by RAISE EXCEPTION) — NOT broad keyword matching, which used to
+    // misclassify unrelated errors that happened to contain words like
+    // "justificacion" (e.g. PostgREST overload errors include parameter names
+    // such as p_descuento_justificacion).
+    if (msg.startsWith('Los pagos electronicos requieren')) {
       return { error: 'Los pagos electronicos requieren foto del comprobante' }
     }
-    if (paymentError.message.includes('justificacion')) {
-      return { error: 'Los descuentos requieren justificacion' }
+    if (msg.startsWith('Los descuentos requieren justificacion')) {
+      return { error: 'Los descuentos requieren justificacion (minimo 5 caracteres)' }
     }
-    if (paymentError.message.includes('no coincide')) {
-      return { error: paymentError.message }
+    if (msg.startsWith('La suma de items') || msg.startsWith('La suma de metodos')) {
+      return { error: msg }
     }
-    if (paymentError.message.includes('paciente no existe')) {
+    if (msg.startsWith('El paciente no existe')) {
       return { error: 'El paciente seleccionado no existe' }
     }
-    if (paymentError.message.includes('Servicio de cita')) {
+    if (msg.startsWith('Servicio de cita')) {
       return { error: 'Uno de los servicios de cita ya fue pagado o no existe' }
     }
-    if (paymentError.message.includes('cita especificada')) {
+    if (msg.startsWith('La cita especificada no existe')) {
       return { error: 'La cita especificada no existe' }
     }
+    if (msg.startsWith('No se pueden crear pagos en un dia cerrado')) {
+      return { error: msg }
+    }
 
-    return { error: 'Error al crear el pago. Por favor intente de nuevo.' }
+    // Fallback: surface the real DB error so the user (and devs) can see it
+    // instead of getting a misleading generic message.
+    return { error: `Error al crear el pago: ${msg || 'error desconocido'}` }
   }
 
   // Revalidate affected pages

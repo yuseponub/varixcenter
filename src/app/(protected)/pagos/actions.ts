@@ -87,8 +87,8 @@ export async function createPayment(
       p_created_by: user.id,
       p_items: validated.data.items,
       p_methods: validated.data.methods,
-      p_appointment_service_ids: appointmentServiceIds.length > 0 ? appointmentServiceIds : undefined,
-      p_appointment_id: undefined,
+      p_appointment_service_ids: appointmentServiceIds,
+      p_appointment_id: null,
       p_nota: validated.data.nota ?? null,
     }
   )

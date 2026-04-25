@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Eye } from 'lucide-react'
-import type { PaymentWithDetails } from '@/types/payments'
+import { PAYMENT_METHOD_LABELS, type PaymentWithDetails } from '@/types/payments'
 
 interface PaymentsTableProps {
   payments: PaymentWithDetails[]
@@ -44,6 +44,8 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
           <TableHead>Paciente</TableHead>
           <TableHead>Fecha</TableHead>
           <TableHead className="text-right">Total</TableHead>
+          <TableHead>Método de pago</TableHead>
+          <TableHead>Notas</TableHead>
           <TableHead>Estado</TableHead>
           <TableHead className="w-[80px]"></TableHead>
         </TableRow>
@@ -71,6 +73,19 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
             </TableCell>
             <TableCell className="text-right font-medium">
               {formatCurrency(payment.total)}
+            </TableCell>
+            <TableCell className="text-sm">
+              {payment.payment_methods.length > 0
+                ? payment.payment_methods
+                    .map((m) => PAYMENT_METHOD_LABELS[m.metodo])
+                    .join(' + ')
+                : <span className="text-muted-foreground">—</span>}
+            </TableCell>
+            <TableCell
+              className="max-w-[220px] truncate text-sm text-muted-foreground"
+              title={payment.nota ?? undefined}
+            >
+              {payment.nota ?? <span>—</span>}
             </TableCell>
             <TableCell>
               <Badge variant={payment.estado === 'activo' ? 'default' : 'destructive'}>

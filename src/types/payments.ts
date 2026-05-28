@@ -155,3 +155,39 @@ export interface PaymentMethodInput {
   monto: number
   comprobante_path: string | null
 }
+
+/**
+ * Payment amounts grouped into the cash-closing columns: efectivo, tarjeta,
+ * and otros (transferencia + nequi). A mixed payment contributes to more than
+ * one bucket so its split is visible per column.
+ */
+export interface MethodBreakdown {
+  efectivo: number
+  tarjeta: number
+  otros: number
+}
+
+/**
+ * Split a payment's methods into efectivo / tarjeta / otros buckets.
+ * Centralized so the cierre detail table and print report tie out identically.
+ */
+export function splitMethodAmounts(
+  methods: { metodo: string; monto: number }[]
+): MethodBreakdown {
+  return methods.reduce<MethodBreakdown>(
+    (acc, m) => {
+      if (m.metodo === 'efectivo') acc.efectivo += m.monto
+      else if (m.metodo === 'tarjeta') acc.tarjeta += m.monto
+      else acc.otros += m.monto
+      return acc
+    },
+    { efectivo: 0, tarjeta: 0, otros: 0 }
+  )
+}
+
+/**
+ * A payment is "mixto" when it combines more than one distinct method.
+ */
+export function isMixedPayment(methods: { metodo: string }[]): boolean {
+  return new Set(methods.map((m) => m.metodo)).size > 1
+}

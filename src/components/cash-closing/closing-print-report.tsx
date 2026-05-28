@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Printer } from 'lucide-react'
-import type { CashClosing } from '@/types'
+import { splitMethodAmounts, isMixedPayment, type CashClosing } from '@/types'
 
 interface PaymentForPrint {
   id: string
@@ -33,19 +33,41 @@ const formatDate = (dateStr: string) =>
 export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintReportProps) {
   const printRef = useRef<HTMLDivElement>(null)
 
+  // Column totals (anulados excluded) shared by the on-screen preview and the printed report.
+  const paymentTotals = payments.reduce(
+    (acc, p) => {
+      if (p.estado === 'anulado') return acc
+      const s = splitMethodAmounts(p.payment_methods)
+      acc.efectivo += s.efectivo
+      acc.tarjeta += s.tarjeta
+      acc.otros += s.otros
+      return acc
+    },
+    { efectivo: 0, tarjeta: 0, otros: 0 }
+  )
+
   const handlePrint = () => {
     const printContent = printRef.current
     if (!printContent) return
 
-    const paymentsRows = payments.map(p => `
+    const cell = (n: number) => (n > 0 ? formatCurrency(n) : '—')
+
+    const paymentsRows = payments.map(p => {
+      const anulado = p.estado === 'anulado'
+      const split = anulado ? { efectivo: 0, tarjeta: 0, otros: 0 } : splitMethodAmounts(p.payment_methods)
+      const mixto = !anulado && isMixedPayment(p.payment_methods)
+      return `
       <tr>
-        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.numero_factura}${p.estado === 'anulado' ? ' <span style="color:red;">(ANULADO)</span>' : ''}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.numero_factura}${mixto ? ' <span style="color:#555;">(Mixto)</span>' : ''}${anulado ? ' <span style="color:red;">(ANULADO)</span>' : ''}</td>
         <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.patients.nombre} ${p.patients.apellido}</td>
         <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.patients.cedula}</td>
         <td style="padding: 4px 8px; border-bottom: 1px solid #eee; text-align: right;">${formatCurrency(p.total)}${p.descuento > 0 ? ` <span style="color:#b45309;font-size:11px;">(-${formatCurrency(p.descuento)})</span>` : ''}</td>
-        <td style="padding: 4px 8px; border-bottom: 1px solid #eee;">${p.payment_methods.map(pm => `${pm.metodo}: ${formatCurrency(pm.monto)}`).join(', ')}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee; text-align: right;">${cell(split.efectivo)}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee; text-align: right;">${cell(split.tarjeta)}</td>
+        <td style="padding: 4px 8px; border-bottom: 1px solid #eee; text-align: right;">${cell(split.otros)}</td>
       </tr>
-    `).join('')
+    `
+    }).join('')
 
     const printWindow = window.open('', '_blank')
     if (!printWindow) return
@@ -220,13 +242,24 @@ export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintRepor
                 <th>Paciente</th>
                 <th>Cedula</th>
                 <th class="right">Total</th>
-                <th>Metodo</th>
+                <th class="right">Efectivo</th>
+                <th class="right">Tarjeta</th>
+                <th class="right">Otros</th>
               </tr>
             </thead>
             <tbody>
               ${paymentsRows}
             </tbody>
+            <tfoot>
+              <tr style="font-weight:bold;border-top:2px solid #333;">
+                <td colspan="4" style="padding: 6px 8px;">TOTALES</td>
+                <td style="padding: 6px 8px; text-align: right;">${formatCurrency(paymentTotals.efectivo)}</td>
+                <td style="padding: 6px 8px; text-align: right;">${formatCurrency(paymentTotals.tarjeta)}</td>
+                <td style="padding: 6px 8px; text-align: right;">${formatCurrency(paymentTotals.otros)}</td>
+              </tr>
+            </tfoot>
           </table>
+          <p style="font-size:10px;color:#666;margin-top:6px;">Otros agrupa transferencia y nequi. Los pagos anulados no suman en los totales.</p>
         </div>
         ` : ''}
 
@@ -308,14 +341,45 @@ export function ClosingPrintReport({ closing, payments = [] }: ClosingPrintRepor
           {payments.length > 0 && (
             <div className="space-y-2">
               <h3 className="font-medium">Pagos del Dia ({payments.length})</h3>
-              <div className="text-xs space-y-1">
-                {payments.map(p => (
-                  <div key={p.id} className="flex justify-between border-b pb-1">
-                    <span>{p.patients.nombre} {p.patients.apellido}</span>
-                    <span>{formatCurrency(p.total)} - {p.payment_methods.map(pm => pm.metodo).join(', ')}</span>
-                  </div>
-                ))}
-              </div>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-1 font-medium">Paciente</th>
+                    <th className="text-right py-1 font-medium">Total</th>
+                    <th className="text-right py-1 font-medium">Efectivo</th>
+                    <th className="text-right py-1 font-medium">Tarjeta</th>
+                    <th className="text-right py-1 font-medium">Otros</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map(p => {
+                    const anulado = p.estado === 'anulado'
+                    const split = anulado
+                      ? { efectivo: 0, tarjeta: 0, otros: 0 }
+                      : splitMethodAmounts(p.payment_methods)
+                    return (
+                      <tr key={p.id} className="border-b last:border-0">
+                        <td className="py-1">
+                          {p.patients.nombre} {p.patients.apellido}
+                          {anulado && <span className="text-red-600 ml-1">(anulado)</span>}
+                        </td>
+                        <td className="py-1 text-right">{formatCurrency(p.total)}</td>
+                        <td className="py-1 text-right">{split.efectivo > 0 ? formatCurrency(split.efectivo) : '—'}</td>
+                        <td className="py-1 text-right">{split.tarjeta > 0 ? formatCurrency(split.tarjeta) : '—'}</td>
+                        <td className="py-1 text-right">{split.otros > 0 ? formatCurrency(split.otros) : '—'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t-2 font-medium">
+                    <td className="py-1 text-right" colSpan={2}>Totales</td>
+                    <td className="py-1 text-right">{formatCurrency(paymentTotals.efectivo)}</td>
+                    <td className="py-1 text-right">{formatCurrency(paymentTotals.tarjeta)}</td>
+                    <td className="py-1 text-right">{formatCurrency(paymentTotals.otros)}</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           )}
         </div>

@@ -141,6 +141,7 @@ export async function getPaymentsForDate(fecha: string) {
       total,
       descuento,
       estado,
+      nota,
       created_at,
       patients!inner(id, nombre, apellido, cedula),
       payment_methods(metodo, monto)

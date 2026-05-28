@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getCashClosingById, getPaymentsForDate } from '@/lib/queries/cash-closings'
@@ -10,7 +9,8 @@ import { Separator } from '@/components/ui/separator'
 import { ReopenDialog } from '@/components/cash-closing/reopen-dialog'
 import { DeleteDialog } from '@/components/cash-closing/delete-dialog'
 import { ClosingPrintReport } from '@/components/cash-closing/closing-print-report'
-import { CIERRE_ESTADO_LABELS, CIERRE_ESTADO_VARIANTS, splitMethodAmounts, isMixedPayment } from '@/types'
+import { PaymentsBreakdownTable, type DayPayment } from '@/components/cash-closing/payments-breakdown-table'
+import { CIERRE_ESTADO_LABELS, CIERRE_ESTADO_VARIANTS } from '@/types'
 import { Banknote, CreditCard, Building2, Smartphone, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import {
   Breadcrumb,
@@ -38,19 +38,6 @@ const formatDateTime = (dateStr: string) =>
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(dateStr))
-
-const amountCell = (amount: number) =>
-  amount > 0 ? formatCurrency(amount) : <span className="text-muted-foreground">—</span>
-
-interface DayPayment {
-  id: string
-  numero_factura: string
-  total: number
-  descuento: number
-  estado: string
-  patients: { nombre: string; apellido: string; cedula: string }
-  payment_methods: { metodo: string; monto: number }[]
-}
 
 async function getUserRole(): Promise<string> {
   const supabase = await createClient()
@@ -96,20 +83,6 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
   ])
 
   const hasDiferencia = closing.diferencia !== 0
-
-  // Column totals for the day's payments. Anulados are excluded so the
-  // efectivo / tarjeta / otros columns tie out to the stored closing totals.
-  const paymentTotals = (payments as DayPayment[]).reduce(
-    (acc, p) => {
-      if (p.estado === 'anulado') return acc
-      const split = splitMethodAmounts(p.payment_methods)
-      acc.efectivo += split.efectivo
-      acc.tarjeta += split.tarjeta
-      acc.otros += split.otros
-      return acc
-    },
-    { efectivo: 0, tarjeta: 0, otros: 0 }
-  )
 
   return (
     <div className="space-y-6">
@@ -302,76 +275,7 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
           <CardTitle className="text-lg">Pagos del Dia ({payments.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          {payments.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay pagos registrados para este dia</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 font-medium">Factura</th>
-                    <th className="text-left py-2 font-medium">Paciente</th>
-                    <th className="text-right py-2 font-medium">Total</th>
-                    <th className="text-right py-2 font-medium">Efectivo</th>
-                    <th className="text-right py-2 font-medium">Tarjeta</th>
-                    <th className="text-right py-2 font-medium">Otros</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(payments as DayPayment[]).map((payment) => {
-                    const anulado = payment.estado === 'anulado'
-                    const split = anulado
-                      ? { efectivo: 0, tarjeta: 0, otros: 0 }
-                      : splitMethodAmounts(payment.payment_methods)
-                    const mixto = !anulado && isMixedPayment(payment.payment_methods)
-                    return (
-                      <tr key={payment.id} className="border-b last:border-0">
-                        <td className="py-2">
-                          <Link
-                            href={`/pagos/${payment.id}`}
-                            className="font-mono text-primary hover:underline"
-                          >
-                            {payment.numero_factura}
-                          </Link>
-                          {mixto && (
-                            <Badge variant="secondary" className="ml-2 text-xs">Mixto</Badge>
-                          )}
-                          {anulado && (
-                            <Badge variant="destructive" className="ml-2 text-xs">Anulado</Badge>
-                          )}
-                        </td>
-                        <td className="py-2">
-                          {payment.patients.nombre} {payment.patients.apellido}
-                        </td>
-                        <td className={`py-2 text-right font-medium ${anulado ? 'text-muted-foreground line-through' : ''}`}>
-                          {formatCurrency(payment.total)}
-                          {payment.descuento > 0 && (
-                            <span className="text-xs text-amber-600 ml-1">
-                              (-{formatCurrency(payment.descuento)})
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-2 text-right">{amountCell(split.efectivo)}</td>
-                        <td className="py-2 text-right">{amountCell(split.tarjeta)}</td>
-                        <td className="py-2 text-right">{amountCell(split.otros)}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 font-medium">
-                    <td className="py-2" colSpan={3}>Totales</td>
-                    <td className="py-2 text-right">{formatCurrency(paymentTotals.efectivo)}</td>
-                    <td className="py-2 text-right">{formatCurrency(paymentTotals.tarjeta)}</td>
-                    <td className="py-2 text-right">{formatCurrency(paymentTotals.otros)}</td>
-                  </tr>
-                </tfoot>
-              </table>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Otros agrupa transferencia y nequi. Los pagos anulados no suman en los totales.
-              </p>
-            </div>
-          )}
+          <PaymentsBreakdownTable payments={payments as DayPayment[]} />
         </CardContent>
       </Card>
 

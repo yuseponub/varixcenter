@@ -1,6 +1,8 @@
-import { getClosingSummaryForDate } from '@/lib/queries/cash-closings'
+import { getClosingSummaryForDate, getPaymentsForDate } from '@/lib/queries/cash-closings'
 import { ClosingForm } from '@/components/cash-closing/closing-form'
+import { PaymentsBreakdownTable, type DayPayment } from '@/components/cash-closing/payments-breakdown-table'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertTriangle } from 'lucide-react'
 import {
   Breadcrumb,
@@ -28,8 +30,11 @@ export default async function NuevoCierrePage({ searchParams }: NuevoCierrePageP
   const params = await searchParams
   const fecha = params.fecha || getTodayDate()
 
-  // Get summary for the selected date
-  const summary = await getClosingSummaryForDate(fecha)
+  // Get summary and per-patient payments for the selected date
+  const [summary, payments] = await Promise.all([
+    getClosingSummaryForDate(fecha),
+    getPaymentsForDate(fecha),
+  ])
 
   if (!summary) {
     return (
@@ -97,6 +102,16 @@ export default async function NuevoCierrePage({ searchParams }: NuevoCierrePageP
       <div className="max-w-2xl">
         <ClosingForm fecha={fecha} summary={summary} />
       </div>
+
+      {/* Per-patient breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Pagos del Dia ({payments.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PaymentsBreakdownTable payments={payments as DayPayment[]} />
+        </CardContent>
+      </Card>
     </div>
   )
 }

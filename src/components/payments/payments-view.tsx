@@ -10,9 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Lock } from 'lucide-react'
+import { Plus, Lock, Banknote, CreditCard } from 'lucide-react'
 import { PaymentsTable } from '@/components/payments/payments-table'
-import type { PaymentWithDetails } from '@/types/payments'
+import { splitMethodAmounts, type PaymentWithDetails } from '@/types/payments'
 
 type FilterMode = 'todos' | 'dia' | 'semana'
 
@@ -63,6 +63,22 @@ export function PaymentsView({ payments }: PaymentsViewProps) {
     return filteredPayments
       .filter(p => p.estado === 'activo')
       .reduce((sum, p) => sum + p.total, 0)
+  }, [filteredPayments])
+
+  // Breakdown by method (active payments only), split mixed payments per method
+  const breakdown = useMemo(() => {
+    return filteredPayments
+      .filter(p => p.estado === 'activo')
+      .reduce(
+        (acc, p) => {
+          const s = splitMethodAmounts(p.payment_methods)
+          acc.efectivo += s.efectivo
+          acc.tarjeta += s.tarjeta
+          acc.otros += s.otros
+          return acc
+        },
+        { efectivo: 0, tarjeta: 0, otros: 0 }
+      )
   }, [filteredPayments])
 
   const formatCurrency = (amount: number) =>
@@ -120,12 +136,30 @@ export function PaymentsView({ payments }: PaymentsViewProps) {
 
       {/* Summary when filtered */}
       {filterMode !== 'todos' && (
-        <div className="bg-muted/50 rounded-lg p-4 flex items-center justify-between">
+        <div className="bg-muted/50 rounded-lg p-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <span className="text-sm text-muted-foreground">
             {filterMode === 'dia' ? 'Total del día' : 'Total de la semana'}
             {' '}({filteredPayments.filter(p => p.estado === 'activo').length} pagos activos)
           </span>
-          <span className="text-lg font-bold">{formatCurrency(total)}</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="flex items-center gap-1.5 text-sm">
+              <Banknote className="h-4 w-4 text-green-600" />
+              <span className="text-muted-foreground">Efectivo:</span>
+              <span className="font-medium">{formatCurrency(breakdown.efectivo)}</span>
+            </span>
+            <span className="flex items-center gap-1.5 text-sm">
+              <CreditCard className="h-4 w-4 text-blue-600" />
+              <span className="text-muted-foreground">Tarjeta:</span>
+              <span className="font-medium">{formatCurrency(breakdown.tarjeta)}</span>
+            </span>
+            {breakdown.otros > 0 && (
+              <span className="flex items-center gap-1.5 text-sm">
+                <span className="text-muted-foreground">Otros:</span>
+                <span className="font-medium">{formatCurrency(breakdown.otros)}</span>
+              </span>
+            )}
+            <span className="text-lg font-bold">{formatCurrency(total)}</span>
+          </div>
         </div>
       )}
 

@@ -88,8 +88,8 @@ export async function createPayment(
       p_items: validated.data.items,
       p_methods: validated.data.methods,
       p_appointment_service_ids: appointmentServiceIds,
-      p_appointment_id: null,
-      p_nota: validated.data.nota ?? null,
+      p_appointment_id: undefined,
+      p_nota: validated.data.nota ?? undefined,
     }
   )
 
@@ -227,6 +227,23 @@ export async function updatePaymentNota(
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'No autorizado.' }
+
+  // Solo admin y medico pueden editar la nota de un pago (el rol viene del JWT)
+  const { data: { session } } = await supabase.auth.getSession()
+  let role = 'none'
+  if (session?.access_token) {
+    try {
+      const payload = JSON.parse(
+        Buffer.from(session.access_token.split('.')[1], 'base64').toString()
+      )
+      role = payload.app_metadata?.role ?? 'none'
+    } catch {
+      role = 'none'
+    }
+  }
+  if (role !== 'admin' && role !== 'medico') {
+    return { success: false, error: 'Solo Admin y Medico pueden editar la nota de un pago.' }
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)

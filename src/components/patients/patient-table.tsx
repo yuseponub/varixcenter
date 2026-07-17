@@ -23,10 +23,10 @@ import { FileText } from 'lucide-react'
 
 type Patient = {
   id: string
-  cedula: string
+  cedula: string | null
   nombre: string
   apellido: string
-  celular: string
+  celular: string | null
   created_at: string
 }
 

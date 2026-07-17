@@ -23,7 +23,7 @@ import type { CartItem, MediasSaleMethodInput } from '@/types/medias/sales'
 
 interface Patient {
   id: string
-  cedula: string
+  cedula: string | null
   nombre: string
   apellido: string
 }
@@ -98,7 +98,7 @@ export function SaleForm({ products, staffUsers, patients }: SaleFormProps) {
   // Filter patients for dropdown search
   const filteredPatients = patientSearch
     ? patients.filter((p) =>
-        `${p.cedula} ${p.nombre} ${p.apellido}`
+        `${p.cedula ?? ''} ${p.nombre} ${p.apellido}`
           .toLowerCase()
           .includes(patientSearch.toLowerCase())
       )

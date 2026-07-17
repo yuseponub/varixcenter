@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseInvoiceImage } from '@/lib/services/invoice-ocr'
+import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 60 // Allow up to 60 seconds for OCR processing
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File
 

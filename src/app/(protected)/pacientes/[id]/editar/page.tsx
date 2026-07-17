@@ -19,16 +19,16 @@ export default async function EditarPacientePage({ params }: PageProps) {
 
   // Convert database dates to form format (YYYY-MM-DD)
   const defaultValues = {
-    cedula: patient.cedula,
+    cedula: patient.cedula ?? '',
     nombre: patient.nombre,
     apellido: patient.apellido,
-    celular: patient.celular,
+    celular: patient.celular ?? '',
     email: patient.email ?? '',
     fecha_nacimiento: patient.fecha_nacimiento ?? '',
     direccion: patient.direccion ?? '',
-    contacto_emergencia_nombre: patient.contacto_emergencia_nombre,
-    contacto_emergencia_telefono: patient.contacto_emergencia_telefono,
-    contacto_emergencia_parentesco: patient.contacto_emergencia_parentesco,
+    contacto_emergencia_nombre: patient.contacto_emergencia_nombre ?? undefined,
+    contacto_emergencia_telefono: patient.contacto_emergencia_telefono ?? undefined,
+    contacto_emergencia_parentesco: patient.contacto_emergencia_parentesco ?? undefined,
   }
 
   return (

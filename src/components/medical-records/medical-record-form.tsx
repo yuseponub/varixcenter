@@ -47,7 +47,7 @@ interface MedicalRecordFormProps {
     id: string
     nombre: string
     apellido: string
-    cedula: string
+    cedula: string | null
     fecha_nacimiento?: string | null
     telefono?: string | null
     email?: string | null
@@ -59,7 +59,7 @@ interface MedicalRecordFormProps {
     fecha_hora_inicio: string
     motivo_consulta?: string | null
   }
-  doctorId: string
+  doctorId: string | null
   services: Service[]
   initialData?: MedicalRecordWithDetails
   userRole: 'admin' | 'medico' | 'enfermera'
@@ -151,7 +151,7 @@ export function MedicalRecordForm({
       // Core fields
       formData.set('patient_id', patientData.id)
       formData.set('appointment_id', appointmentData.id)
-      formData.set('doctor_id', doctorId)
+      if (doctorId) formData.set('doctor_id', doctorId)
 
       // JSONB fields
       formData.set('sintomas', JSON.stringify(sintomas))

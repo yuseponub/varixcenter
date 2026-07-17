@@ -191,6 +191,13 @@ export async function GET(request: NextRequest) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  // Gate por entorno: mientras coexistan el front viejo y el v2, solo uno
+  // debe enviar recordatorios (evita SMS duplicados al paciente).
+  if (process.env.ENABLE_CRON !== 'true') {
+    console.log('[Cron] ENABLE_CRON != true - job deshabilitado en este entorno')
+    return Response.json({ skipped: true, reason: 'ENABLE_CRON disabled' })
+  }
+
   console.log('[Cron] Starting reminder job at', new Date().toISOString())
 
   const results = {

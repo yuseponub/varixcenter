@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getDoctors, getAppointmentsForCalendar } from '@/lib/queries/appointments'
 import { getActiveServices } from '@/lib/queries/services'
 import { CalendarView } from './calendar-view'
+import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
 
 /**
@@ -50,6 +51,9 @@ export default async function CitasPage() {
           <Button>Nueva Cita</Button>
         </Link>
       </div>
+
+      {/* Cita rapida en un renglon */}
+      <QuickAppointmentBar doctors={doctors} services={services} />
 
       {/* Calendar View (client component) */}
       <CalendarView

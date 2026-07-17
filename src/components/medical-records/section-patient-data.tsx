@@ -7,7 +7,7 @@ import { User, Calendar, Phone, Mail, MapPin } from 'lucide-react'
 interface PatientData {
   nombre: string
   apellido: string
-  cedula: string
+  cedula: string | null
   fecha_nacimiento?: string | null
   telefono?: string | null
   email?: string | null
@@ -65,7 +65,7 @@ export function SectionPatientData({
             <h3 className="text-xl font-semibold">
               {patient.nombre} {patient.apellido}
             </h3>
-            <p className="text-muted-foreground">CC: {patient.cedula}</p>
+            <p className="text-muted-foreground">CC: {patient.cedula ?? 'Sin cedula'}</p>
           </div>
           {patient.sexo && (
             <Badge variant="outline">

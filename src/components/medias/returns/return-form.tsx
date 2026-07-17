@@ -165,6 +165,7 @@ export function ReturnForm({ sale, returnableQuantities }: ReturnFormProps) {
         <Input
           id="cantidad"
           type="number"
+          inputMode="numeric"
           min={1}
           max={maxQuantity}
           value={cantidad}

@@ -137,6 +137,7 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
               <Input
                 id="conteo_fisico"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 step="0.01"
                 value={conteoFisico}

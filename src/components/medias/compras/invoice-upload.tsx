@@ -241,6 +241,7 @@ export function InvoiceUpload({
           ref={inputRef}
           type="file"
           accept=".jpg,.jpeg,.png,.webp,.pdf"
+          capture="environment"
           onChange={handleFileSelect}
           className="hidden"
         />

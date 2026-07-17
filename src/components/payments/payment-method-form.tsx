@@ -141,8 +141,10 @@ export function PaymentMethodForm({
                 <Input
                   id={`method-amount-${index}`}
                   type="number"
-                  value={method.monto}
+                  inputMode="numeric"
+                  value={method.monto === 0 ? '' : method.monto}
                   onChange={e => handleAmountChange(index, parseFloat(e.target.value) || 0)}
+                  placeholder="0"
                   disabled={disabled}
                   min={0}
                 />

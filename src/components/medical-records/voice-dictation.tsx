@@ -383,18 +383,16 @@ export function VoiceDictation({
         {value && value.trim().length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
             <span className="text-xs text-muted-foreground self-center">Guardar en:</span>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              disabled={disabled}
+            <span
+              role="status"
+              aria-label="El texto ya se guarda automaticamente en Diagnostico"
               title="El texto ya se guarda automaticamente en Diagnostico"
+              className="inline-flex h-8 items-center gap-1 rounded-md border px-3 text-xs font-medium text-muted-foreground"
             >
               <FileText className="h-3 w-3" />
               Diagnostico
               <Check className="h-3 w-3 text-green-500" />
-            </Button>
+            </span>
             {onAddAsProgressNote && (
               <Button
                 type="button"

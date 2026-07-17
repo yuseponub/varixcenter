@@ -122,6 +122,7 @@ export function CierrePhotoUpload({
           <Input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic"
+            capture="environment"
             onChange={handleFileChange}
             disabled={disabled || isUploading}
             className="hidden"

@@ -40,7 +40,6 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
     if (aptError) {
       console.error('Error fetching appointments:', aptError)
     }
-    console.log('Appointments found:', appointments?.length, 'Error:', aptError)
 
     // Filter out appointments that already have a medical record
     const { data: existingRecords } = await (supabase as any)

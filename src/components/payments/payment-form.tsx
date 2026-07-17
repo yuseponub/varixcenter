@@ -217,6 +217,7 @@ export function PaymentForm({
                   onChange={(e) => setPatientSearch(e.target.value)}
                   className="w-full"
                   autoComplete="off"
+                  autoFocus
                   disabled={isPending}
                 />
 
@@ -312,8 +313,10 @@ export function PaymentForm({
               <Input
                 id="descuento"
                 type="number"
-                value={descuento}
+                inputMode="numeric"
+                value={descuento === 0 ? '' : descuento}
                 onChange={e => setDescuento(parseFloat(e.target.value) || 0)}
+                placeholder="0"
                 disabled={isPending}
                 min={0}
                 max={subtotal}

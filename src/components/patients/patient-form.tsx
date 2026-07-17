@@ -96,7 +96,12 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   <FormControl>
                     <Input
                       {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.replace(/\D/g, '').slice(0, 10))
+                      }
                       placeholder="1234567890"
+                      inputMode="numeric"
+                      autoFocus
                       disabled={isEdit}
                       className={isEdit ? 'bg-gray-100' : ''}
                     />
@@ -158,7 +163,15 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                 <FormItem>
                   <FormLabel>Celular *</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="3001234567" type="tel" />
+                    <Input
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.replace(/\D/g, '').slice(0, 10))
+                      }
+                      placeholder="3001234567"
+                      type="tel"
+                      inputMode="numeric"
+                    />
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.celular && (

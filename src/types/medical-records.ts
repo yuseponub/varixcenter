@@ -257,13 +257,23 @@ export const VASCULAR_LAB_LABELS: Record<keyof Omit<MedicalRecordVascularLab, 'o
 // ============================================
 
 /**
+ * Medical record source values
+ */
+export const MEDICAL_RECORD_SOURCES = ['digital', 'legacy_access'] as const
+
+/**
+ * Medical record source type
+ */
+export type MedicalRecordSource = (typeof MEDICAL_RECORD_SOURCES)[number]
+
+/**
  * Base medical record type from database
  */
 export interface MedicalRecord {
   id: string
   patient_id: string
-  appointment_id: string
-  doctor_id: string
+  appointment_id: string | null
+  doctor_id: string | null
   sintomas: MedicalRecordSymptoms
   signos: MedicalRecordSigns
   inicio_relacionado: MedicalRecordOnset
@@ -275,6 +285,10 @@ export interface MedicalRecord {
   tratamiento_ids: string[]
   diagrama_piernas: string | null // JSON string with fabric.js objects
   estado: MedicalRecordStatus
+  source: MedicalRecordSource
+  legacy_record_id: string | null
+  nombre_medico_legacy: string | null
+  medicamentos: string | null
   created_by: string | null
   updated_by: string | null
   created_at: string

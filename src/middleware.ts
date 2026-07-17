@@ -36,7 +36,12 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
-  const isPublicRoute = request.nextUrl.pathname === '/'
+  // El cron de Vercel no tiene cookie de sesion: el endpoint se protege
+  // por si mismo con CRON_SECRET (Bearer). Sin esta excepcion, el
+  // middleware redirige la invocacion a /login y los recordatorios
+  // nunca se ejecutan.
+  const isCronRoute = request.nextUrl.pathname.startsWith('/api/cron/')
+  const isPublicRoute = request.nextUrl.pathname === '/' || isCronRoute
 
   // Redirect authenticated users away from login
   if (user && isAuthRoute) {

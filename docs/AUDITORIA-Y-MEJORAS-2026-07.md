@@ -39,6 +39,13 @@ entornos. Rama: `mejoras-2026-07`.
 Todas probadas en staging y aplicadas a producción el 16-jul-2026 (verificado:
 pago legítimo pasa, precio manipulado se rechaza, contadores bloqueados).
 
+**Bug extra encontrado en verificación**: el middleware de autenticación
+interceptaba `/api/cron/send-reminders`, redirigiendo la invocación del cron de
+Vercel a /login — **los recordatorios SMS probablemente nunca se enviaron** en
+el front viejo. Corregido en v2 (el endpoint se protege solo con CRON_SECRET).
+Al promover v2 con `ENABLE_CRON=true`, los recordatorios funcionarán por
+primera vez; conviene monitorear `/notificaciones` los primeros días.
+
 ## Mejoras funcionales
 
 - **Cita en un renglón** (`/citas`): barra rápida — paciente con autocompletado

@@ -89,6 +89,7 @@ export async function getLastSyncRun(): Promise<LastSyncRun | null> {
   const { data, error } = await (supabase as any)
     .from('sync_runs')
     .select('started_at, finished_at, ok, stats')
+    .eq('source', 'access')
     .order('started_at', { ascending: false })
     .limit(1)
     .maybeSingle()

@@ -29,7 +29,7 @@ entornos. Rama: `mejoras-2026-07`.
 | ID | Qué era | Arreglo |
 |---|---|---|
 | C1 | `/api/ocr` y `/api/transcribe` abiertos a internet (gasto de OpenAI) | Requieren sesión (401 sin login) |
-| A2 | El RPC de pagos confiaba en el precio del navegador | Migración 056: valida contra catálogo (piso/techo), `total = subtotal − descuento`, `created_by = auth.uid()`; elimina sobrecarga vieja |
+| A2 | El RPC de pagos confiaba en el precio del navegador | Migración 056: valida contra catálogo (piso/techo), `total = subtotal − descuento`, `created_by = auth.uid()`; elimina sobrecarga vieja. **Revertido parcialmente por decisión del dueño (17-jul, migraciones 060/061)**: los precios varían en la práctica, así que se retiraron el piso/techo de catálogo, el precio exacto de servicios fijos, el precio pactado de cita y `total = subtotal − descuento`; también se restauró el comprobante opcional (la 056 lo había re-exigido por error). Se conservan `created_by = auth.uid()`, coherencia de sumas (items↔subtotal, métodos↔total) y justificación de descuento. |
 | M1 | Contadores de facturas editables por cualquier usuario | Migración 057: REVOKE UPDATE + drop de políticas permisivas |
 | M2 | Anular venta de medias deshabilitaba el trigger de inmutabilidad de TODA la tabla | Migración 058: flag transaccional por fila |
 | M3 | Cualquier usuario podía editar la nota de un pago | Solo admin/médico |

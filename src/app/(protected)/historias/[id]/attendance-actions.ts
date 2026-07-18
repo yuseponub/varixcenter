@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { getBogotaNowParts, getBogotaToday } from '@/lib/queries/attendances'
 import { revalidatePath } from 'next/cache'
 import type { PatientAttendance } from '@/types'
 
@@ -38,7 +39,7 @@ export async function markPatientAsAttended(patientId: string): Promise<ActionRe
   }
 
   // Check if already marked today
-  const today = new Date().toISOString().split('T')[0]
+  const { date: today, time: bogotaTime } = getBogotaNowParts()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: existing } = await (supabase as any)
     .from('patient_attendances')
@@ -61,6 +62,8 @@ export async function markPatientAsAttended(patientId: string): Promise<ActionRe
     .insert({
       patient_id: patientId,
       marked_by: user.id,
+      fecha: today,
+      hora: bogotaTime,
     })
     .select()
     .single()
@@ -88,7 +91,7 @@ export async function markPatientAsAttended(patientId: string): Promise<ActionRe
  */
 export async function checkPatientAttendedToday(patientId: string): Promise<PatientAttendance | null> {
   const supabase = await createClient()
-  const today = new Date().toISOString().split('T')[0]
+  const today = getBogotaToday()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)

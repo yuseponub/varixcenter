@@ -1,4 +1,8 @@
-import { getAttendanceComparison, getAttendanceTotals } from '@/lib/queries/attendances'
+import {
+  getAttendanceComparison,
+  getAttendanceTotals,
+  getBogotaToday,
+} from '@/lib/queries/attendances'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { UserCheck, CreditCard, AlertCircle, DollarSign } from 'lucide-react'
 import { AtendidosTable } from './atendidos-table'
@@ -19,7 +23,7 @@ const formatDate = (dateStr: string) =>
   }).format(new Date(dateStr + 'T12:00:00'))
 
 export default async function AtendidosPage() {
-  const today = new Date().toISOString().split('T')[0]
+  const today = getBogotaToday()
 
   const [comparison, totals] = await Promise.all([
     getAttendanceComparison(today),

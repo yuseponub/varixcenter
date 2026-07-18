@@ -5,6 +5,26 @@ import type {
   AttendanceTotals,
 } from '@/types'
 
+export function getBogotaNowParts(): { date: string; time: string } {
+  // Colombia uses UTC-5 year-round.
+  const localIso = new Date(Date.now() - 5 * 3600_000).toISOString()
+  return {
+    date: localIso.slice(0, 10),
+    time: localIso.slice(11, 19),
+  }
+}
+
+export function getBogotaToday(): string {
+  return getBogotaNowParts().date
+}
+
+function bogotaDateBounds(fecha: string): { start: string; end: string } {
+  return {
+    start: new Date(`${fecha}T00:00:00-05:00`).toISOString(),
+    end: new Date(`${fecha}T23:59:59.999-05:00`).toISOString(),
+  }
+}
+
 /**
  * Get patient attendance for a specific date
  * Returns the attendance record if patient was marked as attended
@@ -14,7 +34,7 @@ export async function getPatientAttendance(
   fecha?: string
 ): Promise<PatientAttendance | null> {
   const supabase = await createClient()
-  const targetDate = fecha || new Date().toISOString().split('T')[0]
+  const targetDate = fecha || getBogotaToday()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
@@ -42,7 +62,8 @@ export async function getAttendanceComparison(
   fecha?: string
 ): Promise<AttendanceComparisonItem[]> {
   const supabase = await createClient()
-  const targetDate = fecha || new Date().toISOString().split('T')[0]
+  const targetDate = fecha || getBogotaToday()
+  const { start, end } = bogotaDateBounds(targetDate)
 
   // Get all attendances for the date with patient info
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,7 +102,8 @@ export async function getAttendanceComparison(
   const { data: payments, error: payError } = await supabase
     .from('payments')
     .select('id, patient_id, total, estado')
-    .eq('fecha', targetDate)
+    .gte('created_at', start)
+    .lte('created_at', end)
     .eq('estado', 'activo')
 
   if (payError) {
@@ -131,7 +153,8 @@ export async function getAttendanceComparison(
  */
 export async function getAttendanceTotals(fecha?: string): Promise<AttendanceTotals> {
   const supabase = await createClient()
-  const targetDate = fecha || new Date().toISOString().split('T')[0]
+  const targetDate = fecha || getBogotaToday()
+  const { start, end } = bogotaDateBounds(targetDate)
 
   // Count attendances
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,7 +179,8 @@ export async function getAttendanceTotals(fecha?: string): Promise<AttendanceTot
   const { data: payments, error: payError } = await supabase
     .from('payments')
     .select('patient_id, total')
-    .eq('fecha', targetDate)
+    .gte('created_at', start)
+    .lte('created_at', end)
     .eq('estado', 'activo')
     .in('patient_id', patientIds)
 

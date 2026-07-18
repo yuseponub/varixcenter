@@ -67,6 +67,43 @@ interface LegacyDiagnostic {
   } | null
 }
 
+function getLegacyDateTimestamp(date: string | null | undefined): number | null {
+  if (!date) return null
+  const timestamp = Date.parse(date)
+  return Number.isFinite(timestamp) ? timestamp : null
+}
+
+function sortLegacyDiagnostics(diagnostics: LegacyDiagnostic[]): LegacyDiagnostic[] {
+  return diagnostics
+    .map((diagnostic, index) => ({
+      diagnostic,
+      index,
+      timestamp: getLegacyDateTimestamp(diagnostic.fecha),
+    }))
+    .sort((left, right) => {
+      if (left.timestamp !== null && right.timestamp !== null) {
+        return right.timestamp - left.timestamp
+      }
+      if (left.timestamp !== null) return -1
+      if (right.timestamp !== null) return 1
+      return left.index - right.index
+    })
+    .map(({ diagnostic }) => diagnostic)
+}
+
+function formatLegacyDate(date: string): string {
+  const parsed = new Date(date)
+  if (Number.isNaN(parsed.getTime())) return date
+
+  return parsed.toLocaleDateString('es-CO', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'America/Bogota',
+  })
+}
+
 export default async function HistoriaDetailPage({ params }: PageProps) {
   const { id } = await params
   const record = await getMedicalRecordById(id)
@@ -105,7 +142,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
   // Get programa_terapeutico_texto (cast as any since field may not be in types yet)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const programaTerapeuticoTexto = ((record as any).programa_terapeutico_texto as string) || ''
-  const legacyDiagnostics =
+  const rawLegacyDiagnostics =
     record.source === 'legacy_access'
       ? (
           (
@@ -115,6 +152,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           ).legacy_record?.diagnosticos ?? []
         )
       : []
+  const legacyDiagnostics = sortLegacyDiagnostics(rawLegacyDiagnostics)
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CO', {
@@ -366,6 +404,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
                 <div
                   key={`${diagnostic.tipo ?? 'plan'}-${diagnostic.fecha ?? index}-${index}`}
                   data-legacy-session
+                  data-legacy-date={diagnostic.fecha ?? ''}
                   className="rounded-md border p-3"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -378,7 +417,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
                     </p>
                     {diagnostic.fecha && (
                       <span className="text-sm text-muted-foreground">
-                        {formatDate(diagnostic.fecha)}
+                        {formatLegacyDate(diagnostic.fecha)}
                       </span>
                     )}
                   </div>

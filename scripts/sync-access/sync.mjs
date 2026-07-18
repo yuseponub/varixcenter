@@ -9,6 +9,8 @@
  *   modifican pacientes existentes (pueden haber sido editados en el sistema).
  * - Registros legacy: espejo de Access. Se insertan nuevos y se actualizan
  *   cuando Access tiene MAS sesiones (plan cirugia / plan costos) que Supabase.
+ * - Historias visibles: al final convierte incrementalmente los cambios legacy,
+ *   sin tocar historias digitales ni historias legacy editadas por personal.
  * - Nunca se borra nada.
  *
  * Uso:
@@ -26,6 +28,7 @@ import { createClient } from '@supabase/supabase-js'
 import { readFileSync, existsSync } from 'node:fs'
 import { hostname } from 'node:os'
 import path from 'node:path'
+import { syncLegacyMedicalRecords } from './legacy-medical-resync.mjs'
 
 // ============================================
 // CONFIG
@@ -50,7 +53,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 const BATCH_SIZE = 50
-const AGENT_VERSION = 'sync-access/1.1'
+const AGENT_VERSION = 'sync-access/1.2'
 
 // ============================================
 // NORMALIZACION (misma logica que la migracion original,
@@ -369,6 +372,12 @@ async function main() {
     legacy_new: 0,
     legacy_updated: 0,
     legacy_unchanged: 0,
+    medical_inserted: 0,
+    medical_updated: 0,
+    medical_unchanged: 0,
+    medical_protected: 0,
+    medical_stale: 0,
+    medical_errors: 0,
     errors: 0,
   }
   let runId = null
@@ -551,7 +560,21 @@ async function main() {
     )
 
     // ------------------------------------------------------------------
-    // 5. Cerrar la corrida
+    // 5. Refrescar historias visibles desde el espejo legacy
+    // ------------------------------------------------------------------
+    const medicalStats = await syncLegacyMedicalRecords(supabase)
+    Object.assign(stats, medicalStats)
+    stats.errors += medicalStats.medical_errors
+
+    console.log(
+      `Historias visibles: ${stats.medical_inserted} nuevas, ` +
+      `${stats.medical_updated} actualizadas, ` +
+      `${stats.medical_protected} protegidas, ` +
+      `${stats.medical_errors} errores`
+    )
+
+    // ------------------------------------------------------------------
+    // 6. Cerrar la corrida
     // ------------------------------------------------------------------
     if (runId) {
       await supabase

@@ -2,10 +2,13 @@
 
 Este agente copia automáticamente **los pacientes nuevos y las historias/planes**
 que se registren en el Access de la clínica hacia el sistema nuevo (Supabase).
+Como paso final, refresca la historia visible vinculada a cada registro legacy.
 Corre solo, cada hora, en el PC de la clínica donde está el archivo Access.
 
 **Regla de oro**: solo agrega y actualiza datos que vienen de Access. Nunca
-borra ni modifica lo que se haya creado en el sistema nuevo.
+borra ni modifica lo que se haya creado en el sistema nuevo. Una historia
+legacy que haya sido editada por una persona en la plataforma queda protegida
+y no vuelve a ser sobrescrita por el agente.
 
 ## Requisitos
 
@@ -23,6 +26,10 @@ borra ni modifica lo que se haya creado en el sistema nuevo.
 
 Copiar la carpeta `sync-access` completa a `C:\varix-sync\` en el PC de la clínica
 (por USB, correo o Drive).
+
+La versión 1.2 requiere que `sync.mjs` y `legacy-medical-resync.mjs` estén juntos
+en esa carpeta, y que la migración `063_incremental_legacy_medical_sync.sql` ya
+esté aplicada en Supabase.
 
 ### 3. Configurar
 
@@ -45,6 +52,23 @@ node sync.mjs
 
 Debe terminar diciendo `Sincronizacion completa` con las estadísticas.
 Si dice que no encuentra una tabla, revisar los nombres de tabla en `.env`.
+
+La salida incluye:
+
+- `medical_inserted`: historias visibles creadas para legacy nuevos.
+- `medical_updated`: historias visibles refrescadas.
+- `medical_protected`: historias que el agente dejó intactas por tener edición humana.
+- `medical_errors`: errores de conversión; una corrida con este valor mayor a cero falla.
+
+La conversión también se puede revisar o ejecutar sin leer Access:
+
+```cmd
+node legacy-medical-resync.mjs --dry-run
+node legacy-medical-resync.mjs
+```
+
+El segundo comando es idempotente: si se repite sin cambios nuevos en Access,
+debe terminar con cero inserciones y cero actualizaciones.
 
 ### 5. Programar la ejecución automática (cada hora)
 

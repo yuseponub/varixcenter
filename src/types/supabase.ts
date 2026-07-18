@@ -904,6 +904,8 @@ export type Database = {
           inicio_relacionado: Json
           laboratorio_vascular: Json
           legacy_record_id: string | null
+          legacy_source_updated_at: string | null
+          legacy_synced_at: string | null
           medicamentos: string | null
           nombre_medico_legacy: string | null
           patient_id: string
@@ -935,6 +937,8 @@ export type Database = {
           inicio_relacionado?: Json
           laboratorio_vascular?: Json
           legacy_record_id?: string | null
+          legacy_source_updated_at?: string | null
+          legacy_synced_at?: string | null
           medicamentos?: string | null
           nombre_medico_legacy?: string | null
           patient_id: string
@@ -966,6 +970,8 @@ export type Database = {
           inicio_relacionado?: Json
           laboratorio_vascular?: Json
           legacy_record_id?: string | null
+          legacy_source_updated_at?: string | null
+          legacy_synced_at?: string | null
           medicamentos?: string | null
           nombre_medico_legacy?: string | null
           patient_id?: string
@@ -1128,6 +1134,7 @@ export type Database = {
           source: string
           tiempo_evolucion: string | null
           tratamientos: Json
+          updated_at: string
         }
         Insert: {
           access_cedula?: string | null
@@ -1154,6 +1161,7 @@ export type Database = {
           source?: string
           tiempo_evolucion?: string | null
           tratamientos?: Json
+          updated_at?: string
         }
         Update: {
           access_cedula?: string | null
@@ -1180,6 +1188,7 @@ export type Database = {
           source?: string
           tiempo_evolucion?: string | null
           tratamientos?: Json
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1925,6 +1934,14 @@ export type Database = {
         Returns: Json
       }
       rls_check_passed: { Args: never; Returns: boolean }
+      sync_legacy_medical_records: {
+        Args: { p_records: Json }
+        Returns: {
+          legacy_id: string
+          medical_id: string | null
+          sync_status: string
+        }[]
+      }
       verify_rls_enabled: {
         Args: never
         Returns: {

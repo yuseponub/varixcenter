@@ -59,18 +59,25 @@ primera vez; conviene monitorear `/notificaciones` los primeros días.
 
 ## Sincronización con Access (scripts/sync-access/)
 
-Agente one-way **Access → Supabase** que corre cada hora en el PC de la clínica
-(instrucciones en `scripts/sync-access/INSTALAR.md`).
+Agente one-way **Access → Supabase** instalado en `RECEPCION-NEW`; corre cada
+hora mediante la tarea `VarixSyncAccess` (instrucciones en
+`scripts/sync-access/INSTALAR.md`).
 
 - Pacientes: solo INSERTA nuevos (match por cédula). Nunca modifica existentes.
 - Historias/planes: espejo en `patient_legacy_records`; inserta nuevos y
   actualiza cuando Access tiene más sesiones que Supabase. Nunca borra.
+- Historias visibles: desde v1.2, el último paso de cada corrida convierte de
+  forma incremental `patient_legacy_records` → `medical_records`. Solo crea o
+  refresca espejos `legacy_access`; nunca toca historias digitales ni historias
+  legacy editadas por una persona.
 - Cada corrida queda en la tabla `sync_runs` → visible en el dashboard admin.
-- Probado en staging con los CSV reales: idempotente (2ª corrida = 0 cambios).
+- Migración 063 probada en staging y aplicada a producción el 18-jul-2026.
+  El bootstrap productivo creó 562 espejos faltantes y actualizó 11.545; dejó
+  intactas 78 historias con edición humana. La segunda corrida produjo cero
+  cambios.
+- Corrida horaria v1.2 verificada en producción: `ok=true`, cero errores y un
+  nuevo legacy quedó visible en la misma ejecución.
 - Modo prueba local: `node scripts/sync-access/sync.mjs --from-csv scripts`
-
-**Pendiente**: instalarlo en el PC de la clínica (necesita ~15 min con acceso
-al equipo, ver INSTALAR.md) y pasarle la service key por canal seguro.
 
 ## Decisiones pendientes del dueño
 

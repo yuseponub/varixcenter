@@ -287,6 +287,8 @@ export interface MedicalRecord {
   estado: MedicalRecordStatus
   source: MedicalRecordSource
   legacy_record_id: string | null
+  legacy_source_updated_at: string | null
+  legacy_synced_at: string | null
   nombre_medico_legacy: string | null
   medicamentos: string | null
   created_by: string | null

@@ -97,11 +97,12 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
           <p className="text-muted-foreground">{formatDate(sale.created_at)}</p>
         </div>
 
-        {/* Admin delete button - only for active sales */}
-        {userIsAdmin && sale.estado === 'activo' && (
+        {/* Keep the dialog mounted while the action result reaches the client. */}
+        {userIsAdmin && (
           <DeleteSaleDialog
             saleId={sale.id}
             numeroVenta={sale.numero_venta}
+            disabled={sale.estado !== 'activo'}
           />
         )}
       </div>

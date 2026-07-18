@@ -20,10 +20,16 @@ import { deleteMediasSale, type SaleActionState } from '@/app/(protected)/medias
 interface DeleteSaleDialogProps {
   saleId: string
   numeroVenta: string
+  disabled?: boolean
   onSuccess?: () => void
 }
 
-export function DeleteSaleDialog({ saleId, numeroVenta, onSuccess }: DeleteSaleDialogProps) {
+export function DeleteSaleDialog({
+  saleId,
+  numeroVenta,
+  disabled = false,
+  onSuccess,
+}: DeleteSaleDialogProps) {
   const [open, setOpen] = useState(false)
   const [justificacion, setJustificacion] = useState('')
 
@@ -42,6 +48,13 @@ export function DeleteSaleDialog({ saleId, numeroVenta, onSuccess }: DeleteSaleD
       toast.error(state.error)
     }
   }, [state, onSuccess])
+
+  // Keep this client component mounted after the sale is revalidated as
+  // "anulado". Otherwise the success state is unmounted before its effect can
+  // display the confirmation toast.
+  if (disabled) {
+    return null
+  }
 
   const handleSubmit = (formData: FormData) => {
     formData.set('sale_id', saleId)

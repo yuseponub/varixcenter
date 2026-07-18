@@ -43,13 +43,28 @@ import {
   HISTORY_LABELS,
   VASCULAR_LAB_LABELS,
 } from '@/types'
-import type { CeapClassification } from '@/types'
+import type { CeapClassification, MedicalRecordWithDetails } from '@/types'
 import { LegacyPhotosGallery, MarkAttendedButton, PatientInfoCard, DoctorSelector } from '@/components/medical-records'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { RecordTabs } from '@/components/medical-records/record-tabs'
 
 interface PageProps {
   params: Promise<{ id: string }>
+}
+
+interface LegacyDiagnostic {
+  tipo?: string | null
+  fecha?: string | null
+  sesiones?: {
+    laser?: number | null
+    esclero?: number | null
+    monoter?: number | null
+  } | null
+  procedimientos?: {
+    sesiones_esclero?: number | null
+    sesiones_laser?: number | null
+    sesiones_mono?: number | null
+  } | null
 }
 
 export default async function HistoriaDetailPage({ params }: PageProps) {
@@ -90,6 +105,16 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
   // Get programa_terapeutico_texto (cast as any since field may not be in types yet)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const programaTerapeuticoTexto = ((record as any).programa_terapeutico_texto as string) || ''
+  const legacyDiagnostics =
+    record.source === 'legacy_access'
+      ? (
+          (
+            record as MedicalRecordWithDetails & {
+              legacy_record?: { diagnosticos?: LegacyDiagnostic[] } | null
+            }
+          ).legacy_record?.diagnosticos ?? []
+        )
+      : []
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-CO', {
@@ -301,6 +326,82 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Structured sessions preserved from the linked Access record */}
+      {legacyDiagnostics.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              Sesiones y planes de Access
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {legacyDiagnostics.map((diagnostic, index) => {
+              const sessionValues = [
+                {
+                  label: 'Laser',
+                  value:
+                    diagnostic.sesiones?.laser ??
+                    diagnostic.procedimientos?.sesiones_laser,
+                },
+                {
+                  label: 'Escleroterapia',
+                  value:
+                    diagnostic.sesiones?.esclero ??
+                    diagnostic.procedimientos?.sesiones_esclero,
+                },
+                {
+                  label: 'Monoterapia',
+                  value:
+                    diagnostic.sesiones?.monoter ??
+                    diagnostic.procedimientos?.sesiones_mono,
+                },
+              ].filter(
+                (session): session is { label: string; value: number } =>
+                  typeof session.value === 'number' && session.value > 0
+              )
+
+              return (
+                <div
+                  key={`${diagnostic.tipo ?? 'plan'}-${diagnostic.fecha ?? index}-${index}`}
+                  data-legacy-session
+                  className="rounded-md border p-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-medium">
+                      {diagnostic.tipo === 'cirugia'
+                        ? 'Plan de cirugia'
+                        : diagnostic.tipo === 'escleroterapia'
+                          ? 'Plan de costos / escleroterapia'
+                          : 'Plan de tratamiento'}
+                    </p>
+                    {diagnostic.fecha && (
+                      <span className="text-sm text-muted-foreground">
+                        {formatDate(diagnostic.fecha)}
+                      </span>
+                    )}
+                  </div>
+                  {sessionValues.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {sessionValues.map((session) => (
+                        <Badge key={session.label} variant="secondary">
+                          {session.label}: {session.value}{' '}
+                          {session.value === 1 ? 'sesion' : 'sesiones'}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Sin cantidad de sesiones registrada
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* CEAP Classification */}
       <Card>

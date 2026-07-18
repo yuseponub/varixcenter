@@ -27,6 +27,9 @@ export async function getMedicalRecordById(id: string): Promise<MedicalRecordWit
       ),
       appointment:appointments(
         id, fecha_hora_inicio, fecha_hora_fin, estado, motivo_consulta
+      ),
+      legacy_record:patient_legacy_records(
+        id, diagnosticos
       )
     `)
     .eq('id', id)

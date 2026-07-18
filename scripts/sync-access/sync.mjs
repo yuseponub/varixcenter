@@ -50,7 +50,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 const BATCH_SIZE = 50
-const AGENT_VERSION = 'sync-access/1.0'
+const AGENT_VERSION = 'sync-access/1.1'
 
 // ============================================
 // NORMALIZACION (misma logica que la migracion original,
@@ -436,6 +436,7 @@ async function main() {
     // 3. Pacientes nuevos (solo INSERT, nunca update)
     // ------------------------------------------------------------------
     const newPatientRows = []
+    const skippedDetail = []
     for (const p of source.pacientes) {
       const cedula = normalizeCedula(p.Id)
       if (!cedula || cedulaToUUID.has(cedula)) continue
@@ -443,8 +444,11 @@ async function main() {
       const celular = normalizePhone(p.TelCelular) || normalizePhone(p.TelFijo)
       const nombre = normalizeName(p.Nombre)
       const apellido = normalizeName(p.Apellidos)
-      if (!nombre || !apellido || !celular) {
+      // celular es opcional (la plataforma tambien lo permite); solo nombre y
+      // apellido son NOT NULL en la base
+      if (!nombre || !apellido) {
         stats.patients_skipped_sin_datos++
+        skippedDetail.push(`cedula=${cedula} nombre="${p.Nombre ?? ''}" apellidos="${p.Apellidos ?? ''}"`)
         continue
       }
       const fechaNac = parseAccessDate(p.FechaNacimiento)
@@ -453,7 +457,7 @@ async function main() {
         cedula,
         nombre,
         apellido,
-        celular,
+        celular: celular || null,
         email: trimOrNull(p.email),
         fecha_nacimiento: fechaNac ? fechaNac.split('T')[0] : null,
         direccion: normalizeAddress(p.Direccion) || null,
@@ -482,6 +486,10 @@ async function main() {
       }
     }
     console.log(`Pacientes nuevos: ${stats.patients_new} (omitidos por datos incompletos: ${stats.patients_skipped_sin_datos})`)
+    if (skippedDetail.length) {
+      console.log('Omitidos (sin nombre o apellido en Access; corregirlos alla para que entren):')
+      for (const s of skippedDetail.slice(0, 200)) console.log('  ' + s)
+    }
 
     // ------------------------------------------------------------------
     // 4. Registros legacy: insertar nuevos / actualizar los que crecieron

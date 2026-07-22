@@ -27,6 +27,7 @@ import {
   Bell,
   Vault,
   UserCheck,
+  ReceiptText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -74,6 +75,12 @@ const adminNavItems: NavItem[] = [
   { href: "/reportes", label: "Reportes", icon: <BarChart3 className="h-5 w-5 shrink-0" /> },
   { href: "/notificaciones", label: "Notificaciones", icon: <Bell className="h-5 w-5 shrink-0" /> },
 ]
+
+const billingNavItem: NavItem = {
+  href: "/facturacion",
+  label: "Facturacion",
+  icon: <ReceiptText className="h-5 w-5 shrink-0" />,
+}
 
 const mediasSubItems: MediasSubItem[] = [
   { href: "/medias/productos", label: "Productos", icon: <Package className="h-4 w-4 shrink-0" /> },
@@ -129,9 +136,12 @@ export function AppSidebar({
 
   const showAdmin = role === "admin" || role === "medico"
   const showCierres = showAdmin || role === "enfermera"
+  const showBilling = role === "admin" || role === "secretaria"
 
   const buildNavItems = () => {
-    const items = [...mainNavItems]
+    const items = mainNavItems.flatMap((item) =>
+      showBilling && item.href === "/pagos" ? [item, billingNavItem] : [item]
+    )
     if (showCierres && !showAdmin) {
       // Enfermera: only add Cierres from admin items
       items.push({ href: "/cierres", label: "Cierres", icon: <Vault className="h-5 w-5 shrink-0" /> })

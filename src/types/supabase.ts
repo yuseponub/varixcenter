@@ -1266,6 +1266,63 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_invoicing: {
+        Row: {
+          created_at: string
+          descartada_at: string | null
+          descartada_por: string | null
+          estado: string
+          id: string
+          monto_a_facturar: number | null
+          motivo_descarte: string | null
+          payment_id: string
+          pidio_factura: boolean
+          updated_at: string
+          wimax_factura_numero: string | null
+        }
+        Insert: {
+          created_at?: string
+          descartada_at?: string | null
+          descartada_por?: string | null
+          estado?: string
+          id?: string
+          monto_a_facturar?: number | null
+          motivo_descarte?: string | null
+          payment_id: string
+          pidio_factura?: boolean
+          updated_at?: string
+          wimax_factura_numero?: string | null
+        }
+        Update: {
+          created_at?: string
+          descartada_at?: string | null
+          descartada_por?: string | null
+          estado?: string
+          id?: string
+          monto_a_facturar?: number | null
+          motivo_descarte?: string | null
+          payment_id?: string
+          pidio_factura?: boolean
+          updated_at?: string
+          wimax_factura_numero?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_invoicing_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_invoicing_wimax_factura_numero_fkey"
+            columns: ["wimax_factura_numero"]
+            isOneToOne: true
+            referencedRelation: "wimax_facturas"
+            referencedColumns: ["numero"]
+          },
+        ]
+      }
       payment_items: {
         Row: {
           created_at: string
@@ -1417,6 +1474,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      wimax_facturas: {
+        Row: {
+          cedula: string | null
+          emision: string
+          mes_origen: string
+          nombre: string | null
+          numero: string
+          sync_at: string
+          total: number
+        }
+        Insert: {
+          cedula?: string | null
+          emision: string
+          mes_origen: string
+          nombre?: string | null
+          numero: string
+          sync_at?: string
+          total: number
+        }
+        Update: {
+          cedula?: string | null
+          emision?: string
+          mes_origen?: string
+          nombre?: string | null
+          numero?: string
+          sync_at?: string
+          total?: number
+        }
+        Relationships: []
       }
       progress_notes: {
         Row: {
@@ -1790,6 +1877,7 @@ export type Database = {
         Args: { p_justificacion: string; p_payment_id: string }
         Returns: Json
       }
+      cruzar_facturacion_wimax: { Args: never; Returns: Json }
       approve_medias_return: {
         Args: { p_notas?: string; p_return_id: string }
         Returns: Json
@@ -1886,6 +1974,10 @@ export type Database = {
             Returns: Json
           }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
+      encolar_pago_facturacion: {
+        Args: { p_payment_id: string }
+        Returns: Json
+      }
       eliminar_medias_sale: {
         Args: { p_justificacion: string; p_sale_id: string }
         Returns: Json

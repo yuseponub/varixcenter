@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
@@ -14,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2 } from 'lucide-react'
+import { FileText, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ServiceSelector } from './service-selector'
 import { PaymentMethodForm } from './payment-method-form'
@@ -78,6 +79,7 @@ export function PaymentForm({
   const [descuento, setDescuento] = useState(0)
   const [descuentoJustificacion, setDescuentoJustificacion] = useState('')
   const [nota, setNota] = useState('')
+  const [pidioFactura, setPidioFactura] = useState(false)
 
   // Combine all items for calculations and display
   const allItems: PaymentItemWithAppointmentService[] = [
@@ -120,6 +122,9 @@ export function PaymentForm({
   useEffect(() => {
     if (state?.success && state.data) {
       toast.success(`Pago registrado: ${state.data.numero_factura}`)
+      if (state.invoicingWarning) {
+        toast.warning(state.invoicingWarning)
+      }
       router.push(`/pagos/${state.data.id}`)
     } else if (state?.error) {
       toast.error(state.error)
@@ -171,6 +176,7 @@ export function PaymentForm({
     formData.set('descuento', descuento.toString())
     formData.set('descuento_justificacion', descuentoJustificacion)
     formData.set('nota', nota)
+    formData.set('pidio_factura', String(pidioFactura))
 
     // Extract appointment_service_ids for the RPC
     const appointmentServiceIds = pendingServiceItems
@@ -359,6 +365,33 @@ export function PaymentForm({
           {state?.errors?.methods && (
             <p className="text-sm text-red-500 mt-2">{state.errors.methods[0]}</p>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Nota */}
+      <Card>
+        <CardContent>
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="pidio_factura"
+              checked={pidioFactura}
+              onCheckedChange={(checked) => setPidioFactura(checked === true)}
+              disabled={isPending}
+            />
+            <div className="space-y-1">
+              <Label
+                htmlFor="pidio_factura"
+                className="flex cursor-pointer items-center gap-2 font-medium"
+              >
+                <FileText className="h-4 w-4" />
+                Pidio factura electronica
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Envia este pago a la cola de facturacion WiMAX. Los pagos con
+                tarjeta se envian automaticamente.
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

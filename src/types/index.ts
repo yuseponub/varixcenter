@@ -16,6 +16,9 @@ export * from './services'
 // Re-export payment types
 export * from './payments'
 
+// Re-export WiMAX invoicing queue types
+export * from './invoicing'
+
 // Re-export appointment services types
 export * from './appointment-services'
 

@@ -13,6 +13,7 @@ export type PaymentActionState = {
   errors?: Record<string, string[]>
   success?: boolean
   data?: { id: string; numero_factura: string }
+  invoicingWarning?: string
 }
 
 /**
@@ -56,6 +57,7 @@ export async function createPayment(
       (formData.get('descuento_justificacion') as string) || null,
     nota: (formData.get('nota') as string) || null,
   }
+  const pidioFactura = formData.get('pidio_factura') === 'true'
 
   // Validate with Zod
   const validated = paymentSchema.safeParse(rawData)
@@ -135,14 +137,35 @@ export async function createPayment(
     return { error: `Error al crear el pago: ${msg || 'error desconocido'}` }
   }
 
+  const createdPayment = paymentData as { id: string; numero_factura: string }
+  let invoicingWarning: string | undefined
+
+  if (pidioFactura) {
+    const { error: invoicingError } = await supabase.rpc(
+      'encolar_pago_facturacion',
+      { p_payment_id: createdPayment.id }
+    )
+
+    if (invoicingError) {
+      console.error('Payment invoicing queue error:', invoicingError)
+      // The payment already exists and must never be submitted twice. Surface a
+      // warning while preserving the successful payment result.
+      invoicingWarning =
+        'El pago se registro, pero no pudo marcarse para factura. Avise al administrador.'
+    }
+  }
+
   // Revalidate affected pages
   revalidatePath('/pagos')
   revalidatePath('/pacientes')
   revalidatePath('/citas')
+  revalidatePath('/facturacion')
+  revalidatePath('/dashboard')
 
   return {
     success: true,
-    data: paymentData as { id: string; numero_factura: string },
+    data: createdPayment,
+    invoicingWarning,
   }
 }
 

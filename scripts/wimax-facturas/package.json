@@ -1,0 +1,18 @@
+{
+  "name": "varix-wimax-facturas-mirror",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Espejo de solo lectura de facturas FE desde WiMAX/FoxPro hacia Supabase",
+  "scripts": {
+    "start": "node mirror.mjs",
+    "test:staging": "node staging-fixture-test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.91.1",
+    "dbffile": "1.12.0"
+  }
+}

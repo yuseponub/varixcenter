@@ -7,6 +7,7 @@ import {
   getLastSyncRun,
 } from '@/lib/queries/dashboard'
 import { AlertsWidget } from '@/components/alerts/alerts-widget'
+import { getPendingInvoicingSummary } from '@/lib/queries/invoicing'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,7 @@ import {
   CalendarPlus,
   CreditCard,
   DatabaseZap,
+  FileClock,
 } from 'lucide-react'
 
 const ESTADO_BADGE: Record<string, { label: string; className: string }> = {
@@ -72,11 +74,14 @@ export default async function DashboardPage() {
 
   const showAlerts = role === 'admin' || role === 'medico'
 
-  const [appointments, paymentsSummary, alerts, lastSync] = await Promise.all([
+  const [appointments, paymentsSummary, alerts, lastSync, invoicingSummary] = await Promise.all([
     getTodayAppointments(),
     getTodayPaymentsSummary(),
     showAlerts ? getAlerts({ resuelta: false, limit: 10 }) : Promise.resolve([]),
     role === 'admin' ? getLastSyncRun() : Promise.resolve(null),
+    role === 'admin'
+      ? getPendingInvoicingSummary()
+      : Promise.resolve({ count: 0, oldestDays: null }),
   ])
 
   const syncStale =
@@ -206,6 +211,34 @@ export default async function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+
+          {role === 'admin' && (
+            <Card className={invoicingSummary.count > 0 ? 'border-amber-300' : ''}>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FileClock className="h-5 w-5" />
+                  Facturacion WiMAX
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold tabular-nums">
+                  {invoicingSummary.count} pagos por facturar
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {invoicingSummary.oldestDays === null
+                    ? 'No hay pagos pendientes.'
+                    : `El mas viejo hace ${invoicingSummary.oldestDays} ${
+                        invoicingSummary.oldestDays === 1 ? 'dia' : 'dias'
+                      }.`}
+                </p>
+                <div className="mt-3 text-right">
+                  <Link href="/facturacion" className="text-sm text-primary hover:underline">
+                    Abrir cola →
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Estado del sync con Access (solo admin) */}
           {role === 'admin' && lastSync && (

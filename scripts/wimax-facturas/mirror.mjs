@@ -193,7 +193,7 @@ async function readInvoiceMonth(source, directory, syncAt) {
       ['NUMERO', 'NUMFAC', 'NROFAC', 'FACTURA'],
       ['EMISION', 'FECHA', 'FECEMI', 'FECHA_EMI'],
       ['CLAVE', 'CODCLI', 'CLIENTE'],
-      ['TOTAL', 'VRTOTAL', 'VALTOTAL', 'NETO'],
+      ['TOTAL_FAC', 'TOTAL', 'VRTOTAL', 'VALTOTAL', 'NETO'],
     ],
     source.file
   )
@@ -219,7 +219,7 @@ async function readInvoiceMonth(source, directory, syncAt) {
       firstValue(row, ['EMISION', 'FECHA', 'FECEMI', 'FECHA_EMI'])
     )
     const total = numericValue(
-      firstValue(row, ['TOTAL', 'VRTOTAL', 'VALTOTAL', 'NETO'])
+      firstValue(row, ['TOTAL_FAC', 'TOTAL', 'VRTOTAL', 'VALTOTAL', 'NETO'])
     )
     const key = normalizeKey(
       firstValue(row, ['CLAVE', 'CODCLI', 'CLIENTE'])

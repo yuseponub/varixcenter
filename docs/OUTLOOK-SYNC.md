@@ -18,16 +18,43 @@ Outlook en Supabase. No almacena el cuerpo del evento ni los asistentes.
   coincidencia ambigua se conserva como conflicto en vez de vincularse
   automáticamente.
 
-Microsoft Graph con este modo de servicio solo puede leer un buzón empresarial
-alojado en Exchange Online/Microsoft 365. Una cuenta personal `outlook.com`, un
-calendario que exista únicamente dentro de un PST local o una cuenta IMAP abierta
-desde Outlook no son visibles para esta conexión: en esos casos hay que migrar
-el buzón a Microsoft 365 o crear un agente local adicional en el PC de recepción.
+La cuenta actual de recepción, `varixcenter@hotmail.com`, usa autorización
+delegada de Microsoft. Un administrador de Varix pulsa **Conectar Outlook**, la
+persona inicia sesión una sola vez y acepta acceso al calendario. Varix nunca ve
+la contraseña: conserva únicamente el refresh token, cifrado con AES-256-GCM y
+accesible solo por el rol de servicio de Supabase.
 
-## Preparación en Microsoft 365
+También se conserva el modo `application` para buzones empresariales de
+Exchange Online/Microsoft 365. Una cuenta Gmail mostrada dentro de Outlook, un
+PST local o una cuenta IMAP no se convierten en calendarios Microsoft y necesitan
+su conector propio.
 
-Se necesita una cuenta administrativa de Microsoft 365 y el correo exacto del
-buzón donde recepción registra las citas.
+## Preparación para Hotmail/Outlook personal
+
+1. Registrar una aplicación en Microsoft Entra y permitir **cuentas personales
+   de Microsoft** (solo personales, o cuentas organizacionales y personales).
+2. En **Authentication > Web**, registrar exactamente esta URL de retorno:
+   `https://varixcenter-v2.vercel.app/api/integrations/outlook/callback`.
+3. En Microsoft Graph agregar permisos **delegados** `User.Read` y
+   `Calendars.ReadWrite`. `offline_access`, `openid` y `profile` se solicitan
+   durante el inicio de sesión.
+4. Crear un secreto de cliente y copiar su **valor** en ese momento; Microsoft
+   no vuelve a mostrarlo.
+5. Configurar las variables de producción, aplicar las migraciones 065 y 066,
+   desplegar y entrar como administrador de Varix a `/citas` para pulsar
+   **Conectar Outlook**. Se debe elegir exclusivamente
+   `varixcenter@hotmail.com`; el callback rechaza cualquier otra cuenta.
+
+Referencias oficiales:
+
+- https://learn.microsoft.com/en-us/graph/auth-v2-user
+- https://learn.microsoft.com/en-us/graph/outlook-change-notifications-overview
+- https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow
+
+## Alternativa para Microsoft 365 empresarial
+
+Para `OUTLOOK_AUTH_MODE=application` se necesita una cuenta administrativa de
+Microsoft 365 y el correo exacto del buzón donde recepción registra las citas.
 
 1. Registrar una aplicación en Microsoft Entra ID y crear un secreto de cliente.
 2. Conceder acceso de aplicación `Calendars.ReadWrite`, ya que Varix debe leer y
@@ -53,12 +80,14 @@ Copiar la sección Outlook de `.env.local.example` a Vercel y completar:
 
 ```env
 ENABLE_OUTLOOK_SYNC=true
-MICROSOFT_TENANT_ID=...
+OUTLOOK_AUTH_MODE=delegated
+MICROSOFT_TENANT_ID=consumers
 MICROSOFT_CLIENT_ID=...
 MICROSOFT_CLIENT_SECRET=...
-OUTLOOK_MAILBOX=agenda@dominio.com
+OUTLOOK_TOKEN_ENCRYPTION_KEY=... # generar con: openssl rand -base64 32
+OUTLOOK_MAILBOX=varixcenter@hotmail.com
 OUTLOOK_CALENDAR_ID=calendar
-NEXT_PUBLIC_APP_URL=https://dominio-publico-de-varix.com
+NEXT_PUBLIC_APP_URL=https://varixcenter-v2.vercel.app
 OUTLOOK_WEBHOOK_CLIENT_STATE=secreto-aleatorio-largo
 OUTLOOK_SYNC_PAST_DAYS=30
 OUTLOOK_SYNC_FUTURE_DAYS=400
@@ -70,31 +99,38 @@ consulta incremental estable de Microsoft Graph v1.0 se limita aquí a ese
 calendario; si recepción usa uno secundario, se deben mover esas citas al
 calendario predeterminado antes de activar la integración.
 
-Los dos secretos aleatorios deben ser diferentes. Nunca se deben guardar en el
-repositorio ni enviarse por un canal público.
+Los secretos aleatorios y la clave de cifrado deben ser diferentes. Nunca se
+guardan en el repositorio ni se envían por un canal público. Cambiar la clave de
+cifrado después de autorizar exige volver a conectar la cuenta, porque el token
+anterior deja de ser descifrable.
 
 ## Orden de activación
 
 1. Mantener `ENABLE_OUTLOOK_SYNC=false` mientras se prepara la infraestructura.
-2. Aplicar `supabase/migrations/065_outlook_calendar_sync.sql`.
+2. Aplicar, en orden, `065_outlook_calendar_sync.sql` y
+   `066_outlook_delegated_oauth.sql`.
 3. Desplegar el código y verificar que la URL pública responda a la validación
    del webhook.
 4. Configurar las variables en Vercel y cambiar `ENABLE_OUTLOOK_SYNC=true`.
-5. Ejecutar una vez el cron autenticado:
+5. Entrar a `/citas` como administrador, pulsar **Conectar Outlook**, iniciar
+   sesión con `varixcenter@hotmail.com` y aceptar los permisos.
+6. La conexión dispara la primera sincronización. Opcionalmente, ejecutar el
+   cron autenticado para comprobarlo:
 
    ```bash
    curl -H "Authorization: Bearer $CRON_SECRET" \
      https://dominio-publico-de-varix.com/api/cron/sync-outlook
    ```
 
-6. Abrir `/citas`: debe aparecer el indicador verde con la hora de la última
+7. Abrir `/citas`: debe aparecer el indicador verde con la hora de la última
    sincronización y los eventos Outlook en violeta.
 
 Importante para este proyecto: el historial remoto de migraciones no está
 alineado con los archivos locales; el `dry-run` actual intenta volver a enviar
 desde `001`. No se debe ejecutar `supabase db push` directamente. Hay que aplicar
-solo `065_outlook_calendar_sync.sql` desde el SQL Editor de Supabase o reparar
-primero el historial de migraciones.
+solo `065_outlook_calendar_sync.sql` y `066_outlook_delegated_oauth.sql`, en ese
+orden, mediante consulta directa o el SQL Editor de Supabase; otra opción es
+reparar primero el historial de migraciones.
 
 La primera ejecución hace la lectura completa de 30 días hacia atrás y 400
 días hacia adelante. Después usa el token incremental opaco guardado solo para

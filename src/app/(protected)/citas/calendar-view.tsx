@@ -21,6 +21,7 @@ import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { OutlookEventDialog } from '@/components/appointments/outlook-event-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
 import { AppointmentSearch } from '@/components/appointments/appointment-search'
+import { Button } from '@/components/ui/button'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
 import type { OutlookSyncStatus } from '@/types/outlook'
@@ -49,6 +50,7 @@ interface CalendarViewProps {
   /** Services catalog for adding to appointments */
   services?: ServiceOption[]
   initialOutlookStatus: OutlookSyncStatus
+  initialOutlookNotice?: string
 }
 
 /**
@@ -68,6 +70,7 @@ export function CalendarView({
   initialEnd,
   services = [],
   initialOutlookStatus,
+  initialOutlookNotice,
 }: CalendarViewProps) {
   const router = useRouter()
 
@@ -81,6 +84,21 @@ export function CalendarView({
   // State for detail dialog
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  useEffect(() => {
+    if (!initialOutlookNotice) return
+
+    if (initialOutlookNotice === 'connected') {
+      toast.success('Outlook conectado. La primera sincronización está en curso.')
+    } else if (initialOutlookNotice === 'denied') {
+      toast.info('La autorización de Outlook fue cancelada.')
+    } else if (initialOutlookNotice === 'forbidden') {
+      toast.error('Solo un administrador puede conectar Outlook.')
+    } else {
+      toast.error('No se pudo conectar Outlook. Intente autorizarlo nuevamente.')
+    }
+    window.history.replaceState(null, '', '/citas')
+  }, [initialOutlookNotice])
 
   /**
    * Fetch events when doctor filter or date range changes.
@@ -232,6 +250,9 @@ export function CalendarView({
   const outlookStatusLabel = (() => {
     if (!outlookStatus.enabled) return 'Outlook desactivado'
     if (!outlookStatus.configured) return 'Outlook pendiente de configurar'
+    if (outlookStatus.auth_mode === 'delegated' && !outlookStatus.authorized) {
+      return 'Outlook requiere autorización'
+    }
     if (outlookStatus.last_sync_ok === false) return 'Outlook con error de sincronización'
     if (!outlookStatus.last_synced_at) return 'Outlook preparando primera sincronización'
     return `Outlook sincronizado ${syncTimeFormatter.format(new Date(outlookStatus.last_synced_at))}`
@@ -325,7 +346,9 @@ export function CalendarView({
         <span
           title={outlookStatus.last_error ?? undefined}
           className={
-            outlookStatus.last_sync_ok === false
+            outlookStatus.auth_mode === 'delegated' && !outlookStatus.authorized
+              ? 'rounded-full bg-amber-100 px-2 py-1 text-amber-800'
+              : outlookStatus.last_sync_ok === false
               ? 'rounded-full bg-red-100 px-2 py-1 text-red-700'
               : outlookStatus.last_sync_ok
                 ? 'rounded-full bg-green-100 px-2 py-1 text-green-700'
@@ -334,6 +357,17 @@ export function CalendarView({
         >
           {outlookStatusLabel}
         </span>
+        {outlookStatus.can_manage &&
+          outlookStatus.configured &&
+          outlookStatus.enabled &&
+          outlookStatus.auth_mode === 'delegated' &&
+          (!outlookStatus.authorized || outlookStatus.last_sync_ok === false) && (
+            <Button asChild variant="outline" size="xs">
+              <a href="/api/integrations/outlook/connect">
+                {outlookStatus.authorized ? 'Reautorizar Outlook' : 'Conectar Outlook'}
+              </a>
+            </Button>
+          )}
       </div>
 
       {/* Calendar */}

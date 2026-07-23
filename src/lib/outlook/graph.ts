@@ -1,4 +1,7 @@
 import type { OutlookConfig } from './config'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { refreshMicrosoftAccessToken } from './oauth'
+import { decryptOutlookRefreshToken, encryptOutlookRefreshToken } from './secrets'
 
 const GRAPH_ROOT = 'https://graph.microsoft.com/v1.0'
 
@@ -8,6 +11,7 @@ interface TokenResponse {
 }
 
 interface TokenCache {
+  key: string
   accessToken: string
   expiresAt: number
 }
@@ -66,11 +70,11 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function getAccessToken(config: OutlookConfig, forceRefresh = false): Promise<string> {
-  if (!forceRefresh && tokenCache && tokenCache.expiresAt > Date.now() + 60_000) {
-    return tokenCache.accessToken
-  }
+function tokenCacheKey(config: OutlookConfig): string {
+  return [config.authMode, config.tenantId, config.clientId, config.mailbox].join(':')
+}
 
+async function getApplicationAccessToken(config: OutlookConfig): Promise<TokenCache> {
   const body = new URLSearchParams({
     client_id: config.clientId,
     client_secret: config.clientSecret,
@@ -94,11 +98,88 @@ async function getAccessToken(config: OutlookConfig, forceRefresh = false): Prom
   }
 
   const token = (await response.json()) as TokenResponse
-  tokenCache = {
+  return {
+    key: tokenCacheKey(config),
     accessToken: token.access_token,
     expiresAt: Date.now() + token.expires_in * 1000,
   }
-  return token.access_token
+}
+
+async function getDelegatedAccessToken(config: OutlookConfig): Promise<TokenCache> {
+  if (!config.tokenEncryptionKey) {
+    throw new GraphRequestError('Falta OUTLOOK_TOKEN_ENCRYPTION_KEY', 503)
+  }
+
+  const admin = createAdminClient()
+  // Added by migration 066; kept inside the integration-only untyped boundary.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = admin as any
+  const { data: connection, error } = await db
+    .from('outlook_connections')
+    .select('id, refresh_token_ciphertext')
+    .eq('mailbox', config.mailbox)
+    .eq('calendar_id', config.calendarId)
+    .maybeSingle()
+
+  if (error) {
+    throw new GraphRequestError(`No se pudo leer la autorizacion Outlook: ${error.message}`, 503)
+  }
+  if (!connection?.refresh_token_ciphertext) {
+    throw new GraphRequestError(
+      `La cuenta ${config.mailbox} aun no ha sido autorizada desde Varix`,
+      401,
+      'OutlookAuthorizationRequired'
+    )
+  }
+
+  const refreshToken = decryptOutlookRefreshToken(
+    connection.refresh_token_ciphertext,
+    config.tokenEncryptionKey
+  )
+  const token = await refreshMicrosoftAccessToken(config, refreshToken)
+
+  if (token.refresh_token) {
+    const encryptedRefreshToken = encryptOutlookRefreshToken(
+      token.refresh_token,
+      config.tokenEncryptionKey
+    )
+    const { error: updateError } = await db
+      .from('outlook_connections')
+      .update({
+        refresh_token_ciphertext: encryptedRefreshToken,
+        token_scopes: token.scope ?? null,
+        last_error: null,
+      })
+      .eq('id', connection.id)
+    if (updateError) {
+      throw new GraphRequestError(
+        `No se pudo guardar la renovacion Outlook: ${updateError.message}`,
+        503
+      )
+    }
+  }
+
+  return {
+    key: tokenCacheKey(config),
+    accessToken: token.access_token,
+    expiresAt: Date.now() + token.expires_in * 1000,
+  }
+}
+
+async function getAccessToken(config: OutlookConfig, forceRefresh = false): Promise<string> {
+  const key = tokenCacheKey(config)
+  if (
+    !forceRefresh &&
+    tokenCache?.key === key &&
+    tokenCache.expiresAt > Date.now() + 60_000
+  ) {
+    return tokenCache.accessToken
+  }
+
+  tokenCache = config.authMode === 'delegated'
+    ? await getDelegatedAccessToken(config)
+    : await getApplicationAccessToken(config)
+  return tokenCache.accessToken
 }
 
 function resolveGraphUrl(pathOrUrl: string): string {
@@ -174,18 +255,22 @@ function encodedUser(config: OutlookConfig) {
 
 export function calendarDeltaPath(config: OutlookConfig, start: string, end: string): string {
   const range = `startDateTime=${encodeURIComponent(start)}&endDateTime=${encodeURIComponent(end)}`
-  return `/users/${encodedUser(config)}/calendarView/delta?${range}`
+  const owner = config.authMode === 'delegated' ? '/me' : `/users/${encodedUser(config)}`
+  return `${owner}/calendarView/delta?${range}`
 }
 
 export function calendarCreateEventPath(config: OutlookConfig): string {
-  return `/users/${encodedUser(config)}/calendar/events`
+  const owner = config.authMode === 'delegated' ? '/me' : `/users/${encodedUser(config)}`
+  return `${owner}/calendar/events`
 }
 
 export function userEventPath(config: OutlookConfig, eventId: string): string {
-  return `/users/${encodedUser(config)}/events/${encodeURIComponent(eventId)}`
+  const owner = config.authMode === 'delegated' ? '/me' : `/users/${encodedUser(config)}`
+  return `${owner}/events/${encodeURIComponent(eventId)}`
 }
 
 export function mailboxEventsResource(config: OutlookConfig): string {
+  if (config.authMode === 'delegated') return 'me/events'
   const user = encodeURIComponent(config.mailbox)
   // Graph change notifications support the mailbox-wide events resource.
   // A notification from another calendar is harmless: delta reconciliation

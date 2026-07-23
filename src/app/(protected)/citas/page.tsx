@@ -19,7 +19,12 @@ import { Button } from '@/components/ui/button'
  * APT-02: Doctor filter dropdown shows available medicos
  * FASE-05: Services can be added to appointments
  */
-export default async function CitasPage() {
+interface CitasPageProps {
+  searchParams: Promise<{ outlook?: string }>
+}
+
+export default async function CitasPage({ searchParams }: CitasPageProps) {
+  const params = await searchParams
   // Get current week range for initial load
   const now = new Date()
   const startOfWeek = new Date(now)
@@ -65,6 +70,7 @@ export default async function CitasPage() {
         initialEnd={endDate}
         services={services}
         initialOutlookStatus={outlookStatus}
+        initialOutlookNotice={params.outlook}
       />
     </div>
   )

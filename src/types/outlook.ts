@@ -13,6 +13,11 @@ export interface OutlookConnection {
   last_error: string | null
   sync_lock_owner: string | null
   sync_lock_until: string | null
+  auth_mode: 'application' | 'delegated'
+  microsoft_user_id: string | null
+  refresh_token_ciphertext: string | null
+  token_scopes: string | null
+  authorized_at: string | null
 }
 
 export type OutlookMatchStatus = 'unmatched' | 'matched' | 'conflict' | 'ignored'
@@ -68,6 +73,9 @@ export interface OutlookSyncResult {
 export interface OutlookSyncStatus {
   configured: boolean
   enabled: boolean
+  auth_mode: 'application' | 'delegated'
+  authorized: boolean
+  can_manage: boolean
   mailbox: string | null
   last_synced_at: string | null
   last_sync_ok: boolean | null

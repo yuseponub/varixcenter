@@ -20,11 +20,30 @@ export async function getOrCreateOutlookConnection(
     .maybeSingle()
 
   if (fetchError) throw new Error(`No se pudo consultar la conexion Outlook: ${fetchError.message}`)
-  if (existing) return existing as OutlookConnection
+  if (existing) {
+    if (existing.auth_mode !== config.authMode) {
+      const { data: updated, error: updateError } = await db
+        .from('outlook_connections')
+        .update({ auth_mode: config.authMode })
+        .eq('id', existing.id)
+        .select('*')
+        .single()
+      if (updateError) {
+        throw new Error(`No se pudo actualizar el modo de autenticacion Outlook: ${updateError.message}`)
+      }
+      return updated as OutlookConnection
+    }
+    return existing as OutlookConnection
+  }
 
   const { data, error } = await db
     .from('outlook_connections')
-    .insert({ mailbox: config.mailbox, calendar_id: config.calendarId, enabled: true })
+    .insert({
+      mailbox: config.mailbox,
+      calendar_id: config.calendarId,
+      enabled: true,
+      auth_mode: config.authMode,
+    })
     .select('*')
     .single()
 

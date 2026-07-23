@@ -44,6 +44,15 @@ function Get-Sha256 {
   }
 }
 
+function Add-SkipReason {
+  param([hashtable]$Reasons, [string]$Name)
+  if ($Reasons.ContainsKey($Name)) {
+    $Reasons[$Name]++
+  } else {
+    $Reasons[$Name] = 1
+  }
+}
+
 function Get-CalendarFolders {
   param($Folder)
   $result = New-Object Collections.Generic.List[object]
@@ -64,7 +73,8 @@ function Get-CalendarFolders {
 
 function Find-CalendarFolder {
   param($Namespace, [string]$CalendarName)
-  $matches = New-Object Collections.Generic.List[object]
+  $bestFolder = $null
+  $bestScore = [int]::MinValue
   foreach ($store in @($Namespace.Stores)) {
     try {
       $root = $store.GetRootFolder()
@@ -72,14 +82,17 @@ function Find-CalendarFolder {
         if ($folder.Name -ieq $CalendarName) {
           $score = 0
           if ($store.DisplayName -match 'Archivo de datos|Outlook Data') { $score += 10 }
-          $matches.Add([pscustomobject]@{ Folder = $folder; Store = $store.DisplayName; Score = $score })
+          if ($score -gt $bestScore) {
+            $bestFolder = $folder
+            $bestScore = $score
+          }
         }
       }
     } catch {
       # Continue with the remaining stores.
     }
   }
-  return $matches | Sort-Object Score -Descending | Select-Object -First 1
+  return $bestFolder
 }
 
 function Read-State {
@@ -121,7 +134,7 @@ try {
   }
 
   $config = Get-Content -LiteralPath $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
-  $protectedToken = Get-Content -LiteralPath $TokenPath -Raw -Encoding UTF8
+  $protectedToken = (Get-Content -LiteralPath $TokenPath -Raw -Encoding UTF8).Trim()
   $secureToken = ConvertTo-SecureString $protectedToken
   $token = Convert-SecureValueToText $secureToken
   if ([string]::IsNullOrWhiteSpace($token)) { throw 'El token local esta vacio.' }
@@ -132,15 +145,15 @@ try {
     $outlook = New-Object -ComObject Outlook.Application
   }
   $namespace = $outlook.GetNamespace('MAPI')
-  $calendarMatch = Find-CalendarFolder -Namespace $namespace -CalendarName ([string]$config.calendarName)
-  if (-not $calendarMatch) {
+  $calendarFolder = Find-CalendarFolder -Namespace $namespace -CalendarName ([string]$config.calendarName)
+  if (-not $calendarFolder) {
     throw "No se encontro el calendario '$($config.calendarName)' en Outlook clasico."
   }
 
   $now = Get-Date
   $windowStartLocal = $now.Date.AddDays(-[int]$config.pastDays)
   $windowEndLocal = $now.Date.AddDays([int]$config.futureDays + 1)
-  $items = $calendarMatch.Folder.Items
+  $items = $calendarFolder.Items
   $items.Sort('[Start]')
   $items.IncludeRecurrences = $true
   $culture = [Globalization.CultureInfo]::CurrentCulture
@@ -151,6 +164,7 @@ try {
   $mappings = Read-State
   $events = New-Object Collections.Generic.List[object]
   $skipped = 0
+  $skipReasons = @{}
   $limitExceeded = $false
   foreach ($item in @($restricted)) {
     if ($events.Count -ge 5000) {
@@ -161,11 +175,15 @@ try {
       if ([int]$item.Class -ne 26) { continue }
       $start = ([DateTime]$item.Start).ToUniversalTime()
       $end = ([DateTime]$item.End).ToUniversalTime()
-      if ($end -le $start) { $skipped++; continue }
+      if ($end -le $start) {
+        $end = $start.AddMinutes(15)
+        Add-SkipReason -Reasons $skipReasons -Name 'adjusted-range'
+      }
       $entryId = [string]$item.EntryID
       $globalId = [string]$item.GlobalAppointmentID
       if ([string]::IsNullOrWhiteSpace($entryId) -and [string]::IsNullOrWhiteSpace($globalId)) {
         $skipped++
+        Add-SkipReason -Reasons $skipReasons -Name 'missing-id'
         continue
       }
       $identitySeed = if ([bool]$item.IsRecurring) {
@@ -202,6 +220,8 @@ try {
 
     } catch {
       $skipped++
+      $reason = "line-$([int]$_.InvocationInfo.ScriptLineNumber)-$($_.Exception.GetType().Name)"
+      Add-SkipReason -Reasons $skipReasons -Name $reason
     }
   }
   if ($limitExceeded) { throw 'El calendario supera el limite seguro de 5000 eventos.' }
@@ -234,10 +254,15 @@ try {
     }
   }
   Save-State -Mappings $mappings
-  Write-BridgeLog "OK enviados=$($events.Count) omitidos=$skipped vinculados=$($response.stats.matched)"
+  $reasonSummary = ($skipReasons.GetEnumerator() | Sort-Object Name | ForEach-Object {
+    "$($_.Name):$($_.Value)"
+  }) -join ','
+  Write-BridgeLog "OK enviados=$($events.Count) omitidos=$skipped vinculados=$($response.stats.matched) razones=$reasonSummary"
 } catch {
   $safeMessage = ([string]$_.Exception.Message).Replace("`r", ' ').Replace("`n", ' ')
-  Write-BridgeLog "ERROR $safeMessage"
+  $safeType = $_.Exception.GetType().FullName
+  $safeLine = [int]$_.InvocationInfo.ScriptLineNumber
+  Write-BridgeLog "ERROR type=$safeType line=$safeLine $safeMessage"
   exit 1
 } finally {
   if ($hasMutex) { $mutex.ReleaseMutex() }

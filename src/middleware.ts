@@ -45,6 +45,13 @@ export async function middleware(request: NextRequest) {
   // El handler verifica validationToken/clientState antes de procesarlas.
   const isOutlookWebhook =
     request.nextUrl.pathname === '/api/integrations/outlook/webhook'
+  // El agente del Outlook local no tiene cookie Supabase. Su endpoint usa un
+  // Bearer token dedicado y los dos scripts publicos no contienen secretos.
+  const isOutlookDesktopBridge =
+    request.nextUrl.pathname === '/api/integrations/outlook/desktop-sync'
+  const isOutlookBridgeDownload =
+    request.nextUrl.pathname === '/downloads/varix-outlook-bridge.ps1' ||
+    request.nextUrl.pathname === '/downloads/install-varix-outlook-bridge.ps1'
   // Estas APIs validan la sesion dentro del route handler para poder responder
   // 401 JSON a clientes sin sesion. Si pasan por el redirect generico, reciben
   // 307 + /login en lugar del contrato HTTP esperado.
@@ -52,7 +59,12 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/api/ocr' ||
     request.nextUrl.pathname === '/api/transcribe'
   const isPublicRoute =
-    request.nextUrl.pathname === '/' || isCronRoute || isOutlookWebhook || isApiWithOwnAuth
+    request.nextUrl.pathname === '/' ||
+    isCronRoute ||
+    isOutlookWebhook ||
+    isOutlookDesktopBridge ||
+    isOutlookBridgeDownload ||
+    isApiWithOwnAuth
 
   // Redirect authenticated users away from login
   if (user && isAuthRoute) {

@@ -5,6 +5,11 @@
  * Used by: Payment forms, invoice display, audit trail
  */
 
+import type {
+  PaymentInvoicingSummary,
+  WimaxInvoiceJobSummary,
+} from './invoicing'
+
 /**
  * Payment status values matching the database enum.
  * Uses const assertion for literal type inference.
@@ -133,6 +138,8 @@ export interface PaymentWithDetails extends Payment {
   }
   payment_items: PaymentItem[]
   payment_methods: PaymentMethod[]
+  payment_invoicing: PaymentInvoicingSummary | null
+  wimax_invoice_jobs: WimaxInvoiceJobSummary | null
 }
 
 /**

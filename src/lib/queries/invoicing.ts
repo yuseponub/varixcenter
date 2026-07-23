@@ -4,6 +4,7 @@ import type {
   PendingInvoicingItem,
   PendingInvoicingSummary,
   RecentInvoicingItem,
+  WimaxInvoiceJobSummary,
 } from '@/types/invoicing'
 
 type PaymentRelation = {
@@ -25,6 +26,7 @@ type PaymentRelation = {
     quantity: number
     subtotal: number
   }>
+  wimax_invoice_jobs: WimaxInvoiceJobSummary | null
 }
 
 type PendingRow = {
@@ -83,7 +85,22 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
           created_at,
           estado,
           patients!inner(id, cedula, nombre, apellido),
-          payment_items(id, service_name, unit_price, quantity, subtotal)
+          payment_items(id, service_name, unit_price, quantity, subtotal),
+          wimax_invoice_jobs(
+            id,
+            estado,
+            monto,
+            items,
+            supervisada,
+            last_step,
+            wimax_factura_numero,
+            cufe,
+            error_code,
+            error_message,
+            dedup_evidence,
+            approved_at,
+            updated_at
+          )
         )
       `)
       .eq('estado', 'pendiente')
@@ -106,7 +123,22 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
           created_at,
           estado,
           patients!inner(id, cedula, nombre, apellido),
-          payment_items(id, service_name, unit_price, quantity, subtotal)
+          payment_items(id, service_name, unit_price, quantity, subtotal),
+          wimax_invoice_jobs(
+            id,
+            estado,
+            monto,
+            items,
+            supervisada,
+            last_step,
+            wimax_factura_numero,
+            cufe,
+            error_code,
+            error_message,
+            dedup_evidence,
+            approved_at,
+            updated_at
+          )
         ),
         wimax_facturas(numero, emision, total)
       `)
@@ -136,6 +168,7 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
       created_at: row.created_at,
       updated_at: row.updated_at,
       payment: mapPayment(row.payments),
+      job: row.payments.wimax_invoice_jobs ?? null,
     }))
     .sort(
       (a, b) =>

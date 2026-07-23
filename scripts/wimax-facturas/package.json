@@ -6,6 +6,9 @@
   "description": "Espejo de solo lectura de facturas FE desde WiMAX/FoxPro hacia Supabase",
   "scripts": {
     "start": "node mirror.mjs",
+    "robot": "node robot.mjs",
+    "robot:once": "node robot.mjs --once",
+    "test": "node --test test/*.test.mjs",
     "test:staging": "node staging-fixture-test.mjs"
   },
   "engines": {

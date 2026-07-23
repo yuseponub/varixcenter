@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { AnulacionDialog } from '@/components/payments/anulacion-dialog'
 import { PaymentReceipt } from '@/components/payments/payment-receipt'
 import { PaymentNota } from '@/components/payments/payment-nota'
+import { CreateWimaxInvoiceDialog } from '@/components/payments/create-wimax-invoice-dialog'
 import { PAYMENT_METHOD_LABELS } from '@/types/payments'
 import {
   Breadcrumb,
@@ -44,21 +45,19 @@ async function getUserRole(): Promise<string> {
   }
 }
 
-async function canAnular(): Promise<boolean> {
-  const role = await getUserRole()
-  return role === 'admin' || role === 'medico'
-}
-
 export default async function PaymentDetailPage({ params }: PaymentDetailPageProps) {
   const { id } = await params
-  const [payment, userCanAnular] = await Promise.all([
+  const [payment, userRole] = await Promise.all([
     getPaymentWithDetails(id),
-    canAnular()
+    getUserRole()
   ])
 
   if (!payment) {
     notFound()
   }
+
+  const userCanAnular = userRole === 'admin' || userRole === 'medico'
+  const userCanManageWimax = userRole === 'admin' || userRole === 'secretaria'
 
   return (
     <div className="space-y-6">
@@ -96,6 +95,10 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
         </div>
 
         <div className="flex items-center gap-2">
+          <CreateWimaxInvoiceDialog
+            payment={payment}
+            canManage={userCanManageWimax}
+          />
           <PaymentReceipt payment={payment} />
           {userCanAnular && payment.estado === 'activo' && (
             <AnulacionDialog

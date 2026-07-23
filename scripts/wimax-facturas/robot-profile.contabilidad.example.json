@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "calibrated": false,
+  "sessionId": 1,
+  "display": {
+    "width": 1920,
+    "height": 1080
+  },
+  "window": {
+    "process": "WX",
+    "titlePattern": "Wimax Software",
+    "classPattern": "XbpDialog"
+  },
+  "notes": [
+    "Perfil declarativo de la terminal CONTABILIDAD.",
+    "No cambiar calibrated a true hasta verificar cada tecla, titulo y screenshot en sesion 1.",
+    "La pausa obligatoria ocurre en Asignacion de asiento contable, antes de Aceptar."
+  ],
+  "flows": {
+    "createCustomer": [
+      {
+        "name": "enfocar-wimax",
+        "action": "focus",
+        "target": {
+          "process": "WX",
+          "titlePattern": "Wimax Software",
+          "classPattern": "XbpDialog"
+        }
+      },
+      {
+        "name": "abrir-gestion",
+        "action": "keys",
+        "keys": "%g"
+      },
+      {
+        "name": "abrir-directorio",
+        "action": "keys",
+        "keys": "d",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Directorio"
+        },
+        "capture": true
+      },
+      {
+        "name": "nuevo-cliente",
+        "action": "keys",
+        "keys": "%n",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Datos Generales|Directorio"
+        }
+      },
+      {
+        "name": "cuenta",
+        "action": "text",
+        "value": "{{customer.code}}"
+      },
+      {
+        "name": "identificacion",
+        "action": "keys",
+        "keys": "{TAB}{HOME}c{TAB}"
+      },
+      {
+        "name": "cedula",
+        "action": "text",
+        "value": "{{customer.cedula}}"
+      },
+      {
+        "name": "datos-persona",
+        "action": "keys",
+        "keys": "{TAB}{TAB}n{TAB}n{TAB}a{TAB}"
+      },
+      {
+        "name": "primer-apellido",
+        "action": "text",
+        "value": "{{customer.primerApellido}}"
+      },
+      {
+        "name": "segundo-apellido",
+        "action": "keys",
+        "keys": "{TAB}"
+      },
+      {
+        "name": "segundo-apellido-texto",
+        "action": "text",
+        "value": "{{customer.segundoApellido}}"
+      },
+      {
+        "name": "primer-nombre",
+        "action": "keys",
+        "keys": "{TAB}"
+      },
+      {
+        "name": "primer-nombre-texto",
+        "action": "text",
+        "value": "{{customer.primerNombre}}"
+      },
+      {
+        "name": "segundo-nombre",
+        "action": "keys",
+        "keys": "{TAB}"
+      },
+      {
+        "name": "segundo-nombre-texto",
+        "action": "text",
+        "value": "{{customer.segundoNombre}}"
+      },
+      {
+        "name": "ubicacion-y-celular",
+        "action": "keys",
+        "keys": "{TAB}{{customer.department}}{TAB}{{customer.city}}{TAB}{{customer.postalCode}}{TAB}{{customer.celular}}"
+      },
+      {
+        "name": "datos-tributarios",
+        "action": "keys",
+        "keys": "^{TAB}p{TAB}{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Directorio|Wimax Software"
+        },
+        "capture": true
+      }
+    ],
+    "prepareInvoice": [
+      {
+        "name": "enfocar-wimax",
+        "action": "focus",
+        "target": {
+          "process": "WX",
+          "titlePattern": "Wimax Software",
+          "classPattern": "XbpDialog"
+        }
+      },
+      {
+        "name": "movimientos-ventas-facturacion",
+        "action": "keys",
+        "keys": "%m"
+      },
+      {
+        "name": "seleccionar-ventas",
+        "action": "keys",
+        "keys": "v"
+      },
+      {
+        "name": "facturacion-general",
+        "action": "keys",
+        "keys": "f",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Auditoria|Auditoría|Reportes|Prefijo|Factur"
+        }
+      },
+      {
+        "name": "cerrar-auditoria",
+        "action": "keys",
+        "keys": "{ENTER}"
+      },
+      {
+        "name": "cerrar-reportes",
+        "action": "keys",
+        "keys": "{ENTER}"
+      },
+      {
+        "name": "prefijo-fe",
+        "action": "keys",
+        "keys": "fe{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Factur"
+        },
+        "capture": true
+      },
+      {
+        "name": "tipo-contado-metodo",
+        "action": "keys",
+        "keys": "{TAB}c{ENTER}{TAB}1{TAB}"
+      },
+      {
+        "name": "cuenta-cliente",
+        "action": "text",
+        "value": "{{customer.code}}"
+      },
+      {
+        "name": "cargar-cliente",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "capture": true
+      }
+    ],
+    "addItem": [
+      {
+        "name": "nuevo-item",
+        "action": "keys",
+        "keys": "%n{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Inventario"
+        }
+      },
+      {
+        "name": "referencia",
+        "action": "text",
+        "value": "{{item.reference}}"
+      },
+      {
+        "name": "aceptar-referencia",
+        "action": "keys",
+        "keys": "{ENTER}{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Factur"
+        }
+      },
+      {
+        "name": "cantidad-precio",
+        "action": "keys",
+        "keys": "{TAB}{{item.quantity}}{TAB}{{item.unitPrice}}{ENTER}",
+        "capture": true
+      }
+    ],
+    "finishBeforeApproval": [
+      {
+        "name": "terminar-items",
+        "action": "keys",
+        "keys": "t{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "FORMA DE PAGO"
+        }
+      },
+      {
+        "name": "nuevo-tipo-deposito",
+        "action": "keys",
+        "keys": "%n",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Tipos"
+        }
+      },
+      {
+        "name": "deposito",
+        "action": "keys",
+        "keys": "dp{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Caja|Bancos"
+        }
+      },
+      {
+        "name": "bancolombia-corriente",
+        "action": "text",
+        "value": "{{invoice.bankAccount}}"
+      },
+      {
+        "name": "aceptar-banco",
+        "action": "keys",
+        "keys": "{ENTER}{ENTER}t",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Asignaci.n de asiento contable"
+        },
+        "capture": true
+      }
+    ],
+    "emit": [
+      {
+        "name": "aceptar-asiento-irreversible",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "Imprimir|Factur|Wimax Software"
+        },
+        "capture": true
+      },
+      {
+        "name": "imprimir",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "capture": true
+      }
+    ],
+    "abort": [
+      {
+        "name": "cerrar-dialogos-sin-grabar",
+        "action": "keys",
+        "keys": "{ESC}{ESC}{ESC}",
+        "capture": true
+      }
+    ]
+  }
+}

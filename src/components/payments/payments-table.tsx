@@ -13,9 +13,11 @@ import {
 } from '@/components/ui/table'
 import { Eye } from 'lucide-react'
 import { PAYMENT_METHOD_LABELS, type PaymentWithDetails } from '@/types/payments'
+import { CreateWimaxInvoiceDialog } from '@/components/payments/create-wimax-invoice-dialog'
 
 interface PaymentsTableProps {
   payments: PaymentWithDetails[]
+  canManageWimax: boolean
 }
 
 const formatCurrency = (amount: number) =>
@@ -27,7 +29,7 @@ const formatDate = (dateStr: string) =>
     timeStyle: 'short'
   }).format(new Date(dateStr))
 
-export function PaymentsTable({ payments }: PaymentsTableProps) {
+export function PaymentsTable({ payments, canManageWimax }: PaymentsTableProps) {
   if (payments.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -47,6 +49,7 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
           <TableHead>Método de pago</TableHead>
           <TableHead>Notas</TableHead>
           <TableHead>Estado</TableHead>
+          <TableHead>Factura DIAN</TableHead>
           <TableHead className="w-[80px]"></TableHead>
         </TableRow>
       </TableHeader>
@@ -91,6 +94,13 @@ export function PaymentsTable({ payments }: PaymentsTableProps) {
               <Badge variant={payment.estado === 'activo' ? 'default' : 'destructive'}>
                 {payment.estado === 'activo' ? 'Activo' : 'Anulado'}
               </Badge>
+            </TableCell>
+            <TableCell>
+              <CreateWimaxInvoiceDialog
+                payment={payment}
+                canManage={canManageWimax}
+                autoRefresh={false}
+              />
             </TableCell>
             <TableCell>
               <Button asChild variant="ghost" size="icon">

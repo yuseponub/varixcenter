@@ -256,7 +256,7 @@ async function upsertInvoices(invoices) {
     const batch = invoices.slice(offset, offset + BATCH_SIZE)
     const { error } = await supabase
       .from('wimax_facturas')
-      .upsert(batch, { onConflict: 'numero' })
+      .upsert(batch, { onConflict: 'numero', defaultToNull: false })
     if (error) throw new Error(`Upsert wimax_facturas: ${error.message}`)
   }
 }

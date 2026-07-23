@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { paymentSchema, anulacionSchema } from '@/lib/validations/payment'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
 /**
  * Action state for payment server actions
@@ -15,6 +16,21 @@ export type PaymentActionState = {
   data?: { id: string; numero_factura: string }
   invoicingWarning?: string
 }
+
+export type WimaxActionResult =
+  | {
+      success: true
+      jobId: string
+      estado: string
+      candidates?: Array<{ numero: string; emision: string; total: number }>
+    }
+  | { success: false; error: string }
+
+const wimaxItemSchema = z.object({
+  referencia: z.string().trim().min(1).max(40),
+  cantidad: z.number().int().min(1).max(99),
+  precio_unitario: z.number().positive().max(9_999_999_999.99),
+})
 
 /**
  * Create a new payment
@@ -281,4 +297,124 @@ export async function updatePaymentNota(
 
   revalidatePath(`/pagos/${paymentId}`)
   return { success: true }
+}
+
+/**
+ * Canonicalize and enqueue the editable WiMAX invoice lines. PostgreSQL owns
+ * the final catalog/total/dedup validation; this validation only gives the UI
+ * fast, readable errors.
+ */
+export async function prepararFacturaWimaxAction(
+  paymentId: string,
+  items: Array<{
+    referencia: string
+    cantidad: number
+    precio_unitario: number
+  }>
+): Promise<WimaxActionResult> {
+  const parsed = z
+    .object({
+      paymentId: z.string().uuid(),
+      items: z.array(wimaxItemSchema).min(1).max(20),
+    })
+    .safeParse({ paymentId, items })
+
+  if (!parsed.success) {
+    return { success: false, error: 'Revise tratamientos, cantidades y precios.' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'No autorizado.' }
+
+  const { data, error } = await supabase.rpc('preparar_factura_wimax', {
+    p_payment_id: parsed.data.paymentId,
+    p_items: parsed.data.items,
+  })
+
+  if (error) {
+    console.error('prepararFacturaWimaxAction error:', {
+      code: error.code,
+      message: error.message,
+    })
+    return { success: false, error: error.message || 'No fue posible crear el trabajo WiMAX.' }
+  }
+
+  const result = data as unknown as {
+    job_id: string
+    estado: string
+    candidatas?: Array<{ numero: string; emision: string; total: number }>
+  }
+  revalidatePath('/pagos')
+  revalidatePath(`/pagos/${paymentId}`)
+  revalidatePath('/facturacion')
+
+  return {
+    success: true,
+    jobId: result.job_id,
+    estado: result.estado,
+    candidates: result.candidatas,
+  }
+}
+
+export async function autorizarFacturaWimaxAction(
+  jobId: string
+): Promise<WimaxActionResult> {
+  if (!z.string().uuid().safeParse(jobId).success) {
+    return { success: false, error: 'Trabajo WiMAX invalido.' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'No autorizado.' }
+
+  const { data, error } = await supabase.rpc('autorizar_factura_wimax', {
+    p_job_id: jobId,
+  })
+  if (error) {
+    console.error('autorizarFacturaWimaxAction error:', {
+      code: error.code,
+      message: error.message,
+    })
+    return { success: false, error: error.message || 'No fue posible autorizar la emision.' }
+  }
+
+  const result = data as unknown as { job_id: string; estado: string }
+  revalidatePath('/pagos')
+  revalidatePath('/facturacion')
+  return { success: true, jobId: result.job_id, estado: result.estado }
+}
+
+export async function registrarCufeFacturaWimaxAction(
+  jobId: string,
+  cufe: string
+): Promise<WimaxActionResult> {
+  const normalizedCufe = cufe.trim().toLowerCase()
+  if (
+    !z.string().uuid().safeParse(jobId).success ||
+    !/^[0-9a-f]{64,128}$/.test(normalizedCufe)
+  ) {
+    return { success: false, error: 'Ingrese un CUFE valido.' }
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'No autorizado.' }
+
+  const { data, error } = await supabase.rpc('registrar_cufe_factura_wimax', {
+    p_job_id: jobId,
+    p_cufe: normalizedCufe,
+  })
+  if (error) {
+    console.error('registrarCufeFacturaWimaxAction error:', {
+      code: error.code,
+      message: error.message,
+    })
+    return { success: false, error: error.message || 'No fue posible registrar el CUFE.' }
+  }
+
+  const result = data as unknown as { estado: string; numero: string }
+  revalidatePath('/pagos')
+  revalidatePath('/facturacion')
+  return { success: true, jobId, estado: result.estado }
 }

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -18,6 +19,7 @@ type FilterMode = 'todos' | 'dia' | 'semana'
 
 interface PaymentsViewProps {
   payments: PaymentWithDetails[]
+  canManageWimax: boolean
 }
 
 /**
@@ -41,8 +43,20 @@ function getStartOfWeek(): Date {
   return now
 }
 
-export function PaymentsView({ payments }: PaymentsViewProps) {
+export function PaymentsView({ payments, canManageWimax }: PaymentsViewProps) {
+  const router = useRouter()
   const [filterMode, setFilterMode] = useState<FilterMode>('todos')
+  const hasRunningWimaxJob = payments.some((payment) =>
+    ['en_cola', 'preparando', 'aprobada', 'verificando'].includes(
+      payment.wimax_invoice_jobs?.estado ?? ''
+    )
+  )
+
+  useEffect(() => {
+    if (!hasRunningWimaxJob) return
+    const interval = window.setInterval(() => router.refresh(), 5_000)
+    return () => window.clearInterval(interval)
+  }, [hasRunningWimaxJob, router])
 
   // Filter payments based on selected mode
   const filteredPayments = useMemo(() => {
@@ -164,7 +178,7 @@ export function PaymentsView({ payments }: PaymentsViewProps) {
       )}
 
       {/* Table */}
-      <PaymentsTable payments={filteredPayments} />
+      <PaymentsTable payments={filteredPayments} canManageWimax={canManageWimax} />
     </div>
   )
 }

@@ -7,6 +7,50 @@ export const INVOICING_STATES = [
 
 export type InvoicingState = (typeof INVOICING_STATES)[number]
 
+export const WIMAX_JOB_STATES = [
+  'en_cola',
+  'preparando',
+  'esperando_aprobacion',
+  'aprobada',
+  'verificando',
+  'completada',
+  'bloqueada_duplicado',
+  'emitida_sin_cufe',
+  'requiere_revision',
+  'error',
+  'cancelada',
+] as const
+
+export type WimaxJobState = (typeof WIMAX_JOB_STATES)[number]
+
+export interface WimaxInvoiceJobSummary {
+  id: string
+  estado: WimaxJobState
+  monto: number
+  items: Array<{
+    referencia: string
+    descripcion: string
+    cantidad: number
+    precio_unitario: number
+  }>
+  supervisada: boolean
+  last_step: string | null
+  wimax_factura_numero: string | null
+  cufe: string | null
+  error_code: string | null
+  error_message: string | null
+  dedup_evidence: Record<string, unknown>
+  approved_at: string | null
+  updated_at: string
+}
+
+export interface PaymentInvoicingSummary {
+  estado: InvoicingState
+  monto_a_facturar: number | null
+  pidio_factura: boolean
+  wimax_factura_numero: string | null
+}
+
 export interface InvoicingService {
   id: string
   service_name: string
@@ -38,6 +82,7 @@ export interface PendingInvoicingItem {
   created_at: string
   updated_at: string
   payment: InvoicingPayment
+  job: WimaxInvoiceJobSummary | null
 }
 
 export interface RecentInvoicingItem {

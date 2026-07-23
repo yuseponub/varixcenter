@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   Check,
   Clipboard,
@@ -155,6 +156,15 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
     )
   )
   const amountChanged = Math.abs(amount - savedAmount) >= 0.01
+  const activeJob = item.job && [
+    'en_cola',
+    'preparando',
+    'esperando_aprobacion',
+    'aprobada',
+    'verificando',
+    'emitida_sin_cufe',
+    'requiere_revision',
+  ].includes(item.job.estado)
 
   function saveAmount() {
     startSaving(async () => {
@@ -198,6 +208,9 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
             {item.pidio_factura && (
               <Badge variant="secondary">La solicito</Badge>
             )}
+            {item.job && (
+              <Badge variant="outline">Robot: {item.job.estado.replaceAll('_', ' ')}</Badge>
+            )}
             <Badge className="bg-amber-100 text-amber-800">Pendiente</Badge>
           </div>
         </div>
@@ -225,7 +238,7 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
                 step="0.01"
                 value={amount || ''}
                 onChange={(event) => setAmount(Number(event.target.value))}
-                disabled={isSaving}
+                disabled={isSaving || Boolean(activeJob)}
               />
               <Button
                 type="button"
@@ -244,7 +257,12 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
                   type="button"
                   size="icon"
                   onClick={saveAmount}
-                  disabled={isSaving || !Number.isFinite(amount) || amount <= 0}
+                  disabled={
+                    isSaving ||
+                    Boolean(activeJob) ||
+                    !Number.isFinite(amount) ||
+                    amount <= 0
+                  }
                   aria-label="Guardar monto a facturar"
                 >
                   {isSaving ? (
@@ -268,10 +286,13 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
           warning={!services}
         />
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button asChild type="button" variant="outline" size="sm">
+            <Link href={`/pagos/${item.payment_id}`}>Abrir pago</Link>
+          </Button>
           <Dialog open={discardOpen} onOpenChange={setDiscardOpen}>
             <DialogTrigger asChild>
-              <Button type="button" variant="outline" size="sm">
+              <Button type="button" variant="outline" size="sm" disabled={Boolean(activeJob)}>
                 <Trash2 className="h-4 w-4" />
                 Descartar
               </Button>

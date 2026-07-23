@@ -22,7 +22,23 @@ export async function getPayments(options: {
       *,
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
-      payment_methods(*)
+      payment_methods(*),
+      payment_invoicing(estado, monto_a_facturar, pidio_factura, wimax_factura_numero),
+      wimax_invoice_jobs(
+        id,
+        estado,
+        monto,
+        items,
+        supervisada,
+        last_step,
+        wimax_factura_numero,
+        cufe,
+        error_code,
+        error_message,
+        dedup_evidence,
+        approved_at,
+        updated_at
+      )
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
@@ -60,7 +76,23 @@ export async function getPaymentWithDetails(id: string): Promise<PaymentWithDeta
       *,
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
-      payment_methods(*)
+      payment_methods(*),
+      payment_invoicing(estado, monto_a_facturar, pidio_factura, wimax_factura_numero),
+      wimax_invoice_jobs(
+        id,
+        estado,
+        monto,
+        items,
+        supervisada,
+        last_step,
+        wimax_factura_numero,
+        cufe,
+        error_code,
+        error_message,
+        dedup_evidence,
+        approved_at,
+        updated_at
+      )
     `)
     .eq('id', id)
     .single()

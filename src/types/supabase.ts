@@ -1475,10 +1475,141 @@ export type Database = {
           },
         ]
       }
+      wimax_invoice_jobs: {
+        Row: {
+          agent_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          attempt_count: number
+          cufe: string | null
+          completed_at: string | null
+          dedup_evidence: Json
+          error_code: string | null
+          error_message: string | null
+          estado: string
+          id: string
+          items: Json
+          last_step: string | null
+          lease_expires_at: string | null
+          lease_token: string | null
+          monto: number
+          paciente: Json
+          payment_id: string
+          queued_at: string
+          requested_at: string
+          requested_by: string
+          started_at: string | null
+          supervisada: boolean
+          ui_evidence: Json
+          updated_at: string
+          wimax_cliente_codigo: string | null
+          wimax_factura_numero: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attempt_count?: number
+          cufe?: string | null
+          completed_at?: string | null
+          dedup_evidence?: Json
+          error_code?: string | null
+          error_message?: string | null
+          estado?: string
+          id?: string
+          items: Json
+          last_step?: string | null
+          lease_expires_at?: string | null
+          lease_token?: string | null
+          monto: number
+          paciente: Json
+          payment_id: string
+          queued_at?: string
+          requested_at?: string
+          requested_by: string
+          started_at?: string | null
+          supervisada?: boolean
+          ui_evidence?: Json
+          updated_at?: string
+          wimax_cliente_codigo?: string | null
+          wimax_factura_numero?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attempt_count?: number
+          cufe?: string | null
+          completed_at?: string | null
+          dedup_evidence?: Json
+          error_code?: string | null
+          error_message?: string | null
+          estado?: string
+          id?: string
+          items?: Json
+          last_step?: string | null
+          lease_expires_at?: string | null
+          lease_token?: string | null
+          monto?: number
+          paciente?: Json
+          payment_id?: string
+          queued_at?: string
+          requested_at?: string
+          requested_by?: string
+          started_at?: string | null
+          supervisada?: boolean
+          ui_evidence?: Json
+          updated_at?: string
+          wimax_cliente_codigo?: string | null
+          wimax_factura_numero?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wimax_invoice_jobs_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wimax_invoice_jobs_wimax_factura_numero_fkey"
+            columns: ["wimax_factura_numero"]
+            isOneToOne: false
+            referencedRelation: "wimax_facturas"
+            referencedColumns: ["numero"]
+          },
+        ]
+      }
+      wimax_service_catalog: {
+        Row: {
+          activo: boolean
+          created_at: string
+          descripcion: string
+          referencia: string
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          descripcion: string
+          referencia: string
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          descripcion?: string
+          referencia?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wimax_facturas: {
         Row: {
           cedula: string | null
+          cufe: string | null
           emision: string
+          estado_dian: string | null
           mes_origen: string
           nombre: string | null
           numero: string
@@ -1487,7 +1618,9 @@ export type Database = {
         }
         Insert: {
           cedula?: string | null
+          cufe?: string | null
           emision: string
+          estado_dian?: string | null
           mes_origen: string
           nombre?: string | null
           numero: string
@@ -1496,7 +1629,9 @@ export type Database = {
         }
         Update: {
           cedula?: string | null
+          cufe?: string | null
           emision?: string
+          estado_dian?: string | null
           mes_origen?: string
           nombre?: string | null
           numero?: string
@@ -1877,6 +2012,10 @@ export type Database = {
         Args: { p_justificacion: string; p_payment_id: string }
         Returns: Json
       }
+      autorizar_factura_wimax: {
+        Args: { p_job_id: string }
+        Returns: Json
+      }
       cruzar_facturacion_wimax: { Args: never; Returns: Json }
       approve_medias_return: {
         Args: { p_notas?: string; p_return_id: string }
@@ -2013,6 +2152,16 @@ export type Database = {
       }
       get_unclosed_days: { Args: { p_limit?: number }; Returns: Json }
       get_user_role: { Args: never; Returns: string }
+      firma_nombre_wimax: { Args: { p_value: string }; Returns: string }
+      normalizar_nombre_wimax: { Args: { p_value: string }; Returns: string }
+      preparar_factura_wimax: {
+        Args: { p_items: Json; p_payment_id: string }
+        Returns: Json
+      }
+      registrar_cufe_factura_wimax: {
+        Args: { p_cufe: string; p_job_id: string }
+        Returns: Json
+      }
       reject_medias_return: {
         Args: { p_notas?: string; p_return_id: string }
         Returns: Json
@@ -2026,6 +2175,66 @@ export type Database = {
         Returns: Json
       }
       rls_check_passed: { Args: never; Returns: boolean }
+      robot_wimax_completar: {
+        Args: {
+          p_cedula: string
+          p_cufe: string
+          p_emision: string
+          p_evidence?: Json
+          p_job_id: string
+          p_lease_token: string
+          p_nombre: string
+          p_numero: string
+          p_total: number
+        }
+        Returns: Json
+      }
+      robot_wimax_emitida_sin_cufe: {
+        Args: {
+          p_cedula: string
+          p_emision: string
+          p_evidence?: Json
+          p_job_id: string
+          p_lease_token: string
+          p_nombre: string
+          p_numero: string
+          p_total: number
+        }
+        Returns: Json
+      }
+      robot_wimax_esperar_aprobacion: {
+        Args: { p_job_id: string; p_lease_token: string; p_ui_evidence?: Json }
+        Returns: Json
+      }
+      robot_wimax_fallar: {
+        Args: {
+          p_error_code: string
+          p_error_message: string
+          p_job_id: string
+          p_lease_token: string
+          p_resultado_ambiguo?: boolean
+        }
+        Returns: Json
+      }
+      robot_wimax_heartbeat: {
+        Args: { p_job_id: string; p_lease_token: string; p_step?: string }
+        Returns: Json
+      }
+      robot_wimax_marcar_verificando: {
+        Args: { p_job_id: string; p_lease_token: string }
+        Returns: Json
+      }
+      robot_wimax_reclamar: { Args: { p_agent_id: string }; Returns: Json }
+      robot_wimax_registrar_preflight: {
+        Args: {
+          p_cliente_codigo: string | null
+          p_evidence: Json
+          p_job_id: string
+          p_lease_token: string
+          p_resultado: string
+        }
+        Returns: Json
+      }
       sync_legacy_medical_records: {
         Args: { p_records: Json }
         Returns: {

@@ -80,6 +80,28 @@ export async function descartarFacturacionAction(
     }
   }
 
+  const { data: activeJob, error: jobError } = await auth.supabase
+    .from('wimax_invoice_jobs')
+    .select('estado')
+    .eq('payment_id', paymentId)
+    .in('estado', [
+      'en_cola',
+      'preparando',
+      'esperando_aprobacion',
+      'aprobada',
+      'verificando',
+      'emitida_sin_cufe',
+      'requiere_revision',
+    ])
+    .maybeSingle()
+  if (jobError) {
+    console.error('descartarFacturacionAction job check error:', jobError)
+    return { success: false, error: 'No fue posible verificar el estado del robot' }
+  }
+  if (activeJob) {
+    return { success: false, error: 'Detenga o termine el trabajo del robot antes de descartar' }
+  }
+
   const { data, error } = await auth.supabase
     .from('payment_invoicing')
     .update({

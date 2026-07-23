@@ -18,11 +18,21 @@ import { toast } from 'sonner'
 import type { EventClickArg, DateSelectArg, EventDropArg, DatesSetArg } from '@fullcalendar/core'
 import { AppointmentCalendar } from '@/components/appointments/appointment-calendar'
 import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
+import { OutlookEventDialog } from '@/components/appointments/outlook-event-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
 import { AppointmentSearch } from '@/components/appointments/appointment-search'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
+import type { OutlookSyncStatus } from '@/types/outlook'
 import type { ServiceOption } from '@/types/services'
+
+const syncTimeFormatter = new Intl.DateTimeFormat('es-CO', {
+  day: 'numeric',
+  month: 'short',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/Bogota',
+})
 
 /**
  * Props for CalendarView component
@@ -38,6 +48,7 @@ interface CalendarViewProps {
   initialEnd: string
   /** Services catalog for adding to appointments */
   services?: ServiceOption[]
+  initialOutlookStatus: OutlookSyncStatus
 }
 
 /**
@@ -56,6 +67,7 @@ export function CalendarView({
   initialStart,
   initialEnd,
   services = [],
+  initialOutlookStatus,
 }: CalendarViewProps) {
   const router = useRouter()
 
@@ -64,6 +76,7 @@ export function CalendarView({
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>('all')
   const [dateRange, setDateRange] = useState({ start: initialStart, end: initialEnd })
   const [isLoading, setIsLoading] = useState(false)
+  const [outlookStatus, setOutlookStatus] = useState(initialOutlookStatus)
 
   // State for detail dialog
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
@@ -72,8 +85,8 @@ export function CalendarView({
   /**
    * Fetch events when doctor filter or date range changes.
    */
-  const fetchEvents = useCallback(async () => {
-    setIsLoading(true)
+  const fetchEvents = useCallback(async (background = false) => {
+    if (!background) setIsLoading(true)
 
     try {
       // Build query params
@@ -86,7 +99,7 @@ export function CalendarView({
       }
 
       // Fetch from API route
-      const response = await fetch(`/citas/api?${params}`)
+      const response = await fetch(`/citas/api?${params}`, { cache: 'no-store' })
 
       if (!response.ok) {
         throw new Error('Error al cargar las citas')
@@ -94,17 +107,29 @@ export function CalendarView({
 
       const data = await response.json()
       setEvents(data.events)
+      if (data.outlookStatus) setOutlookStatus(data.outlookStatus)
     } catch (error) {
       console.error('Error fetching events:', error)
-      toast.error('Error al cargar las citas')
+      if (!background) toast.error('Error al cargar las citas')
     } finally {
-      setIsLoading(false)
+      if (!background) setIsLoading(false)
     }
   }, [dateRange, selectedDoctorId])
 
   // Fetch events when filter changes
   useEffect(() => {
-    fetchEvents()
+    void fetchEvents()
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') void fetchEvents(true)
+    }
+    const interval = window.setInterval(() => {
+      refreshWhenVisible()
+    }, 30_000)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+    return () => {
+      window.clearInterval(interval)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
   }, [fetchEvents])
 
   /**
@@ -162,6 +187,11 @@ export function CalendarView({
    */
   const handleEventDrop = useCallback(async (info: EventDropArg) => {
     const { event, revert } = info
+    if (event.extendedProps.source === 'outlook') {
+      toast.info('Esta cita se reprograma desde Outlook')
+      revert()
+      return
+    }
     const appointmentId = event.extendedProps.appointmentId
 
     // Get new times
@@ -196,8 +226,16 @@ export function CalendarView({
    * Handle status update from dialog -> refresh events.
    */
   const handleStatusUpdate = useCallback(() => {
-    fetchEvents()
+    void fetchEvents()
   }, [fetchEvents])
+
+  const outlookStatusLabel = (() => {
+    if (!outlookStatus.enabled) return 'Outlook desactivado'
+    if (!outlookStatus.configured) return 'Outlook pendiente de configurar'
+    if (outlookStatus.last_sync_ok === false) return 'Outlook con error de sincronización'
+    if (!outlookStatus.last_synced_at) return 'Outlook preparando primera sincronización'
+    return `Outlook sincronizado ${syncTimeFormatter.format(new Date(outlookStatus.last_synced_at))}`
+  })()
 
   /**
    * Handle search result selection.
@@ -219,6 +257,7 @@ export function CalendarView({
       start: appointment.fecha_hora_inicio,
       end: appointment.fecha_hora_fin,
       extendedProps: {
+        source: 'varix',
         appointmentId: appointment.id,
         patientId: '', // Not needed for dialog display
         patientName: `${appointment.patient.nombre} ${appointment.patient.apellido}`,
@@ -275,6 +314,28 @@ export function CalendarView({
         )}
       </div>
 
+      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-blue-500" /> Varix
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-violet-600" /> Outlook
+        </span>
+        <span>Actualización automática cada 30 segundos</span>
+        <span
+          title={outlookStatus.last_error ?? undefined}
+          className={
+            outlookStatus.last_sync_ok === false
+              ? 'rounded-full bg-red-100 px-2 py-1 text-red-700'
+              : outlookStatus.last_sync_ok
+                ? 'rounded-full bg-green-100 px-2 py-1 text-green-700'
+                : 'rounded-full bg-gray-100 px-2 py-1 text-gray-600'
+          }
+        >
+          {outlookStatusLabel}
+        </span>
+      </div>
+
       {/* Calendar */}
       <div className="h-[calc(100vh-240px)] min-h-[500px] overflow-auto border rounded-lg bg-white">
         <AppointmentCalendar
@@ -289,11 +350,16 @@ export function CalendarView({
 
       {/* Detail Dialog */}
       <AppointmentDialog
-        event={selectedEvent}
-        open={dialogOpen}
+        event={selectedEvent?.extendedProps.source === 'varix' ? selectedEvent : null}
+        open={dialogOpen && selectedEvent?.extendedProps.source === 'varix'}
         onOpenChange={setDialogOpen}
         onStatusUpdate={handleStatusUpdate}
         services={services}
+      />
+      <OutlookEventDialog
+        event={selectedEvent?.extendedProps.source === 'outlook' ? selectedEvent : null}
+        open={dialogOpen && selectedEvent?.extendedProps.source === 'outlook'}
+        onOpenChange={setDialogOpen}
       />
     </div>
   )

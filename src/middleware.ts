@@ -41,6 +41,10 @@ export async function middleware(request: NextRequest) {
   // middleware redirige la invocacion a /login y los recordatorios
   // nunca se ejecutan.
   const isCronRoute = request.nextUrl.pathname.startsWith('/api/cron/')
+  // Microsoft Graph valida y entrega notificaciones sin una cookie Supabase.
+  // El handler verifica validationToken/clientState antes de procesarlas.
+  const isOutlookWebhook =
+    request.nextUrl.pathname === '/api/integrations/outlook/webhook'
   // Estas APIs validan la sesion dentro del route handler para poder responder
   // 401 JSON a clientes sin sesion. Si pasan por el redirect generico, reciben
   // 307 + /login en lugar del contrato HTTP esperado.
@@ -48,7 +52,7 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname === '/api/ocr' ||
     request.nextUrl.pathname === '/api/transcribe'
   const isPublicRoute =
-    request.nextUrl.pathname === '/' || isCronRoute || isApiWithOwnAuth
+    request.nextUrl.pathname === '/' || isCronRoute || isOutlookWebhook || isApiWithOwnAuth
 
   // Redirect authenticated users away from login
   if (user && isAuthRoute) {

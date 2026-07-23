@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "test:outlook": "node --test test/outlook-transform.test.mjs"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",

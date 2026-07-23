@@ -90,6 +90,7 @@ export async function getLastSyncRun(): Promise<LastSyncRun | null> {
     .from('sync_runs')
     .select('started_at, finished_at, ok, stats')
     .eq('source', 'access')
+    .not('finished_at', 'is', null)
     .order('started_at', { ascending: false })
     .limit(1)
     .maybeSingle()

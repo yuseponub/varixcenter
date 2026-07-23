@@ -89,10 +89,13 @@ export interface CalendarEvent {
   title: string
   start: string | Date
   end: string | Date
+  allDay?: boolean
+  editable?: boolean
   backgroundColor?: string
   borderColor?: string
   textColor?: string
   extendedProps: {
+    source: 'varix' | 'outlook'
     appointmentId: string
     patientId: string
     patientName: string
@@ -102,6 +105,11 @@ export interface CalendarEvent {
     estado: AppointmentStatus
     motivoConsulta: string | null
     notas: string | null
+    outlookEventId?: string
+    outlookWebLink?: string | null
+    outlookLocation?: string | null
+    outlookConflict?: boolean
+    outlookAllDay?: boolean
   }
 }
 

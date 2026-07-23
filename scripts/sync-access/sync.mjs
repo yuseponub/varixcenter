@@ -53,7 +53,92 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 const BATCH_SIZE = 50
-const AGENT_VERSION = 'sync-access/1.2'
+const AGENT_VERSION = 'sync-access/1.3'
+const STALE_RUN_MINUTES = 30
+const MONITOR_RETRY_DELAYS_MS = [0, 500, 1500]
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Reintenta escrituras pequenas de monitoreo. La sincronizacion puede haber
+ * terminado bien aunque el ultimo UPDATE falle por una interrupcion de red;
+ * sin este control el dashboard deja la corrida abierta para siempre.
+ */
+async function runMonitoringQuery(label, operation) {
+  let lastError = null
+
+  for (let attempt = 0; attempt < MONITOR_RETRY_DELAYS_MS.length; attempt++) {
+    const delay = MONITOR_RETRY_DELAYS_MS[attempt]
+    if (delay > 0) await wait(delay)
+
+    try {
+      const result = await operation()
+      if (!result.error) return result
+      lastError = result.error
+    } catch (error) {
+      lastError = error
+    }
+
+    console.warn(
+      `Monitoreo: ${label} fallo (intento ${attempt + 1}/${MONITOR_RETRY_DELAYS_MS.length}): ` +
+      `${lastError?.message || String(lastError)}`
+    )
+  }
+
+  throw new Error(`Monitoreo: ${label}: ${lastError?.message || String(lastError)}`)
+}
+
+async function repairStaleRuns() {
+  const cutoff = new Date(Date.now() - STALE_RUN_MINUTES * 60_000).toISOString()
+  const detectedAt = new Date().toISOString()
+  const result = await runMonitoringQuery('cerrar corridas interrumpidas', () =>
+    supabase
+      .from('sync_runs')
+      .update({
+        finished_at: detectedAt,
+        ok: false,
+        error: `Ejecucion interrumpida: seguia abierta despues de ${STALE_RUN_MINUTES} minutos`,
+      })
+      .eq('source', 'access')
+      .is('finished_at', null)
+      .lt('started_at', cutoff)
+      .select('id')
+  )
+
+  const repaired = result.data?.length ?? 0
+  if (repaired > 0) {
+    console.warn(`Monitoreo: ${repaired} corrida(s) anterior(es) marcada(s) como interrumpida(s)`)
+  }
+}
+
+async function startSyncRun(startedAt) {
+  const result = await runMonitoringQuery('registrar inicio', () =>
+    supabase
+      .from('sync_runs')
+      .insert({ source: 'access', started_at: startedAt, agent_info: `${AGENT_VERSION} @ ${hostname()}` })
+      .select('id')
+      .single()
+  )
+
+  if (!result.data?.id) throw new Error('Monitoreo: el inicio no devolvio un id de corrida')
+  return result.data.id
+}
+
+async function finishSyncRun(runId, payload) {
+  const result = await runMonitoringQuery('registrar cierre', () =>
+    supabase
+      .from('sync_runs')
+      .update({ finished_at: new Date().toISOString(), ...payload })
+      .eq('id', runId)
+      .select('id')
+  )
+
+  if (result.data?.length !== 1) {
+    throw new Error(`Monitoreo: no se pudo confirmar el cierre de la corrida ${runId}`)
+  }
+}
 
 // ============================================
 // NORMALIZACION (misma logica que la migracion original,
@@ -382,16 +467,20 @@ async function main() {
   }
   let runId = null
 
-  // Registrar inicio de la corrida
+  // Reparar corridas que quedaron abiertas por cierre de Windows, corte de red
+  // o terminacion abrupta del proceso. No bloquea la copia de datos si falla.
   try {
-    const { data } = await supabase
-      .from('sync_runs')
-      .insert({ source: 'access', started_at: startedAt, agent_info: `${AGENT_VERSION} @ ${hostname()}` })
-      .select('id')
-      .single()
-    runId = data?.id ?? null
-  } catch {
-    // sin sync_runs no abortamos: la sincronizacion es lo importante
+    await repairStaleRuns()
+  } catch (error) {
+    console.error(error.message)
+  }
+
+  // Registrar inicio de la corrida. Sin sync_runs no abortamos la copia: el
+  // error queda visible en sync.log y la proxima corrida vuelve a intentarlo.
+  try {
+    runId = await startSyncRun(startedAt)
+  } catch (error) {
+    console.error(error.message)
   }
 
   try {
@@ -577,10 +666,7 @@ async function main() {
     // 6. Cerrar la corrida
     // ------------------------------------------------------------------
     if (runId) {
-      await supabase
-        .from('sync_runs')
-        .update({ finished_at: new Date().toISOString(), ok: stats.errors === 0, stats })
-        .eq('id', runId)
+      await finishSyncRun(runId, { ok: stats.errors === 0, stats, error: null })
     }
 
     console.log('Sincronizacion completa.', JSON.stringify(stats))
@@ -588,10 +674,15 @@ async function main() {
   } catch (err) {
     console.error('FALLO la sincronizacion:', err.message)
     if (runId) {
-      await supabase
-        .from('sync_runs')
-        .update({ finished_at: new Date().toISOString(), ok: false, stats, error: String(err.message).slice(0, 2000) })
-        .eq('id', runId)
+      try {
+        await finishSyncRun(runId, {
+          ok: false,
+          stats,
+          error: String(err.message).slice(0, 2000),
+        })
+      } catch (monitorError) {
+        console.error('FALLO tambien el cierre de monitoreo:', monitorError.message)
+      }
     }
     process.exit(1)
   }

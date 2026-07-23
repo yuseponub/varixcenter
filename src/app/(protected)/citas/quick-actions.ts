@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { queueOutlookAppointmentSync } from '@/lib/outlook/outbox'
 
 /**
  * Cita rapida en un renglon (mejora solicitada por la clinica):
@@ -153,6 +154,7 @@ export async function quickCreateAppointment(
     }
   }
 
+  await queueOutlookAppointmentSync(supabase, appointment.id)
   revalidatePath('/citas')
   revalidatePath('/pacientes')
 

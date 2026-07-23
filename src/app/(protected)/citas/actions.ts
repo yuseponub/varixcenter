@@ -8,6 +8,7 @@ import {
 } from '@/lib/validations/appointment'
 import { patientSchema } from '@/lib/validations/patient'
 import { canTransition, STATUS_LABELS } from '@/lib/appointments/state-machine'
+import { queueOutlookAppointmentSync } from '@/lib/outlook/outbox'
 import type { AppointmentStatus } from '@/types/appointments'
 import { revalidatePath } from 'next/cache'
 
@@ -115,6 +116,7 @@ export async function createAppointment(
   }
 
   // Revalidate citas pages
+  await queueOutlookAppointmentSync(supabase, data.id)
   revalidatePath('/citas')
 
   return { success: true, data: { id: data.id } }
@@ -195,6 +197,9 @@ export async function updateAppointmentStatus(
   }
 
   // Revalidate citas pages
+  if (newStatus === 'cancelada') {
+    await queueOutlookAppointmentSync(supabase, appointmentId, 'delete')
+  }
   revalidatePath('/citas')
 
   return { success: true }
@@ -261,6 +266,7 @@ export async function rescheduleAppointment(
   }
 
   // Revalidate citas pages
+  await queueOutlookAppointmentSync(supabase, appointmentId)
   revalidatePath('/citas')
 
   return { success: true }
@@ -357,6 +363,7 @@ export async function updateAppointment(
   }
 
   // Revalidate citas pages
+  await queueOutlookAppointmentSync(supabase, appointmentId)
   revalidatePath('/citas')
 
   return { success: true, data: { id: appointmentId } }
@@ -546,6 +553,7 @@ export async function createAppointmentWithNewPatient(
   }
 
   // Revalidate pages
+  await queueOutlookAppointmentSync(supabase, appointmentData.id)
   revalidatePath('/citas')
   revalidatePath('/pacientes')
 

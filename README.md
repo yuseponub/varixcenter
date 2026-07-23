@@ -50,6 +50,7 @@ Digitalizar y asegurar los procesos de:
 - [Modelos de Datos](./docs/DATA_MODELS.md) - Estructura de datos
 - [Guía de UI](./docs/UI_GUIDE.md) - Pantallas y componentes
 - [Prompts para v0](./docs/V0_PROMPTS.md) - Prompts para generar UI
+- [Sincronización Outlook ↔ Varix](./docs/OUTLOOK-SYNC.md) - Configuración, seguridad y activación
 
 ## Estructura del Proyecto
 

@@ -199,7 +199,7 @@ export function AppointmentCalendar({
         eventDrop={handleEventDrop}
         datesSet={handleDatesSet}
         // Display options
-        allDaySlot={false}
+        allDaySlot={events.some((event) => event.allDay)}
         nowIndicator={true}
         dayMaxEvents={true}
         weekNumbers={false}

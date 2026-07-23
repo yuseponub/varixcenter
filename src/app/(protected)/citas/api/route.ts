@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAppointmentsForCalendar } from '@/lib/queries/appointments'
+import { getOutlookSyncStatus } from '@/lib/queries/outlook'
 
 /**
  * GET /citas/api - Fetch calendar events
@@ -26,8 +27,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const events = await getAppointmentsForCalendar(start, end, doctorId)
-    return NextResponse.json({ events })
+    const [events, outlookStatus] = await Promise.all([
+      getAppointmentsForCalendar(start, end, doctorId),
+      getOutlookSyncStatus(),
+    ])
+    return NextResponse.json({ events, outlookStatus })
   } catch (error) {
     console.error('Error fetching calendar events:', error)
     return NextResponse.json(

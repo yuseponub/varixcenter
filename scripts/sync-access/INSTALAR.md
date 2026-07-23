@@ -27,9 +27,14 @@ y no vuelve a ser sobrescrita por el agente.
 Copiar la carpeta `sync-access` completa a `C:\varix-sync\` en el PC de la clínica
 (por USB, correo o Drive).
 
-La versión 1.2 requiere que `sync.mjs` y `legacy-medical-resync.mjs` estén juntos
+La versión 1.3 requiere que `sync.mjs` y `legacy-medical-resync.mjs` estén juntos
 en esa carpeta, y que la migración `063_incremental_legacy_medical_sync.sql` ya
 esté aplicada en Supabase.
+
+La versión 1.3 también reintenta el registro de inicio/cierre y marca como
+interrumpidas las corridas que lleven más de 30 minutos abiertas. Así una caída
+de Windows o de internet no deja el dashboard mostrando una sincronización
+pendiente para siempre.
 
 ### 3. Configurar
 

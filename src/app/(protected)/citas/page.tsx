@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getDoctors, getAppointmentsForCalendar } from '@/lib/queries/appointments'
 import { getActiveServices } from '@/lib/queries/services'
+import { getOutlookSyncStatus } from '@/lib/queries/outlook'
 import { CalendarView } from './calendar-view'
 import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
@@ -36,10 +37,11 @@ export default async function CitasPage() {
   const endDate = endOfWeek.toISOString()
 
   // Fetch doctors, initial events, and services in parallel
-  const [doctors, events, services] = await Promise.all([
+  const [doctors, events, services, outlookStatus] = await Promise.all([
     getDoctors(),
     getAppointmentsForCalendar(startDate, endDate),
     getActiveServices(),
+    getOutlookSyncStatus(),
   ])
 
   return (
@@ -62,6 +64,7 @@ export default async function CitasPage() {
         initialStart={startDate}
         initialEnd={endDate}
         services={services}
+        initialOutlookStatus={outlookStatus}
       />
     </div>
   )

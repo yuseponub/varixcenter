@@ -153,7 +153,7 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
       {/* Loading indicator */}
       {isLoading && (
         <div className="absolute right-12 top-1/2 -translate-y-1/2">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-blue-600" />
         </div>
       )}
 

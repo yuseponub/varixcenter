@@ -69,7 +69,7 @@ export function CancelPurchaseDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-red-600">
+          <DialogTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
             Anular Compra
           </DialogTitle>
@@ -80,9 +80,9 @@ export function CancelPurchaseDialog({
         </DialogHeader>
 
         {willReverseStock && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm">
-            <p className="font-medium text-red-800 mb-1">Atencion:</p>
-            <p className="text-red-700">
+          <div className="bg-destructive-soft border border-destructive/30 rounded-lg p-4 text-sm">
+            <p className="font-medium text-destructive mb-1">Atencion:</p>
+            <p className="text-destructive">
               Esta compra ya fue recibida. El stock sera revertido automaticamente.
             </p>
           </div>
@@ -90,7 +90,7 @@ export function CancelPurchaseDialog({
 
         <div>
           <Label>
-            Justificacion <span className="text-red-500">*</span>
+            Justificacion <span className="text-destructive">*</span>
           </Label>
           <Textarea
             value={justificacion}

@@ -63,7 +63,7 @@ export function ConfirmReceptionDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <PackageCheck className="h-5 w-5 text-green-600" />
+            <PackageCheck className="h-5 w-5 text-success-foreground" />
             Confirmar Recepcion
           </DialogTitle>
           <DialogDescription>
@@ -72,9 +72,9 @@ export function ConfirmReceptionDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
-          <p className="font-medium text-yellow-800 mb-1">Importante:</p>
-          <ul className="list-disc list-inside text-yellow-700 space-y-1">
+        <div className="bg-warning border border-warning-foreground/40 rounded-lg p-4 text-sm">
+          <p className="font-medium text-warning-foreground mb-1">Importante:</p>
+          <ul className="list-disc list-inside text-warning-foreground space-y-1">
             <li>Verifique que la mercancia fisica coincida con la factura</li>
             <li>El stock se actualizara inmediatamente</li>
             <li>Esta accion no se puede deshacer facilmente</li>

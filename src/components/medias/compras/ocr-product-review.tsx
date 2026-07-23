@@ -129,7 +129,7 @@ export function OCRProductReview({
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Productos Detectados por OCR</span>
-          <span className="text-sm font-normal text-gray-500">
+          <span className="text-sm font-normal text-muted-foreground">
             {matchedCount}/{totalCount} asignados
           </span>
         </CardTitle>
@@ -137,8 +137,8 @@ export function OCRProductReview({
       <CardContent className="space-y-4">
         {/* OCR Metadata */}
         {(ocrResult.proveedor || ocrResult.fecha_factura || ocrResult.total) && (
-          <div className="bg-blue-50 p-3 rounded-lg text-sm">
-            <p className="font-medium text-blue-800 mb-1">Datos detectados:</p>
+          <div className="bg-info p-3 rounded-lg text-sm">
+            <p className="font-medium text-info-foreground mb-1">Datos detectados:</p>
             {ocrResult.proveedor && (
               <p>Proveedor: {ocrResult.proveedor}</p>
             )}
@@ -162,7 +162,7 @@ export function OCRProductReview({
               <div
                 key={index}
                 className={`border rounded-lg p-3 ${
-                  item.matched ? 'border-green-300 bg-green-50' : 'border-yellow-300 bg-yellow-50'
+                  item.matched ? 'border-success bg-success' : 'border-warning-foreground/40 bg-warning'
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -171,21 +171,21 @@ export function OCRProductReview({
                       {ocrProduct.descripcion}
                     </p>
                     {ocrProduct.codigo_producto && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-muted-foreground">
                         Codigo OCR: {ocrProduct.codigo_producto}
                       </p>
                     )}
                     {ocrProduct.needs_review && (
-                      <p className="text-xs text-yellow-600">
+                      <p className="text-xs text-warning-foreground">
                         Requiere revision (confianza baja)
                       </p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     {item.matched ? (
-                      <Check className="h-5 w-5 text-green-600" />
+                      <Check className="h-5 w-5 text-success-foreground" />
                     ) : (
-                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                      <AlertTriangle className="h-5 w-5 text-warning-foreground" />
                     )}
                     <Button
                       variant="ghost"
@@ -255,8 +255,8 @@ export function OCRProductReview({
         </div>
 
         {matchedProducts.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <AlertTriangle className="mx-auto h-12 w-12 text-yellow-500 mb-2" />
+          <div className="text-center py-8 text-muted-foreground">
+            <AlertTriangle className="mx-auto h-12 w-12 text-warning-foreground mb-2" />
             <p>No se detectaron productos en la factura</p>
             <p className="text-sm">Ingrese los productos manualmente</p>
           </div>

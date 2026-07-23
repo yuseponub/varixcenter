@@ -32,26 +32,26 @@ export default async function EditarPacientePage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-gray-600">
-        <Link href="/pacientes" className="hover:text-gray-900">
+      <nav className="mb-6 text-sm text-muted-foreground">
+        <Link href="/pacientes" className="hover:text-foreground">
           Pacientes
         </Link>
         <span className="mx-2">/</span>
-        <Link href={`/pacientes/${id}`} className="hover:text-gray-900">
+        <Link href={`/pacientes/${id}`} className="hover:text-foreground">
           {patient.nombre} {patient.apellido}
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-900">Editar</span>
+        <span className="text-foreground">Editar</span>
       </nav>
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Editar Paciente</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-[22px] font-bold">Editar Paciente</h1>
+        <p className="mt-1 text-muted-foreground">
           Cedula: <span className="font-mono">{patient.cedula}</span>
-          <span className="ml-2 text-xs text-amber-600">
+          <span className="ml-2 text-xs text-warning-foreground">
             (La cedula no puede ser modificada)
           </span>
         </p>

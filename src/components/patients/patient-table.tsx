@@ -74,7 +74,7 @@ const columns: ColumnDef<Patient>[] = [
     cell: ({ row }) => (
       <Link
         href={`/historias?search=${row.original.cedula}`}
-        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+        className="inline-flex items-center gap-1 text-sm text-primary hover:text-info-foreground hover:underline"
         onClick={(e) => e.stopPropagation()}
       >
         <FileText className="h-4 w-4" />
@@ -103,7 +103,7 @@ export function PatientTable({ data }: PatientTableProps) {
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-xl bg-card shadow-card">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -136,7 +136,7 @@ export function PatientTable({ data }: PatientTableProps) {
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="cursor-pointer hover:bg-gray-50"
+                className="cursor-pointer"
                 onClick={() => router.push(`/pacientes/${row.original.id}`)}
               >
                 {row.getVisibleCells().map((cell) => (

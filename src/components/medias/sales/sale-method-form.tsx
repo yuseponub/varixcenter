@@ -188,7 +188,7 @@ export function SaleMethodForm({
 
       {methods.length > 0 && Math.abs(difference) > 0.01 && (
         <p
-          className={`text-sm ${difference > 0 ? 'text-amber-600' : 'text-red-600'}`}
+          className={`text-sm ${difference > 0 ? 'text-warning-foreground' : 'text-destructive'}`}
         >
           {difference > 0
             ? `Falta: ${formatCurrency(difference)}`

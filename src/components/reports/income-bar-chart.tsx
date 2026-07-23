@@ -33,19 +33,19 @@ import { es } from 'date-fns/locale'
 const chartConfig = {
   efectivo: {
     label: 'Efectivo',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
   tarjeta: {
     label: 'Tarjeta',
-    color: 'hsl(var(--chart-2))',
+    color: 'var(--chart-2)',
   },
   transferencia: {
     label: 'Transferencia',
-    color: 'hsl(var(--chart-3))',
+    color: 'var(--chart-3)',
   },
   nequi: {
     label: 'Nequi',
-    color: 'hsl(var(--chart-4))',
+    color: 'var(--chart-4)',
   },
 } satisfies ChartConfig
 

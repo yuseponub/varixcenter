@@ -66,7 +66,7 @@ export function RejectDialog({ returnId, numeroDevolucion }: RejectDialogProps) 
         <Button
           variant="ghost"
           size="icon"
-          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="text-destructive hover:text-destructive hover:bg-destructive-soft"
           title="Rechazar devolucion"
         >
           <X className="h-4 w-4" />

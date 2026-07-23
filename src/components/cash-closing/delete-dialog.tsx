@@ -74,7 +74,7 @@ export function DeleteDialog({ cierreId, cierreNumero }: DeleteDialogProps) {
 
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+            <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-destructive">
               Justificacion
             </Label>
             <Textarea
@@ -89,7 +89,7 @@ export function DeleteDialog({ cierreId, cierreNumero }: DeleteDialogProps) {
               {justificacion.length}/10 caracteres minimos
             </p>
             {state?.errors?.justificacion && (
-              <p className="text-sm text-red-500">{state.errors.justificacion[0]}</p>
+              <p className="text-sm text-destructive">{state.errors.justificacion[0]}</p>
             )}
           </div>
 

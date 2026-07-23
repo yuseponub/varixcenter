@@ -28,7 +28,7 @@ export function MetricCard({ title, value, icon, variant = 'default' }: MetricCa
         </div>
       </CardHeader>
       <CardContent>
-        <div className={cn('text-2xl font-bold', isPrimary && 'text-3xl')}>
+        <div className={cn('text-[22px] font-bold', isPrimary && 'text-3xl')}>
           {displayValue}
         </div>
       </CardContent>

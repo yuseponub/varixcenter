@@ -109,7 +109,7 @@ function ApprovalDialog({ payment }: { payment: PaymentWithDetails }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" size="sm" className="bg-amber-600 hover:bg-amber-700">
+        <Button type="button" size="sm" className="bg-[oklch(0.68_0.14_80)] text-white hover:bg-[oklch(0.6_0.13_78)]">
           <ShieldCheck />
           Autorizar emisión
         </Button>
@@ -122,7 +122,7 @@ function ApprovalDialog({ payment }: { payment: PaymentWithDetails }) {
             permite aceptar el asiento contable y transmitirla a la DIAN.
           </DialogDescription>
         </DialogHeader>
-        <Alert className="border-amber-300 bg-amber-50 text-amber-950">
+        <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
           <AlertTriangle />
           <AlertTitle>Acción irreversible</AlertTitle>
           <AlertDescription>
@@ -175,7 +175,7 @@ function CufeDialog({ payment }: { payment: PaymentWithDetails }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" size="sm" variant="outline" className="border-amber-500 text-amber-800">
+        <Button type="button" size="sm" variant="outline" className="border-warning-foreground/60 text-warning-foreground">
           <AlertTriangle />
           Registrar CUFE
         </Button>
@@ -220,7 +220,7 @@ function BlockedDialog({ payment }: { payment: PaymentWithDetails }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button type="button" size="sm" variant="outline" className="border-amber-500 text-amber-800">
+        <Button type="button" size="sm" variant="outline" className="border-warning-foreground/60 text-warning-foreground">
           <AlertTriangle />
           {statusLabel(job.estado)}
         </Button>
@@ -232,7 +232,7 @@ function BlockedDialog({ payment }: { payment: PaymentWithDetails }) {
             El robot no enviará nada a la DIAN hasta resolver esta revisión.
           </DialogDescription>
         </DialogHeader>
-        <Alert className="border-amber-300 bg-amber-50 text-amber-950">
+        <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
           <AlertTriangle />
           <AlertTitle>{statusLabel(job.estado)}</AlertTitle>
           <AlertDescription>
@@ -303,7 +303,7 @@ export function CreateWimaxInvoiceDialog({
 
   if (invoicing.estado === 'facturada_total' || invoicing.estado === 'facturada_parcial') {
     return (
-      <Badge className="bg-emerald-100 text-emerald-800">
+      <Badge className="bg-success text-success-foreground">
         <FileCheck2 />
         {invoicing.wimax_factura_numero ?? 'Facturada'}
       </Badge>
@@ -320,7 +320,7 @@ export function CreateWimaxInvoiceDialog({
   if (job?.estado === 'esperando_aprobacion') return <ApprovalDialog payment={payment} />
   if (job?.estado === 'emitida_sin_cufe') return <CufeDialog payment={payment} />
   if (job?.estado === 'completada') {
-    return <Badge className="bg-emerald-100 text-emerald-800">{job.wimax_factura_numero}</Badge>
+    return <Badge className="bg-success text-success-foreground">{job.wimax_factura_numero}</Badge>
   }
   if (job && ['bloqueada_duplicado', 'requiere_revision'].includes(job.estado)) {
     return <BlockedDialog payment={payment} />
@@ -410,7 +410,7 @@ export function CreateWimaxInvoiceDialog({
         )}
 
         {hasUnknown && (
-          <Alert className="border-amber-300 bg-amber-50 text-amber-950">
+          <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
             <AlertTriangle />
             <AlertTitle>Falta mapear un tratamiento</AlertTitle>
             <AlertDescription>
@@ -434,7 +434,7 @@ export function CreateWimaxInvoiceDialog({
                   }}
                   disabled={isPending}
                 >
-                  <SelectTrigger className={!item.referencia ? 'border-amber-500' : ''}>
+                  <SelectTrigger className={!item.referencia ? 'border-warning-foreground/60' : ''}>
                     <SelectValue placeholder="Seleccione tratamiento" />
                   </SelectTrigger>
                   <SelectContent>

@@ -107,7 +107,7 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight font-mono">
+            <h1 className="text-[22px] font-bold tracking-tight font-mono">
               {closing.cierre_numero}
             </h1>
             <Badge variant={CIERRE_ESTADO_VARIANTS[closing.estado]}>
@@ -137,9 +137,9 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
 
       {/* Reopen info */}
       {closing.estado === 'reabierto' && closing.reopen_justificacion && (
-        <Card className="border-amber-500 bg-amber-50">
+        <Card className="border-warning-foreground/40 bg-warning">
           <CardHeader className="pb-2">
-            <CardTitle className="text-amber-700">Cierre Reabierto</CardTitle>
+            <CardTitle className="text-warning-foreground">Cierre Reabierto</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm">{closing.reopen_justificacion}</p>
@@ -159,25 +159,25 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <Banknote className="h-4 w-4 text-green-600" />
+                <Banknote className="h-4 w-4 text-success-foreground" />
                 <span className="text-sm">Efectivo</span>
               </div>
               <span className="text-right font-medium">{formatCurrency(closing.total_efectivo)}</span>
 
               <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-blue-600" />
+                <CreditCard className="h-4 w-4 text-primary" />
                 <span className="text-sm">Tarjeta</span>
               </div>
               <span className="text-right font-medium">{formatCurrency(closing.total_tarjeta)}</span>
 
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-purple-600" />
+                <Building2 className="h-4 w-4 text-[oklch(0.45_0.12_210)]" />
                 <span className="text-sm">Transferencia</span>
               </div>
               <span className="text-right font-medium">{formatCurrency(closing.total_transferencia)}</span>
 
               <div className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-teal-600" />
+                <Smartphone className="h-4 w-4 text-primary" />
                 <span className="text-sm">Nequi</span>
               </div>
               <span className="text-right font-medium">{formatCurrency(closing.total_nequi)}</span>
@@ -187,7 +187,7 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
 
             <div className="flex justify-between items-center">
               <span className="font-medium">Total Recaudado</span>
-              <span className="text-2xl font-bold">{formatCurrency(closing.grand_total)}</span>
+              <span className="text-[22px] font-bold">{formatCurrency(closing.grand_total)}</span>
             </div>
 
             {(closing.total_descuentos > 0 || closing.total_anulaciones > 0) && (
@@ -195,13 +195,13 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
                 <Separator />
                 <div className="space-y-2 text-sm">
                   {closing.total_descuentos > 0 && (
-                    <div className="flex justify-between text-amber-600">
+                    <div className="flex justify-between text-warning-foreground">
                       <span>Descuentos aplicados</span>
                       <span>-{formatCurrency(closing.total_descuentos)}</span>
                     </div>
                   )}
                   {closing.total_anulaciones > 0 && (
-                    <div className="flex justify-between text-red-600">
+                    <div className="flex justify-between text-destructive">
                       <span>Pagos anulados</span>
                       <span>{formatCurrency(closing.total_anulaciones)}</span>
                     </div>
@@ -231,18 +231,18 @@ export default async function CierreDetailPage({ params }: CierreDetailPageProps
 
             <Separator />
 
-            <div className={`flex items-center justify-between p-3 rounded-lg ${hasDiferencia ? 'bg-red-50' : 'bg-green-50'}`}>
+            <div className={`flex items-center justify-between p-3 rounded-lg ${hasDiferencia ? 'bg-destructive-soft' : 'bg-success'}`}>
               <div className="flex items-center gap-2">
                 {hasDiferencia ? (
-                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
                 ) : (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success-foreground" />
                 )}
-                <span className={`font-medium ${hasDiferencia ? 'text-red-700' : 'text-green-700'}`}>
+                <span className={`font-medium ${hasDiferencia ? 'text-destructive' : 'text-success-foreground'}`}>
                   Diferencia
                 </span>
               </div>
-              <span className={`font-bold ${hasDiferencia ? 'text-red-700' : 'text-green-700'}`}>
+              <span className={`font-bold ${hasDiferencia ? 'text-destructive' : 'text-success-foreground'}`}>
                 {formatCurrency(closing.diferencia)}
               </span>
             </div>

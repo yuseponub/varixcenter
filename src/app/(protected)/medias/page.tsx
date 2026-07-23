@@ -29,10 +29,10 @@ export default async function MediasDashboardPage() {
   ])
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Medias de Compresion</h1>
+        <h1 className="text-[22px] font-bold">Medias de Compresion</h1>
         <p className="text-muted-foreground">Dashboard operativo</p>
       </div>
 

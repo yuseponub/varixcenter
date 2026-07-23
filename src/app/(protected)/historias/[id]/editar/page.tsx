@@ -34,7 +34,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
   // Check if user can edit medical records
   if (!['admin', 'medico', 'enfermera'].includes(userRole)) {
     return (
-      <div className="container mx-auto py-6 max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Acceso Denegado</AlertTitle>
@@ -64,7 +64,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
   // Check if record can be edited (only drafts, but legacy records are always editable)
   if (record.estado === 'completado' && record.source !== 'legacy_access') {
     return (
-      <div className="container mx-auto py-6 max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Historia completada</AlertTitle>
@@ -123,7 +123,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
+    <div className="mx-auto max-w-4xl">
       <div className="mb-6">
         <Link
           href={`/historias/${id}`}
@@ -132,7 +132,7 @@ export default async function EditarHistoriaPage({ params }: PageProps) {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver a Historia
         </Link>
-        <h1 className="text-2xl font-bold mt-4">Editar Historia Clinica</h1>
+        <h1 className="text-[22px] font-bold mt-4">Editar Historia Clinica</h1>
         <p className="text-muted-foreground">
           Modificar historia clinica del paciente
         </p>

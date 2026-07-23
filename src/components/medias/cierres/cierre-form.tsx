@@ -128,7 +128,7 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
           <div className="space-y-2">
             <Label
               htmlFor="conteo_fisico"
-              className="after:content-['*'] after:ml-0.5 after:text-red-500"
+              className="after:content-['*'] after:ml-0.5 after:text-destructive"
             >
               Total en efectivo contado
             </Label>
@@ -156,26 +156,26 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
           <div
             className={`p-4 rounded-lg ${
               hasDiferencia
-                ? 'bg-red-50 border-2 border-red-500'
-                : 'bg-green-50 border border-green-200'
+                ? 'bg-destructive-soft border-2 border-destructive'
+                : 'bg-success border border-success'
             }`}
           >
             <div className="flex items-center gap-2">
               {hasDiferencia ? (
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
               ) : (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <CheckCircle2 className="h-5 w-5 text-success-foreground" />
               )}
               <span
                 className={`font-medium ${
-                  hasDiferencia ? 'text-red-700' : 'text-green-700'
+                  hasDiferencia ? 'text-destructive' : 'text-success-foreground'
                 }`}
               >
                 Diferencia: {formatCurrency(diferencia)}
               </span>
             </div>
             {hasDiferencia && (
-              <p className="text-sm text-red-600 mt-1 font-semibold">
+              <p className="text-sm text-destructive mt-1 font-semibold">
                 TOLERANCIA CERO: Cualquier diferencia requiere justificacion
                 detallada.
               </p>
@@ -187,7 +187,7 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
             <div className="space-y-2">
               <Label
                 htmlFor="justificacion"
-                className="after:content-['*'] after:ml-0.5 after:text-red-500"
+                className="after:content-['*'] after:ml-0.5 after:text-destructive"
               >
                 Justificacion de la diferencia
               </Label>
@@ -198,13 +198,13 @@ export function MediasCierreForm({ fecha, summary }: MediasCierreFormProps) {
                 placeholder="Explique detalladamente la razon de la diferencia (minimo 10 caracteres)"
                 rows={3}
                 disabled={isPending}
-                className="border-red-300 focus:border-red-500"
+                className="border-destructive/30 focus:border-destructive"
               />
               <p className="text-xs text-muted-foreground">
                 {justificacion.length}/10 caracteres minimos
               </p>
               {state?.errors?.diferencia_justificacion && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-destructive">
                   {state.errors.diferencia_justificacion[0]}
                 </p>
               )}

@@ -47,7 +47,7 @@ export default async function CompraDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -57,10 +57,10 @@ export default async function CompraDetailPage({ params }: PageProps) {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold font-mono">
+            <h1 className="text-[22px] font-bold font-mono">
               {purchase.numero_compra}
             </h1>
-            <p className="text-gray-500">
+            <p className="text-muted-foreground">
               {format(new Date(purchase.created_at), "dd 'de' MMMM, yyyy", {
                 locale: es,
               })}
@@ -86,23 +86,23 @@ export default async function CompraDetailPage({ params }: PageProps) {
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-sm text-gray-500">Proveedor</p>
+              <p className="text-sm text-muted-foreground">Proveedor</p>
               <p className="font-medium">{purchase.proveedor}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Fecha de Factura</p>
+              <p className="text-sm text-muted-foreground">Fecha de Factura</p>
               <p className="font-medium">
                 {format(new Date(purchase.fecha_factura), 'dd/MM/yyyy')}
               </p>
             </div>
             {purchase.numero_factura && (
               <div>
-                <p className="text-sm text-gray-500">Numero de Factura</p>
+                <p className="text-sm text-muted-foreground">Numero de Factura</p>
                 <p className="font-medium">{purchase.numero_factura}</p>
               </div>
             )}
             <div>
-              <p className="text-sm text-gray-500">Total</p>
+              <p className="text-sm text-muted-foreground">Total</p>
               <p className="text-xl font-bold">{formatCurrency(purchase.total)}</p>
             </div>
           </CardContent>
@@ -118,18 +118,18 @@ export default async function CompraDetailPage({ params }: PageProps) {
                 href={invoiceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
               >
-                <FileText className="h-10 w-10 text-red-500" />
+                <FileText className="h-10 w-10 text-destructive" />
                 <div>
                   <p className="font-medium">Ver Factura</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Abrir en nueva pestana
                   </p>
                 </div>
               </a>
             ) : (
-              <p className="text-gray-500">No hay documento adjunto</p>
+              <p className="text-muted-foreground">No hay documento adjunto</p>
             )}
           </CardContent>
         </Card>
@@ -140,12 +140,12 @@ export default async function CompraDetailPage({ params }: PageProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PackageCheck className="h-5 w-5 text-green-600" />
+              <PackageCheck className="h-5 w-5 text-success-foreground" />
               Recepcion Confirmada
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Confirmado el{' '}
               {format(new Date(purchase.recibido_at), "dd/MM/yyyy 'a las' HH:mm", {
                 locale: es,
@@ -157,15 +157,15 @@ export default async function CompraDetailPage({ params }: PageProps) {
 
       {/* Anulacion Info (if cancelled) */}
       {purchase.estado === 'anulado' && purchase.anulado_at && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/30 bg-destructive-soft">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-700">
+            <CardTitle className="flex items-center gap-2 text-destructive">
               <Trash2 className="h-5 w-5" />
               Compra Anulada
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Anulada el{' '}
               {format(new Date(purchase.anulado_at), "dd/MM/yyyy 'a las' HH:mm", {
                 locale: es,

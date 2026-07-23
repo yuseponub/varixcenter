@@ -113,12 +113,12 @@ export function CierrePhotoUpload({
 
   return (
     <div className="space-y-2">
-      <Label className={required ? "after:content-['*'] after:ml-0.5 after:text-red-500" : ''}>
+      <Label className={required ? "after:content-['*'] after:ml-0.5 after:text-destructive" : ''}>
         Foto del reporte firmado
       </Label>
 
       {!preview && !uploadedPath ? (
-        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${displayError ? 'border-red-500' : 'border-muted'}`}>
+        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${displayError ? 'border-destructive' : 'border-muted'}`}>
           <Input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic"
@@ -189,7 +189,7 @@ export function CierrePhotoUpload({
       )}
 
       {displayError && (
-        <p className="text-sm text-red-500">{displayError}</p>
+        <p className="text-sm text-destructive">{displayError}</p>
       )}
     </div>
   )

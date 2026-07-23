@@ -68,7 +68,7 @@ export function MediasCierresTable({
             </TableCell>
             <TableCell
               className={`text-right ${
-                cierre.diferencia !== 0 ? 'text-red-600 font-medium' : ''
+                cierre.diferencia !== 0 ? 'text-destructive font-medium' : ''
               }`}
             >
               {formatCurrency(cierre.diferencia)}

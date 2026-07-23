@@ -54,7 +54,7 @@ export function ReturnsTable({
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-xl bg-card shadow-card">
       <Table>
         <TableHeader>
           <TableRow>

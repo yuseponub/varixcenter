@@ -363,7 +363,7 @@ export function VoiceDictation({
             title="Copiar"
           >
             {copied ? (
-              <Check className="h-4 w-4 text-green-500" />
+              <Check className="h-4 w-4 text-success-foreground" />
             ) : (
               <Copy className="h-4 w-4" />
             )}
@@ -391,7 +391,7 @@ export function VoiceDictation({
             >
               <FileText className="h-3 w-3" />
               Diagnostico
-              <Check className="h-3 w-3 text-green-500" />
+              <Check className="h-3 w-3 text-success-foreground" />
             </span>
             {onAddAsProgressNote && (
               <Button

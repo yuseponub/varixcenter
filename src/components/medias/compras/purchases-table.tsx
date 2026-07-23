@@ -65,7 +65,7 @@ export function PurchasesTable({ purchases, onFilterChange }: PurchasesTableProp
       <div className="flex gap-4">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar por proveedor..."
               value={proveedorFilter}
@@ -105,8 +105,8 @@ export function PurchasesTable({ purchases, onFilterChange }: PurchasesTableProp
           <TableBody>
             {purchases.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                  <Package className="mx-auto h-12 w-12 text-gray-300 mb-2" />
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <Package className="mx-auto h-12 w-12 text-muted-foreground/40 mb-2" />
                   <p>No hay compras registradas</p>
                 </TableCell>
               </TableRow>

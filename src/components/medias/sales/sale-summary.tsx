@@ -78,7 +78,7 @@ export function SaleSummary({ cart, methods }: SaleSummaryProps) {
         {methods.length > 0 && Math.abs(difference) > 0.01 && (
           <div
             className={`text-sm font-medium ${
-              difference > 0 ? 'text-amber-600' : 'text-red-600'
+              difference > 0 ? 'text-warning-foreground' : 'text-destructive'
             }`}
           >
             {difference > 0

@@ -33,7 +33,7 @@ export default async function CierresPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Cierres de Caja</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">Cierres de Caja</h1>
           <p className="text-muted-foreground">
             Registro de cierres de caja diarios
           </p>

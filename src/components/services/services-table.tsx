@@ -165,7 +165,7 @@ export function ServicesTable({ data, onRefresh }: ServicesTableProps) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div className="overflow-hidden rounded-xl bg-card shadow-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

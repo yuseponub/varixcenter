@@ -198,7 +198,7 @@ export function PaymentForm({
           <div className="space-y-2">
             {/* Selected patient display */}
             {patientId && selectedPatient && (
-              <div className="flex items-center justify-between rounded-md border bg-gray-50 px-3 py-2">
+              <div className="flex items-center justify-between rounded-md border bg-muted/50 px-3 py-2">
                 <span className="text-sm font-medium">{selectedPatientName}</span>
                 <button
                   type="button"
@@ -206,7 +206,7 @@ export function PaymentForm({
                     setPatientId('')
                     setPatientSearch('')
                   }}
-                  className="text-gray-400 hover:text-gray-600 text-sm"
+                  className="text-muted-foreground hover:text-muted-foreground text-sm"
                   disabled={isPending}
                 >
                   Cambiar
@@ -244,7 +244,7 @@ export function PaymentForm({
                         <button
                           key={patient.id}
                           type="button"
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
+                          className="w-full px-3 py-2 text-left hover:bg-neutral-badge border-b last:border-b-0"
                           onClick={() => {
                             setPatientId(patient.id)
                             setSelectedPatient(patient)
@@ -263,7 +263,7 @@ export function PaymentForm({
             )}
           </div>
           {state?.errors?.patient_id && (
-            <p className="text-sm text-red-500 mt-1">{state.errors.patient_id[0]}</p>
+            <p className="text-sm text-destructive mt-1">{state.errors.patient_id[0]}</p>
           )}
         </CardContent>
       </Card>
@@ -302,7 +302,7 @@ export function PaymentForm({
             disabled={isPending}
           />
           {state?.errors?.items && (
-            <p className="text-sm text-red-500 mt-2">{state.errors.items[0]}</p>
+            <p className="text-sm text-destructive mt-2">{state.errors.items[0]}</p>
           )}
         </CardContent>
       </Card>
@@ -331,7 +331,7 @@ export function PaymentForm({
           </div>
           {descuento > 0 && (
             <div className="space-y-2">
-              <Label htmlFor="descuento_justificacion" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+              <Label htmlFor="descuento_justificacion" className="after:content-['*'] after:ml-0.5 after:text-destructive">
                 Justificacion del descuento
               </Label>
               <Textarea
@@ -343,7 +343,7 @@ export function PaymentForm({
                 rows={2}
               />
               {descuentoJustificacion.length < 5 && descuentoJustificacion.length > 0 && (
-                <p className="text-sm text-amber-600">Minimo 5 caracteres</p>
+                <p className="text-sm text-warning-foreground">Minimo 5 caracteres</p>
               )}
             </div>
           )}
@@ -363,7 +363,7 @@ export function PaymentForm({
             disabled={isPending}
           />
           {state?.errors?.methods && (
-            <p className="text-sm text-red-500 mt-2">{state.errors.methods[0]}</p>
+            <p className="text-sm text-destructive mt-2">{state.errors.methods[0]}</p>
           )}
         </CardContent>
       </Card>
@@ -440,7 +440,7 @@ export function PaymentForm({
 
       {/* Global error */}
       {state?.error && !state.errors && (
-        <p className="text-sm text-red-500">{state.error}</p>
+        <p className="text-sm text-destructive">{state.error}</p>
       )}
 
     </form>

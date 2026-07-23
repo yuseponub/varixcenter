@@ -67,7 +67,7 @@ export default async function NewPaymentPage({ searchParams }: NewPaymentPagePro
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Nuevo Pago</h1>
+        <h1 className="text-[22px] font-bold tracking-tight">Nuevo Pago</h1>
         <p className="text-muted-foreground">
           Registre un nuevo pago seleccionando paciente, servicios y metodo de pago.
         </p>

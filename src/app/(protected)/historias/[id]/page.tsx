@@ -669,7 +669,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
   )
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -680,7 +680,7 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a Historias
           </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-3">
+          <h1 className="text-[22px] font-bold flex items-center gap-3">
             <FileText className="h-6 w-6" />
             Historia Clinica
             <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>
@@ -717,10 +717,10 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
 
       {/* Legacy record banner */}
       {record.source === 'legacy_access' && (
-        <Alert className="border-blue-300 bg-blue-50 text-blue-900">
-          <Database className="h-4 w-4 text-blue-600" />
-          <AlertTitle className="text-blue-800">Historia migrada del sistema anterior</AlertTitle>
-          <AlertDescription className="text-blue-700">
+        <Alert className="border-info bg-info text-info-foreground">
+          <Database className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-info-foreground">Historia migrada del sistema anterior</AlertTitle>
+          <AlertDescription className="text-info-foreground">
             Esta historia fue migrada automaticamente desde el sistema Access.
             {record.nombre_medico_legacy && !record.doctor && (
               <span className="block mt-1">Medico original: <strong>{record.nombre_medico_legacy}</strong></span>
@@ -731,10 +731,10 @@ export default async function HistoriaDetailPage({ params }: PageProps) {
 
       {/* Alert for missing doctor */}
       {!record.doctor && record.source !== 'legacy_access' && (
-        <Alert variant="destructive" className="border-yellow-500 bg-yellow-50 text-yellow-900">
-          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <AlertTitle className="text-yellow-800">Medico no asignado</AlertTitle>
-          <AlertDescription className="text-yellow-700">
+        <Alert variant="destructive" className="border-warning-foreground/40 bg-warning text-warning-foreground">
+          <AlertTriangle className="h-4 w-4 text-warning-foreground" />
+          <AlertTitle className="text-warning-foreground">Medico no asignado</AlertTitle>
+          <AlertDescription className="text-warning-foreground">
             Esta historia clinica no tiene un medico asignado. Asigne un medico en la seccion &quot;Informacion de Registro&quot; para que aparezca en el Plan de Tratamiento.
           </AlertDescription>
         </Alert>

@@ -94,6 +94,7 @@ export interface CalendarEvent {
   backgroundColor?: string
   borderColor?: string
   textColor?: string
+  classNames?: string[]
   extendedProps: {
     source: 'varix' | 'outlook'
     appointmentId: string

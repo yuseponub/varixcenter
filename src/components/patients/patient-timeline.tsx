@@ -30,9 +30,9 @@ export function PatientTimeline({ events }: PatientTimelineProps) {
           <CardTitle>Historial de Actividad</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+          <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
             <svg
-              className="mb-4 h-12 w-12 text-gray-300"
+              className="mb-4 h-12 w-12 text-muted-foreground/40"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -45,7 +45,7 @@ export function PatientTimeline({ events }: PatientTimelineProps) {
               />
             </svg>
             <p className="text-sm">No hay eventos registrados</p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               Los pagos, citas y procedimientos apareceran aqui
             </p>
           </div>
@@ -62,7 +62,7 @@ export function PatientTimeline({ events }: PatientTimelineProps) {
       <CardContent>
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+          <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-[oklch(0.93_0.02_200)]" />
 
           {/* Events */}
           <div className="space-y-6">
@@ -77,12 +77,12 @@ export function PatientTimeline({ events }: PatientTimelineProps) {
                 <div className="rounded-lg border bg-white p-3 shadow-sm">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-foreground">
                         {getEventTitle(event)}
                       </p>
-                      <p className="text-sm text-gray-600">{event.details}</p>
+                      <p className="text-sm text-muted-foreground">{event.details}</p>
                     </div>
-                    <time className="shrink-0 text-xs text-gray-400">
+                    <time className="shrink-0 text-xs text-muted-foreground">
                       {formatTimestamp(event.timestamp)}
                     </time>
                   </div>
@@ -102,17 +102,17 @@ export function PatientTimeline({ events }: PatientTimelineProps) {
 function getEventColor(type: TimelineEvent['type']): string {
   switch (type) {
     case 'patient_record':
-      return 'bg-blue-500'
+      return 'bg-primary'
     case 'payment':
-      return 'bg-green-500'
+      return 'bg-[oklch(0.62_0.15_165)]'
     case 'appointment':
-      return 'bg-purple-500'
+      return 'bg-[oklch(0.45_0.12_210)]'
     case 'procedure':
-      return 'bg-orange-500'
+      return 'bg-[oklch(0.75_0.15_85)]'
     case 'sms_reminder':
-      return 'bg-cyan-500'
+      return 'bg-[oklch(0.55_0.1_205)]'
     default:
-      return 'bg-gray-500'
+      return 'bg-muted-foreground'
   }
 }
 

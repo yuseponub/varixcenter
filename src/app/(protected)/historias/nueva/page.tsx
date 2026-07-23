@@ -55,13 +55,13 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
     )
 
     return (
-      <div className="container mx-auto py-6 max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-6">
           <Link href="/historias" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a Historias
           </Link>
-          <h1 className="text-2xl font-bold mt-4">Nueva Historia Clinica</h1>
+          <h1 className="text-[22px] font-bold mt-4">Nueva Historia Clinica</h1>
           <p className="text-muted-foreground">
             Seleccione la cita para crear la historia clinica
           </p>
@@ -92,7 +92,7 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
   // Check if user can create medical records
   if (!['admin', 'medico', 'enfermera'].includes(userRole)) {
     return (
-      <div className="container mx-auto py-6 max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Acceso Denegado</AlertTitle>
@@ -158,7 +158,7 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
+    <div className="mx-auto max-w-4xl">
       <div className="mb-6">
         <div className="flex items-start justify-between">
           <div>
@@ -166,7 +166,7 @@ export default async function NuevaHistoriaPage({ searchParams }: PageProps) {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver a Citas
             </Link>
-            <h1 className="text-2xl font-bold mt-4">Nueva Historia Clinica</h1>
+            <h1 className="text-[22px] font-bold mt-4">Nueva Historia Clinica</h1>
             <p className="text-muted-foreground">
               Crear historia clinica para el paciente desde la cita
             </p>

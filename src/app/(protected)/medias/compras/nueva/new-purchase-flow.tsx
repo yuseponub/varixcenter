@@ -122,15 +122,15 @@ export function NewPurchaseFlow({ products }: NewPurchaseFlowProps) {
   return (
     <div className="space-y-6">
       {/* Step indicator */}
-      <div className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span className={step === 'upload' ? 'font-bold text-primary' : ''}>
           1. Subir Factura
         </span>
-        <span className="text-gray-300">{'>'}</span>
+        <span className="text-muted-foreground/50">{'>'}</span>
         <span className={step === 'review' ? 'font-bold text-primary' : ''}>
           2. Revisar OCR
         </span>
-        <span className="text-gray-300">{'>'}</span>
+        <span className="text-muted-foreground/50">{'>'}</span>
         <span className={step === 'form' || step === 'saving' ? 'font-bold text-primary' : ''}>
           3. Confirmar
         </span>

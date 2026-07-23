@@ -106,7 +106,7 @@ export default async function VerDigitalPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -117,7 +117,7 @@ export default async function VerDigitalPage({ params }: PageProps) {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver a Historia Antigua
           </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-3">
+          <h1 className="text-[22px] font-bold flex items-center gap-3">
             <FileText className="h-6 w-6" />
             Datos Digitales
             <Badge variant={MEDICAL_RECORD_STATUS_VARIANTS[record.estado]}>

@@ -255,7 +255,7 @@ export function AppointmentForm({
       <form action={formAction} className="space-y-6">
         {/* Server error message */}
         {state?.error && (
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-md bg-destructive-soft p-4 text-sm text-destructive">
             {state.error}
           </div>
         )}
@@ -302,7 +302,7 @@ export function AppointmentForm({
                       <div className="space-y-2">
                         {/* Selected patient display */}
                         {field.value && selectedPatient && (
-                          <div className="flex items-center justify-between rounded-md border bg-gray-50 px-3 py-2">
+                          <div className="flex items-center justify-between rounded-md border bg-muted/50 px-3 py-2">
                             <span className="text-sm font-medium">{displayName}</span>
                             <button
                               type="button"
@@ -311,7 +311,7 @@ export function AppointmentForm({
                                 setSelectedPatient(null)
                                 setPatientSearch('')
                               }}
-                              className="text-gray-400 hover:text-gray-600 text-sm"
+                              className="text-muted-foreground hover:text-muted-foreground text-sm"
                             >
                               Cambiar
                             </button>
@@ -346,7 +346,7 @@ export function AppointmentForm({
                                     <button
                                       key={patient.id}
                                       type="button"
-                                      className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
+                                      className="w-full px-3 py-2 text-left hover:bg-neutral-badge border-b last:border-b-0"
                                       onClick={() => {
                                         field.onChange(patient.id)
                                         setSelectedPatient(patient)
@@ -368,7 +368,7 @@ export function AppointmentForm({
                       <input type="hidden" name="patient_id" value={field.value} />
                       <FormMessage />
                       {state?.errors?.patient_id && (
-                        <p className="text-sm text-red-600">{state.errors.patient_id[0]}</p>
+                        <p className="text-sm text-destructive">{state.errors.patient_id[0]}</p>
                       )}
                     </FormItem>
                   )
@@ -392,7 +392,7 @@ export function AppointmentForm({
                       onChange={(e) => updateNewPatientField('cedula', e.target.value)}
                     />
                     {state?.errors?.cedula && (
-                      <p className="text-sm text-red-600">{state.errors.cedula[0]}</p>
+                      <p className="text-sm text-destructive">{state.errors.cedula[0]}</p>
                     )}
                   </div>
 
@@ -408,7 +408,7 @@ export function AppointmentForm({
                       onChange={(e) => updateNewPatientField('celular', e.target.value)}
                     />
                     {state?.errors?.celular && (
-                      <p className="text-sm text-red-600">{state.errors.celular[0]}</p>
+                      <p className="text-sm text-destructive">{state.errors.celular[0]}</p>
                     )}
                   </div>
 
@@ -423,7 +423,7 @@ export function AppointmentForm({
                       onChange={(e) => updateNewPatientField('nombre', e.target.value)}
                     />
                     {state?.errors?.nombre && (
-                      <p className="text-sm text-red-600">{state.errors.nombre[0]}</p>
+                      <p className="text-sm text-destructive">{state.errors.nombre[0]}</p>
                     )}
                   </div>
 
@@ -438,7 +438,7 @@ export function AppointmentForm({
                       onChange={(e) => updateNewPatientField('apellido', e.target.value)}
                     />
                     {state?.errors?.apellido && (
-                      <p className="text-sm text-red-600">{state.errors.apellido[0]}</p>
+                      <p className="text-sm text-destructive">{state.errors.apellido[0]}</p>
                     )}
                   </div>
 
@@ -492,7 +492,7 @@ export function AppointmentForm({
                         onChange={(e) => updateNewPatientField('contacto_emergencia_nombre', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_nombre && (
-                        <p className="text-sm text-red-600">{state.errors.contacto_emergencia_nombre[0]}</p>
+                        <p className="text-sm text-destructive">{state.errors.contacto_emergencia_nombre[0]}</p>
                       )}
                     </div>
 
@@ -507,7 +507,7 @@ export function AppointmentForm({
                         onChange={(e) => updateNewPatientField('contacto_emergencia_telefono', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_telefono && (
-                        <p className="text-sm text-red-600">{state.errors.contacto_emergencia_telefono[0]}</p>
+                        <p className="text-sm text-destructive">{state.errors.contacto_emergencia_telefono[0]}</p>
                       )}
                     </div>
 
@@ -521,7 +521,7 @@ export function AppointmentForm({
                         onChange={(e) => updateNewPatientField('contacto_emergencia_parentesco', e.target.value)}
                       />
                       {state?.errors?.contacto_emergencia_parentesco && (
-                        <p className="text-sm text-red-600">{state.errors.contacto_emergencia_parentesco[0]}</p>
+                        <p className="text-sm text-destructive">{state.errors.contacto_emergencia_parentesco[0]}</p>
                       )}
                     </div>
                   </div>
@@ -573,7 +573,7 @@ export function AppointmentForm({
                   <input type="hidden" name="doctor_id" value={field.value || ''} />
                   <FormMessage />
                   {state?.errors?.doctor_id && (
-                    <p className="text-sm text-red-600">{state.errors.doctor_id[0]}</p>
+                    <p className="text-sm text-destructive">{state.errors.doctor_id[0]}</p>
                   )}
                 </FormItem>
               )}
@@ -654,7 +654,7 @@ export function AppointmentForm({
                       </FormControl>
                       <FormMessage />
                       {state?.errors?.fecha_hora_inicio && (
-                        <p className="text-sm text-red-600">{state.errors.fecha_hora_inicio[0]}</p>
+                        <p className="text-sm text-destructive">{state.errors.fecha_hora_inicio[0]}</p>
                       )}
                     </FormItem>
 
@@ -721,7 +721,7 @@ export function AppointmentForm({
                 </SelectContent>
               </Select>
               {state?.errors?.fecha_hora_fin && (
-                <p className="text-sm text-red-600">{state.errors.fecha_hora_fin[0]}</p>
+                <p className="text-sm text-destructive">{state.errors.fecha_hora_fin[0]}</p>
               )}
             </div>
           </CardContent>

@@ -58,7 +58,7 @@ export function PaymentSummary({
         {/* Descuento */}
         {descuento > 0 && (
           <>
-            <div className="flex justify-between text-sm text-amber-600">
+            <div className="flex justify-between text-sm text-warning-foreground">
               <span>Descuento</span>
               <span>-{formatCurrency(descuento)}</span>
             </div>
@@ -100,7 +100,7 @@ export function PaymentSummary({
 
         {/* Balance check */}
         {!isBalanced && (
-          <div className="text-sm text-red-600 font-medium">
+          <div className="text-sm text-destructive font-medium">
             {methodsTotal > total
               ? `Los metodos exceden el total por ${formatCurrency(methodsTotal - total)}`
               : `Faltan ${formatCurrency(total - methodsTotal)} por asignar`

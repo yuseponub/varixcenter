@@ -69,7 +69,7 @@ export function ReportsPageClient({
   if (!hasAccess) {
     return (
       <div className="bg-white shadow rounded-lg p-6">
-        <div className="flex items-center gap-3 text-yellow-700">
+        <div className="flex items-center gap-3 text-warning-foreground">
           <AlertTriangle className="h-6 w-6" />
           <div>
             <h2 className="text-lg font-semibold">Acceso Denegado</h2>
@@ -84,7 +84,7 @@ export function ReportsPageClient({
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Reportes Financieros</h1>
+        <h1 className="text-[22px] font-bold text-foreground">Reportes Financieros</h1>
       </div>
 
       {/* Date Range Picker */}
@@ -106,7 +106,7 @@ export function ReportsPageClient({
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-destructive-soft border border-destructive/30 rounded-lg p-4 text-destructive">
           {error}
         </div>
       )}

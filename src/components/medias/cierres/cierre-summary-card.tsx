@@ -39,7 +39,7 @@ export function MediasCierreSummaryCard({
         {/* Totals by method */}
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
-            <Banknote className="h-4 w-4 text-green-600" />
+            <Banknote className="h-4 w-4 text-success-foreground" />
             <span className="text-sm">Efectivo</span>
           </div>
           <span className="text-right font-medium">
@@ -47,7 +47,7 @@ export function MediasCierreSummaryCard({
           </span>
 
           <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-blue-600" />
+            <CreditCard className="h-4 w-4 text-primary" />
             <span className="text-sm">Tarjeta</span>
           </div>
           <span className="text-right font-medium">
@@ -55,7 +55,7 @@ export function MediasCierreSummaryCard({
           </span>
 
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-purple-600" />
+            <Building2 className="h-4 w-4 text-[oklch(0.45_0.12_210)]" />
             <span className="text-sm">Transferencia</span>
           </div>
           <span className="text-right font-medium">
@@ -63,7 +63,7 @@ export function MediasCierreSummaryCard({
           </span>
 
           <div className="flex items-center gap-2">
-            <Smartphone className="h-4 w-4 text-teal-600" />
+            <Smartphone className="h-4 w-4 text-primary" />
             <span className="text-sm">Nequi</span>
           </div>
           <span className="text-right font-medium">
@@ -100,14 +100,14 @@ export function MediasCierreSummaryCard({
               </div>
               <div
                 className={`flex justify-between items-center font-medium ${
-                  hasDiferencia ? 'text-red-600' : 'text-green-600'
+                  hasDiferencia ? 'text-destructive' : 'text-success-foreground'
                 }`}
               >
                 <span>Diferencia</span>
                 <span>{formatCurrency(diferencia!)}</span>
               </div>
               {hasDiferencia && (
-                <p className="text-xs text-red-600 font-semibold">
+                <p className="text-xs text-destructive font-semibold">
                   TOLERANCIA CERO: Se requiere justificacion para cualquier diferencia.
                 </p>
               )}

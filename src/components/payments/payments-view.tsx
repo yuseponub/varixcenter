@@ -107,7 +107,7 @@ export function PaymentsView({ payments, canManageWimax }: PaymentsViewProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pagos</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">Pagos</h1>
           <p className="text-muted-foreground">
             Registro de pagos de la clinica
           </p>
@@ -157,12 +157,12 @@ export function PaymentsView({ payments, canManageWimax }: PaymentsViewProps) {
           </span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="flex items-center gap-1.5 text-sm">
-              <Banknote className="h-4 w-4 text-green-600" />
+              <Banknote className="h-4 w-4 text-success-foreground" />
               <span className="text-muted-foreground">Efectivo:</span>
               <span className="font-medium">{formatCurrency(breakdown.efectivo)}</span>
             </span>
             <span className="flex items-center gap-1.5 text-sm">
-              <CreditCard className="h-4 w-4 text-blue-600" />
+              <CreditCard className="h-4 w-4 text-primary" />
               <span className="text-muted-foreground">Tarjeta:</span>
               <span className="font-medium">{formatCurrency(breakdown.tarjeta)}</span>
             </span>

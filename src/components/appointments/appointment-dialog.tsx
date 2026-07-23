@@ -243,22 +243,22 @@ export function AppointmentDialog({
               <div className="space-y-4">
                 {/* Date and time */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-1">Fecha y hora</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Fecha y hora</h4>
                   <p className="text-sm capitalize">
                     {dateTimeFormatter.format(startDate)}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {timeFormatter.format(startDate)} - {timeFormatter.format(endDate)}
                   </p>
                 </div>
 
                 {/* Contact */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-1">Telefono</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Telefono</h4>
                   <p className="text-sm">
                     <a
                       href={`tel:${extendedProps.patientCelular}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-primary hover:underline"
                     >
                       {extendedProps.patientCelular}
                     </a>
@@ -268,7 +268,7 @@ export function AppointmentDialog({
                 {/* Reason for visit */}
                 {extendedProps.motivoConsulta && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Motivo de consulta</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Motivo de consulta</h4>
                     <p className="text-sm">{extendedProps.motivoConsulta}</p>
                   </div>
                 )}
@@ -276,15 +276,15 @@ export function AppointmentDialog({
                 {/* Notes */}
                 {extendedProps.notas && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Notas</h4>
-                    <p className="text-sm text-gray-600">{extendedProps.notas}</p>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Notas</h4>
+                    <p className="text-sm text-muted-foreground">{extendedProps.notas}</p>
                   </div>
                 )}
 
                 {/* Status dropdown */}
                 {availableTransitions.length > 0 && (
                   <div className="border-t pt-4">
-                    <Label className="text-sm font-medium text-gray-500">Cambiar estado</Label>
+                    <Label className="text-sm font-medium text-muted-foreground">Cambiar estado</Label>
                     <Select
                       value=""
                       onValueChange={(value) => handleStatusChange(value as AppointmentStatus)}
@@ -321,22 +321,22 @@ export function AppointmentDialog({
           <div className="space-y-4 py-4">
             {/* Date and time */}
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-1">Fecha y hora</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Fecha y hora</h4>
               <p className="text-sm capitalize">
                 {dateTimeFormatter.format(startDate)}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {timeFormatter.format(startDate)} - {timeFormatter.format(endDate)}
               </p>
             </div>
 
             {/* Contact */}
             <div>
-              <h4 className="text-sm font-medium text-gray-500 mb-1">Telefono</h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Telefono</h4>
               <p className="text-sm">
                 <a
                   href={`tel:${extendedProps.patientCelular}`}
-                  className="text-blue-600 hover:underline"
+                  className="text-primary hover:underline"
                 >
                   {extendedProps.patientCelular}
                 </a>
@@ -346,7 +346,7 @@ export function AppointmentDialog({
             {/* Reason for visit */}
             {extendedProps.motivoConsulta && (
               <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-1">Motivo de consulta</h4>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">Motivo de consulta</h4>
                 <p className="text-sm">{extendedProps.motivoConsulta}</p>
               </div>
             )}
@@ -354,15 +354,15 @@ export function AppointmentDialog({
             {/* Notes */}
             {extendedProps.notas && (
               <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-1">Notas</h4>
-                <p className="text-sm text-gray-600">{extendedProps.notas}</p>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">Notas</h4>
+                <p className="text-sm text-muted-foreground">{extendedProps.notas}</p>
               </div>
             )}
 
             {/* Status dropdown */}
             {availableTransitions.length > 0 && (
               <div className="border-t pt-4">
-                <Label className="text-sm font-medium text-gray-500">Cambiar estado</Label>
+                <Label className="text-sm font-medium text-muted-foreground">Cambiar estado</Label>
                 <Select
                   value=""
                   onValueChange={(value) => handleStatusChange(value as AppointmentStatus)}

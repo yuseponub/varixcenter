@@ -89,7 +89,7 @@ export function PurchaseForm({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>
-                Proveedor <span className="text-red-500">*</span>
+                Proveedor <span className="text-destructive">*</span>
               </Label>
               <Input
                 value={proveedor}
@@ -100,7 +100,7 @@ export function PurchaseForm({
             </div>
             <div>
               <Label>
-                Fecha de Factura <span className="text-red-500">*</span>
+                Fecha de Factura <span className="text-destructive">*</span>
               </Label>
               <Input
                 type="date"
@@ -147,7 +147,7 @@ export function PurchaseForm({
         </CardHeader>
         <CardContent>
           {items.length === 0 ? (
-            <p className="text-center text-gray-500 py-4">
+            <p className="text-center text-muted-foreground py-4">
               No hay productos. Haga clic en "Agregar" para comenzar.
             </p>
           ) : (
@@ -205,7 +205,7 @@ export function PurchaseForm({
                     />
                   </div>
                   <div className="col-span-1 text-right">
-                    <p className="text-xs text-gray-500 mb-1">Subtotal</p>
+                    <p className="text-xs text-muted-foreground mb-1">Subtotal</p>
                     <p className="font-medium text-sm">
                       {formatCurrency(item.cantidad * item.costo_unitario)}
                     </p>
@@ -217,7 +217,7 @@ export function PurchaseForm({
                       onClick={() => removeItem(index)}
                       disabled={disabled}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
@@ -229,8 +229,8 @@ export function PurchaseForm({
           {items.length > 0 && (
             <div className="flex justify-end pt-4 border-t mt-4">
               <div className="text-right">
-                <p className="text-sm text-gray-500">Total</p>
-                <p className="text-2xl font-bold">
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-[22px] font-bold">
                   {formatCurrency(calculateTotal())}
                 </p>
               </div>

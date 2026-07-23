@@ -53,7 +53,7 @@ export function ClosingsTable({ closings }: ClosingsTableProps) {
         {closings.map(closing => (
           <TableRow
             key={closing.id}
-            className={closing.estado === 'reabierto' ? 'bg-amber-50' : ''}
+            className={closing.estado === 'reabierto' ? 'bg-warning' : ''}
           >
             <TableCell className="font-mono text-sm">
               {closing.cierre_numero}
@@ -67,7 +67,7 @@ export function ClosingsTable({ closings }: ClosingsTableProps) {
             <TableCell className="text-right">
               {formatCurrency(closing.total_efectivo)}
             </TableCell>
-            <TableCell className={`text-right ${closing.diferencia !== 0 ? 'text-red-600' : 'text-green-600'}`}>
+            <TableCell className={`text-right ${closing.diferencia !== 0 ? 'text-destructive' : 'text-success-foreground'}`}>
               {formatCurrency(closing.diferencia)}
             </TableCell>
             <TableCell>

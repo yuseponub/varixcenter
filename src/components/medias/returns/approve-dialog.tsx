@@ -66,7 +66,7 @@ export function ApproveDialog({ returnId, numeroDevolucion }: ApproveDialogProps
         <Button
           variant="ghost"
           size="icon"
-          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+          className="text-success-foreground hover:text-success-foreground hover:bg-success"
           title="Aprobar devolucion"
         >
           <Check className="h-4 w-4" />

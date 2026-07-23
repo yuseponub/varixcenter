@@ -14,7 +14,7 @@ export default async function NuevaCompraPage() {
   const products = await getProductsForMatching()
 
   return (
-    <div className="container mx-auto py-6 max-w-4xl">
+    <div className="mx-auto max-w-4xl">
       {/* Header with back button */}
       <div className="flex items-center gap-4 mb-6">
         <Link href="/medias/compras">
@@ -22,7 +22,7 @@ export default async function NuevaCompraPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold">Nueva Compra</h1>
+        <h1 className="text-[22px] font-bold">Nueva Compra</h1>
       </div>
 
       <NewPurchaseFlow products={products} />

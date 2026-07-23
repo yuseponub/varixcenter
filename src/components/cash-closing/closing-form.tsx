@@ -109,7 +109,7 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="conteo_fisico" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+            <Label htmlFor="conteo_fisico" className="after:content-['*'] after:ml-0.5 after:text-destructive">
               Total en efectivo contado
             </Label>
             <div className="flex items-center gap-2">
@@ -133,19 +133,19 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
           </div>
 
           {/* Difference display */}
-          <div className={`p-4 rounded-lg ${hasDiferencia ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+          <div className={`p-4 rounded-lg ${hasDiferencia ? 'bg-destructive-soft border border-destructive/30' : 'bg-success border border-success'}`}>
             <div className="flex items-center gap-2">
               {hasDiferencia ? (
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
               ) : (
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <CheckCircle2 className="h-5 w-5 text-success-foreground" />
               )}
-              <span className={`font-medium ${hasDiferencia ? 'text-red-700' : 'text-green-700'}`}>
+              <span className={`font-medium ${hasDiferencia ? 'text-destructive' : 'text-success-foreground'}`}>
                 Diferencia: {formatCurrency(diferencia)}
               </span>
             </div>
             {hasDiferencia && (
-              <p className="text-sm text-red-600 mt-1">
+              <p className="text-sm text-destructive mt-1">
                 Hay una diferencia de {formatCurrency(diferencia)}. Debe justificar esta diferencia.
               </p>
             )}
@@ -154,7 +154,7 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
           {/* Justificacion (required if diferencia != 0) */}
           {hasDiferencia && (
             <div className="space-y-2">
-              <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+              <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-destructive">
                 Justificacion de la diferencia
               </Label>
               <Textarea
@@ -169,7 +169,7 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
                 {justificacion.length}/10 caracteres minimos
               </p>
               {state?.errors?.diferencia_justificacion && (
-                <p className="text-sm text-red-500">{state.errors.diferencia_justificacion[0]}</p>
+                <p className="text-sm text-destructive">{state.errors.diferencia_justificacion[0]}</p>
               )}
             </div>
           )}

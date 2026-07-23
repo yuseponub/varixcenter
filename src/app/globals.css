@@ -37,6 +37,16 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-heading: var(--heading);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-neutral-badge: var(--neutral-badge);
+  --color-neutral-badge-foreground: var(--neutral-badge-foreground);
+  --color-destructive-soft: var(--destructive-soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,72 +57,94 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Tema "Aqua clínica" — radius base 12px: cards rounded-xl=16px, modales 2xl=20px, inputs md=10px */
+  --radius: 0.75rem;
+  --background: oklch(0.97 0.015 190);
+  --foreground: oklch(0.25 0.03 220);
+  --heading: oklch(0.3 0.06 215);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.25 0.03 220);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.25 0.03 220);
+  --primary: oklch(0.55 0.13 200);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.015 195);
+  --secondary-foreground: oklch(0.3 0.06 215);
+  --muted: oklch(0.95 0.015 195);
+  --muted-foreground: oklch(0.5 0.04 210);
+  --accent: oklch(0.94 0.025 195);
+  --accent-foreground: oklch(0.3 0.06 215);
+  --destructive: oklch(0.52 0.19 27);
+  --destructive-soft: oklch(0.95 0.03 25);
+  --success: oklch(0.93 0.06 160);
+  --success-foreground: oklch(0.42 0.13 160);
+  --info: oklch(0.93 0.04 210);
+  --info-foreground: oklch(0.42 0.11 210);
+  --warning: oklch(0.97 0.05 90);
+  --warning-foreground: oklch(0.55 0.13 75);
+  --neutral-badge: oklch(0.94 0.008 210);
+  --neutral-badge-foreground: oklch(0.45 0.03 210);
+  --border: oklch(0.94 0.01 195);
+  --input: oklch(0.9 0.02 195);
+  --ring: oklch(0.55 0.13 200);
+  --chart-1: oklch(0.55 0.13 200);
+  --chart-2: oklch(0.62 0.15 165);
+  --chart-3: oklch(0.72 0.17 155);
+  --chart-4: oklch(0.45 0.12 210);
+  --chart-5: oklch(0.88 0.04 190);
+  --sidebar: oklch(0.97 0.015 190);
+  --sidebar-foreground: oklch(0.35 0.04 215);
+  --sidebar-primary: oklch(0.55 0.13 200);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.93 0.025 195);
+  --sidebar-accent-foreground: oklch(0.3 0.06 215);
+  --sidebar-border: oklch(0.9 0.02 195);
+  --sidebar-ring: oklch(0.55 0.13 200);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  /* Variante oscura del tema Aqua (no especificada en el handoff; derivada de los mismos matices) */
+  --background: oklch(0.18 0.02 210);
+  --foreground: oklch(0.95 0.01 200);
+  --heading: oklch(0.97 0.015 195);
+  --card: oklch(0.23 0.025 210);
+  --card-foreground: oklch(0.95 0.01 200);
+  --popover: oklch(0.23 0.025 210);
+  --popover-foreground: oklch(0.95 0.01 200);
+  --primary: oklch(0.7 0.12 195);
+  --primary-foreground: oklch(0.15 0.03 215);
+  --secondary: oklch(0.28 0.025 210);
+  --secondary-foreground: oklch(0.95 0.01 200);
+  --muted: oklch(0.28 0.025 210);
+  --muted-foreground: oklch(0.7 0.03 205);
+  --accent: oklch(0.3 0.03 205);
+  --accent-foreground: oklch(0.95 0.01 200);
+  --destructive: oklch(0.66 0.18 25);
+  --destructive-soft: oklch(0.3 0.06 25);
+  --success: oklch(0.32 0.06 160);
+  --success-foreground: oklch(0.85 0.1 160);
+  --info: oklch(0.32 0.05 210);
+  --info-foreground: oklch(0.85 0.07 210);
+  --warning: oklch(0.34 0.06 85);
+  --warning-foreground: oklch(0.85 0.11 85);
+  --neutral-badge: oklch(0.3 0.01 210);
+  --neutral-badge-foreground: oklch(0.75 0.02 210);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.7 0.12 195);
+  --chart-1: oklch(0.7 0.12 195);
+  --chart-2: oklch(0.7 0.15 165);
+  --chart-3: oklch(0.78 0.16 155);
+  --chart-4: oklch(0.6 0.1 210);
+  --chart-5: oklch(0.4 0.04 200);
+  --sidebar: oklch(0.18 0.02 210);
+  --sidebar-foreground: oklch(0.85 0.02 205);
+  --sidebar-primary: oklch(0.7 0.12 195);
+  --sidebar-primary-foreground: oklch(0.15 0.03 215);
+  --sidebar-accent: oklch(0.27 0.03 208);
+  --sidebar-accent-foreground: oklch(0.95 0.01 200);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.7 0.12 195);
 }
 
 @layer base {
@@ -122,89 +154,236 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1, h2, h3, h4 {
+    color: var(--heading);
+    letter-spacing: -0.02em;
+  }
 }
 
-/* FullCalendar custom styles - larger time slots */
+/* Utilidades del tema Aqua clínica */
+@utility bg-gradient-primary {
+  background: linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.62 0.15 165));
+}
+@utility bg-gradient-chart {
+  background: linear-gradient(180deg, oklch(0.62 0.15 165), oklch(0.55 0.13 200));
+}
+@utility bg-gradient-chart-h {
+  background: linear-gradient(90deg, oklch(0.55 0.13 200), oklch(0.62 0.15 165));
+}
+@utility shadow-card {
+  box-shadow: 0 2px 10px oklch(0.5 0.08 200 / 0.08);
+}
+@utility shadow-primary-btn {
+  box-shadow: 0 3px 12px oklch(0.55 0.13 190 / 0.4);
+}
+@utility shadow-nav-active {
+  box-shadow: 0 3px 10px oklch(0.55 0.13 200 / 0.35);
+}
+
+/* FullCalendar — theming "Aqua clínica" (README sección Citas).
+   Las vars van sobre .fc (FullCalendar las define ahí mismo, no en :root)
+   y los selectores incluyen .fc para ganarle al CSS que inyecta en runtime. */
 .appointment-calendar {
-  /* Make slots taller for better visibility */
-  --fc-slot-height: 60px;
+  /* 4 slots de 15 min = 64px por hora */
+  --fc-slot-height: 16px;
+  padding: 4px 6px;
 }
 
-.appointment-calendar .fc-timegrid-slot {
+.appointment-calendar .fc {
+  --fc-border-color: oklch(0.96 0.008 195);
+  --fc-page-bg-color: transparent;
+  --fc-today-bg-color: oklch(0.98 0.01 195);
+  --fc-now-indicator-color: #ef4444;
+  --fc-button-text-color: var(--foreground);
+  --fc-button-bg-color: var(--card);
+  --fc-button-border-color: var(--input);
+  --fc-button-hover-bg-color: var(--accent);
+  --fc-button-hover-border-color: var(--input);
+  --fc-button-active-bg-color: var(--card);
+  --fc-button-active-border-color: var(--input);
+  --fc-list-event-hover-bg-color: oklch(0.98 0.008 195);
+}
+
+.appointment-calendar .fc .fc-timegrid-slot {
   height: var(--fc-slot-height) !important;
 }
 
-.appointment-calendar .fc-timegrid-slot-label {
+.appointment-calendar .fc .fc-timegrid-slot-label {
   vertical-align: top;
-  padding-top: 4px;
+  padding-top: 2px;
+  font-size: 11px;
+  color: var(--muted-foreground);
 }
 
-/* Event styles for better readability */
-.appointment-calendar .fc-event {
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.85rem;
+/* Encabezados de columna (días) */
+.appointment-calendar .fc .fc-col-header-cell {
+  background: var(--muted);
+  border-color: oklch(0.94 0.01 195);
+}
+.appointment-calendar .fc .fc-col-header-cell-cushion {
+  padding: 8px 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--heading);
+  text-transform: capitalize;
+}
+
+/* Eventos: card radio 8px con borde izquierdo 3px */
+.appointment-calendar .fc .fc-event {
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 12px;
   border-width: 0;
   border-left-width: 3px;
+  border-left-style: solid;
+  box-shadow: 0 1px 3px oklch(0.5 0.08 200 / 0.1);
 }
 
-.appointment-calendar .fc-event-title {
+.appointment-calendar .fc .fc-event-title {
   font-weight: 500;
 }
 
+.appointment-calendar .fc .fc-event-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Cancelada / no asistió: tachado */
+.appointment-calendar .evt-cancelada .fc-event-title,
+.appointment-calendar .evt-no_asistio .fc-event-title {
+  text-decoration: line-through;
+}
+
 /* Scrollable container */
-.appointment-calendar .fc-scroller {
+.appointment-calendar .fc .fc-scroller {
   overflow-y: auto !important;
 }
 
 /* Now indicator */
-.appointment-calendar .fc-timegrid-now-indicator-line {
+.appointment-calendar .fc .fc-timegrid-now-indicator-line {
   border-color: #ef4444;
   border-width: 2px;
 }
 
-.appointment-calendar .fc-timegrid-now-indicator-arrow {
+.appointment-calendar .fc .fc-timegrid-now-indicator-arrow {
   border-color: #ef4444;
 }
 
-/* List view styles */
-.appointment-calendar .fc-list {
-  border-radius: 8px;
+/* Toolbar: título bold + botones píldora */
+.appointment-calendar .fc .fc-toolbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
 }
 
-.appointment-calendar .fc-list-event {
+.appointment-calendar .fc .fc-button {
+  text-transform: capitalize;
+  background: var(--card);
+  border: 1px solid var(--input);
+  color: var(--foreground);
+  border-radius: 9px;
+  height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: background 0.15s;
+}
+.appointment-calendar .fc .fc-button:hover {
+  background: var(--accent);
+  border-color: var(--input);
+  color: var(--accent-foreground);
+}
+.appointment-calendar .fc .fc-button:focus,
+.appointment-calendar .fc .fc-button:focus-visible {
+  box-shadow: 0 0 0 3px oklch(0.55 0.13 200 / 0.18);
+}
+.appointment-calendar .fc .fc-button:disabled {
+  background: var(--card);
+  border-color: var(--input);
+  color: var(--muted-foreground);
+}
+.appointment-calendar .fc .fc-prev-button,
+.appointment-calendar .fc .fc-next-button {
+  padding: 0 8px;
+}
+.appointment-calendar .fc .fc-button .fc-icon {
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+/* Grupos de vistas (Lista/Calendario, Semana/Día): contenedor píldora, activo blanco con sombra */
+.appointment-calendar .fc .fc-button-group {
+  gap: 2px;
+  background: oklch(0.95 0.015 195);
+  border-radius: 9999px;
+  padding: 3px;
+}
+.appointment-calendar .fc .fc-button-group .fc-button {
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  height: 26px;
+  color: var(--muted-foreground);
+}
+.appointment-calendar .fc .fc-button-group .fc-button:hover {
+  color: var(--accent-foreground);
+}
+.appointment-calendar .fc .fc-button-group .fc-button-active,
+.appointment-calendar .fc .fc-button-group .fc-button-primary:not(:disabled).fc-button-active {
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 1px 3px oklch(0.5 0.08 200 / 0.2);
+}
+/* prev/next/today no van dentro de píldora */
+.appointment-calendar .fc .fc-toolbar-chunk:first-child .fc-button-group {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+.appointment-calendar .fc .fc-toolbar-chunk:first-child .fc-button {
+  background: var(--card);
+  border: 1px solid var(--input);
+  border-radius: 9px;
+  height: 30px;
+  color: var(--foreground);
+}
+
+/* List view styles */
+.appointment-calendar .fc .fc-list {
+  border-radius: 8px;
+  border-color: oklch(0.94 0.01 195);
+}
+
+.appointment-calendar .fc .fc-list-event {
   cursor: pointer;
 }
 
-.appointment-calendar .fc-list-event:hover td {
-  background-color: hsl(var(--accent));
+.appointment-calendar .fc .fc-list-event:hover td {
+  background-color: oklch(0.98 0.008 195);
 }
 
-.appointment-calendar .fc-list-event-title {
+.appointment-calendar .fc .fc-list-event-title {
   font-weight: 500;
 }
 
-.appointment-calendar .fc-list-event-time {
+.appointment-calendar .fc .fc-list-event-time {
   font-weight: 600;
-  color: hsl(var(--primary));
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--primary);
 }
 
-.appointment-calendar .fc-list-day-cushion {
-  background-color: hsl(var(--muted));
+.appointment-calendar .fc .fc-list-day-cushion {
+  background-color: var(--muted);
   font-weight: 600;
+  color: var(--heading);
 }
 
-.appointment-calendar .fc-list-event-dot {
+.appointment-calendar .fc .fc-list-event-dot {
   border-radius: 50%;
-}
-
-/* Button group styling */
-.appointment-calendar .fc-button-group {
-  gap: 2px;
-}
-
-.appointment-calendar .fc-button {
-  text-transform: capitalize;
 }
 
 /* Thermal Receipt Print Styles - 58mm width */

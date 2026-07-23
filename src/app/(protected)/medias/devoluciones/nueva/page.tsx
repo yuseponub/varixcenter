@@ -26,7 +26,7 @@ export default async function NuevaDevolucionPage({ searchParams }: Props) {
     const activeSales = await getSales({ status: 'activo', limit: 50 })
 
     return (
-      <div className="container mx-auto py-6 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/medias/devoluciones">
@@ -34,7 +34,7 @@ export default async function NuevaDevolucionPage({ searchParams }: Props) {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Nueva Devolucion</h1>
+            <h1 className="text-[22px] font-bold">Nueva Devolucion</h1>
             <p className="text-muted-foreground">Paso 1: Seleccione la venta original</p>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default async function NuevaDevolucionPage({ searchParams }: Props) {
 
   if (sale.estado !== 'activo') {
     return (
-      <div className="container mx-auto py-6">
+      <div>
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
@@ -87,7 +87,7 @@ export default async function NuevaDevolucionPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/medias/devoluciones/nueva">
@@ -95,7 +95,7 @@ export default async function NuevaDevolucionPage({ searchParams }: Props) {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Nueva Devolucion</h1>
+          <h1 className="text-[22px] font-bold">Nueva Devolucion</h1>
           <p className="text-muted-foreground">
             Venta: {sale.numero_venta}
             {sale.patient && ` - ${sale.patient.nombre} ${sale.patient.apellido}`}

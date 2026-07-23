@@ -207,7 +207,7 @@ export function QuotationPanel({
           <Separator />
           <div className="flex items-center justify-between py-2">
             <span className="text-lg font-semibold">Total</span>
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-[22px] font-bold text-primary">
               {formatCurrency(total)}
             </span>
           </div>

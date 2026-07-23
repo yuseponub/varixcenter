@@ -64,7 +64,7 @@ export function AtendidosTable({ items }: AtendidosTableProps) {
             </TableCell>
             <TableCell>
               {item.tiene_pago ? (
-                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                <Badge className="bg-success text-success-foreground hover:bg-success">
                   Pagado
                 </Badge>
               ) : (

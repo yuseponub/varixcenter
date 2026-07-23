@@ -35,7 +35,7 @@ export function MarkAttendedButton({ patientId, initialAttendance }: MarkAttende
 
   if (attendance) {
     return (
-      <Button variant="outline" className="bg-green-50 border-green-300 text-green-700 cursor-default" disabled>
+      <Button variant="outline" className="bg-success border-success text-success-foreground cursor-default" disabled>
         <CheckCircle className="mr-2 h-4 w-4" />
         Atendido a las {formatTime(attendance.hora)}
       </Button>
@@ -47,7 +47,7 @@ export function MarkAttendedButton({ patientId, initialAttendance }: MarkAttende
       <Button
         onClick={handleClick}
         disabled={isPending}
-        className="bg-green-600 hover:bg-green-700 text-white"
+        className="bg-[oklch(0.62_0.15_165)] hover:bg-[oklch(0.55_0.14_165)] text-white"
       >
         {isPending ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -57,7 +57,7 @@ export function MarkAttendedButton({ patientId, initialAttendance }: MarkAttende
         {isPending ? 'Marcando...' : 'Marcar Atendido'}
       </Button>
       {error && (
-        <p className="text-xs text-red-600">{error}</p>
+        <p className="text-xs text-destructive">{error}</p>
       )}
     </div>
   )

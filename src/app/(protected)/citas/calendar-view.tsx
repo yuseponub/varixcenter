@@ -328,31 +328,31 @@ export function CalendarView({
         </div>
 
         {isLoading && (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted border-t-primary" />
             Cargando...
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-blue-500" /> Varix
+          <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Varix
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-violet-600" /> Outlook
+          <span className="h-2.5 w-2.5 rounded-full bg-[oklch(0.45_0.12_210)]" /> Outlook
         </span>
         <span>Actualización automática cada 30 segundos</span>
         <span
           title={outlookStatus.last_error ?? undefined}
           className={
             outlookStatus.auth_mode === 'delegated' && !outlookStatus.authorized
-              ? 'rounded-full bg-amber-100 px-2 py-1 text-amber-800'
+              ? 'rounded-full bg-warning px-2 py-1 font-semibold text-warning-foreground'
               : outlookStatus.last_sync_ok === false
-              ? 'rounded-full bg-red-100 px-2 py-1 text-red-700'
+              ? 'rounded-full bg-destructive-soft px-2 py-1 font-semibold text-destructive'
               : outlookStatus.last_sync_ok
-                ? 'rounded-full bg-green-100 px-2 py-1 text-green-700'
-                : 'rounded-full bg-gray-100 px-2 py-1 text-gray-600'
+                ? 'rounded-full bg-success px-2 py-1 font-semibold text-success-foreground'
+                : 'rounded-full bg-neutral-badge px-2 py-1 font-semibold text-neutral-badge-foreground'
           }
         >
           {outlookStatusLabel}
@@ -371,7 +371,7 @@ export function CalendarView({
       </div>
 
       {/* Calendar */}
-      <div className="h-[calc(100vh-240px)] min-h-[500px] overflow-auto border rounded-lg bg-white">
+      <div className="h-[calc(100vh-240px)] min-h-[500px] overflow-auto rounded-xl bg-card shadow-card">
         <AppointmentCalendar
           events={events}
           onEventClick={handleEventClick}

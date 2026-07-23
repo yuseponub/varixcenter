@@ -23,11 +23,11 @@ import {
 } from 'lucide-react'
 
 const ESTADO_BADGE: Record<string, { label: string; className: string }> = {
-  programada: { label: 'Programada', className: 'bg-blue-100 text-blue-800' },
-  confirmada: { label: 'Confirmada', className: 'bg-emerald-100 text-emerald-800' },
-  en_curso: { label: 'En curso', className: 'bg-amber-100 text-amber-800' },
-  completada: { label: 'Completada', className: 'bg-gray-100 text-gray-700' },
-  no_asistio: { label: 'No asistio', className: 'bg-red-100 text-red-800' },
+  programada: { label: 'Programada', className: 'bg-info text-info-foreground' },
+  confirmada: { label: 'Confirmada', className: 'bg-success text-success-foreground' },
+  en_curso: { label: 'En curso', className: 'bg-warning text-warning-foreground' },
+  completada: { label: 'Completada', className: 'bg-neutral-badge text-neutral-badge-foreground' },
+  no_asistio: { label: 'No asistio', className: 'bg-destructive-soft text-destructive' },
 }
 
 function formatHoraBogota(iso: string): string {
@@ -91,14 +91,19 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       {/* Encabezado + accesos rapidos */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold capitalize">
-          {new Date().toLocaleDateString('es-CO', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            timeZone: 'America/Bogota',
-          })}
-        </h1>
+        <div>
+          <h1 className="text-[22px] font-bold capitalize">
+            {new Date().toLocaleDateString('es-CO', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              timeZone: 'America/Bogota',
+            })}
+          </h1>
+          <p className="text-[13px] text-muted-foreground">
+            Resumen del día en la clínica
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/citas">
             <Button size="sm">
@@ -122,8 +127,8 @@ export default async function DashboardPage() {
       </div>
 
       {role === 'none' && (
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-          <p className="text-yellow-800">
+        <div className="rounded-xl bg-warning p-4 shadow-card">
+          <p className="text-warning-foreground">
             <strong>Nota:</strong> Tu cuenta no tiene un rol asignado. Contacta al
             administrador para obtener permisos.
           </p>
@@ -150,7 +155,7 @@ export default async function DashboardPage() {
                 {appointments.map((a) => {
                   const badge = ESTADO_BADGE[a.estado] ?? {
                     label: a.estado,
-                    className: 'bg-gray-100 text-gray-700',
+                    className: 'bg-neutral-badge text-foreground',
                   }
                   return (
                     <li key={a.id} className="flex items-center gap-3 py-2.5">
@@ -174,7 +179,7 @@ export default async function DashboardPage() {
                           </span>
                         )}
                       </span>
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}>
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-semibold ${badge.className}`}>
                         {badge.label}
                       </span>
                     </li>
@@ -183,7 +188,7 @@ export default async function DashboardPage() {
               </ul>
             )}
             <div className="mt-3 text-right">
-              <Link href="/citas" className="text-sm text-primary hover:underline">
+              <Link href="/citas" className="text-[12.5px] font-semibold text-primary hover:underline">
                 Ver agenda completa →
               </Link>
             </div>
@@ -200,12 +205,12 @@ export default async function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold tabular-nums">{formatCOP(paymentsSummary.total)}</p>
+              <p className="font-mono text-[26px] font-bold tabular-nums">{formatCOP(paymentsSummary.total)}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {paymentsSummary.count} {paymentsSummary.count === 1 ? 'pago registrado' : 'pagos registrados'}
               </p>
               <div className="mt-3 text-right">
-                <Link href="/pagos" className="text-sm text-primary hover:underline">
+                <Link href="/pagos" className="text-[12.5px] font-semibold text-primary hover:underline">
                   Ver pagos →
                 </Link>
               </div>
@@ -213,7 +218,7 @@ export default async function DashboardPage() {
           </Card>
 
           {role === 'admin' && (
-            <Card className={invoicingSummary.count > 0 ? 'border-amber-300' : ''}>
+            <Card className={invoicingSummary.count > 0 ? 'border border-warning-foreground/40' : ''}>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <FileClock className="h-5 w-5" />
@@ -221,8 +226,8 @@ export default async function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold tabular-nums">
-                  {invoicingSummary.count} pagos por facturar
+                <p className="text-[22px] font-bold tabular-nums">
+                  <span className="font-mono">{invoicingSummary.count}</span> pagos por facturar
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {invoicingSummary.oldestDays === null
@@ -232,7 +237,7 @@ export default async function DashboardPage() {
                       }.`}
                 </p>
                 <div className="mt-3 text-right">
-                  <Link href="/facturacion" className="text-sm text-primary hover:underline">
+                  <Link href="/facturacion" className="text-[12.5px] font-semibold text-primary hover:underline">
                     Abrir cola →
                   </Link>
                 </div>
@@ -242,7 +247,7 @@ export default async function DashboardPage() {
 
           {/* Estado del sync con Access (solo admin) */}
           {role === 'admin' && lastSync && (
-            <Card className={syncStale ? 'border-amber-300' : ''}>
+            <Card className={syncStale ? 'border border-warning-foreground/40' : ''}>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <DatabaseZap className="h-5 w-5" />
@@ -256,7 +261,7 @@ export default async function DashboardPage() {
                   {lastSync.ok === false ? (
                     <Badge variant="destructive">con errores</Badge>
                   ) : lastSync.finished_at ? (
-                    <Badge className="bg-emerald-100 text-emerald-800">OK</Badge>
+                    <Badge variant="success">OK</Badge>
                   ) : null}
                 </p>
                 {lastSync.stats && (
@@ -267,7 +272,7 @@ export default async function DashboardPage() {
                   </p>
                 )}
                 {syncStale && (
-                  <p className="mt-2 text-amber-700">
+                  <p className="mt-2 text-warning-foreground">
                     ⚠ Hace mas de 24 horas que no sincroniza. Revisar el PC de la clinica.
                   </p>
                 )}

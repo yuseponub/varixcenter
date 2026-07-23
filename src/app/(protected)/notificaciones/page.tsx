@@ -24,10 +24,10 @@ export default async function NotificacionesPage() {
   )
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Notificaciones SMS</h1>
+        <h1 className="text-[22px] font-bold">Notificaciones SMS</h1>
         <p className="text-muted-foreground">
           Historial de recordatorios de citas enviados a pacientes
         </p>
@@ -41,7 +41,7 @@ export default async function NotificacionesPage() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{notifications.length}</div>
+            <div className="text-[22px] font-bold">{notifications.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -49,7 +49,7 @@ export default async function NotificacionesPage() {
             <CardTitle className="text-sm font-medium">Enviados</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-[22px] font-bold text-success-foreground">
               {statusCounts['enviado'] || 0}
             </div>
           </CardContent>
@@ -59,7 +59,7 @@ export default async function NotificacionesPage() {
             <CardTitle className="text-sm font-medium">Fallidos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-[22px] font-bold text-destructive">
               {statusCounts['fallido'] || 0}
             </div>
           </CardContent>
@@ -69,7 +69,7 @@ export default async function NotificacionesPage() {
             <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-[22px] font-bold text-warning-foreground">
               {(statusCounts['pendiente'] || 0) + (statusCounts['reintentando'] || 0)}
             </div>
           </CardContent>

@@ -47,7 +47,7 @@ export default async function NuevoMediasCierrePage({ searchParams }: Props) {
               Cambiar fecha
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Error</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">Error</h1>
         </div>
         <Alert variant="destructive">
           <AlertDescription>
@@ -68,7 +68,7 @@ export default async function NuevoMediasCierrePage({ searchParams }: Props) {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-[22px] font-bold tracking-tight">
             Cierre de Medias - {fecha}
           </h1>
           <p className="text-muted-foreground">

@@ -89,7 +89,7 @@ export function MediasReopenDialog({
               {justificacion.length}/10 caracteres minimos
             </p>
             {state?.errors?.justificacion && (
-              <p className="text-sm text-red-500">
+              <p className="text-sm text-destructive">
                 {state.errors.justificacion[0]}
               </p>
             )}

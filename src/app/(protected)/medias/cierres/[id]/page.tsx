@@ -90,7 +90,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="text-[22px] font-bold tracking-tight">
               Cierre {cierre.cierre_numero}
             </h1>
             <p className="text-muted-foreground">
@@ -126,7 +126,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex items-center gap-2">
-              <Banknote className="h-4 w-4 text-green-600" />
+              <Banknote className="h-4 w-4 text-success-foreground" />
               <div>
                 <p className="text-xs text-muted-foreground">Efectivo</p>
                 <p className="font-medium">
@@ -135,7 +135,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-blue-600" />
+              <CreditCard className="h-4 w-4 text-primary" />
               <div>
                 <p className="text-xs text-muted-foreground">Tarjeta</p>
                 <p className="font-medium">
@@ -144,7 +144,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-purple-600" />
+              <Building2 className="h-4 w-4 text-[oklch(0.45_0.12_210)]" />
               <div>
                 <p className="text-xs text-muted-foreground">Transferencia</p>
                 <p className="font-medium">
@@ -153,7 +153,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Smartphone className="h-4 w-4 text-teal-600" />
+              <Smartphone className="h-4 w-4 text-primary" />
               <div>
                 <p className="text-xs text-muted-foreground">Nequi</p>
                 <p className="font-medium">
@@ -197,7 +197,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
               <p className="text-xs text-muted-foreground">Diferencia</p>
               <p
                 className={`font-medium ${
-                  cierre.diferencia !== 0 ? 'text-red-600' : 'text-green-600'
+                  cierre.diferencia !== 0 ? 'text-destructive' : 'text-success-foreground'
                 }`}
               >
                 {formatCurrency(cierre.diferencia)}
@@ -206,14 +206,14 @@ export default async function MediasCierreDetailPage({ params }: Props) {
           </div>
 
           {cierre.diferencia !== 0 && cierre.diferencia_justificacion && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 bg-destructive-soft border border-destructive/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5" />
+                <AlertTriangle className="h-4 w-4 text-destructive mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-red-700">
+                  <p className="text-sm font-medium text-destructive">
                     Justificacion de Diferencia
                   </p>
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-destructive mt-1">
                     {cierre.diferencia_justificacion}
                   </p>
                 </div>
@@ -243,12 +243,12 @@ export default async function MediasCierreDetailPage({ params }: Props) {
 
       {/* Reopen info */}
       {cierre.estado === 'reabierto' && (
-        <Card className="border-amber-200 bg-amber-50">
+        <Card className="border-warning-foreground/40 bg-warning">
           <CardHeader>
-            <CardTitle className="text-amber-800">Cierre Reabierto</CardTitle>
+            <CardTitle className="text-warning-foreground">Cierre Reabierto</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="text-sm text-amber-700">
+            <p className="text-sm text-warning-foreground">
               <strong>Reabierto:</strong>{' '}
               {cierre.reopened_at
                 ? format(new Date(cierre.reopened_at), 'dd/MM/yyyy HH:mm', {
@@ -256,7 +256,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
                   })
                 : 'N/A'}
             </p>
-            <p className="text-sm text-amber-700">
+            <p className="text-sm text-warning-foreground">
               <strong>Justificacion:</strong> {cierre.reopen_justificacion}
             </p>
           </CardContent>
@@ -315,7 +315,7 @@ export default async function MediasCierreDetailPage({ params }: Props) {
                     <span
                       className={`font-medium ${
                         sale.estado === 'anulado'
-                          ? 'text-red-500 line-through'
+                          ? 'text-destructive line-through'
                           : ''
                       }`}
                     >

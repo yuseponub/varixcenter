@@ -87,7 +87,7 @@ export default async function SaleDetailPage({ params }: SaleDetailPageProps) {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight font-mono">
+            <h1 className="text-[22px] font-bold tracking-tight font-mono">
               {sale.numero_venta}
             </h1>
             <Badge variant={sale.estado === 'activo' ? 'default' : 'destructive'}>

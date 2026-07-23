@@ -45,11 +45,11 @@ export function PatientSearch() {
         placeholder="Buscar por cedula, nombre, apellido o celular..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full max-w-md"
+        className="w-full max-w-[320px] rounded-full bg-card"
       />
       {isPending && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
         </div>
       )}
     </div>

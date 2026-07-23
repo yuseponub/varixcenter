@@ -19,10 +19,10 @@ export default async function PacientesPage({ searchParams }: PageProps) {
   const { q = '' } = await searchParams
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Pacientes</h1>
+        <h1 className="text-[22px] font-bold">Pacientes</h1>
         <Link href="/pacientes/nuevo">
           <Button>Nuevo Paciente</Button>
         </Link>
@@ -37,7 +37,7 @@ export default async function PacientesPage({ searchParams }: PageProps) {
       <Suspense
         fallback={
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-blue-600" />
           </div>
         }
       >

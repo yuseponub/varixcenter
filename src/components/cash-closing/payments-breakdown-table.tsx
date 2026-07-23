@@ -80,7 +80,7 @@ export function PaymentsBreakdownTable({ payments }: { payments: DayPayment[] })
                 <td className={`py-2 text-right font-medium ${anulado ? 'text-muted-foreground line-through' : ''}`}>
                   {formatCurrency(payment.total)}
                   {payment.descuento > 0 && (
-                    <span className="text-xs text-amber-600 ml-1">
+                    <span className="text-xs text-warning-foreground ml-1">
                       (-{formatCurrency(payment.descuento)})
                     </span>
                   )}

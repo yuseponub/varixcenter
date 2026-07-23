@@ -65,11 +65,11 @@ export default function ProductosPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Catalogo de Productos</h1>
+          <h1 className="text-[22px] font-bold">Catalogo de Productos</h1>
           <p className="text-muted-foreground">Medias de compresion</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
@@ -87,20 +87,20 @@ export default function ProductosPage() {
 
       {/* Stock Alert Banner */}
       {!isLoading && criticalProducts.length > 0 && (
-        <div className="mb-4 flex items-start gap-3 rounded-md border-l-4 border-amber-500 bg-amber-50 p-4">
-          <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="mb-4 flex items-start gap-3 rounded-md border-l-4 border-warning-foreground/60 bg-warning p-4">
+          <AlertTriangle className="h-5 w-5 text-warning-foreground shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium text-amber-800">
+            <p className="font-medium text-warning-foreground">
               {criticalProducts.length} producto{criticalProducts.length > 1 ? 's' : ''} con stock critico
             </p>
-            <ul className="mt-2 text-sm text-amber-700 space-y-1">
+            <ul className="mt-2 text-sm text-warning-foreground space-y-1">
               {criticalProducts.slice(0, 5).map(p => (
                 <li key={p.id} className="font-mono">
                   {p.codigo} ({p.tipo} {p.talla}) - {p.stock_normal} unidades
                 </li>
               ))}
               {criticalProducts.length > 5 && (
-                <li className="text-amber-600">
+                <li className="text-warning-foreground">
                   y {criticalProducts.length - 5} mas...
                 </li>
               )}
@@ -112,7 +112,7 @@ export default function ProductosPage() {
       {/* Products Table */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-blue-600" />
         </div>
       ) : (
         <ProductsTable data={products} onRefresh={fetchProducts} />

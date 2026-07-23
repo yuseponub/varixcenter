@@ -151,7 +151,7 @@ export function ProgressNotes({
               disabled={isPending}
             />
             {state?.errors?.nota && (
-              <p className="text-sm text-red-500">{state.errors.nota[0]}</p>
+              <p className="text-sm text-destructive">{state.errors.nota[0]}</p>
             )}
 
             <div className="flex justify-end gap-2">

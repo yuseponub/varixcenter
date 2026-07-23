@@ -101,7 +101,7 @@ function CopyField({
       <Label className="text-xs text-muted-foreground">{label}</Label>
       <div className="flex min-h-9 items-center gap-2 rounded-md border bg-muted/30 px-3 py-1.5">
         <span
-          className={`min-w-0 flex-1 break-words text-sm ${warning ? 'text-amber-700' : ''}`}
+          className={`min-w-0 flex-1 break-words text-sm ${warning ? 'text-warning-foreground' : ''}`}
         >
           {displayValue ?? value}
         </span>
@@ -211,7 +211,7 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
             {item.job && (
               <Badge variant="outline">Robot: {item.job.estado.replaceAll('_', ' ')}</Badge>
             )}
-            <Badge className="bg-amber-100 text-amber-800">Pendiente</Badge>
+            <Badge className="bg-warning text-warning-foreground">Pendiente</Badge>
           </div>
         </div>
       </CardHeader>
@@ -368,8 +368,8 @@ function RecentCard({ item }: { item: RecentInvoicingItem }) {
       <Badge
         className={
           item.estado === 'facturada_total'
-            ? 'w-fit bg-emerald-100 text-emerald-800'
-            : 'w-fit bg-blue-100 text-blue-800'
+            ? 'w-fit bg-success text-success-foreground'
+            : 'w-fit bg-info text-info-foreground'
         }
       >
         {item.estado === 'facturada_total' ? 'Total' : 'Parcial'}
@@ -405,7 +405,7 @@ export function FacturacionQueue({ pending, recent }: FacturacionQueueProps) {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+          <h1 className="flex items-center gap-2 text-[22px] font-bold tracking-tight">
             <FileClock className="h-6 w-6" />
             Facturacion WiMAX
           </h1>
@@ -431,7 +431,7 @@ export function FacturacionQueue({ pending, recent }: FacturacionQueueProps) {
         {pending.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center py-10 text-center">
-              <Check className="mb-3 h-8 w-8 text-emerald-600" />
+              <Check className="mb-3 h-8 w-8 text-success-foreground" />
               <p className="font-medium">No hay pagos pendientes</p>
               <p className="text-sm text-muted-foreground">
                 Los pagos con tarjeta y las solicitudes nuevas apareceran aqui.

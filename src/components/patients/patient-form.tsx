@@ -75,7 +75,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
       <form action={formAction} className="space-y-6">
         {/* Server error message */}
         {state?.error && (
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-md bg-destructive-soft p-4 text-sm text-destructive">
             {state.error}
           </div>
         )}
@@ -103,15 +103,15 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                       inputMode="numeric"
                       autoFocus
                       disabled={isEdit}
-                      className={isEdit ? 'bg-gray-100' : ''}
+                      className={isEdit ? 'bg-neutral-badge' : ''}
                     />
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.cedula && (
-                    <p className="text-sm text-red-600">{state.errors.cedula[0]}</p>
+                    <p className="text-sm text-destructive">{state.errors.cedula[0]}</p>
                   )}
                   {isEdit && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       La cedula no puede ser modificada
                     </p>
                   )}
@@ -131,7 +131,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.nombre && (
-                    <p className="text-sm text-red-600">{state.errors.nombre[0]}</p>
+                    <p className="text-sm text-destructive">{state.errors.nombre[0]}</p>
                   )}
                 </FormItem>
               )}
@@ -149,7 +149,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.apellido && (
-                    <p className="text-sm text-red-600">{state.errors.apellido[0]}</p>
+                    <p className="text-sm text-destructive">{state.errors.apellido[0]}</p>
                   )}
                 </FormItem>
               )}
@@ -175,7 +175,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.celular && (
-                    <p className="text-sm text-red-600">{state.errors.celular[0]}</p>
+                    <p className="text-sm text-destructive">{state.errors.celular[0]}</p>
                   )}
                 </FormItem>
               )}
@@ -250,7 +250,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.contacto_emergencia_nombre && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-destructive">
                       {state.errors.contacto_emergencia_nombre[0]}
                     </p>
                   )}
@@ -270,7 +270,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.contacto_emergencia_telefono && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-destructive">
                       {state.errors.contacto_emergencia_telefono[0]}
                     </p>
                   )}
@@ -290,7 +290,7 @@ export function PatientForm({ mode, patientId, defaultValues }: PatientFormProps
                   </FormControl>
                   <FormMessage />
                   {state?.errors?.contacto_emergencia_parentesco && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-destructive">
                       {state.errors.contacto_emergencia_parentesco[0]}
                     </p>
                   )}

@@ -57,10 +57,10 @@ export default function ServiciosPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Catalogo de Servicios</h1>
+        <h1 className="text-[22px] font-bold">Catalogo de Servicios</h1>
         <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
           <DialogTrigger asChild>
             <Button>Nuevo Servicio</Button>
@@ -77,7 +77,7 @@ export default function ServiciosPage() {
       {/* Services Table */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-blue-600" />
         </div>
       ) : (
         <ServicesTable data={services} onRefresh={fetchServices} />

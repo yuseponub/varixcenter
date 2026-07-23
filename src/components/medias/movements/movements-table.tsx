@@ -40,11 +40,11 @@ const MOVEMENT_TYPE_CONFIG: Record<
   MediasMovementType,
   { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }
 > = {
-  compra: { label: 'Compra', variant: 'default', className: 'bg-green-500 hover:bg-green-600' },
-  venta: { label: 'Venta', variant: 'default', className: 'bg-blue-500 hover:bg-blue-600' },
-  devolucion: { label: 'Devolucion', variant: 'default', className: 'bg-purple-500 hover:bg-purple-600' },
-  ajuste_entrada: { label: 'Ajuste +', variant: 'default', className: 'bg-teal-500 hover:bg-teal-600' },
-  ajuste_salida: { label: 'Ajuste -', variant: 'default', className: 'bg-orange-500 hover:bg-orange-600' },
+  compra: { label: 'Compra', variant: 'default', className: 'bg-[oklch(0.62_0.15_165)] text-white hover:bg-[oklch(0.55_0.14_165)]' },
+  venta: { label: 'Venta', variant: 'default', className: 'bg-primary text-white hover:bg-primary/90' },
+  devolucion: { label: 'Devolucion', variant: 'default', className: 'bg-[oklch(0.45_0.12_210)] hover:bg-[oklch(0.45_0.12_210)]' },
+  ajuste_entrada: { label: 'Ajuste +', variant: 'default', className: 'bg-primary text-white hover:bg-primary/90' },
+  ajuste_salida: { label: 'Ajuste -', variant: 'default', className: 'bg-[oklch(0.75_0.15_85)] text-white hover:bg-[oklch(0.68_0.14_80)]' },
   transferencia: { label: 'Transferencia', variant: 'secondary' },
 }
 
@@ -116,7 +116,7 @@ export function MovementsTable({ data }: MovementsTableProps) {
         return (
           <span
             className={`font-mono font-medium ${
-              isEntrada ? 'text-green-600' : 'text-red-600'
+              isEntrada ? 'text-success-foreground' : 'text-destructive'
             }`}
           >
             {isEntrada ? '+' : '-'}{cantidad}
@@ -196,7 +196,7 @@ export function MovementsTable({ data }: MovementsTableProps) {
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-xl bg-card shadow-card">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

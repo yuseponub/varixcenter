@@ -12,9 +12,9 @@ export default async function SalesPage() {
   const sales = await getSales({ limit: 100 })
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Ventas de Medias</h1>
+        <h1 className="text-[22px] font-bold">Ventas de Medias</h1>
         <Button asChild>
           <Link href="/medias/ventas/nueva">
             <Plus className="mr-2 h-4 w-4" />

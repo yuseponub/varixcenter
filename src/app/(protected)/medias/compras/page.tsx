@@ -18,12 +18,12 @@ export default async function ComprasPage() {
   ])
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Compras de Medias</h1>
-          <p className="text-gray-500">
+          <h1 className="text-[22px] font-bold">Compras de Medias</h1>
+          <p className="text-muted-foreground">
             Registro de compras de mercancia
           </p>
         </div>
@@ -41,13 +41,13 @@ export default async function ComprasPage() {
           <Badge variant="secondary" className="text-sm">
             {counts.pendiente_recepcion}
           </Badge>
-          <span className="text-sm text-gray-600">Pendientes de recepcion</span>
+          <span className="text-sm text-muted-foreground">Pendientes de recepcion</span>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="default" className="text-sm">
             {counts.recibido}
           </Badge>
-          <span className="text-sm text-gray-600">Recibidos</span>
+          <span className="text-sm text-muted-foreground">Recibidos</span>
         </div>
       </div>
 

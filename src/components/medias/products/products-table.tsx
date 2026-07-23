@@ -113,7 +113,7 @@ export function ProductsTable({ data, onRefresh }: ProductsTableProps) {
         return (
           <div className={`text-sm ${product.activo ? '' : 'opacity-50'}`}>
             <div className="font-medium">{total} total</div>
-            <div className={`text-xs flex items-center gap-1 ${isLowStock ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+            <div className={`text-xs flex items-center gap-1 ${isLowStock ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
               {isLowStock && (
                 <AlertTriangle
                   className="h-3 w-3"
@@ -192,7 +192,7 @@ export function ProductsTable({ data, onRefresh }: ProductsTableProps) {
 
   return (
     <>
-      <div className="rounded-md border">
+      <div className="overflow-hidden rounded-xl bg-card shadow-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -228,7 +228,7 @@ export function ProductsTable({ data, onRefresh }: ProductsTableProps) {
                 return (
                   <TableRow
                     key={row.id}
-                    className={isLowStock ? 'bg-red-50 border-l-4 border-l-red-500' : ''}
+                    className={isLowStock ? 'bg-destructive-soft border-l-4 border-l-red-500' : ''}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

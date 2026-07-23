@@ -37,7 +37,7 @@ export default async function MediasCierresPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-[22px] font-bold tracking-tight">
             Cierres de Caja - Medias
           </h1>
           <p className="text-muted-foreground">
@@ -53,9 +53,9 @@ export default async function MediasCierresPage() {
       </div>
 
       {/* Info card about zero tolerance */}
-      <Card className="border-amber-200 bg-amber-50">
+      <Card className="border-warning-foreground/40 bg-warning">
         <CardContent className="pt-4">
-          <p className="text-sm text-amber-800">
+          <p className="text-sm text-warning-foreground">
             <strong>Tolerancia Cero:</strong> Cualquier diferencia entre el
             conteo fisico y el total calculado requiere justificacion detallada.
             Esta politica es mas estricta que la clinica.

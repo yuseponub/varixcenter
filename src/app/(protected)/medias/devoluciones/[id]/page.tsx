@@ -66,7 +66,7 @@ export default async function ReturnDetailPage({ params }: Props) {
   const canApprove = ['admin', 'medico'].includes(userRole)
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -94,7 +94,7 @@ export default async function ReturnDetailPage({ params }: Props) {
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold tracking-tight font-mono">
+              <h1 className="text-[22px] font-bold tracking-tight font-mono">
                 {ret.numero_devolucion}
               </h1>
               <ReturnStatusBadge estado={ret.estado} />

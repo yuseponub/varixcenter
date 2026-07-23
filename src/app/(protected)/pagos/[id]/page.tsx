@@ -82,7 +82,7 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight font-mono">
+            <h1 className="text-[22px] font-bold tracking-tight font-mono">
               {payment.numero_factura}
             </h1>
             <Badge variant={payment.estado === 'activo' ? 'default' : 'destructive'}>
@@ -144,9 +144,9 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
             <CardTitle className="text-lg">Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{formatCurrency(payment.total)}</p>
+            <p className="text-[22px] font-bold">{formatCurrency(payment.total)}</p>
             {payment.descuento > 0 && (
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-warning-foreground">
                 Descuento: -{formatCurrency(payment.descuento)}
               </p>
             )}
@@ -177,7 +177,7 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
             </div>
             {payment.descuento > 0 && (
               <>
-                <div className="flex justify-between text-amber-600">
+                <div className="flex justify-between text-warning-foreground">
                   <span>Descuento</span>
                   <span>-{formatCurrency(payment.descuento)}</span>
                 </div>

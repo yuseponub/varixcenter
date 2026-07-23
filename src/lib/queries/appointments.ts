@@ -5,14 +5,15 @@ import type { CalendarEvent, AppointmentStatus, AppointmentWithPatient } from '@
  * Status color mapping for calendar events.
  * Maps appointment status to FullCalendar-compatible colors.
  */
+// Paleta "Aqua clínica": fondos suaves + borde izquierdo saturado por estado.
 const STATUS_COLORS: Record<AppointmentStatus, { bg: string; border: string; text: string }> = {
-  programada: { bg: '#3b82f6', border: '#2563eb', text: '#ffffff' },    // Blue
-  confirmada: { bg: '#22c55e', border: '#16a34a', text: '#ffffff' },    // Green
-  en_sala: { bg: '#f59e0b', border: '#d97706', text: '#000000' },       // Amber
-  en_atencion: { bg: '#8b5cf6', border: '#7c3aed', text: '#ffffff' },   // Purple
-  completada: { bg: '#6b7280', border: '#4b5563', text: '#ffffff' },    // Gray
-  cancelada: { bg: '#ef4444', border: '#dc2626', text: '#ffffff' },     // Red
-  no_asistio: { bg: '#f97316', border: '#ea580c', text: '#ffffff' },    // Orange
+  programada: { bg: 'oklch(0.94 0.03 210)', border: 'oklch(0.55 0.13 200)', text: 'oklch(0.35 0.08 210)' },
+  confirmada: { bg: 'oklch(0.95 0.05 155)', border: 'oklch(0.62 0.15 165)', text: 'oklch(0.38 0.1 160)' },
+  en_sala: { bg: 'oklch(0.97 0.05 90)', border: 'oklch(0.75 0.15 85)', text: 'oklch(0.5 0.12 78)' },
+  en_atencion: { bg: 'oklch(0.55 0.13 200)', border: 'oklch(0.45 0.12 205)', text: '#ffffff' },
+  completada: { bg: 'oklch(0.94 0.008 210)', border: 'oklch(0.7 0.02 210)', text: 'oklch(0.45 0.03 210)' },
+  cancelada: { bg: 'oklch(0.95 0.03 25)', border: 'oklch(0.6 0.18 27)', text: 'oklch(0.52 0.19 27)' },
+  no_asistio: { bg: 'oklch(0.96 0.04 60)', border: 'oklch(0.68 0.15 55)', text: 'oklch(0.5 0.14 50)' },
 }
 
 /**
@@ -84,6 +85,7 @@ export async function getAppointmentsForCalendar(
       backgroundColor: colors.bg,
       borderColor: colors.border,
       textColor: colors.text,
+      classNames: [`evt-${appointment.estado}`],
       extendedProps: {
         source: 'varix',
         appointmentId: appointment.id,
@@ -154,8 +156,8 @@ export async function getAppointmentsForCalendar(
       end: event.is_all_day ? event.end_at.slice(0, 10) : event.end_at,
       allDay: event.is_all_day,
       editable: false,
-      backgroundColor: conflict ? '#dc2626' : '#7c3aed',
-      borderColor: conflict ? '#991b1b' : '#6d28d9',
+      backgroundColor: conflict ? 'oklch(0.52 0.19 27)' : 'oklch(0.45 0.12 210)',
+      borderColor: conflict ? 'oklch(0.42 0.17 27)' : 'oklch(0.38 0.1 212)',
       textColor: '#ffffff',
       extendedProps: {
         source: 'outlook',
@@ -235,8 +237,8 @@ export async function getAppointmentsForCalendar(
       end: event.is_all_day ? event.end_at.slice(0, 10) : event.end_at,
       allDay: event.is_all_day,
       editable: false,
-      backgroundColor: conflict ? '#dc2626' : '#0891b2',
-      borderColor: conflict ? '#991b1b' : '#0e7490',
+      backgroundColor: conflict ? 'oklch(0.52 0.19 27)' : 'oklch(0.5 0.1 205)',
+      borderColor: conflict ? 'oklch(0.42 0.17 27)' : 'oklch(0.42 0.09 208)',
       textColor: '#ffffff',
       extendedProps: {
         source: 'outlook',

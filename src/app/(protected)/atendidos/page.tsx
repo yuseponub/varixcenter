@@ -31,10 +31,10 @@ export default async function AtendidosPage() {
   ])
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-[22px] font-bold flex items-center gap-2">
           <UserCheck className="h-6 w-6" />
           Pacientes Atendidos
         </h1>
@@ -49,7 +49,7 @@ export default async function AtendidosPage() {
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totals.total_atendidos}</div>
+            <div className="text-[22px] font-bold">{totals.total_atendidos}</div>
             <p className="text-xs text-muted-foreground">pacientes hoy</p>
           </CardContent>
         </Card>
@@ -57,10 +57,10 @@ export default async function AtendidosPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Con Pago</CardTitle>
-            <CreditCard className="h-4 w-4 text-green-600" />
+            <CreditCard className="h-4 w-4 text-success-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{totals.con_pago}</div>
+            <div className="text-[22px] font-bold text-success-foreground">{totals.con_pago}</div>
             <p className="text-xs text-muted-foreground">pacientes pagaron</p>
           </CardContent>
         </Card>
@@ -68,10 +68,10 @@ export default async function AtendidosPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sin Pago</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{totals.sin_pago}</div>
+            <div className="text-[22px] font-bold text-destructive">{totals.sin_pago}</div>
             <p className="text-xs text-muted-foreground">pendientes de pago</p>
           </CardContent>
         </Card>
@@ -82,7 +82,7 @@ export default async function AtendidosPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totals.monto_total)}</div>
+            <div className="text-[22px] font-bold">{formatCurrency(totals.monto_total)}</div>
             <p className="text-xs text-muted-foreground">recaudado hoy</p>
           </CardContent>
         </Card>

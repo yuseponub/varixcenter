@@ -70,7 +70,7 @@ export function AnulacionDialog({ paymentId, numeroFactura, onSuccess }: Anulaci
 
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+            <Label htmlFor="justificacion" className="after:content-['*'] after:ml-0.5 after:text-destructive">
               Justificacion de la anulacion
             </Label>
             <Textarea
@@ -85,7 +85,7 @@ export function AnulacionDialog({ paymentId, numeroFactura, onSuccess }: Anulaci
               {justificacion.length}/10 caracteres minimos
             </p>
             {state?.errors?.justificacion && (
-              <p className="text-sm text-red-500">{state.errors.justificacion[0]}</p>
+              <p className="text-sm text-destructive">{state.errors.justificacion[0]}</p>
             )}
           </div>
 

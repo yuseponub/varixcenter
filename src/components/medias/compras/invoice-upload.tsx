@@ -145,19 +145,19 @@ export function InvoiceUpload({
     <Card>
       <CardContent className="p-4">
         <Label className="mb-2 block font-medium">
-          Foto/PDF de Factura <span className="text-red-500">*</span>
+          Foto/PDF de Factura <span className="text-destructive">*</span>
         </Label>
 
         {state.status === 'idle' && (
           <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors"
+            className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
             onClick={() => inputRef.current?.click()}
           >
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-600">
+            <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+            <p className="mt-2 text-sm text-muted-foreground">
               Haga clic para seleccionar archivo
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               JPG, PNG, WebP o PDF (max 10MB)
             </p>
           </div>
@@ -165,8 +165,8 @@ export function InvoiceUpload({
 
         {state.status === 'uploading' && (
           <div className="border rounded-lg p-8 text-center">
-            <Loader2 className="mx-auto h-12 w-12 text-blue-500 animate-spin" />
-            <p className="mt-2 text-sm text-gray-600">
+            <Loader2 className="mx-auto h-12 w-12 text-primary animate-spin" />
+            <p className="mt-2 text-sm text-muted-foreground">
               Subiendo... {state.progress}%
             </p>
           </div>
@@ -174,11 +174,11 @@ export function InvoiceUpload({
 
         {state.status === 'processing' && (
           <div className="border rounded-lg p-8 text-center">
-            <Loader2 className="mx-auto h-12 w-12 text-green-500 animate-spin" />
-            <p className="mt-2 text-sm text-gray-600">
+            <Loader2 className="mx-auto h-12 w-12 text-primary animate-spin" />
+            <p className="mt-2 text-sm text-muted-foreground">
               Procesando factura con OCR...
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Esto puede tardar unos segundos
             </p>
           </div>
@@ -189,7 +189,7 @@ export function InvoiceUpload({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {isPDF ? (
-                  <FileText className="h-10 w-10 text-red-500" />
+                  <FileText className="h-10 w-10 text-destructive" />
                 ) : preview ? (
                   <img
                     src={preview}
@@ -197,13 +197,13 @@ export function InvoiceUpload({
                     className="h-16 w-16 object-cover rounded"
                   />
                 ) : (
-                  <ImageIcon className="h-10 w-10 text-blue-500" />
+                  <ImageIcon className="h-10 w-10 text-primary" />
                 )}
                 <div>
                   <p className="font-medium text-sm truncate max-w-[200px]">
                     {fileName || 'Archivo subido'}
                   </p>
-                  <p className="text-xs text-green-600">
+                  <p className="text-xs text-success-foreground">
                     {state.ocrResult
                       ? `${state.ocrResult.productos?.length || 0} productos detectados`
                       : 'Subido correctamente'}
@@ -223,8 +223,8 @@ export function InvoiceUpload({
         )}
 
         {state.status === 'error' && (
-          <div className="border border-red-300 bg-red-50 rounded-lg p-4">
-            <p className="text-red-600 text-sm">{state.message}</p>
+          <div className="border border-destructive/30 bg-destructive-soft rounded-lg p-4">
+            <p className="text-destructive text-sm">{state.message}</p>
             <Button
               variant="outline"
               size="sm"

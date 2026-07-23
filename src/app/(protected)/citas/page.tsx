@@ -50,10 +50,15 @@ export default async function CitasPage({ searchParams }: CitasPageProps) {
   ])
 
   return (
-    <div className="container mx-auto py-6">
+    <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Agenda de Citas</h1>
+        <div>
+          <h1 className="text-[22px] font-bold">Agenda de Citas</h1>
+          <p className="text-[13px] text-muted-foreground">
+            Semana, día o lista · arrastra para reprogramar
+          </p>
+        </div>
         <Link href="/citas/nueva">
           <Button>Nueva Cita</Button>
         </Link>

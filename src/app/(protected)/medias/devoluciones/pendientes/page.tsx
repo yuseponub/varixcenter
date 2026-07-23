@@ -34,7 +34,7 @@ export default async function PendientesPage() {
   ])
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/medias/devoluciones">
@@ -42,7 +42,7 @@ export default async function PendientesPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Devoluciones Pendientes</h1>
+          <h1 className="text-[22px] font-bold">Devoluciones Pendientes</h1>
           <p className="text-muted-foreground">
             {returns.length} solicitud{returns.length !== 1 ? 'es' : ''} pendiente{returns.length !== 1 ? 's' : ''} de aprobacion
           </p>

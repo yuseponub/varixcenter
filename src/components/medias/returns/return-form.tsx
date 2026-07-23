@@ -182,9 +182,9 @@ export function ReturnForm({ sale, returnableQuantities }: ReturnFormProps) {
 
       {/* Refund amount preview */}
       {selectedItem && (
-        <div className="rounded-lg border p-4 bg-green-50 dark:bg-green-950">
+        <div className="rounded-lg border p-4 bg-success">
           <p className="text-sm text-muted-foreground">Monto a reembolsar</p>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-[22px] font-bold text-success-foreground">
             {formatCurrency(refundAmount)}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -214,7 +214,7 @@ export function ReturnForm({ sale, returnableQuantities }: ReturnFormProps) {
 
       {/* Motivo */}
       <div className="space-y-2">
-        <Label htmlFor="motivo" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+        <Label htmlFor="motivo" className="after:content-['*'] after:ml-0.5 after:text-destructive">
           Motivo de la devolucion
         </Label>
         <Textarea

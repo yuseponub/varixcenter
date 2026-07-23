@@ -53,10 +53,10 @@ export function AlertItem({ alert, onResolve }: AlertItemProps) {
       <div className="flex items-start gap-3">
         <Icon className={`h-5 w-5 mt-0.5 ${
           alert.severidad === 'critico'
-            ? 'text-red-600'
+            ? 'text-destructive'
             : alert.severidad === 'advertencia'
-              ? 'text-yellow-600'
-              : 'text-blue-600'
+              ? 'text-warning-foreground'
+              : 'text-primary'
         }`} />
 
         <div className="flex-1 space-y-1">
@@ -70,7 +70,7 @@ export function AlertItem({ alert, onResolve }: AlertItemProps) {
           </div>
 
           <p className="font-medium text-sm">{alert.titulo}</p>
-          <p className="text-sm text-gray-600">{alert.descripcion}</p>
+          <p className="text-sm text-muted-foreground">{alert.descripcion}</p>
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
             <span>
@@ -78,7 +78,7 @@ export function AlertItem({ alert, onResolve }: AlertItemProps) {
             </span>
 
             {alert.resuelta && alert.resuelta_at && (
-              <span className="text-green-600">
+              <span className="text-success-foreground">
                 Resuelta el {format(new Date(alert.resuelta_at), 'dd MMM yyyy', { locale: es })}
               </span>
             )}

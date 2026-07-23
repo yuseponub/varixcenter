@@ -203,7 +203,7 @@ export function AdjustmentForm({ products, onSuccess }: AdjustmentFormProps) {
 
       {/* Razon */}
       <div className="space-y-2">
-        <Label htmlFor="razon" className="after:content-['*'] after:ml-0.5 after:text-red-500">
+        <Label htmlFor="razon" className="after:content-['*'] after:ml-0.5 after:text-destructive">
           Razon del ajuste
         </Label>
         <Textarea

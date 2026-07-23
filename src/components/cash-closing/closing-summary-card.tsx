@@ -31,25 +31,25 @@ export function ClosingSummaryCard({ summary, conteoFisico }: ClosingSummaryCard
         {/* Totals by method */}
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
-            <Banknote className="h-4 w-4 text-green-600" />
+            <Banknote className="h-4 w-4 text-success-foreground" />
             <span className="text-sm">Efectivo</span>
           </div>
           <span className="text-right font-medium">{formatCurrency(summary.total_efectivo)}</span>
 
           <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-blue-600" />
+            <CreditCard className="h-4 w-4 text-primary" />
             <span className="text-sm">Tarjeta</span>
           </div>
           <span className="text-right font-medium">{formatCurrency(summary.total_tarjeta)}</span>
 
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-purple-600" />
+            <Building2 className="h-4 w-4 text-[oklch(0.45_0.12_210)]" />
             <span className="text-sm">Transferencia</span>
           </div>
           <span className="text-right font-medium">{formatCurrency(summary.total_transferencia)}</span>
 
           <div className="flex items-center gap-2">
-            <Smartphone className="h-4 w-4 text-teal-600" />
+            <Smartphone className="h-4 w-4 text-primary" />
             <span className="text-sm">Nequi</span>
           </div>
           <span className="text-right font-medium">{formatCurrency(summary.total_nequi)}</span>
@@ -69,7 +69,7 @@ export function ClosingSummaryCard({ summary, conteoFisico }: ClosingSummaryCard
             <Separator />
             <div className="space-y-2 text-sm">
               {summary.total_descuentos > 0 && (
-                <div className="flex items-center justify-between text-amber-600">
+                <div className="flex items-center justify-between text-warning-foreground">
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4" />
                     <span>Descuentos aplicados</span>
@@ -78,7 +78,7 @@ export function ClosingSummaryCard({ summary, conteoFisico }: ClosingSummaryCard
                 </div>
               )}
               {summary.total_anulaciones > 0 && (
-                <div className="flex items-center justify-between text-red-600">
+                <div className="flex items-center justify-between text-destructive">
                   <div className="flex items-center gap-2">
                     <XCircle className="h-4 w-4" />
                     <span>Pagos anulados</span>
@@ -103,12 +103,12 @@ export function ClosingSummaryCard({ summary, conteoFisico }: ClosingSummaryCard
                 <span>Total efectivo calculado</span>
                 <span className="font-medium">{formatCurrency(summary.total_efectivo)}</span>
               </div>
-              <div className={`flex justify-between items-center font-medium ${hasDiferencia ? 'text-red-600' : 'text-green-600'}`}>
+              <div className={`flex justify-between items-center font-medium ${hasDiferencia ? 'text-destructive' : 'text-success-foreground'}`}>
                 <span>Diferencia</span>
                 <span>{formatCurrency(diferencia!)}</span>
               </div>
               {hasDiferencia && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-destructive">
                   Hay una diferencia. Se requiere justificacion.
                 </p>
               )}

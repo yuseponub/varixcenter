@@ -205,7 +205,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
   return (
     <div className="mb-4 rounded-lg border bg-card p-3 shadow-sm" onKeyDown={onKeyDown}>
       <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        <Zap className="h-4 w-4 text-amber-500" />
+        <Zap className="h-4 w-4 text-warning-foreground" />
         Cita rapida — llene el renglon y presione Enter
       </div>
 
@@ -220,7 +220,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
               setPatientId('')
             }}
             onFocus={() => hits.length > 0 && !patientId && setShowDropdown(true)}
-            className={patientId ? 'border-green-500' : newPatientMode ? 'border-amber-500' : ''}
+            className={patientId ? 'border-success-foreground/60' : newPatientMode ? 'border-warning-foreground/60' : ''}
           />
           {showDropdown && (
             <div className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border bg-popover shadow-md">
@@ -241,7 +241,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
               ))}
               <button
                 type="button"
-                className="flex w-full items-center gap-2 border-t px-3 py-2 text-left text-sm font-medium text-amber-600 hover:bg-accent"
+                className="flex w-full items-center gap-2 border-t px-3 py-2 text-left text-sm font-medium text-warning-foreground hover:bg-accent"
                 onClick={enableNewPatient}
               >
                 <UserPlus className="h-4 w-4" />
@@ -317,8 +317,8 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
 
       {/* Campos minimos para paciente nuevo */}
       {newPatientMode && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md bg-amber-50 p-2 dark:bg-amber-950/30">
-          <span className="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400">
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md bg-warning p-2 ">
+          <span className="flex items-center gap-1 text-xs font-medium text-warning-foreground">
             <UserPlus className="h-3.5 w-3.5" />
             Paciente nuevo: &quot;{patientQuery}&quot;
           </span>

@@ -26,9 +26,9 @@ interface ReportSummaryCardProps {
  */
 const variantStyles = {
   default: '',
-  success: 'border-green-500',
-  warning: 'border-yellow-500',
-  danger: 'border-red-500',
+  success: 'border-success-foreground/50',
+  warning: 'border-warning-foreground/50',
+  danger: 'border-destructive/50',
 } as const
 
 export function ReportSummaryCard({
@@ -47,7 +47,7 @@ export function ReportSummaryCard({
         )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-[22px] font-bold">{value}</div>
         {subtitle && (
           <p className="text-xs text-muted-foreground">{subtitle}</p>
         )}

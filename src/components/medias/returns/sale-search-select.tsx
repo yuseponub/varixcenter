@@ -91,7 +91,7 @@ export function SaleSearchSelect({ activeSales }: SaleSearchSelectProps) {
           )}
         </div>
       ) : (
-        <div className="rounded-md border">
+        <div className="overflow-hidden rounded-xl bg-card shadow-card">
           <Table>
             <TableHeader>
               <TableRow>

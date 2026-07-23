@@ -119,7 +119,7 @@ export function ReceiptUpload({
       </Label>
 
       {!preview && !uploadedPath ? (
-        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${uploadError ? 'border-red-500' : 'border-muted'}`}>
+        <div className={`border-2 border-dashed rounded-lg p-6 text-center ${uploadError ? 'border-destructive' : 'border-muted'}`}>
           <Input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic"
@@ -190,7 +190,7 @@ export function ReceiptUpload({
       )}
 
       {uploadError && (
-        <p className="text-sm text-red-500">{uploadError}</p>
+        <p className="text-sm text-destructive">{uploadError}</p>
       )}
     </div>
   )

@@ -92,7 +92,7 @@ export default async function NuevoCierrePage({ searchParams }: NuevoCierrePageP
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Nuevo Cierre de Caja</h1>
+        <h1 className="text-[22px] font-bold tracking-tight">Nuevo Cierre de Caja</h1>
         <p className="text-muted-foreground">
           {formatDate(fecha)}
         </p>

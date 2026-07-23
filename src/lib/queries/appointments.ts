@@ -177,7 +177,88 @@ export async function getAppointmentsForCalendar(
     }
   })
 
-  return [...appointmentEvents, ...outlookEvents]
+  // The reception PC can also mirror a local PST calendar through the desktop
+  // bridge. The local Outlook row is authoritative for calendar display and
+  // remains read-only; a linked native row is hidden to avoid a duplicate.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: desktopData, error: desktopError } = await (supabase as any)
+    .from('outlook_desktop_events')
+    .select(`
+      id,
+      external_id,
+      subject,
+      start_at,
+      end_at,
+      is_all_day,
+      location,
+      appointment_id,
+      match_status
+    `)
+    .gte('start_at', startDate)
+    .lte('start_at', endDate)
+    .is('deleted_at', null)
+    .neq('match_status', 'ignored')
+    .order('start_at', { ascending: true })
+
+  if (desktopError) {
+    if (desktopError.code !== '42P01' && desktopError.code !== 'PGRST205') {
+      console.error('[Outlook desktop] Error loading mirrored calendar:', desktopError)
+    }
+    return [...appointmentEvents, ...outlookEvents]
+  }
+
+  const linkedDesktopAppointmentIds = new Set(
+    (desktopData ?? []).flatMap((event: { appointment_id: string | null }) =>
+      event.appointment_id ? [event.appointment_id] : []
+    )
+  )
+  const visibleAppointmentEvents = appointmentEvents.filter(
+    (event) => !linkedDesktopAppointmentIds.has(event.extendedProps.appointmentId)
+  )
+
+  const desktopEvents: CalendarEvent[] = (desktopData ?? []).map((event: {
+    id: string
+    external_id: string
+    subject: string
+    start_at: string
+    end_at: string
+    is_all_day: boolean
+    location: string | null
+    appointment_id: string | null
+    match_status: string
+  }) => {
+    const conflict = event.match_status === 'conflict'
+    return {
+      id: `outlook-desktop-${event.id}`,
+      title: `Outlook · ${event.subject}`,
+      start: event.is_all_day ? event.start_at.slice(0, 10) : event.start_at,
+      end: event.is_all_day ? event.end_at.slice(0, 10) : event.end_at,
+      allDay: event.is_all_day,
+      editable: false,
+      backgroundColor: conflict ? '#dc2626' : '#0891b2',
+      borderColor: conflict ? '#991b1b' : '#0e7490',
+      textColor: '#ffffff',
+      extendedProps: {
+        source: 'outlook',
+        appointmentId: event.appointment_id ?? '',
+        patientId: '',
+        patientName: event.subject,
+        patientCedula: '',
+        patientCelular: '',
+        doctorId: null,
+        estado: 'programada',
+        motivoConsulta: null,
+        notas: null,
+        outlookEventId: `desktop:${event.external_id}`,
+        outlookWebLink: null,
+        outlookLocation: event.location,
+        outlookConflict: conflict,
+        outlookAllDay: event.is_all_day,
+      },
+    }
+  })
+
+  return [...visibleAppointmentEvents, ...outlookEvents, ...desktopEvents]
 }
 
 /**

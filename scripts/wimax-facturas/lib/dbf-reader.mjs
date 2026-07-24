@@ -2,7 +2,7 @@ import { DBFFile } from 'dbffile'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import {
-  dateOnly,
+  dbfDateOnly,
   digitsOnly,
   normalizeInvoiceNumber,
   normalizeKey,
@@ -138,7 +138,7 @@ export async function readInvoices(wimaxDir, startDate, endDate, directory) {
         type,
         firstValue(row, ['NUMERO', 'NUMFAC', 'NROFAC', 'FACTURA'])
       )
-      const emission = dateOnly(
+      const emission = dbfDateOnly(
         firstValue(row, ['EMISION', 'FECHA', 'FECEMI', 'FECHA_EMI'])
       )
       const total = numericValue(

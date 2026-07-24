@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   buildCustomerCode,
+  dbfDateOnly,
   normalizeInvoiceNumber,
   normalizeName,
   splitPatientName,
@@ -19,6 +20,11 @@ test('normaliza nombres e identificadores FE', () => {
   assert.equal(normalizeName('  Pérez, María-José '), 'PEREZ MARIA JOSE')
   assert.equal(normalizeInvoiceNumber('FE', '7862'), 'FE7862')
   assert.equal(normalizeInvoiceNumber('FE', ' FE7862 '), 'FE7862')
+})
+
+test('conserva el dia calendario de una fecha DBF en equipos de Bogota', () => {
+  const dbfDate = new Date(Date.UTC(2026, 6, 23))
+  assert.equal(dbfDateOnly(dbfDate), '2026-07-23')
 })
 
 test('separa los cuatro campos de nombre de tmdir', () => {

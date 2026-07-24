@@ -11,6 +11,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { hostname } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { dbfDateOnly } from './lib/normalize.mjs'
 
 const AGENT_VERSION = 'wimax-facturas/1.0.0'
 const BATCH_SIZE = 500
@@ -95,25 +96,6 @@ function numericValue(value) {
 
   const parsed = Number(text)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-function dateOnly(value) {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    const year = value.getFullYear()
-    const month = String(value.getMonth() + 1).padStart(2, '0')
-    const day = String(value.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
-  const text = String(value ?? '').trim()
-  if (!text) return null
-  const iso = text.match(/^(\d{4})[-/]([01]\d)[-/]([0-3]\d)/)
-  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`
-  const latin = text.match(/^([0-3]?\d)[-/]([01]?\d)[-/](\d{4})/)
-  if (latin) {
-    return `${latin[3]}-${latin[2].padStart(2, '0')}-${latin[1].padStart(2, '0')}`
-  }
-  return null
 }
 
 function sourceForMonth(date) {
@@ -215,7 +197,7 @@ async function readInvoiceMonth(source, directory, syncAt) {
     const numero = textOrNull(
       firstValue(row, ['NUMERO', 'NUMFAC', 'NROFAC', 'FACTURA'])
     )
-    const emision = dateOnly(
+    const emision = dbfDateOnly(
       firstValue(row, ['EMISION', 'FECHA', 'FECEMI', 'FECHA_EMI'])
     )
     const total = numericValue(

@@ -57,6 +57,20 @@ export function dateOnly(value) {
   return null
 }
 
+// dbffile represents a DBF `D` value as midnight UTC. Reading that value with
+// local getters on the WiMAX PC (America/Bogota) moves it to the previous day.
+// DBF dates have no timezone, so preserve the calendar components stored in
+// UTC instead of converting them to the host timezone.
+export function dbfDateOnly(value) {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const year = value.getUTCFullYear()
+    const month = String(value.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(value.getUTCDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  return dateOnly(value)
+}
+
 export function normalizeInvoiceNumber(type, number) {
   const raw = normalizeKey(number).replace(/\s+/g, '')
   if (!raw) return null

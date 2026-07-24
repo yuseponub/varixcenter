@@ -30,7 +30,7 @@ if ($Enable -and $envText -notmatch '(?m)^WIMAX_ROBOT_ENABLED\s*=\s*true\s*$') {
 if ($Enable) {
   $profileMatch = [regex]::Match(
     $envText,
-    '(?m)^WIMAX_UI_PROFILE\s*=\s*["'']?([^"'']+)["'']?\s*$'
+    '(?m)^WIMAX_UI_PROFILE[ \t]*=[ \t]*["'']?([^\r\n"'']+?)["'']?[ \t]*\r?$'
   )
   if (-not $profileMatch.Success) {
     throw 'Para habilitar, WIMAX_UI_PROFILE debe estar configurado en .env'
@@ -71,6 +71,9 @@ $principal = New-ScheduledTaskPrincipal `
   -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet `
   -MultipleInstances IgnoreNew `
+  -StartWhenAvailable `
+  -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries `
   -RestartCount 3 `
   -RestartInterval (New-TimeSpan -Minutes 1) `
   -ExecutionTimeLimit ([TimeSpan]::Zero)

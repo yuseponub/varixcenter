@@ -1,15 +1,16 @@
 /**
- * Supervised WiMAX invoicing robot.
+ * Scheduled WiMAX invoicing robot.
  *
  * Safety invariants:
  * - C:\wimax is only opened through dbffile in read mode.
- * - A job is claimed only while the interactive desktop is idle.
+ * - Urgent jobs require explicit desktop consent; close jobs require idle time.
  * - Cloud + tmdir/trafac dedup runs before typing and again before emission.
- * - The irreversible accounting acceptance requires web approval.
+ * - The irreversible accounting acceptance requires an audited exact snapshot approval.
  * - payment_invoicing completes only after trafac FE + CUFE are both observed.
  */
 
 import { createClient } from '@supabase/supabase-js'
+import { spawn } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { readdir, rmdir, stat, unlink } from 'node:fs/promises'
 import { hostname } from 'node:os'
@@ -23,6 +24,7 @@ import { reconcilePendingColfactJobs } from './lib/colfact-reconcile.mjs'
 import { preflightDedup } from './lib/dedup.mjs'
 import { readCufeBuffer, readDirectory, readInvoices } from './lib/dbf-reader.mjs'
 import { GuiDriver, WimaxWorkflow } from './lib/gui.mjs'
+import { dailyWindow, shutdownDecision } from './lib/schedule.mjs'
 import {
   addDays,
   amountEqual,
@@ -31,7 +33,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.3.0'
+const AGENT_VERSION = 'wimax-facturas/2.4.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -56,6 +58,13 @@ function integerEnv(name, fallback, min, max) {
     throw new Error(`CONFIG: ${name} invalido`)
   }
   return value
+}
+
+function booleanEnv(name, fallback = false) {
+  const value = String(process.env[name] ?? fallback).trim().toLowerCase()
+  if (value === 'true') return true
+  if (value === 'false') return false
+  throw new Error(`CONFIG: ${name} debe ser true o false`)
 }
 
 function loadProfile(file) {
@@ -205,6 +214,9 @@ export function sessionIdForDesktop(profile, desktop) {
 
 async function desktopReady(driver, profile, minIdleSeconds) {
   const desktop = await driver.inspect()
+  if (desktop.interactiveDesktop === false) {
+    return { ready: false, reason: 'sesion_bloqueada' }
+  }
   const expectedSessionId = sessionIdForDesktop(profile, desktop)
   if (!expectedSessionId || Number(desktop.sessionId) !== expectedSessionId) {
     return { ready: false, reason: 'sesion_interactiva_incorrecta' }
@@ -563,6 +575,68 @@ async function processJob({
   }
 }
 
+const UNRESOLVED_JOB_STATES = [
+  'en_cola',
+  'preparando',
+  'esperando_aprobacion',
+  'aprobada',
+  'verificando',
+  'bloqueada_duplicado',
+  'emitida_sin_cufe',
+  'requiere_revision',
+  'error',
+]
+
+async function firstQueuedJob(supabase, modes) {
+  const { data, error } = await supabase
+    .from('wimax_invoice_jobs')
+    .select('id,modo_ejecucion,queued_at')
+    .eq('estado', 'en_cola')
+    .in('modo_ejecucion', modes)
+    .order('queued_at', { ascending: true })
+    .order('id', { ascending: true })
+    .limit(1)
+  if (error) throw new Error(`QUEUE_STATE: ${error.message}`)
+  return data?.[0] ?? null
+}
+
+async function unresolvedJobs(supabase) {
+  const { data, error } = await supabase
+    .from('wimax_invoice_jobs')
+    .select('id,estado,modo_ejecucion,updated_at')
+    .in('estado', UNRESOLVED_JOB_STATES)
+  if (error) throw new Error(`QUEUE_STATE: ${error.message}`)
+  return data ?? []
+}
+
+async function scheduleWindowsShutdown(delaySeconds) {
+  const args = [
+    '/s',
+    '/t',
+    String(delaySeconds),
+    '/d',
+    'p:0:0',
+    '/c',
+    'VarixCenter termino facturacion y conciliacion. Use shutdown /a para cancelar.',
+  ]
+  const child = spawn('shutdown.exe', args, {
+    windowsHide: true,
+    stdio: ['ignore', 'ignore', 'pipe'],
+  })
+  let stderr = ''
+  child.stderr.setEncoding('utf8')
+  child.stderr.on('data', (chunk) => {
+    stderr += chunk
+  })
+  const exitCode = await new Promise((resolve, reject) => {
+    child.on('error', reject)
+    child.on('close', resolve)
+  })
+  if (exitCode !== 0) {
+    throw new Error(`SHUTDOWN_FAILED: ${stderr.trim().split(/\r?\n/)[0] || exitCode}`)
+  }
+}
+
 async function main() {
   loadEnv()
   if (process.platform !== 'win32') throw new Error('CONFIG: el robot solo corre en Windows interactivo')
@@ -579,6 +653,27 @@ async function main() {
   const stateDir = path.resolve(ROOT, process.env.WIMAX_STATE_DIR || 'state')
   const pollSeconds = integerEnv('WIMAX_POLL_SECONDS', 30, 5, 3600)
   const minIdleSeconds = integerEnv('WIMAX_MIN_IDLE_SECONDS', 300, 30, 86400)
+  const urgentPromptTimeoutSeconds = integerEnv(
+    'WIMAX_URGENT_PROMPT_TIMEOUT_SECONDS', 45, 15, 120
+  )
+  const urgentReminderSeconds = integerEnv(
+    'WIMAX_URGENT_REMINDER_SECONDS', 300, 60, 3600
+  )
+  const endOfDayEnabled = booleanEnv('WIMAX_END_OF_DAY_ENABLED', false)
+  const endOfDayTime = process.env.WIMAX_END_OF_DAY_TIME?.trim() || '21:00'
+  const endOfDayWindowMinutes = integerEnv(
+    'WIMAX_END_OF_DAY_WINDOW_MINUTES', 360, 60, 720
+  )
+  const endOfDayMinIdleSeconds = integerEnv(
+    'WIMAX_END_OF_DAY_MIN_IDLE_SECONDS', 600, 60, 86400
+  )
+  const endOfDayQuietSeconds = integerEnv(
+    'WIMAX_END_OF_DAY_QUIET_SECONDS', 120, 30, 900
+  )
+  const endOfDayShutdown = booleanEnv('WIMAX_END_OF_DAY_SHUTDOWN', false)
+  const shutdownDelaySeconds = integerEnv(
+    'WIMAX_SHUTDOWN_DELAY_SECONDS', 60, 30, 600
+  )
   const approvalTimeoutMinutes = integerEnv('WIMAX_APPROVAL_TIMEOUT_MINUTES', 120, 5, 480)
   const verificationTimeoutSeconds = integerEnv('WIMAX_VERIFY_TIMEOUT_SECONDS', 120, 30, 600)
   const cufeGraceSeconds = integerEnv('WIMAX_CUFE_GRACE_SECONDS', 15, 1, 60)
@@ -603,6 +698,13 @@ async function main() {
     .slice(0, 80)
   const runOnce = process.argv.includes('--once')
 
+  // Validate schedule syntax once at startup instead of producing a repeated
+  // configuration error every polling cycle.
+  if (endOfDayEnabled) {
+    dailyWindow({ start: endOfDayTime, windowMinutes: endOfDayWindowMinutes })
+  }
+  withinAllowedHours(process.env.WIMAX_ALLOWED_HOURS)
+
   const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
@@ -614,9 +716,59 @@ async function main() {
     ? Date.now() + colfactPostBatchDelaySeconds * 1_000
     : 0
   let colfactAttemptsRemaining = colfactClient ? 1 : 0
-  console.log(`${AGENT_VERSION}; agent=${agentId}; supervised=true`)
+  let urgentSnoozedUntil = 0
+  let closeQuietStartedAt = 0
+  let closeBusinessDate = null
+  let lastDeferredReason = null
+  let lastDeferredLogAt = 0
+  let shutdownReadyLoggedDate = null
+  console.log(
+    `${AGENT_VERSION}; agent=${agentId}; scheduled=${endOfDayEnabled}; close=${endOfDayTime}; shutdown=${endOfDayShutdown}`
+  )
 
   await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
+
+  function logDeferred(reason, context) {
+    const now = Date.now()
+    if (reason !== lastDeferredReason || now - lastDeferredLogAt >= 5 * 60_000) {
+      console.log(`${context}: ${reason}`)
+      lastDeferredReason = reason
+      lastDeferredLogAt = now
+    }
+  }
+
+  async function processNext(modes, requiredIdleSeconds) {
+    const desktop = await desktopReady(driver, profile, requiredIdleSeconds)
+    if (!desktop.ready) return { processed: false, reason: desktop.reason }
+
+    const claimed = await rpc(supabase, 'robot_wimax_reclamar_modos', {
+      p_agent_id: agentId,
+      p_modos: modes,
+    })
+    const job = claimed?.job
+    if (!job) return { processed: false, reason: 'cola_vacia' }
+
+    const result = await processJob({
+      supabase,
+      driver,
+      profile,
+      stateDir,
+      wimaxDir,
+      approvalTimeoutMinutes,
+      verificationTimeoutSeconds,
+      cufeGraceSeconds,
+      colfactClient,
+      colfactLookupTimeoutSeconds,
+      colfactLookupPollSeconds,
+      job,
+    })
+    if (result?.emitted && colfactClient) {
+      colfactReconcileDueAt = Date.now() + colfactPostBatchDelaySeconds * 1_000
+      colfactAttemptsRemaining = colfactPostBatchAttempts
+    }
+    await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
+    return { processed: true, result }
+  }
 
   do {
     try {
@@ -642,39 +794,115 @@ async function main() {
         }
       }
 
-      if (!withinAllowedHours(process.env.WIMAX_ALLOWED_HOURS)) {
-        if (runOnce) console.log('Fuera de la ventana horaria configurada')
-      } else {
-        const desktop = await desktopReady(driver, profile, minIdleSeconds)
-        if (!desktop.ready) {
-          if (runOnce) console.log(`Sin reclamar: ${desktop.reason}`)
+      if (runOnce) {
+        if (!withinAllowedHours(process.env.WIMAX_ALLOWED_HOURS)) {
+          console.log('Fuera de la ventana horaria configurada')
         } else {
-          const claimed = await rpc(supabase, 'robot_wimax_reclamar', {
-            p_agent_id: agentId,
-          })
-          const job = claimed?.job
-          if (job) {
-            const result = await processJob({
-              supabase,
-              driver,
-              profile,
-              stateDir,
-              wimaxDir,
-              approvalTimeoutMinutes,
-              verificationTimeoutSeconds,
-              cufeGraceSeconds,
-              colfactClient,
-              colfactLookupTimeoutSeconds,
-              colfactLookupPollSeconds,
-              job,
+          const outcome = await processNext(
+            ['urgente', 'cierre', 'supervisada'],
+            minIdleSeconds
+          )
+          if (!outcome.processed) console.log(`Sin reclamar: ${outcome.reason}`)
+        }
+      } else {
+        const closeWindow = endOfDayEnabled
+          ? dailyWindow({
+              start: endOfDayTime,
+              windowMinutes: endOfDayWindowMinutes,
             })
-            if (result?.emitted && colfactClient) {
-              colfactReconcileDueAt = Date.now() + colfactPostBatchDelaySeconds * 1_000
-              colfactAttemptsRemaining = colfactPostBatchAttempts
+          : { active: false, businessDate: null }
+
+        if (closeWindow.active) {
+          if (closeBusinessDate !== closeWindow.businessDate) {
+            closeBusinessDate = closeWindow.businessDate
+            closeQuietStartedAt = 0
+            shutdownReadyLoggedDate = null
+            console.log(`Inicio de cierre WiMAX ${closeBusinessDate}`)
+          }
+
+          const queued = await firstQueuedJob(supabase, ['urgente', 'cierre'])
+          if (queued) {
+            closeQuietStartedAt = 0
+            const outcome = await processNext(
+              ['urgente', 'cierre'],
+              endOfDayMinIdleSeconds
+            )
+            if (!outcome.processed) {
+              logDeferred(outcome.reason, 'Cierre esperando escritorio')
+            } else {
+              lastDeferredReason = null
             }
-            await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
-          } else if (runOnce) {
-            console.log('No hay trabajos WiMAX listos')
+          } else {
+            if (!closeQuietStartedAt) {
+              closeQuietStartedAt = Date.now()
+              console.log(`Cierre sin cola; esperando ${endOfDayQuietSeconds}s por el lote`)
+            }
+            const quietElapsedSeconds = Math.floor(
+              (Date.now() - closeQuietStartedAt) / 1_000
+            )
+            const jobs = await unresolvedJobs(supabase)
+            const decision = shutdownDecision({
+              jobs,
+              quietElapsedSeconds,
+              quietRequiredSeconds: endOfDayQuietSeconds,
+              reconciliationScheduled: colfactReconcileDueAt > 0,
+            })
+
+            if (decision.allowed) {
+              const powerDesktop = await driver.inspect()
+              if (Number(powerDesktop.idleSeconds ?? 0) < endOfDayMinIdleSeconds) {
+                logDeferred('escritorio_en_uso', 'Cierre no puede apagar')
+              } else if (endOfDayShutdown) {
+                await scheduleWindowsShutdown(shutdownDelaySeconds)
+                console.log(
+                  `Cierre seguro; apagado programado en ${shutdownDelaySeconds}s (cancelable con shutdown /a)`
+                )
+                return
+              } else if (shutdownReadyLoggedDate !== closeBusinessDate) {
+                console.log('Cierre seguro terminado; apagado automatico deshabilitado')
+                shutdownReadyLoggedDate = closeBusinessDate
+              }
+            } else if (decision.reason === 'trabajos_pendientes') {
+              const states = [...new Set(decision.blockers.map((job) => job.estado))]
+                .sort()
+                .join(',')
+              logDeferred(`bloqueos=${states}`, 'Cierre no puede apagar')
+            }
+          }
+        } else {
+          closeBusinessDate = null
+          closeQuietStartedAt = 0
+          const urgent = withinAllowedHours(process.env.WIMAX_ALLOWED_HOURS)
+            ? await firstQueuedJob(supabase, ['urgente'])
+            : null
+
+          if (urgent && Date.now() >= urgentSnoozedUntil) {
+            const desktop = await driver.inspect()
+            if (desktop.interactiveDesktop === false) {
+              urgentSnoozedUntil = Date.now() + urgentReminderSeconds * 1_000
+              logDeferred('sesion_bloqueada', 'Urgente pospuesta')
+            } else {
+              const prompt = await driver.promptUrgent(urgentPromptTimeoutSeconds)
+              if (prompt.decision === 'cierre') {
+                await rpc(supabase, 'robot_wimax_posponer_al_cierre', {
+                  p_job_id: urgent.id,
+                })
+                console.log('Factura urgente movida al cierre por el usuario del PC')
+                urgentSnoozedUntil = 0
+              } else if (prompt.decision === 'ahora') {
+                const outcome = await processNext(['urgente'], 0)
+                if (!outcome.processed) {
+                  urgentSnoozedUntil = Date.now() + urgentReminderSeconds * 1_000
+                  logDeferred(outcome.reason, 'Urgente no pudo iniciar')
+                } else {
+                  urgentSnoozedUntil = 0
+                  lastDeferredReason = null
+                }
+              } else {
+                urgentSnoozedUntil = Date.now() + urgentReminderSeconds * 1_000
+                logDeferred(prompt.decision, 'Urgente recordara despues')
+              }
+            }
           }
         }
       }

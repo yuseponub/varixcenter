@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { paymentSchema, anulacionSchema } from '@/lib/validations/payment'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import type { WimaxExecutionMode } from '@/types/invoicing'
 
 /**
  * Action state for payment server actions
@@ -23,6 +24,7 @@ export type WimaxActionResult =
       jobId: string
       estado: string
       candidates?: Array<{ numero: string; emision: string; total: number }>
+      modoEjecucion?: WimaxExecutionMode
     }
   | { success: false; error: string }
 
@@ -310,14 +312,16 @@ export async function prepararFacturaWimaxAction(
     referencia: string
     cantidad: number
     precio_unitario: number
-  }>
+  }>,
+  modoEjecucion: Extract<WimaxExecutionMode, 'urgente' | 'cierre'>
 ): Promise<WimaxActionResult> {
   const parsed = z
     .object({
       paymentId: z.string().uuid(),
       items: z.array(wimaxItemSchema).min(1).max(20),
+      modoEjecucion: z.enum(['urgente', 'cierre']),
     })
-    .safeParse({ paymentId, items })
+    .safeParse({ paymentId, items, modoEjecucion })
 
   if (!parsed.success) {
     return { success: false, error: 'Revise tratamientos, cantidades y precios.' }
@@ -327,9 +331,10 @@ export async function prepararFacturaWimaxAction(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'No autorizado.' }
 
-  const { data, error } = await supabase.rpc('preparar_factura_wimax', {
+  const { data, error } = await supabase.rpc('preparar_factura_wimax_programada', {
     p_payment_id: parsed.data.paymentId,
     p_items: parsed.data.items,
+    p_modo: parsed.data.modoEjecucion,
   })
 
   if (error) {
@@ -343,6 +348,7 @@ export async function prepararFacturaWimaxAction(
   const result = data as unknown as {
     job_id: string
     estado: string
+    modo_ejecucion: WimaxExecutionMode
     candidatas?: Array<{ numero: string; emision: string; total: number }>
   }
   revalidatePath('/pagos')
@@ -353,6 +359,7 @@ export async function prepararFacturaWimaxAction(
     success: true,
     jobId: result.job_id,
     estado: result.estado,
+    modoEjecucion: result.modo_ejecucion,
     candidates: result.candidatas,
   }
 }

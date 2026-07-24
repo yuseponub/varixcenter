@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation'
 import {
   AlertTriangle,
   ArrowLeft,
-  CheckCircle2,
+  Clock3,
   FileCheck2,
   FilePlus2,
   Loader2,
   Plus,
   ShieldCheck,
   Trash2,
+  Zap,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -50,6 +51,7 @@ import {
   type WimaxInvoiceItemInput,
 } from '@/lib/wimax/catalog'
 import type { PaymentWithDetails } from '@/types/payments'
+import type { WimaxExecutionMode } from '@/types/invoicing'
 
 interface CreateWimaxInvoiceDialogProps {
   payment: PaymentWithDetails
@@ -85,6 +87,14 @@ function statusLabel(status: string): string {
     cancelada: 'Cancelada',
   }
   return labels[status] ?? status
+}
+
+function jobStatusLabel(job: NonNullable<PaymentWithDetails['wimax_invoice_jobs']>): string {
+  if (job.estado === 'en_cola') {
+    if (job.modo_ejecucion === 'urgente') return 'Esperando PC'
+    if (job.modo_ejecucion === 'cierre') return 'Programada al cierre'
+  }
+  return statusLabel(job.estado)
 }
 
 function ApprovalDialog({ payment }: { payment: PaymentWithDetails }) {
@@ -328,7 +338,7 @@ export function CreateWimaxInvoiceDialog({
   }
 
   if (!canManage) {
-    return <Badge variant="secondary">{job ? statusLabel(job.estado) : 'Pendiente FE'}</Badge>
+    return <Badge variant="secondary">{job ? jobStatusLabel(job) : 'Pendiente FE'}</Badge>
   }
 
   if (job?.estado === 'esperando_aprobacion') return <ApprovalDialog payment={payment} />
@@ -343,7 +353,7 @@ export function CreateWimaxInvoiceDialog({
     return (
       <Button type="button" size="sm" variant="outline" disabled>
         {['preparando', 'verificando'].includes(job.estado) && <Loader2 className="animate-spin" />}
-        {statusLabel(job.estado)}
+        {jobStatusLabel(job)}
       </Button>
     )
   }
@@ -372,7 +382,7 @@ export function CreateWimaxInvoiceDialog({
     ])
   }
 
-  function enqueue() {
+  function enqueue(modoEjecucion: Extract<WimaxExecutionMode, 'urgente' | 'cierre'>) {
     if (!canSubmit) return
     startTransition(async () => {
       const result = await prepararFacturaWimaxAction(
@@ -381,7 +391,8 @@ export function CreateWimaxInvoiceDialog({
           referencia: item.referencia,
           cantidad: item.cantidad,
           precio_unitario: item.precio_unitario,
-        }))
+        })),
+        modoEjecucion
       )
       if (!result.success) {
         toast.error(result.error)
@@ -390,7 +401,11 @@ export function CreateWimaxInvoiceDialog({
       if (result.estado === 'bloqueada_duplicado') {
         toast.warning('Factura detenida: existen FE recientes para esta cédula.')
       } else {
-        toast.success('Factura enviada al robot en modo supervisado.')
+        toast.success(
+          modoEjecucion === 'urgente'
+            ? 'Factura urgente enviada. El PC pedirá permiso para usar la pantalla.'
+            : 'Factura autorizada y programada para el cierre de jornada.'
+        )
       }
       setOpen(false)
       router.refresh()
@@ -570,10 +585,11 @@ export function CreateWimaxInvoiceDialog({
 
         {!confirming && <Alert>
           <ShieldCheck />
-          <AlertTitle>Emisión supervisada</AlertTitle>
+          <AlertTitle>Emisión protegida</AlertTitle>
           <AlertDescription>
-            El robot hará deduplicación en Supabase y en los DBF, preparará la
-            factura y se detendrá antes del paso irreversible.
+            El robot hará deduplicación en Supabase y en los DBF antes de tocar
+            WiMAX. En la revisión final podrá crearla ahora o dejarla autorizada
+            para el cierre de jornada.
           </AlertDescription>
         </Alert>}
 
@@ -583,8 +599,9 @@ export function CreateWimaxInvoiceDialog({
               <AlertTriangle />
               <AlertTitle>Confirmación final</AlertTitle>
               <AlertDescription>
-                Después de preparar la factura todavía deberá autorizar la emisión
-                irreversible. Confirme ahora que paciente, tratamientos y valores son correctos.
+                Los botones siguientes constituyen la autorización final para emitir
+                electrónicamente este paciente, estos tratamientos y este valor. El
+                robot no permitirá cambiar el contenido después de confirmarlo.
               </AlertDescription>
             </Alert>
             <div className="rounded-lg border">
@@ -630,9 +647,22 @@ export function CreateWimaxInvoiceDialog({
                 <ArrowLeft />
                 Corregir
               </Button>
-              <Button type="button" onClick={enqueue} disabled={isPending || !canSubmit}>
-                {isPending ? <Loader2 className="animate-spin" /> : <CheckCircle2 />}
-                Confirmar y enviar al robot
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => enqueue('cierre')}
+                disabled={isPending || !canSubmit}
+              >
+                {isPending ? <Loader2 className="animate-spin" /> : <Clock3 />}
+                Facturar al cierre
+              </Button>
+              <Button
+                type="button"
+                onClick={() => enqueue('urgente')}
+                disabled={isPending || !canSubmit}
+              >
+                {isPending ? <Loader2 className="animate-spin" /> : <Zap />}
+                Crear ahora
               </Button>
             </>
           ) : (

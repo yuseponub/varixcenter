@@ -23,6 +23,9 @@ export const WIMAX_JOB_STATES = [
 
 export type WimaxJobState = (typeof WIMAX_JOB_STATES)[number]
 
+export const WIMAX_EXECUTION_MODES = ['supervisada', 'urgente', 'cierre'] as const
+export type WimaxExecutionMode = (typeof WIMAX_EXECUTION_MODES)[number]
+
 export interface WimaxInvoiceJobSummary {
   id: string
   estado: WimaxJobState
@@ -34,6 +37,7 @@ export interface WimaxInvoiceJobSummary {
     precio_unitario: number
   }>
   supervisada: boolean
+  modo_ejecucion: WimaxExecutionMode
   last_step: string | null
   wimax_factura_numero: string | null
   cufe: string | null

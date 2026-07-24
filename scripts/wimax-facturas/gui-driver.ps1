@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('Inspect', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'Click', 'Screenshot')]
+  [ValidateSet('Inspect', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'Click', 'Screenshot', 'PromptUrgent')]
   [string]$Action,
 
   [string]$OutputPath,
@@ -112,6 +112,15 @@ namespace Varix.Wimax {
     [DllImport("user32.dll")]
     private static extern bool GetLastInputInfo(ref LASTINPUTINFO info);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr OpenInputDesktop(uint flags, bool inherit, uint desiredAccess);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SwitchDesktop(IntPtr desktop);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool CloseDesktop(IntPtr desktop);
+
     [DllImport("user32.dll")]
     private static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, UIntPtr extraInfo);
 
@@ -210,9 +219,99 @@ namespace Varix.Wimax {
       if (!GetLastInputInfo(ref info)) return 0;
       return unchecked((uint)Environment.TickCount - info.Time) / 1000;
     }
+
+    public static bool InteractiveDesktopAvailable() {
+      const uint DESKTOP_SWITCHDESKTOP = 0x0100;
+      var desktop = OpenInputDesktop(0, false, DESKTOP_SWITCHDESKTOP);
+      if (desktop == IntPtr.Zero) return false;
+      try {
+        return SwitchDesktop(desktop);
+      }
+      finally {
+        CloseDesktop(desktop);
+      }
+    }
   }
 }
 '@
+}
+
+function Show-UrgentPrompt([object]$Payload) {
+  $timeoutSeconds = if ($Payload.timeoutSeconds) { [int]$Payload.timeoutSeconds } else { 45 }
+  $timeoutSeconds = [Math]::Min([Math]::Max($timeoutSeconds, 15), 120)
+
+  $form = [System.Windows.Forms.Form]::new()
+  $form.Text = 'VarixCenter - factura urgente'
+  $form.ClientSize = [System.Drawing.Size]::new(560, 260)
+  $form.StartPosition = 'CenterScreen'
+  $form.FormBorderStyle = 'FixedDialog'
+  $form.MaximizeBox = $false
+  $form.MinimizeBox = $false
+  $form.TopMost = $true
+  $form.ShowInTaskbar = $true
+  $form.Tag = 'timeout'
+
+  $title = [System.Windows.Forms.Label]::new()
+  $title.Text = 'Hay una factura urgente pendiente'
+  $title.Font = [System.Drawing.Font]::new('Segoe UI', 14, [System.Drawing.FontStyle]::Bold)
+  $title.Location = [System.Drawing.Point]::new(24, 20)
+  $title.Size = [System.Drawing.Size]::new(510, 34)
+
+  $message = [System.Windows.Forms.Label]::new()
+  $message.Text = "WiMAX necesita usar el teclado y la pantalla durante unos minutos.`r`nGuarde su trabajo y deje WiMAX abierto en la pantalla principal."
+  $message.Font = [System.Drawing.Font]::new('Segoe UI', 10)
+  $message.Location = [System.Drawing.Point]::new(24, 64)
+  $message.Size = [System.Drawing.Size]::new(510, 58)
+
+  $countdown = [System.Windows.Forms.Label]::new()
+  $countdown.Text = "La ventana se cerrara en $timeoutSeconds segundos sin iniciar nada."
+  $countdown.ForeColor = [System.Drawing.Color]::DimGray
+  $countdown.Location = [System.Drawing.Point]::new(24, 126)
+  $countdown.Size = [System.Drawing.Size]::new(510, 24)
+  $countdown.Tag = $timeoutSeconds
+
+  $nowButton = [System.Windows.Forms.Button]::new()
+  $nowButton.Text = 'Facturar ahora'
+  $nowButton.Location = [System.Drawing.Point]::new(24, 178)
+  $nowButton.Size = [System.Drawing.Size]::new(150, 42)
+  $nowButton.Add_Click({ $form.Tag = 'ahora'; $form.Close() })
+
+  $remindButton = [System.Windows.Forms.Button]::new()
+  $remindButton.Text = 'Recordar en 5 min'
+  $remindButton.Location = [System.Drawing.Point]::new(190, 178)
+  $remindButton.Size = [System.Drawing.Size]::new(160, 42)
+  $remindButton.Add_Click({ $form.Tag = 'recordar'; $form.Close() })
+
+  $closeButton = [System.Windows.Forms.Button]::new()
+  $closeButton.Text = 'Dejar para el cierre'
+  $closeButton.Location = [System.Drawing.Point]::new(366, 178)
+  $closeButton.Size = [System.Drawing.Size]::new(168, 42)
+  $closeButton.Add_Click({ $form.Tag = 'cierre'; $form.Close() })
+
+  $timer = [System.Windows.Forms.Timer]::new()
+  $timer.Interval = 1000
+  $timer.Add_Tick({
+    $countdown.Tag = [int]$countdown.Tag - 1
+    $remaining = [int]$countdown.Tag
+    $countdown.Text = "La ventana se cerrara en $remaining segundos sin iniciar nada."
+    if ($remaining -le 0) {
+      $form.Tag = 'timeout'
+      $form.Close()
+    }
+  })
+
+  $form.Controls.AddRange(@($title, $message, $countdown, $nowButton, $remindButton, $closeButton))
+  $form.AcceptButton = $nowButton
+  $form.Add_Shown({ $form.Activate(); $timer.Start() })
+  try {
+    [void]$form.ShowDialog()
+    return [string]$form.Tag
+  }
+  finally {
+    $timer.Stop()
+    $timer.Dispose()
+    $form.Dispose()
+  }
 }
 
 function Read-Payload {
@@ -289,6 +388,7 @@ switch ($Action) {
       windows = [Varix.Wimax.NativeGui]::Windows()
       foreground = [Varix.Wimax.NativeGui]::Foreground()
       idleSeconds = [Varix.Wimax.NativeGui]::IdleSeconds()
+      interactiveDesktop = [Varix.Wimax.NativeGui]::InteractiveDesktopAvailable()
       sessionId = [System.Diagnostics.Process]::GetCurrentProcess().SessionId
       screen = [pscustomobject]@{
         width = [System.Windows.Forms.SystemInformation]::VirtualScreen.Width
@@ -362,5 +462,13 @@ switch ($Action) {
       $bitmap.Dispose()
     }
     Write-Result ([pscustomobject]@{ ok = $true; path = [string]$payload.path })
+  }
+  'PromptUrgent' {
+    if (-not [Varix.Wimax.NativeGui]::InteractiveDesktopAvailable()) {
+      Write-Result ([pscustomobject]@{ ok = $true; decision = 'locked' })
+      break
+    }
+    $decision = Show-UrgentPrompt $payload
+    Write-Result ([pscustomobject]@{ ok = $true; decision = $decision })
   }
 }

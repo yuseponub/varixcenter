@@ -1,4 +1,4 @@
-# Espejo y robot supervisado de facturas WiMAX
+# Espejo y robot programado de facturas WiMAX
 
 Agente de una sola via: lee las facturas FE del mes actual y el anterior en
 WiMAX/FoxPro y las refleja en Supabase. No crea, modifica ni elimina archivos
@@ -23,6 +23,16 @@ El agente registra cada intento en `sync_runs` con
 modulo Pagos. Corre con el Node portatil y una tarea interactiva en la sesion 1;
 una tarea SSH/sesion 0 no puede dar foco de forma confiable a Xbase++.
 
+La confirmacion final permite escoger uno de dos modos:
+
+- **Crear ahora**: deja autorizado el snapshot exacto y muestra en el PC las
+  opciones **Facturar ahora**, **Recordar en 5 min** y **Dejar para el cierre**.
+  Solo la primera entrega voluntariamente teclado y pantalla al robot.
+- **Facturar al cierre**: deja autorizado el mismo snapshot para el lote diario.
+  A las `WIMAX_END_OF_DAY_TIME` el agente espera el tiempo de inactividad
+  configurado, vacia todas las facturas autorizadas y espera un periodo quieto
+  por si se estaba creando un lote.
+
 El flujo tiene dos barreras independientes:
 
 1. Antes de tocar la UI compara la cedula contra `wimax_facturas` y, de forma
@@ -32,10 +42,10 @@ El flujo tiene dos barreras independientes:
    El monto nunca se usa para ignorar un posible duplicado.
    Si el codigo de cliente calculado ya pertenece a otra cedula, prueba una
    secuencia determinista con la inicial del apellido y registra el fallback.
-2. El robot prepara cliente, encabezado, items, deposito y banco, pero se detiene
-   en **Asignacion de asiento contable**. Un Admin o Secretaria debe revisar el
-   escritorio y pulsar **Autorizar emision** en VarixCenter. Solo entonces se
-   acepta el paso irreversible.
+2. El robot prepara cliente, encabezado, items, deposito y banco. Los trabajos
+   nuevos quedan preautorizados exclusivamente sobre el paciente, items y monto
+   de la segunda confirmacion web. Los trabajos antiguos en modo `supervisada`
+   conservan la barrera **Autorizar emision** antes del paso irreversible.
 
 El modal permite escoger un monto positivo hasta el total del pago, ajustar las
 lineas y exige una segunda pantalla de confirmacion. Si el monto confirmado es
@@ -87,6 +97,16 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 - Antes de reclamar una tarea, el escritorio debe llevar al menos
   `WIMAX_MIN_IDLE_SECONDS` sin entrada humana y estar dentro de
   `WIMAX_ALLOWED_HOURS`, si se configuro.
+- Una urgente omite el contador de inactividad solamente despues de que la
+  persona del PC pulsa **Facturar ahora**. Una sesion bloqueada nunca emite.
+- El cierre usa su propia barrera `WIMAX_END_OF_DAY_MIN_IDLE_SECONDS`. Para una
+  cola no vacia, el usuario debe dejar la sesion iniciada y desbloqueada, WiMAX
+  abierto en su unica pantalla principal y la resolucion calibrada.
+- El PC no se apaga si queda una factura en cola, error, duplicado, revision,
+  verificacion o pendiente de CUFE, ni mientras haya conciliacion programada.
+  Tambien vuelve a exigir inactividad justo antes de ejecutar el apagado.
+- `shutdown.exe` da el aviso configurado por `WIMAX_SHUTDOWN_DELAY_SECONDS`;
+  durante ese plazo se puede cancelar manualmente con `shutdown /a`.
 - Todos los trabajos usan lease atomico; un segundo agente no puede reclamarlos.
 - Los screenshots se quedan exclusivamente en `WIMAX_STATE_DIR`, se refleja en
   Supabase solo su SHA-256 y se borran localmente segun
@@ -122,11 +142,17 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
    ```
 
 7. Tras validar una emision completa (FE en `trafac`, CUFE y estado en
-   VarixCenter), dejar `WIMAX_ROBOT_ENABLED=true` en `.env` e instalar/activar:
+   VarixCenter), configurar el cierre, dejar `WIMAX_ROBOT_ENABLED=true` en
+   `.env` e instalar/activar:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\install-robot.ps1 -Enable
    ```
+
+Al retirarse, el personal deja WiMAX en su pantalla principal y la sesion
+desbloqueada. Si hay facturas, el PC permanece encendido ante cualquier fallo;
+si todo termina limpio, se apaga. Al dia siguiente debe encenderse e iniciar
+sesion normalmente (el encendido automatico depende del BIOS y no del robot).
 
 Para detenerlo sin tocar datos, deshabilitar la tarea `VarixWimaxRobot` y poner
 `WIMAX_ROBOT_ENABLED=false`. Un trabajo que ya llego a `verificando` se revisa

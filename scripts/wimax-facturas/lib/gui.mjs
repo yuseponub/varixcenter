@@ -77,6 +77,10 @@ export class GuiDriver {
   screenshot(file) {
     return this.run('Screenshot', { path: file })
   }
+
+  promptUrgent(timeoutSeconds = 45) {
+    return this.run('PromptUrgent', { timeoutSeconds })
+  }
 }
 
 export function escapeSendKeysText(value) {

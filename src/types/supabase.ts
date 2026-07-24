@@ -1493,6 +1493,7 @@ export type Database = {
           lease_expires_at: string | null
           lease_token: string | null
           monto: number
+          modo_ejecucion: string
           paciente: Json
           payment_id: string
           queued_at: string
@@ -1522,6 +1523,7 @@ export type Database = {
           lease_expires_at?: string | null
           lease_token?: string | null
           monto: number
+          modo_ejecucion?: string
           paciente: Json
           payment_id: string
           queued_at?: string
@@ -1551,6 +1553,7 @@ export type Database = {
           lease_expires_at?: string | null
           lease_token?: string | null
           monto?: number
+          modo_ejecucion?: string
           paciente?: Json
           payment_id?: string
           queued_at?: string
@@ -2158,6 +2161,10 @@ export type Database = {
         Args: { p_items: Json; p_payment_id: string }
         Returns: Json
       }
+      preparar_factura_wimax_programada: {
+        Args: { p_items: Json; p_modo: string; p_payment_id: string }
+        Returns: Json
+      }
       registrar_cufe_factura_wimax: {
         Args: { p_cufe: string; p_job_id: string }
         Returns: Json
@@ -2229,6 +2236,14 @@ export type Database = {
         Returns: Json
       }
       robot_wimax_reclamar: { Args: { p_agent_id: string }; Returns: Json }
+      robot_wimax_reclamar_modos: {
+        Args: { p_agent_id: string; p_modos: string[] }
+        Returns: Json
+      }
+      robot_wimax_posponer_al_cierre: {
+        Args: { p_job_id: string }
+        Returns: Json
+      }
       robot_wimax_registrar_preflight: {
         Args: {
           p_cliente_codigo: string | null

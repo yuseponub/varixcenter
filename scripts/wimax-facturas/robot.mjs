@@ -15,6 +15,10 @@ import { readdir, rmdir, stat, unlink } from 'node:fs/promises'
 import { hostname } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  createColfactClientFromEnv,
+  waitForColfactInvoice,
+} from './lib/colfact-client.mjs'
 import { preflightDedup } from './lib/dedup.mjs'
 import { readCufeBuffer, readDirectory, readInvoices } from './lib/dbf-reader.mjs'
 import { GuiDriver, WimaxWorkflow } from './lib/gui.mjs'
@@ -26,7 +30,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.0.0'
+const AGENT_VERSION = 'wimax-facturas/2.1.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -342,6 +346,9 @@ async function processJob({
   approvalTimeoutMinutes,
   verificationTimeoutSeconds,
   cufeGraceSeconds,
+  colfactClient,
+  colfactLookupTimeoutSeconds,
+  colfactLookupPollSeconds,
   job,
 }) {
   const workflow = new WimaxWorkflow({ driver, profile, stateDir, jobId: job.id })
@@ -440,11 +447,38 @@ async function processJob({
       await cufeWatcher.stop()
     }
 
-    const cufe = cufeWatcher.captured.get(newInvoice.numero)
+    let cufe = cufeWatcher.captured.get(newInvoice.numero)
+    let cufeSource = cufe ? 'tmfecufe' : null
+    let colfactError = null
+    if (!cufe && colfactClient) {
+      try {
+        const portalInvoice = await waitForColfactInvoice({
+          client: colfactClient,
+          invoice: {
+            numero: newInvoice.numero,
+            emision: newInvoice.emision,
+            cedula: newInvoice.cedula,
+            total: newInvoice.total,
+          },
+          timeoutMs: colfactLookupTimeoutSeconds * 1_000,
+          pollMs: colfactLookupPollSeconds * 1_000,
+        })
+        if (portalInvoice) {
+          cufe = portalInvoice.cufe
+          cufeSource = 'colfact_xml'
+        }
+      } catch (error) {
+        colfactError = errorCode(error)
+        console.error(`ColFact no confirmo trabajo ${job.id.slice(0, 8)}: ${colfactError}`)
+      }
+    }
     const evidence = {
       steps: workflow.evidence,
       trafac_confirmed: true,
-      tmfecufe_captured: Boolean(cufe),
+      tmfecufe_captured: cufeSource === 'tmfecufe',
+      colfact_checked: Boolean(colfactClient),
+      colfact_xml_confirmed: cufeSource === 'colfact_xml',
+      colfact_error: colfactError,
     }
     if (cufe) {
       await rpc(supabase, 'robot_wimax_completar', {
@@ -511,6 +545,12 @@ async function main() {
   const approvalTimeoutMinutes = integerEnv('WIMAX_APPROVAL_TIMEOUT_MINUTES', 120, 5, 480)
   const verificationTimeoutSeconds = integerEnv('WIMAX_VERIFY_TIMEOUT_SECONDS', 120, 30, 600)
   const cufeGraceSeconds = integerEnv('WIMAX_CUFE_GRACE_SECONDS', 15, 1, 60)
+  const colfactLookupTimeoutSeconds = integerEnv(
+    'COLFACT_LOOKUP_TIMEOUT_SECONDS', 90, 5, 600
+  )
+  const colfactLookupPollSeconds = integerEnv(
+    'COLFACT_LOOKUP_POLL_SECONDS', 3, 1, 60
+  )
   const screenshotRetentionHours = integerEnv('WIMAX_SCREENSHOT_RETENTION_HOURS', 24, 1, 168)
   const agentId = (process.env.WIMAX_AGENT_ID || `${hostname()}-session1`)
     .replace(/[^A-Za-z0-9._-]/g, '-')
@@ -520,6 +560,9 @@ async function main() {
   const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
+  const colfactClient = process.env.COLFACT_RECONCILE_ENABLED === 'true'
+    ? createColfactClientFromEnv(process.env)
+    : null
   const driver = new GuiDriver({ scriptPath: path.join(ROOT, 'gui-driver.ps1') })
   console.log(`${AGENT_VERSION}; agent=${agentId}; supervised=true`)
 
@@ -548,6 +591,9 @@ async function main() {
               approvalTimeoutMinutes,
               verificationTimeoutSeconds,
               cufeGraceSeconds,
+              colfactClient,
+              colfactLookupTimeoutSeconds,
+              colfactLookupPollSeconds,
               job,
             })
             await cleanupLocalEvidence(stateDir, screenshotRetentionHours)

@@ -2189,6 +2189,10 @@ export type Database = {
         }
         Returns: Json
       }
+      robot_wimax_completar_desde_portal: {
+        Args: { p_cufe: string; p_evidence?: Json; p_job_id: string }
+        Returns: Json
+      }
       robot_wimax_emitida_sin_cufe: {
         Args: {
           p_cedula: string

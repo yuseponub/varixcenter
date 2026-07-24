@@ -35,13 +35,32 @@ El flujo tiene dos barreras independientes:
    acepta el paso irreversible.
 
 Despues de emitir, el pago sigue pendiente hasta observar la nueva FE en
-`trafac` y su CUFE en el DBF temporal `tmfecufe.dbf`. Si WiMAX crea la FE pero el
-CUFE no alcanza a capturarse, el trabajo queda `emitida_sin_cufe`: no se reintenta
-ni se vuelve a emitir; el CUFE se completa manualmente desde ConexusIT.
+`trafac` y confirmar su CUFE. El robot intenta primero el DBF temporal
+`tmfecufe.dbf`; si la version de WiMAX no lo llena, consulta la factura exacta en
+ColFact y valida numero, fecha, cedula, monto, estado y el CUFE SHA-384 dentro del
+XML oficial. Solo entonces enlaza la FE y marca el pago como facturado.
+
+El conciliador de portal tambien revisa trabajos `emitida_sin_cufe`, de modo que
+una respuesta tardia de ColFact se concilia en background sin volver a emitir.
+Si el portal no esta disponible o cualquier dato difiere, el trabajo permanece
+protegido y el CUFE se puede completar manualmente desde VarixCenter.
 
 El watcher empieza antes del paso irreversible, consulta `tmfecufe.dbf` con alta
 frecuencia y permanece activo durante `WIMAX_CUFE_GRACE_SECONDS` despues de ver
 la FE en `trafac`.
+
+Las credenciales de ColFact se configuran exclusivamente en `.env` mediante
+`COLFACT_USERNAME`, `COLFACT_PASSWORD` y `COLFACT_EMISOR_NIT`, con
+`COLFACT_RECONCILE_ENABLED=true`. El cliente rechaza cualquier URL que no sea
+`https://nube.conexusit.com` para impedir el envio accidental de credenciales a
+otro host.
+
+Instalar el conciliador independiente cada cinco minutos (no usa la GUI ni
+puede emitir facturas):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-colfact-reconciler.ps1 -Enable
+```
 
 ### Salvaguardas operativas
 
@@ -60,6 +79,8 @@ la FE en `trafac`.
   `WIMAX_SCREENSHOT_RETENTION_HOURS`.
 - Los errores/logs usan ID de trabajo y paso, no nombres, cedulas, tratamientos
   ni service keys.
+- ColFact debe devolver una unica factura exacta, completada y no fallida; el
+  `CodigoTransaccion` y el UUID `CUFE-SHA384` del XML deben coincidir.
 
 ### Instalacion segura en CONTABILIDAD
 

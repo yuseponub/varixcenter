@@ -184,8 +184,9 @@ function CufeDialog({ payment }: { payment: PaymentWithDetails }) {
         <DialogHeader>
           <DialogTitle>Completar factura {job.wimax_factura_numero}</DialogTitle>
           <DialogDescription>
-            WiMAX creó la FE, pero el robot no alcanzó a leer el CUFE temporal.
-            Cópielo desde ConexusIT para cerrar el trabajo sin volver a emitir.
+            WiMAX creó la FE, pero todavía no fue posible verificar el CUFE en
+            el DBF ni en ColFact. El robot seguirá consultando el portal sin
+            volver a emitir; también puede copiarlo manualmente para cerrar el trabajo.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">

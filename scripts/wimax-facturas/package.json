@@ -8,6 +8,7 @@
     "start": "node mirror.mjs",
     "robot": "node robot.mjs",
     "robot:once": "node robot.mjs --once",
+    "reconcile:colfact": "node reconcile-colfact.mjs",
     "test": "node --test test/*.test.mjs",
     "test:staging": "node staging-fixture-test.mjs"
   },

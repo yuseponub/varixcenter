@@ -63,6 +63,27 @@ const rangeTitleFmt = new Intl.DateTimeFormat('es-CO', {
 })
 
 const OUTLOOK_COLOR = 'oklch(0.45 0.12 210)'
+
+/** Tintes por estado. Hora = confirmación; Nombre = asistencia. */
+const TINT = {
+  confirmada: {
+    bg: 'color-mix(in oklch, oklch(0.62 0.15 165) 22%, transparent)',
+    color: 'oklch(0.36 0.11 160)',
+  },
+  cancelada: {
+    bg: 'color-mix(in oklch, oklch(0.6 0.18 27) 22%, transparent)',
+    color: 'oklch(0.48 0.19 27)',
+  },
+  completada: {
+    bg: 'color-mix(in oklch, oklch(0.62 0.15 165) 24%, transparent)',
+    color: 'oklch(0.34 0.11 160)',
+  },
+  no_asistio: {
+    bg: 'color-mix(in oklch, oklch(0.68 0.15 55) 30%, transparent)',
+    color: 'oklch(0.46 0.14 50)',
+  },
+} as const
+
 const DEFAULT_MIN_HOUR = 8
 const DEFAULT_MAX_HOUR = 19
 
@@ -119,6 +140,22 @@ function CitaCard({
     ev.extendedProps.matchedPatientName ||
     ev.extendedProps.patientName ||
     ev.title
+  const estado = ev.extendedProps.estado
+  // Hora ← confirmación; Nombre ← asistencia. Solo para citas de Varix.
+  const timeTint = isOutlook
+    ? null
+    : estado === 'confirmada'
+      ? TINT.confirmada
+      : estado === 'cancelada'
+        ? TINT.cancelada
+        : null
+  const nameTint = isOutlook
+    ? null
+    : estado === 'completada'
+      ? TINT.completada
+      : estado === 'no_asistio'
+        ? TINT.no_asistio
+        : null
   return (
     <button
       type="button"
@@ -127,10 +164,24 @@ function CitaCard({
       className="flex w-full items-center gap-2 rounded-md border border-border bg-card px-2 py-1 text-left shadow-sm hover:bg-accent/60"
       style={{ borderLeft: `4px solid ${accent}` }}
     >
-      <span className="shrink-0 text-[11px] font-semibold tabular-nums text-muted-foreground">
+      <span
+        className={`shrink-0 rounded px-1 text-[11px] font-semibold tabular-nums ${
+          timeTint ? '' : 'text-muted-foreground'
+        }`}
+        style={
+          timeTint ? { backgroundColor: timeTint.bg, color: timeTint.color } : undefined
+        }
+      >
         {timeFmt.format(new Date(ev.start))}
       </span>
-      <span className="min-w-0 flex-1 truncate text-xs font-medium">{name}</span>
+      <span
+        className="min-w-0 flex-1 truncate rounded px-1 text-xs font-medium"
+        style={
+          nameTint ? { backgroundColor: nameTint.bg, color: nameTint.color } : undefined
+        }
+      >
+        {name}
+      </span>
       {!compact &&
         (isOutlook ? (
           <span

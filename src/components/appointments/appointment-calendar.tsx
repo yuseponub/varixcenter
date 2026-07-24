@@ -56,7 +56,7 @@ export function AppointmentCalendar({
   onDateSelect,
   onEventDrop,
   onDatesSet,
-  initialView = 'timeGridWeek',
+  initialView = 'listWeek',
   initialDate,
   editable = true,
 }: AppointmentCalendarProps) {
@@ -148,8 +148,10 @@ export function AppointmentCalendar({
     [onEventDrop]
   )
 
+  const [isTimeGrid, setIsTimeGrid] = useState(initialView.startsWith('timeGrid'))
   const handleDatesSet = useCallback(
     (info: DatesSetArg) => {
+      setIsTimeGrid(info.view.type.startsWith('timeGrid'))
       onDatesSet?.(info)
     },
     [onDatesSet]
@@ -160,8 +162,11 @@ export function AppointmentCalendar({
       className="appointment-calendar h-full"
       style={{ '--fc-slot-height': `${slotPx}px` } as CSSProperties}
     >
-      {/* Control de grosor de fila (solo en vistas de calendario, no lista) */}
-      <div className="mb-1 flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+      {/* Control de grosor de fila (solo en vistas de calendario grid, no lista) */}
+      <div
+        className="mb-1 flex items-center justify-end gap-1.5 text-xs text-muted-foreground"
+        style={{ display: isTimeGrid ? undefined : 'none' }}
+      >
         <span>Alto de fila</span>
         <button
           type="button"

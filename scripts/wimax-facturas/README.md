@@ -23,6 +23,15 @@ El agente registra cada intento en `sync_runs` con
 modulo Pagos. Corre con el Node portatil y una tarea interactiva en la sesion 1;
 una tarea SSH/sesion 0 no puede dar foco de forma confiable a Xbase++.
 
+Con `WIMAX_AUTO_START_ENABLED=true`, WiMAX puede estar cerrado. El agente solo
+lo abre cuando ya existe una factura autorizada que va a procesar: despues de
+que la persona acepta una urgente o cuando comienza el lote de cierre. Verifica
+la ruta, tamano y SHA-256 de `C:\wimax\WIMAX.EXE`, selecciona exactamente
+`VARIX CENTER S.A.S 2026`, envia la clave local y responde **No** a un maximo de
+dos avisos de reorganizacion. Antes de reclamar el trabajo vuelve a reconocer
+la marca calibrada de la empresa en la pantalla principal. Una ventana, empresa
+o ejecutable diferente bloquea el arranque sin pulsar controles desconocidos.
+
 La confirmacion final permite escoger uno de dos modos:
 
 - **Crear ahora**: deja autorizado el snapshot exacto y muestra en el PC las
@@ -91,7 +100,11 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 - El proceso y la ventana de WiMAX deben pertenecer a la sesion interactiva
   configurada. En un PC fijo se recomienda `sessionId: 1`; en RDS/nube se usa
   `sessionId: "current"` para validar la sesion donde corre el propio agente.
-- La resolucion debe coincidir con el perfil y WiMAX debe estar abierto.
+- La resolucion debe coincidir con el perfil. Si el autoarranque esta
+  deshabilitado, WiMAX debe estar abierto y autenticado manualmente.
+- Si el autoarranque esta habilitado, WiMAX puede estar cerrado. El escritorio
+  debe seguir desbloqueado e inactivo; el agente no puede iniciar una sesion de
+  Windows ni trabajar en el escritorio bloqueado.
 - Solo se reclama trabajo si existe una unica ventana principal de WiMAX; un
   dialogo residual obliga a revision humana.
 - Antes de reclamar una tarea, el escritorio debe llevar al menos
@@ -111,6 +124,9 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 - Los screenshots se quedan exclusivamente en `WIMAX_STATE_DIR`, se refleja en
   Supabase solo su SHA-256 y se borran localmente segun
   `WIMAX_SCREENSHOT_RETENTION_HOURS`.
+- El arranque no toma screenshots: reconoce la empresa con una firma de pixeles
+  en memoria. `WIMAX_COMPANY_PASSWORD` solo vive en el `.env` local del PC y no
+  se incluye en perfiles, Git, Supabase, evidencia ni mensajes de error.
 - Los errores/logs usan ID de trabajo y paso, no nombres, cedulas, tratamientos
   ni service keys.
 - ColFact debe devolver una unica factura exacta, completada y no fallida; el
@@ -127,6 +143,9 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
    `robot-profile.contabilidad.json`. Verificar paso a paso atajos, titulos,
    orden TAB y screenshots en la sesion 1. Solo entonces cambiar
    `calibrated` a `true`.
+   Para autoarranque, copiar tambien `wimax-startup.contabilidad.example.json`
+   como `wimax-startup.contabilidad.json`, confirmar la huella del ejecutable y
+   completar `WIMAX_COMPANY_PASSWORD` exclusivamente en el `.env` local.
 5. Instalar la tarea, todavia deshabilitada:
 
    ```powershell
@@ -141,6 +160,12 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
    & C:\varix-facturas\node\node.exe .\robot.mjs --once
    ```
 
+   El arranque se puede validar por separado, sin consultar ni reclamar la cola:
+
+   ```powershell
+   & C:\varix-facturas\node\node.exe .\robot.mjs --ensure-wimax
+   ```
+
 7. Tras validar una emision completa (FE en `trafac`, CUFE y estado en
    VarixCenter), configurar el cierre, dejar `WIMAX_ROBOT_ENABLED=true` en
    `.env` e instalar/activar:
@@ -149,10 +174,11 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
    powershell -ExecutionPolicy Bypass -File .\install-robot.ps1 -Enable
    ```
 
-Al retirarse, el personal deja WiMAX en su pantalla principal y la sesion
-desbloqueada. Si hay facturas, el PC permanece encendido ante cualquier fallo;
-si todo termina limpio, se apaga. Al dia siguiente debe encenderse e iniciar
-sesion normalmente (el encendido automatico depende del BIOS y no del robot).
+Al retirarse, el personal puede dejar WiMAX cerrado, pero la sesion de Windows
+debe permanecer iniciada y desbloqueada. Si hay facturas, el PC permanece
+encendido ante cualquier fallo; si todo termina limpio, se apaga. Al dia
+siguiente debe encenderse e iniciar sesion de Windows normalmente (el encendido
+automatico depende del BIOS y no del robot).
 
 Para detenerlo sin tocar datos, deshabilitar la tarea `VarixWimaxRobot` y poner
 `WIMAX_ROBOT_ENABLED=false`. Un trabajo que ya llego a `verificando` se revisa

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "calibrated": true,
+  "sessionId": 1,
+  "display": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executable": {
+    "path": "C:\\wimax\\WIMAX.EXE",
+    "workingDirectory": "C:\\wimax",
+    "length": 2202284,
+    "sha256": "92f8c9ae9162ebccaec07594fbd3460f9446707dae1ed2f9a78e703f05f5939d"
+  },
+  "window": {
+    "process": "WX",
+    "titlePattern": "Wimax Software",
+    "classPattern": "^XbpDialog$",
+    "width": 1920,
+    "height": 1055
+  },
+  "company": {
+    "exactName": "VARIX CENTER S.A.S 2026"
+  },
+  "companyLink": {
+    "x": 950,
+    "y": 58
+  },
+  "dialogs": {
+    "companySelectorTitle": "Seleccionar Empresa",
+    "loginTitlePattern": "^Acceso VARIX CENTER S\\.A\\.S 2026\\s+- Fiscal:2026$",
+    "reorganizationTitle": "Grupo Wimax",
+    "acceptButton": "Aceptar",
+    "declineButton": "No",
+    "recommendedButton": "Si (Recomendado)"
+  },
+  "readyIndicator": {
+    "region": {
+      "x": 600,
+      "y": 35,
+      "width": 710,
+      "height": 45
+    },
+    "blue": {
+      "minimum": 150,
+      "maximumRed": 169,
+      "overRed": 1.5,
+      "overGreen": 1.35
+    },
+    "expected": {
+      "count": { "min": 650, "max": 1150 },
+      "minX": { "min": 220, "max": 240 },
+      "maxX": { "min": 465, "max": 485 },
+      "minY": { "min": 12, "max": 20 },
+      "maxY": { "min": 25, "max": 34 }
+    }
+  },
+  "maxReorganizationPrompts": 2
+}

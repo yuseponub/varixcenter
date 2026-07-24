@@ -25,6 +25,7 @@ import { preflightDedup } from './lib/dedup.mjs'
 import { readCufeBuffer, readDirectory, readInvoices } from './lib/dbf-reader.mjs'
 import { GuiDriver, WimaxWorkflow } from './lib/gui.mjs'
 import { dailyWindow, shutdownDecision } from './lib/schedule.mjs'
+import { loadStartupProfile, WimaxStartupDriver } from './lib/startup.mjs'
 import {
   addDays,
   amountEqual,
@@ -33,7 +34,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.4.0'
+const AGENT_VERSION = 'wimax-facturas/2.5.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -645,14 +646,46 @@ async function main() {
     return
   }
 
-  const supabaseUrl = required('SUPABASE_URL')
-  const serviceKey = required('SUPABASE_SERVICE_KEY')
-  const wimaxDir = required('WIMAX_DIR')
   const profilePath = path.resolve(ROOT, required('WIMAX_UI_PROFILE'))
   const profile = loadProfile(profilePath)
   const stateDir = path.resolve(ROOT, process.env.WIMAX_STATE_DIR || 'state')
   const pollSeconds = integerEnv('WIMAX_POLL_SECONDS', 30, 5, 3600)
   const minIdleSeconds = integerEnv('WIMAX_MIN_IDLE_SECONDS', 300, 30, 86400)
+  const autoStartEnabled = booleanEnv('WIMAX_AUTO_START_ENABLED', false)
+  const startupTimeoutSeconds = integerEnv(
+    'WIMAX_STARTUP_TIMEOUT_SECONDS', 120, 30, 300
+  )
+  const ensureWimaxOnly = process.argv.includes('--ensure-wimax')
+  let startup = null
+  if (autoStartEnabled || ensureWimaxOnly) {
+    if (!autoStartEnabled) {
+      throw new Error('CONFIG: --ensure-wimax requiere WIMAX_AUTO_START_ENABLED=true')
+    }
+    const companyPassword = required('WIMAX_COMPANY_PASSWORD')
+    const startupProfilePath = path.resolve(ROOT, required('WIMAX_STARTUP_PROFILE'))
+    const startupProfile = loadStartupProfile(startupProfilePath, profile)
+    startup = new WimaxStartupDriver({
+      scriptPath: path.join(ROOT, 'wimax-startup-driver.ps1'),
+      profile: startupProfile,
+      companyPassword,
+      timeoutSeconds: startupTimeoutSeconds,
+    })
+    // Only the dedicated startup child receives the credential. Invoice GUI
+    // drivers and screenshot processes never inherit it.
+    delete process.env.WIMAX_COMPANY_PASSWORD
+  }
+
+  if (ensureWimaxOnly) {
+    const result = await startup.ensure(minIdleSeconds)
+    console.log(
+      `Arranque WiMAX verificado; opened=${result.launched}; reorg_no=${result.reorganizationsDeclined}`
+    )
+    return
+  }
+
+  const supabaseUrl = required('SUPABASE_URL')
+  const serviceKey = required('SUPABASE_SERVICE_KEY')
+  const wimaxDir = required('WIMAX_DIR')
   const urgentPromptTimeoutSeconds = integerEnv(
     'WIMAX_URGENT_PROMPT_TIMEOUT_SECONDS', 45, 15, 120
   )
@@ -722,8 +755,9 @@ async function main() {
   let lastDeferredReason = null
   let lastDeferredLogAt = 0
   let shutdownReadyLoggedDate = null
+  let startupBlockedReason = null
   console.log(
-    `${AGENT_VERSION}; agent=${agentId}; scheduled=${endOfDayEnabled}; close=${endOfDayTime}; shutdown=${endOfDayShutdown}`
+    `${AGENT_VERSION}; agent=${agentId}; scheduled=${endOfDayEnabled}; close=${endOfDayTime}; shutdown=${endOfDayShutdown}; autostart=${autoStartEnabled}`
   )
 
   await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
@@ -737,8 +771,78 @@ async function main() {
     }
   }
 
+  async function desktopForClaim(requiredIdleSeconds) {
+    let desktop = await desktopReady(driver, profile, requiredIdleSeconds)
+    if (!startup) return desktop
+
+    if (
+      !desktop.ready &&
+      !['wimax_no_abierto', 'interfaz_wimax_no_limpia'].includes(desktop.reason)
+    ) {
+      return desktop
+    }
+
+    let startupState
+    try {
+      startupState = await startup.inspect()
+    } catch (error) {
+      console.error(`ARRANQUE_WIMAX_INSPECT: ${safeError(error)}`)
+      return { ready: false, reason: 'arranque_wimax_no_inspeccionable' }
+    }
+
+    if (startupState.state === 'ready') {
+      startupBlockedReason = null
+      return desktop.ready
+        ? desktop
+        : desktopReady(driver, profile, requiredIdleSeconds)
+    }
+    if (startupState.state === 'blocked') {
+      return {
+        ready: false,
+        reason: `arranque_wimax_${startupState.reason || 'estado_desconocido'}`,
+      }
+    }
+    if (startupBlockedReason) {
+      return { ready: false, reason: 'arranque_wimax_bloqueado' }
+    }
+
+    try {
+      const result = await startup.ensure(requiredIdleSeconds)
+      console.log(
+        `Arranque WiMAX listo; opened=${result.launched}; reorg_no=${result.reorganizationsDeclined}`
+      )
+    } catch (error) {
+      let after = null
+      try {
+        after = await startup.inspect()
+      } catch {
+        // The original sanitized startup error remains the useful diagnosis.
+      }
+      if (after?.reason === 'sesion_bloqueada') {
+        return { ready: false, reason: 'sesion_bloqueada' }
+      }
+      if (Number(after?.idleSeconds ?? requiredIdleSeconds) < requiredIdleSeconds) {
+        return { ready: false, reason: 'escritorio_en_uso' }
+      }
+      startupBlockedReason = safeError(error)
+      console.error(`ARRANQUE_WIMAX_BLOQUEADO: ${startupBlockedReason}`)
+      return { ready: false, reason: 'arranque_wimax_bloqueado' }
+    }
+
+    // The calibrated startup click itself resets Windows' idle counter. The
+    // driver already checked the requested idle barrier before touching WiMAX.
+    desktop = await desktopReady(driver, profile, 0)
+    if (!desktop.ready) return desktop
+    const verified = await startup.inspect()
+    if (verified.state !== 'ready') {
+      return { ready: false, reason: 'arranque_wimax_no_verificado' }
+    }
+    startupBlockedReason = null
+    return desktop
+  }
+
   async function processNext(modes, requiredIdleSeconds) {
-    const desktop = await desktopReady(driver, profile, requiredIdleSeconds)
+    const desktop = await desktopForClaim(requiredIdleSeconds)
     if (!desktop.ready) return { processed: false, reason: desktop.reason }
 
     const claimed = await rpc(supabase, 'robot_wimax_reclamar_modos', {

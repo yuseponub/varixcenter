@@ -9,11 +9,12 @@ $ErrorActionPreference = 'Stop'
 
 $robot = Join-Path $AppDir 'robot.mjs'
 $driver = Join-Path $AppDir 'gui-driver.ps1'
+$startupDriver = Join-Path $AppDir 'wimax-startup-driver.ps1'
 $envFile = Join-Path $AppDir '.env'
 $logDir = Join-Path $AppDir 'logs'
 $logFile = Join-Path $logDir 'robot.log'
 
-foreach ($required in @($NodeExe, $robot, $driver, $envFile)) {
+foreach ($required in @($NodeExe, $robot, $driver, $startupDriver, $envFile)) {
   if (-not (Test-Path -LiteralPath $required)) {
     throw "No existe $required"
   }
@@ -48,6 +49,54 @@ if ($Enable) {
     [string]$profile.sessionId -ceq 'current'
   if ($profile.calibrated -ne $true -or -not $validSession) {
     throw 'El perfil UI debe estar calibrado y usar una sesion positiva o current'
+  }
+
+  $autoStart = $envText -match '(?m)^WIMAX_AUTO_START_ENABLED\s*=\s*true\s*$'
+  if ($autoStart) {
+    $startupProfileMatch = [regex]::Match(
+      $envText,
+      '(?m)^WIMAX_STARTUP_PROFILE[ \t]*=[ \t]*["'']?([^\r\n"'']+?)["'']?[ \t]*\r?$'
+    )
+    if (-not $startupProfileMatch.Success) {
+      throw 'El autoarranque requiere WIMAX_STARTUP_PROFILE en .env'
+    }
+    $startupProfilePath = $startupProfileMatch.Groups[1].Value.Trim()
+    if (-not [System.IO.Path]::IsPathRooted($startupProfilePath)) {
+      $startupProfilePath = Join-Path $AppDir $startupProfilePath
+    }
+    if (-not (Test-Path -LiteralPath $startupProfilePath)) {
+      throw "No existe el perfil de arranque configurado: $startupProfilePath"
+    }
+    $startupProfile = Get-Content -LiteralPath $startupProfilePath -Raw | ConvertFrom-Json
+    if ($startupProfile.calibrated -ne $true) {
+      throw 'El perfil de arranque WiMAX no esta calibrado'
+    }
+    $passwordMatch = [regex]::Match(
+      $envText,
+      '(?m)^WIMAX_COMPANY_PASSWORD[ \t]*=[ \t]*(.+?)[ \t]*\r?$'
+    )
+    if (-not $passwordMatch.Success) {
+      throw 'El autoarranque requiere la clave local de empresa WiMAX'
+    }
+    $passwordValue = $passwordMatch.Groups[1].Value.Trim().Trim('"', "'")
+    if ([string]::IsNullOrWhiteSpace($passwordValue)) {
+      throw 'El autoarranque requiere la clave local de empresa WiMAX'
+    }
+    $passwordValue = $null
+    $passwordMatch = $null
+
+    $executable = [string]$startupProfile.executable.path
+    if (-not (Test-Path -LiteralPath $executable -PathType Leaf)) {
+      throw 'No existe el WIMAX.EXE calibrado para autoarranque'
+    }
+    $item = Get-Item -LiteralPath $executable
+    $hash = (Get-FileHash -LiteralPath $executable -Algorithm SHA256).Hash
+    if (
+      $item.Length -ne [long]$startupProfile.executable.length -or
+      $hash -ine [string]$startupProfile.executable.sha256
+    ) {
+      throw 'WIMAX.EXE cambio; recalibre el perfil antes de habilitar el robot'
+    }
   }
 }
 

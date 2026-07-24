@@ -194,6 +194,44 @@ export function desktopEventMatchesPatient(subject: string, fullName: string): b
   return tokens.length > 0 && tokens.every((token) => normalizedSubject.includes(token))
 }
 
+/**
+ * La agenda de Outlook de la clínica guarda la hora REAL en el asunto
+ * ("8.00 NOMBRE", "10.15 NOMBRE", "2.30 NOMBRE") mientras el slot de Outlook
+ * queda apilado cada 30 min desde la medianoche, sin relación con la hora real.
+ * Esta función deriva inicio/fin correctos leyendo la hora del asunto.
+ *
+ * Convención: hora al inicio como `H.MM` / `H:MM`. Horario clínica ~7:00–19:00
+ * (Colombia UTC-5 fijo, sin horario de verano):
+ *   1–6 → PM (+12) · 7–11 → AM · 12 → mediodía.
+ * Si el asunto no trae una hora válida se conserva el valor original.
+ */
+export function deriveDesktopEventTime(
+  subject: string,
+  startISO: string,
+  endISO: string,
+  isAllDay: boolean
+): { start: string; end: string; derived: boolean } {
+  const original = { start: startISO, end: endISO, derived: false }
+  if (isAllDay) return original
+  const match = subject.match(/^\s*(\d{1,2})[.:hH](\d{2})(?!\d)/)
+  if (!match) return original
+  let hour = Number.parseInt(match[1], 10)
+  const minute = Number.parseInt(match[2], 10)
+  if (hour < 1 || hour > 12 || minute > 59) return original
+  if (hour >= 1 && hour <= 6) hour += 12 // 1–6 = tarde
+  // Fecha (Bogotá, UTC-5) del slot original
+  const bogotaDate = new Date(new Date(startISO).getTime() - 5 * 3600 * 1000)
+    .toISOString()
+    .slice(0, 10)
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const start = new Date(`${bogotaDate}T${pad(hour)}:${pad(minute)}:00-05:00`)
+  if (Number.isNaN(start.getTime())) return original
+  let durationMs = new Date(endISO).getTime() - new Date(startISO).getTime()
+  if (!(durationMs > 0) || durationMs > 8 * 3600 * 1000) durationMs = 15 * 60 * 1000
+  const end = new Date(start.getTime() + durationMs)
+  return { start: start.toISOString(), end: end.toISOString(), derived: true }
+}
+
 export function findDesktopAppointmentMatch(
   event: Pick<DesktopBridgeEventInput, 'subject' | 'start'>,
   appointments: BridgeAppointmentCandidate[],

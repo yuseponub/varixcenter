@@ -269,6 +269,18 @@
   border-color: #ef4444;
 }
 
+/* Barra superior: más delgada (solo el espacio, no las letras) y fija al hacer
+   scroll dentro del horario. */
+.appointment-calendar .fc .fc-header-toolbar.fc-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin-bottom: 8px;
+  padding: 4px 2px;
+  row-gap: 4px;
+  background: var(--background);
+}
+
 /* Toolbar: título bold + botones píldora */
 .appointment-calendar .fc .fc-toolbar-title {
   font-size: 16px;

@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
   DESKTOP_BRIDGE_MAX_BODY_BYTES,
+  deriveDesktopEventTime,
   desktopBridgeTokenMatches,
   findDesktopAppointmentMatch,
   parseDesktopBridgeSnapshot,
@@ -152,6 +153,15 @@ export async function POST(request: Request) {
     }
 
     for (const event of snapshot.events) {
+      // La hora real de la cita está en el asunto ("8.00 NOMBRE"); el slot de
+      // Outlook viene apilado desde la medianoche. Derivamos inicio/fin reales
+      // antes de emparejar y de guardar.
+      const time = deriveDesktopEventTime(
+        event.subject,
+        event.start,
+        event.end,
+        event.isAllDay
+      )
       const previous = existingByExternalId.get(event.externalId)
       const preferredAppointmentId = event.appointmentId ?? previous?.appointment_id ?? null
       let appointmentId: string | null = null
@@ -166,7 +176,7 @@ export async function POST(request: Request) {
         matchStatus = 'matched'
       } else {
         const match = findDesktopAppointmentMatch(
-          event,
+          { subject: event.subject, start: time.start },
           matchableAppointments,
           claimedAppointmentIds
         )
@@ -187,8 +197,8 @@ export async function POST(request: Request) {
         external_id: event.externalId,
         global_id: event.globalId,
         subject: event.subject,
-        start_at: event.start,
-        end_at: event.end,
+        start_at: time.start,
+        end_at: time.end,
         is_all_day: event.isAllDay,
         show_as: event.showAs,
         location: event.location,

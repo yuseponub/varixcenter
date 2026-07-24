@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import type { CalendarEvent, AppointmentStatus, AppointmentWithPatient } from '@/types/appointments'
+import { getPatientNameIndex, matchPatientBySubject } from '@/lib/queries/patient-name-index'
 
 /**
  * Status color mapping for calendar events.
@@ -14,6 +15,16 @@ const STATUS_COLORS: Record<AppointmentStatus, { bg: string; border: string; tex
   completada: { bg: 'oklch(0.94 0.008 210)', border: 'oklch(0.7 0.02 210)', text: 'oklch(0.45 0.03 210)' },
   cancelada: { bg: 'oklch(0.95 0.03 25)', border: 'oklch(0.6 0.18 27)', text: 'oklch(0.52 0.19 27)' },
   no_asistio: { bg: 'oklch(0.96 0.04 60)', border: 'oklch(0.68 0.15 55)', text: 'oklch(0.5 0.14 50)' },
+}
+
+/**
+ * Muestra el asunto de un evento de Outlook sin el prefijo "Outlook ·" ni la
+ * hora inicial ("8.00 NOMBRE" → "NOMBRE"). El color del evento ya indica que
+ * proviene de Outlook, así que el título queda limpio con solo el nombre.
+ */
+function cleanOutlookSubject(subject: string): string {
+  const withoutTime = subject.replace(/^\s*\d{1,2}[.:hH]\d{2}\s*/, '').trim()
+  return withoutTime || subject.trim()
 }
 
 /**
@@ -106,6 +117,13 @@ export async function getAppointmentsForCalendar(
   // native appointment and therefore hidden here. Conflicts remain visible.
   if (doctorId) return appointmentEvents
 
+  // Índice de pacientes para mapear por nombre los eventos de Outlook (texto
+  // libre) a un paciente existente. Si falla, se sigue sin mapeo.
+  const patientIndex = await getPatientNameIndex().catch((indexError) => {
+    console.error('[Outlook] No se pudo cargar el índice de pacientes:', indexError)
+    return []
+  })
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: outlookData, error: outlookError } = await (supabase as any)
     .from('outlook_events')
@@ -149,9 +167,10 @@ export async function getAppointmentsForCalendar(
     match_status: string
   }) => {
     const conflict = event.match_status === 'conflict'
+    const matched = matchPatientBySubject(event.subject, patientIndex)
     return {
       id: `outlook-${event.id}`,
-      title: `Outlook · ${event.subject}`,
+      title: cleanOutlookSubject(event.subject),
       start: event.is_all_day ? event.start_at.slice(0, 10) : event.start_at,
       end: event.is_all_day ? event.end_at.slice(0, 10) : event.end_at,
       allDay: event.is_all_day,
@@ -162,10 +181,11 @@ export async function getAppointmentsForCalendar(
       extendedProps: {
         source: 'outlook',
         appointmentId: event.appointment_id ?? '',
-        patientId: '',
-        patientName: event.subject,
-        patientCedula: '',
-        patientCelular: '',
+        patientId: matched?.id ?? '',
+        patientName: cleanOutlookSubject(event.subject),
+        patientCedula: matched?.cedula ?? '',
+        patientCelular: matched?.celular ?? '',
+        matchedPatientName: matched?.name ?? null,
         doctorId: null,
         estado: 'programada',
         motivoConsulta: null,
@@ -209,16 +229,15 @@ export async function getAppointmentsForCalendar(
     return [...appointmentEvents, ...outlookEvents]
   }
 
-  const linkedDesktopAppointmentIds = new Set(
-    (desktopData ?? []).flatMap((event: { appointment_id: string | null }) =>
-      event.appointment_id ? [event.appointment_id] : []
-    )
-  )
-  const visibleAppointmentEvents = appointmentEvents.filter(
-    (event) => !linkedDesktopAppointmentIds.has(event.extendedProps.appointmentId)
+  // Una cita nativa de Varix (editable, con máquina de estados) manda sobre el
+  // espejo de Outlook: una vez el evento de escritorio se vincula a una cita
+  // nativa (al convertirlo), se oculta el espejo read-only y se muestra la cita
+  // nativa que sí se puede confirmar, mover de estado, etc.
+  const unlinkedDesktopData = (desktopData ?? []).filter(
+    (event: { appointment_id: string | null }) => !event.appointment_id
   )
 
-  const desktopEvents: CalendarEvent[] = (desktopData ?? []).map((event: {
+  const desktopEvents: CalendarEvent[] = unlinkedDesktopData.map((event: {
     id: string
     external_id: string
     subject: string
@@ -230,9 +249,10 @@ export async function getAppointmentsForCalendar(
     match_status: string
   }) => {
     const conflict = event.match_status === 'conflict'
+    const matched = matchPatientBySubject(event.subject, patientIndex)
     return {
       id: `outlook-desktop-${event.id}`,
-      title: `Outlook · ${event.subject}`,
+      title: cleanOutlookSubject(event.subject),
       start: event.is_all_day ? event.start_at.slice(0, 10) : event.start_at,
       end: event.is_all_day ? event.end_at.slice(0, 10) : event.end_at,
       allDay: event.is_all_day,
@@ -243,10 +263,11 @@ export async function getAppointmentsForCalendar(
       extendedProps: {
         source: 'outlook',
         appointmentId: event.appointment_id ?? '',
-        patientId: '',
-        patientName: event.subject,
-        patientCedula: '',
-        patientCelular: '',
+        patientId: matched?.id ?? '',
+        patientName: cleanOutlookSubject(event.subject),
+        patientCedula: matched?.cedula ?? '',
+        patientCelular: matched?.celular ?? '',
+        matchedPatientName: matched?.name ?? null,
         doctorId: null,
         estado: 'programada',
         motivoConsulta: null,
@@ -260,7 +281,7 @@ export async function getAppointmentsForCalendar(
     }
   })
 
-  return [...visibleAppointmentEvents, ...outlookEvents, ...desktopEvents]
+  return [...appointmentEvents, ...outlookEvents, ...desktopEvents]
 }
 
 /**

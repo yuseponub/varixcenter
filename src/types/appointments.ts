@@ -102,6 +102,9 @@ export interface CalendarEvent {
     patientName: string
     patientCedula: string
     patientCelular: string
+    /** Nombre real del paciente en la BD cuando un evento de Outlook se mapeó
+     *  por nombre a un paciente existente (match único). */
+    matchedPatientName?: string | null
     doctorId: string | null
     estado: AppointmentStatus
     motivoConsulta: string | null

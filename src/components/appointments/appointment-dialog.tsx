@@ -412,28 +412,8 @@ export function AppointmentDialog({
               </div>
             )}
 
-            {/* Status dropdown */}
-            {availableTransitions.length > 0 && (
-              <div className="border-t pt-4">
-                <Label className="text-sm font-medium text-muted-foreground">Cambiar estado</Label>
-                <Select
-                  value=""
-                  onValueChange={(value) => handleStatusChange(value as AppointmentStatus)}
-                  disabled={isPending}
-                >
-                  <SelectTrigger className="w-full mt-2">
-                    <SelectValue placeholder="Seleccionar nuevo estado..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableTransitions.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {STATUS_LABELS[status]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {/* Controles de estado: Confirmación + Asistencia */}
+            {statusControls}
           </div>
         )}
 

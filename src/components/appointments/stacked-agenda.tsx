@@ -135,7 +135,13 @@ function CitaCard({
   onClick: () => void
 }) {
   const isOutlook = ev.extendedProps.source === 'outlook'
-  const accent = isOutlook ? OUTLOOK_COLOR : ev.borderColor || 'var(--primary)'
+  // Cita de Outlook sin paciente asignado → toda la barra amarilla.
+  const unassigned = isOutlook && !ev.extendedProps.patientId
+  const accent = unassigned
+    ? 'oklch(0.72 0.15 85)'
+    : isOutlook
+      ? OUTLOOK_COLOR
+      : ev.borderColor || 'var(--primary)'
   const name =
     ev.extendedProps.matchedPatientName ||
     ev.extendedProps.patientName ||
@@ -162,7 +168,16 @@ function CitaCard({
       onClick={onClick}
       title={`${timeFmt.format(new Date(ev.start))} · ${name}`}
       className="flex w-full items-center gap-2 rounded-md border border-border bg-card px-2 py-1 text-left shadow-sm hover:bg-accent/60"
-      style={{ borderLeft: `4px solid ${accent}` }}
+      style={
+        unassigned
+          ? {
+              backgroundColor: 'oklch(0.95 0.09 95)',
+              borderColor: accent,
+              borderLeft: `4px solid ${accent}`,
+              color: 'oklch(0.4 0.1 65)',
+            }
+          : { borderLeft: `4px solid ${accent}` }
+      }
     >
       <span
         className={`shrink-0 rounded px-1 text-[11px] font-semibold tabular-nums ${

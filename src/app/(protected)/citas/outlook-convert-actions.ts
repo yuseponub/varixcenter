@@ -15,10 +15,21 @@ import { createClient } from '@/lib/supabase/server'
  */
 
 const newPatientSchema = z.object({
-  cedula: z.string().trim().regex(/^\d{6,10}$/, 'La cédula debe tener entre 6 y 10 dígitos'),
+  // Cédula y celular OPCIONALES: a veces se piden cuando el paciente llega.
+  cedula: z
+    .string()
+    .trim()
+    .regex(/^\d{6,10}$/, 'La cédula debe tener entre 6 y 10 dígitos')
+    .optional()
+    .or(z.literal('')),
   nombre: z.string().trim().min(2, 'El nombre es muy corto').max(100),
   apellido: z.string().trim().min(2, 'El apellido es muy corto').max(100),
-  celular: z.string().trim().regex(/^\d{10}$/, 'El celular debe tener 10 dígitos'),
+  celular: z
+    .string()
+    .trim()
+    .regex(/^\d{10}$/, 'El celular debe tener 10 dígitos')
+    .optional()
+    .or(z.literal('')),
 })
 
 const convertSchema = z
@@ -107,13 +118,15 @@ export async function convertOutlookEventToAppointment(
   // Resolver el paciente: existente (patientId) o crear uno nuevo.
   let finalPatientId = patientId
   if (newPatient) {
+    const cedula = newPatient.cedula?.trim() || null
+    const celular = newPatient.celular?.trim() || null
     const { data: created, error: createError } = await db
       .from('patients')
       .insert({
-        cedula: newPatient.cedula,
+        cedula,
         nombre: newPatient.nombre,
         apellido: newPatient.apellido,
-        celular: newPatient.celular,
+        celular,
         created_by: user.id,
       })
       .select('id')
@@ -121,11 +134,11 @@ export async function convertOutlookEventToAppointment(
 
     if (createError) {
       // Cédula duplicada: reutilizar el paciente que ya existe en vez de fallar.
-      if (createError.code === '23505') {
+      if (createError.code === '23505' && cedula) {
         const { data: existing } = await db
           .from('patients')
           .select('id')
-          .eq('cedula', newPatient.cedula)
+          .eq('cedula', cedula)
           .maybeSingle()
         if (existing) {
           finalPatientId = existing.id

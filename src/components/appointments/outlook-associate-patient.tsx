@@ -219,17 +219,21 @@ export function OutlookAssociatePatient({ event, onDone }: Props) {
               value={cedula}
               onChange={(e) => setCedula(e.target.value.replace(/\D/g, ''))}
               inputMode="numeric"
-              placeholder="Cédula"
+              placeholder="Cédula (opcional)"
               className={inputCls}
             />
             <input
               value={celular}
               onChange={(e) => setCelular(e.target.value.replace(/\D/g, ''))}
               inputMode="numeric"
-              placeholder="Celular (10 dígitos)"
+              placeholder="Celular (opcional)"
               className={inputCls}
             />
           </div>
+          <p className="text-xs text-muted-foreground">
+            Solo el nombre y apellido son obligatorios. La cédula y el celular se pueden
+            completar después, cuando el paciente llegue.
+          </p>
           <Button
             className="w-full"
             disabled={submitting}

@@ -9,7 +9,7 @@ import {
   splitPatientName,
 } from '../lib/normalize.mjs'
 import { escapeSendKeysText } from '../lib/gui.mjs'
-import { cleanWimaxDesktop } from '../robot.mjs'
+import { cleanWimaxDesktop, sessionIdForDesktop } from '../robot.mjs'
 
 test('genera cuenta WiMAX con cedula y primer nombre normalizados', () => {
   assert.equal(buildCustomerCode('99.006.801', 'Robot Prueba'), '99ROB')
@@ -75,4 +75,10 @@ test('solo considera limpia una unica ventana principal de WiMAX', () => {
     ),
     false
   )
+})
+
+test('permite fijar la sesion o usar la sesion interactiva actual en RDS', () => {
+  assert.equal(sessionIdForDesktop({ sessionId: 1 }, { sessionId: 1 }), 1)
+  assert.equal(sessionIdForDesktop({ sessionId: 'current' }, { sessionId: 7 }), 7)
+  assert.equal(sessionIdForDesktop({ sessionId: 'current' }, { sessionId: 0 }), null)
 })

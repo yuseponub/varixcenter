@@ -43,8 +43,11 @@ if ($Enable) {
     throw "No existe el perfil UI configurado: $profilePath"
   }
   $profile = Get-Content -LiteralPath $profilePath -Raw | ConvertFrom-Json
-  if ($profile.calibrated -ne $true -or [int]$profile.sessionId -ne 1) {
-    throw 'El perfil UI debe estar calibrado y fijado a la sesion interactiva 1'
+  $fixedSession = $profile.sessionId -is [int] -or $profile.sessionId -is [long]
+  $validSession = ($fixedSession -and [long]$profile.sessionId -ge 1) -or `
+    [string]$profile.sessionId -ceq 'current'
+  if ($profile.calibrated -ne $true -or -not $validSession) {
+    throw 'El perfil UI debe estar calibrado y usar una sesion positiva o current'
   }
 }
 

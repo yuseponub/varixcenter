@@ -31,7 +31,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.2.0'
+const AGENT_VERSION = 'wimax-facturas/2.3.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -64,8 +64,11 @@ function loadProfile(file) {
   if (profile.version !== 1 || profile.calibrated !== true) {
     throw new Error('CONFIG: el perfil UI no esta calibrado y aprobado')
   }
-  if (!Number.isInteger(profile.sessionId) || profile.sessionId < 1) {
-    throw new Error('CONFIG: sessionId interactivo invalido')
+  if (
+    profile.sessionId !== 'current' &&
+    (!Number.isInteger(profile.sessionId) || profile.sessionId < 1)
+  ) {
+    throw new Error('CONFIG: sessionId debe ser un entero positivo o current')
   }
   for (const flow of [
     'createCustomer',
@@ -194,14 +197,21 @@ export function cleanWimaxDesktop(desktop, profile) {
   })
 }
 
+export function sessionIdForDesktop(profile, desktop) {
+  const currentSessionId = Number(desktop?.sessionId)
+  if (!Number.isInteger(currentSessionId) || currentSessionId < 1) return null
+  return profile.sessionId === 'current' ? currentSessionId : profile.sessionId
+}
+
 async function desktopReady(driver, profile, minIdleSeconds) {
   const desktop = await driver.inspect()
-  if (Number(desktop.sessionId) !== profile.sessionId) {
+  const expectedSessionId = sessionIdForDesktop(profile, desktop)
+  if (!expectedSessionId || Number(desktop.sessionId) !== expectedSessionId) {
     return { ready: false, reason: 'sesion_interactiva_incorrecta' }
   }
   const windows = wimaxWindows(desktop, profile)
   if (windows.length === 0) return { ready: false, reason: 'wimax_no_abierto' }
-  if (windows.some((window) => Number(window.SessionId) !== profile.sessionId)) {
+  if (windows.some((window) => Number(window.SessionId) !== expectedSessionId)) {
     return { ready: false, reason: 'wimax_en_otra_sesion' }
   }
   if (!cleanWimaxDesktop(desktop, profile)) {

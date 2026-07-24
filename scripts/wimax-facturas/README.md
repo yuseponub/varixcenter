@@ -78,7 +78,9 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 
 - `WIMAX_ROBOT_ENABLED` debe ser literalmente `true`.
 - El perfil UI debe tener `calibrated: true`; el ejemplo se entrega bloqueado.
-- El proceso y la ventana de WiMAX deben pertenecer a la sesion interactiva 1.
+- El proceso y la ventana de WiMAX deben pertenecer a la sesion interactiva
+  configurada. En un PC fijo se recomienda `sessionId: 1`; en RDS/nube se usa
+  `sessionId: "current"` para validar la sesion donde corre el propio agente.
 - La resolucion debe coincidir con el perfil y WiMAX debe estar abierto.
 - Solo se reclama trabajo si existe una unica ventana principal de WiMAX; un
   dialogo residual obliga a revision humana.

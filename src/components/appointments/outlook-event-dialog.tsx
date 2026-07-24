@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { convertOutlookEventToAppointment } from '@/app/(protected)/citas/outlook-convert-actions'
+import { OutlookAssociatePatient } from '@/components/appointments/outlook-associate-patient'
 import type { CalendarEvent } from '@/types/appointments'
 
 interface OutlookEventDialogProps {
@@ -137,10 +138,20 @@ export function OutlookEventDialog({ event, open, onOpenChange }: OutlookEventDi
           )}
 
           {!props.patientId && !props.appointmentId && (
-            <div className="rounded-md border border-info-foreground/20 bg-info p-3 text-info-foreground">
-              Esta cita todavía no está asociada a un paciente de Varix, pero permanece visible en
-              la agenda sincronizada.
-            </div>
+            props.outlookAllDay ? (
+              <div className="rounded-md border border-info-foreground/20 bg-info p-3 text-info-foreground">
+                Esta cita todavía no está asociada a un paciente de Varix, pero permanece visible en
+                la agenda sincronizada.
+              </div>
+            ) : (
+              <OutlookAssociatePatient
+                event={event}
+                onDone={() => {
+                  onOpenChange(false)
+                  router.refresh()
+                }}
+              />
+            )
           )}
 
           {confirming && (

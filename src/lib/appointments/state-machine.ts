@@ -24,27 +24,31 @@ import { APPOINTMENT_STATES } from '@/types/appointments'
  * - cancelada/no_asistio -> programada (reschedule)
  * - Reversion allowed at each step
  */
+// Flujo simplificado (jul-2026): confirmación (confirmada / cancelada-reagendada)
+// y asistencia (completada = "Asistió" / no_asistio). Se dejaron de usar en la UI
+// los estados intermedios en_sala / en_atencion, pero se conservan aquí para no
+// romper citas existentes que aún estén en ellos.
 const TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
-  // Initial state
-  programada: ['confirmada', 'cancelada'],
+  // Estado inicial: confirmar, cancelar o marcar asistencia directo.
+  programada: ['confirmada', 'cancelada', 'completada', 'no_asistio'],
 
-  // Patient confirmed - can proceed directly to attention or revert
-  confirmada: ['en_atencion', 'programada', 'cancelada', 'no_asistio'],
+  // Confirmada: marcar asistencia, revertir o cancelar.
+  confirmada: ['completada', 'no_asistio', 'cancelada', 'programada'],
 
-  // Legacy state - kept for backwards compatibility with existing data
-  en_sala: ['en_atencion', 'confirmada', 'cancelada', 'no_asistio'],
+  // Estado legado - se mantiene por datos existentes.
+  en_sala: ['completada', 'no_asistio', 'confirmada', 'cancelada'],
 
-  // Currently being attended - can complete, revert, or mark no-show
-  en_atencion: ['completada', 'confirmada', 'cancelada', 'no_asistio'],
+  // Estado legado - se mantiene por datos existentes.
+  en_atencion: ['completada', 'no_asistio', 'confirmada', 'cancelada'],
 
-  // Terminal state - no further transitions (except reschedule via new appointment)
-  completada: ['cancelada'],
+  // Asistió: permitir corrección (marcar no asistió) o cancelar.
+  completada: ['no_asistio', 'cancelada', 'confirmada'],
 
-  // Cancelled - can reschedule
-  cancelada: ['programada'],
+  // Cancelada / reagendada: volver a programar o confirmar.
+  cancelada: ['programada', 'confirmada'],
 
-  // No show - can reschedule
-  no_asistio: ['programada'],
+  // No asistió: reprogramar, confirmar o corregir a asistió.
+  no_asistio: ['programada', 'confirmada', 'completada'],
 }
 
 /**
@@ -81,9 +85,9 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
   confirmada: 'Confirmada',
   en_sala: 'En Sala de Espera',
   en_atencion: 'En Atencion',
-  completada: 'Completada',
+  completada: 'Asistió',
   cancelada: 'Cancelada',
-  no_asistio: 'No Asistio',
+  no_asistio: 'No asistió',
 }
 
 /**

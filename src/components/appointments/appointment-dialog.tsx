@@ -67,6 +67,18 @@ const SERVICE_ENABLED_STATES: AppointmentStatus[] = ['en_atencion', 'completada'
 /** States where medical record can be created */
 const MEDICAL_RECORD_ENABLED_STATES: AppointmentStatus[] = ['en_atencion', 'completada']
 
+/** Opciones de confirmación (dropdown independiente). */
+const CONFIRM_OPTIONS: { value: AppointmentStatus; label: string }[] = [
+  { value: 'confirmada', label: 'Confirmada' },
+  { value: 'cancelada', label: 'Cancelada / Reagendada' },
+]
+
+/** Opciones de asistencia (botones). */
+const ATTENDANCE_OPTIONS: { value: AppointmentStatus; label: string }[] = [
+  { value: 'completada', label: 'Asistió' },
+  { value: 'no_asistio', label: 'No asistió' },
+]
+
 /**
  * Spanish date/time formatter using Intl.DateTimeFormat.
  * Format: "Lunes, 23 de enero de 2026 a las 10:00"
@@ -211,6 +223,67 @@ export function AppointmentDialog({
   const startDate = new Date(event.start)
   const endDate = new Date(event.end)
 
+  const confirmValue = CONFIRM_OPTIONS.some((o) => o.value === displayStatus)
+    ? displayStatus
+    : ''
+
+  const statusControls = (
+    <div className="border-t pt-4 space-y-3">
+      {/* Confirmación (dropdown independiente) */}
+      <div>
+        <Label className="text-sm font-medium text-muted-foreground">Confirmación</Label>
+        <Select
+          value={confirmValue}
+          onValueChange={(value) => {
+            if (value && value !== displayStatus) handleStatusChange(value as AppointmentStatus)
+          }}
+          disabled={isPending}
+        >
+          <SelectTrigger className="w-full mt-2">
+            <SelectValue placeholder="Sin confirmar…" />
+          </SelectTrigger>
+          <SelectContent>
+            {CONFIRM_OPTIONS.map((o) => (
+              <SelectItem
+                key={o.value}
+                value={o.value}
+                disabled={o.value !== displayStatus && !availableTransitions.includes(o.value)}
+              >
+                {o.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Asistencia (botones) */}
+      <div>
+        <Label className="text-sm font-medium text-muted-foreground">Asistencia</Label>
+        <div className="mt-2 flex gap-2">
+          {ATTENDANCE_OPTIONS.map((o) => {
+            const active = displayStatus === o.value
+            const allowed = active || availableTransitions.includes(o.value)
+            return (
+              <Button
+                key={o.value}
+                type="button"
+                size="sm"
+                variant={active ? 'default' : 'outline'}
+                disabled={isPending || !allowed}
+                onClick={() => {
+                  if (!active) handleStatusChange(o.value)
+                }}
+                className="flex-1"
+              >
+                {o.label}
+              </Button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className={showServicesSection ? 'sm:max-w-xl' : 'sm:max-w-lg'}>
@@ -281,28 +354,8 @@ export function AppointmentDialog({
                   </div>
                 )}
 
-                {/* Status dropdown */}
-                {availableTransitions.length > 0 && (
-                  <div className="border-t pt-4">
-                    <Label className="text-sm font-medium text-muted-foreground">Cambiar estado</Label>
-                    <Select
-                      value=""
-                      onValueChange={(value) => handleStatusChange(value as AppointmentStatus)}
-                      disabled={isPending}
-                    >
-                      <SelectTrigger className="w-full mt-2">
-                        <SelectValue placeholder="Seleccionar nuevo estado..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableTransitions.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {STATUS_LABELS[status]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                {/* Controles de estado: Confirmación + Asistencia */}
+                {statusControls}
               </div>
             </TabsContent>
 

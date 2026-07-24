@@ -9,7 +9,7 @@
  * APT-01: Calendar displays appointments in day and week views
  */
 
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useState, useEffect, type CSSProperties } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
@@ -61,6 +61,25 @@ export function AppointmentCalendar({
   editable = true,
 }: AppointmentCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null)
+
+  // Grosor de cada fila de hora, ajustable por el usuario (persistido). Filas
+  // más gruesas dejan que las citas cercanas en el tiempo se apilen legibles.
+  const SLOT_MIN = 14
+  const SLOT_MAX = 64
+  const [slotPx, setSlotPx] = useState(24)
+  useEffect(() => {
+    const saved = Number(localStorage.getItem('varix-cal-slot-height'))
+    if (saved >= SLOT_MIN && saved <= SLOT_MAX) setSlotPx(saved)
+  }, [])
+  const changeSlot = useCallback((delta: number) => {
+    setSlotPx((prev) => {
+      const next = Math.min(SLOT_MAX, Math.max(SLOT_MIN, prev + delta))
+      try {
+        localStorage.setItem('varix-cal-slot-height', String(next))
+      } catch {}
+      return next
+    })
+  }, [])
 
   // Track current view mode (list or calendar) and range (week or day)
   const getCurrentRange = useCallback(() => {
@@ -137,7 +156,31 @@ export function AppointmentCalendar({
   )
 
   return (
-    <div className="appointment-calendar h-full">
+    <div
+      className="appointment-calendar h-full"
+      style={{ '--fc-slot-height': `${slotPx}px` } as CSSProperties}
+    >
+      {/* Control de grosor de fila (solo en vistas de calendario, no lista) */}
+      <div className="mb-1 flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+        <span>Alto de fila</span>
+        <button
+          type="button"
+          aria-label="Reducir alto de fila"
+          onClick={() => changeSlot(-2)}
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-input bg-card leading-none hover:bg-accent"
+        >
+          −
+        </button>
+        <span className="w-9 text-center tabular-nums">{slotPx}px</span>
+        <button
+          type="button"
+          aria-label="Aumentar alto de fila"
+          onClick={() => changeSlot(2)}
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-input bg-card leading-none hover:bg-accent"
+        >
+          +
+        </button>
+      </div>
       <FullCalendar
         ref={calendarRef}
         plugins={[timeGridPlugin, listPlugin, interactionPlugin]}
@@ -179,6 +222,10 @@ export function AppointmentCalendar({
         slotMaxTime="20:00:00"
         slotDuration="00:15:00"
         slotLabelInterval="01:00:00"
+        // Citas que coinciden en el tiempo no se tapan: se reparten en columnas
+        // (una al lado de la otra) en vez de encimarse.
+        slotEventOverlap={false}
+        eventMinHeight={20}
         // Business hours (visual indicator)
         businessHours={{
           daysOfWeek: [1, 2, 3, 4, 5, 6], // Monday to Saturday

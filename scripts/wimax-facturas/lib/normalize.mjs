@@ -86,6 +86,20 @@ export function buildCustomerCode(cedula, firstNames) {
   return `${digits.slice(0, 2)}${letters.slice(0, 3)}`
 }
 
+export function buildCustomerCodeCandidates(cedula, firstNames, lastNames) {
+  const digits = digitsOnly(cedula)
+  const first = normalizeName(firstNames).split(' ')[0]?.replace(/[^A-Z]/g, '') ?? ''
+  const last = normalizeName(lastNames).split(' ')[0]?.replace(/[^A-Z]/g, '') ?? ''
+  if (!digits || digits.length < 2 || first.length < 3) return []
+
+  return [...new Set([
+    `${digits.slice(0, 2)}${first.slice(0, 3)}`,
+    last ? `${digits.slice(0, 2)}${first.slice(0, 2)}${last.slice(0, 1)}` : null,
+    last.length >= 2 ? `${digits.slice(0, 2)}${first.slice(0, 1)}${last.slice(0, 2)}` : null,
+    `${digits.slice(-2)}${first.slice(0, 3)}`,
+  ].filter((value) => value?.length === 5))]
+}
+
 export function splitPatientName(patient) {
   const firstNames = String(patient?.nombre ?? '').trim().split(/\s+/).filter(Boolean)
   const lastNames = String(patient?.apellido ?? '').trim().split(/\s+/).filter(Boolean)

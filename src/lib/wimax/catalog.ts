@@ -33,6 +33,53 @@ export interface WimaxInvoiceItemInput {
   sourceItemId?: string
 }
 
+/**
+ * Keep the selected treatments intact while moving one editable unit price so
+ * the lines add up to the amount the operator chose for WiMAX. The backend
+ * still validates the exact total and never accepts more than the payment.
+ */
+export function adjustWimaxItemsToTotal(
+  sourceItems: WimaxInvoiceItemInput[],
+  targetTotal: number
+): WimaxInvoiceItemInput[] {
+  if (
+    sourceItems.length === 0 ||
+    !Number.isFinite(targetTotal) ||
+    targetTotal <= 0
+  ) {
+    return sourceItems
+  }
+
+  const items = sourceItems.map((item) => ({ ...item }))
+  const currentTotal = items.reduce(
+    (sum, item) => sum + item.cantidad * item.precio_unitario,
+    0
+  )
+  const difference = Math.round((targetTotal - currentTotal) * 100) / 100
+  if (Math.abs(difference) < 0.01) return items
+
+  const preferredIndex = items.findIndex(
+    (item) =>
+      item.cantidad === 1 &&
+      item.precio_unitario + difference > 0
+  )
+  const fallbackIndex = items.findIndex(
+    (item) =>
+      item.cantidad > 0 &&
+      item.precio_unitario + difference / item.cantidad > 0
+  )
+  const index = preferredIndex >= 0 ? preferredIndex : fallbackIndex
+  if (index < 0) return sourceItems
+
+  const adjusted =
+    items[index].precio_unitario + difference / items[index].cantidad
+  const rounded = Math.round(adjusted * 100) / 100
+  if (rounded <= 0) return sourceItems
+
+  items[index] = { ...items[index], precio_unitario: rounded }
+  return items
+}
+
 function normalize(value: string): string {
   return value
     .normalize('NFD')
@@ -85,27 +132,7 @@ export function defaultWimaxItems(
     sourceItemId: item.id,
   }))
 
-  if (items.length === 0) return items
-
-  const currentTotal = items.reduce(
-    (sum, item) => sum + item.cantidad * item.precio_unitario,
-    0
-  )
-  const difference = Math.round((paymentTotal - currentTotal) * 100) / 100
-  if (Math.abs(difference) < 0.01) return items
-
-  const preferredIndex = items.findIndex(
-    (item) => item.cantidad === 1 && item.precio_unitario + difference > 0
-  )
-  const index = preferredIndex >= 0 ? preferredIndex : 0
-  const adjusted =
-    items[index].precio_unitario + difference / items[index].cantidad
-  const rounded = Math.round(adjusted * 100) / 100
-
-  if (rounded > 0) {
-    items[index] = { ...items[index], precio_unitario: rounded }
-  }
-  return items
+  return adjustWimaxItemsToTotal(items, paymentTotal)
 }
 
 export function isWimaxReference(value: string): value is WimaxCatalogReference {

@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   buildCustomerCode,
+  buildCustomerCodeCandidates,
   dbfDateOnly,
   normalizeInvoiceNumber,
   normalizeName,
@@ -14,6 +15,10 @@ test('genera cuenta WiMAX con cedula y primer nombre normalizados', () => {
   assert.equal(buildCustomerCode('99.006.801', 'Robot Prueba'), '99ROB')
   assert.equal(buildCustomerCode('88.006.802', 'Ensayo'), '88ENS')
   assert.equal(buildCustomerCode('12', 'Al'), null)
+  assert.deepEqual(
+    buildCustomerCodeCandidates('1098741379', 'Paula Andrea', 'Quintana Laiton'),
+    ['10PAU', '10PAQ', '10PQU', '79PAU']
+  )
 })
 
 test('normaliza nombres e identificadores FE', () => {

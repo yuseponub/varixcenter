@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
   FileCheck2,
   FilePlus2,
   Loader2,
@@ -41,6 +43,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
+  adjustWimaxItemsToTotal,
   defaultWimaxItems,
   isWimaxReference,
   WIMAX_CATALOG,
@@ -264,10 +267,13 @@ export function CreateWimaxInvoiceDialog({
   const invoicing = payment.payment_invoicing
   const isCard = payment.payment_methods.some((method) => method.metodo === 'tarjeta')
   const isEligible = payment.estado === 'activo' && (isCard || Boolean(invoicing?.pidio_factura))
+  const initialTargetAmount = invoicing?.monto_a_facturar ?? payment.total
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<WimaxInvoiceItemInput[]>(() =>
-    defaultWimaxItems(payment.payment_items, payment.total)
+    defaultWimaxItems(payment.payment_items, initialTargetAmount)
   )
+  const [targetAmount, setTargetAmount] = useState(initialTargetAmount)
+  const [confirming, setConfirming] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
@@ -278,15 +284,22 @@ export function CreateWimaxInvoiceDialog({
 
   useEffect(() => {
     if (open) {
-      setItems(defaultWimaxItems(payment.payment_items, payment.total))
+      const target = invoicing?.monto_a_facturar ?? payment.total
+      setTargetAmount(target)
+      setItems(defaultWimaxItems(payment.payment_items, target))
+      setConfirming(false)
     }
-  }, [open, payment.payment_items, payment.total])
+  }, [open, invoicing?.monto_a_facturar, payment.payment_items, payment.total])
 
   const invoiceTotal = useMemo(
     () => items.reduce((sum, item) => sum + item.cantidad * item.precio_unitario, 0),
     [items]
   )
-  const difference = Math.round((invoiceTotal - payment.total) * 100) / 100
+  const difference = Math.round((invoiceTotal - targetAmount) * 100) / 100
+  const validTargetAmount =
+    Number.isFinite(targetAmount) &&
+    targetAmount > 0 &&
+    targetAmount <= payment.total
   const hasUnknown = items.some((item) => !item.referencia)
   const validItems =
     items.length > 0 &&
@@ -298,7 +311,7 @@ export function CreateWimaxInvoiceDialog({
         Number.isFinite(item.precio_unitario) &&
         item.precio_unitario > 0
     )
-  const canSubmit = validItems && Math.abs(difference) < 0.01
+  const canSubmit = validItems && validTargetAmount && Math.abs(difference) < 0.01
 
   if (!isEligible || !invoicing) return null
 
@@ -384,8 +397,20 @@ export function CreateWimaxInvoiceDialog({
     })
   }
 
+  function adjustToTarget() {
+    setItems((current) => adjustWimaxItemsToTotal(current, targetAmount))
+  }
+
+  const isPartial = validTargetAmount && targetAmount < payment.total
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen)
+        if (!nextOpen) setConfirming(false)
+      }}
+    >
       <DialogTrigger asChild>
         <Button type="button" size="sm" variant={job?.estado === 'error' ? 'outline' : 'default'}>
           <FilePlus2 />
@@ -397,12 +422,12 @@ export function CreateWimaxInvoiceDialog({
           <DialogTitle>Crear factura electrónica en WiMAX</DialogTitle>
           <DialogDescription>
             {payment.patients.nombre} {payment.patients.apellido} · pago{' '}
-            {payment.numero_factura}. Los valores son editables, pero el total
-            debe coincidir con lo pagado.
+            {payment.numero_factura}. Escoja el monto, confirme los tratamientos
+            y revise todo una segunda vez antes de enviarlo al robot.
           </DialogDescription>
         </DialogHeader>
 
-        {job?.estado === 'error' && (
+        {!confirming && job?.estado === 'error' && (
           <Alert variant="destructive">
             <AlertTriangle />
             <AlertTitle>El intento anterior falló antes de emitir</AlertTitle>
@@ -410,7 +435,7 @@ export function CreateWimaxInvoiceDialog({
           </Alert>
         )}
 
-        {hasUnknown && (
+        {!confirming && hasUnknown && (
           <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
             <AlertTriangle />
             <AlertTitle>Falta mapear un tratamiento</AlertTitle>
@@ -420,7 +445,33 @@ export function CreateWimaxInvoiceDialog({
           </Alert>
         )}
 
-        <div className="space-y-3">
+        {!confirming && (
+          <div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+            <Label htmlFor={`wimax-target-${payment.id}`}>Monto a facturar en WiMAX</Label>
+            <Input
+              id={`wimax-target-${payment.id}`}
+              type="number"
+              min="0.01"
+              max={payment.total}
+              step="0.01"
+              value={targetAmount || ''}
+              onChange={(event) => setTargetAmount(Number(event.target.value))}
+              disabled={isPending}
+              className="text-lg font-semibold"
+            />
+            <p className="text-xs text-muted-foreground">
+              Máximo disponible: {currencyFormatter.format(payment.total)}.
+              Si factura menos, el pago quedará marcado como facturado parcial.
+            </p>
+            {!validTargetAmount && (
+              <p className="text-xs text-destructive">
+                Ingrese un monto mayor que cero y no superior al pago.
+              </p>
+            )}
+          </div>
+        )}
+
+        {!confirming && <div className="space-y-3">
           {items.map((item, index) => (
             <div
               key={item.sourceItemId ?? `${index}-${item.referencia}`}
@@ -492,15 +543,15 @@ export function CreateWimaxInvoiceDialog({
             <Plus />
             Agregar tratamiento
           </Button>
-        </div>
+        </div>}
 
-        <div className="rounded-lg bg-muted/50 p-4">
+        {!confirming && <div className="rounded-lg bg-muted/50 p-4">
           <div className="flex justify-between text-sm">
             <span>Total del pago</span>
             <span>{currencyFormatter.format(payment.total)}</span>
           </div>
           <div className="mt-2 flex justify-between text-lg font-semibold">
-            <span>Total a facturar</span>
+            <span>Suma de tratamientos</span>
             <span className={Math.abs(difference) >= 0.01 ? 'text-destructive' : ''}>
               {currencyFormatter.format(invoiceTotal)}
             </span>
@@ -510,25 +561,90 @@ export function CreateWimaxInvoiceDialog({
               Diferencia: {currencyFormatter.format(difference)}
             </p>
           )}
-        </div>
+          {Math.abs(difference) >= 0.01 && validTargetAmount && (
+            <Button type="button" variant="outline" size="sm" className="mt-3" onClick={adjustToTarget}>
+              Ajustar valores al monto elegido
+            </Button>
+          )}
+        </div>}
 
-        <Alert>
+        {!confirming && <Alert>
           <ShieldCheck />
           <AlertTitle>Emisión supervisada</AlertTitle>
           <AlertDescription>
             El robot hará deduplicación en Supabase y en los DBF, preparará la
             factura y se detendrá antes del paso irreversible.
           </AlertDescription>
-        </Alert>
+        </Alert>}
+
+        {confirming && (
+          <div className="space-y-4">
+            <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
+              <AlertTriangle />
+              <AlertTitle>Confirmación final</AlertTitle>
+              <AlertDescription>
+                Después de preparar la factura todavía deberá autorizar la emisión
+                irreversible. Confirme ahora que paciente, tratamientos y valores son correctos.
+              </AlertDescription>
+            </Alert>
+            <div className="rounded-lg border">
+              {items.map((item, index) => {
+                const catalogItem = WIMAX_CATALOG.find(
+                  (candidate) => candidate.reference === item.referencia
+                )
+                return (
+                  <div
+                    key={item.sourceItemId ?? `${index}-${item.referencia}`}
+                    className="flex items-start justify-between gap-4 border-b p-3 last:border-b-0"
+                  >
+                    <div>
+                      <p className="font-medium">{catalogItem?.description ?? item.referencia}</p>
+                      <p className="text-xs text-muted-foreground">{item.referencia}</p>
+                    </div>
+                    <div className="text-right text-sm">
+                      <p>{item.cantidad} × {currencyFormatter.format(item.precio_unitario)}</p>
+                      <p className="font-semibold">
+                        {currencyFormatter.format(item.cantidad * item.precio_unitario)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="rounded-lg bg-muted/50 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total confirmado para WiMAX</p>
+                  {isPartial && <Badge variant="secondary" className="mt-1">Factura parcial</Badge>}
+                </div>
+                <p className="text-xl font-bold">{currencyFormatter.format(targetAmount)}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline" disabled={isPending}>Cancelar</Button>
-          </DialogClose>
-          <Button type="button" onClick={enqueue} disabled={isPending || !canSubmit}>
-            {isPending && <Loader2 className="animate-spin" />}
-            Enviar al robot
-          </Button>
+          {confirming ? (
+            <>
+              <Button type="button" variant="outline" onClick={() => setConfirming(false)} disabled={isPending}>
+                <ArrowLeft />
+                Corregir
+              </Button>
+              <Button type="button" onClick={enqueue} disabled={isPending || !canSubmit}>
+                {isPending ? <Loader2 className="animate-spin" /> : <CheckCircle2 />}
+                Confirmar y enviar al robot
+              </Button>
+            </>
+          ) : (
+            <>
+              <DialogClose asChild>
+                <Button type="button" variant="outline" disabled={isPending}>Cancelar</Button>
+              </DialogClose>
+              <Button type="button" onClick={() => setConfirming(true)} disabled={isPending || !canSubmit}>
+                Revisar factura
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

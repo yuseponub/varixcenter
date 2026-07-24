@@ -19,6 +19,7 @@ import {
   createColfactClientFromEnv,
   waitForColfactInvoice,
 } from './lib/colfact-client.mjs'
+import { reconcilePendingColfactJobs } from './lib/colfact-reconcile.mjs'
 import { preflightDedup } from './lib/dedup.mjs'
 import { readCufeBuffer, readDirectory, readInvoices } from './lib/dbf-reader.mjs'
 import { GuiDriver, WimaxWorkflow } from './lib/gui.mjs'
@@ -30,7 +31,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.1.0'
+const AGENT_VERSION = 'wimax-facturas/2.2.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -134,7 +135,7 @@ async function rpc(supabase, name, args = {}) {
   return data
 }
 
-async function cloudInvoicesForJob(supabase, job) {
+async function cloudDedupContextForJob(supabase, job) {
   const cedula = digitsOnly(job.paciente?.cedula)
   const paymentDate = String(job.paciente?.payment_created_at ?? '').slice(0, 10)
   const start = addDays(paymentDate, -2)
@@ -142,11 +143,29 @@ async function cloudInvoicesForJob(supabase, job) {
   const { data, error } = await supabase
     .from('wimax_facturas')
     .select('numero,emision,cedula,nombre,total')
-    .eq('cedula', cedula)
     .gte('emision', start)
     .lte('emision', end)
   if (error) throw new Error(`CLOUD_DEDUP: ${error.message}`)
-  return data ?? []
+  const invoices = (data ?? []).filter(
+    (invoice) => digitsOnly(invoice.cedula) === cedula
+  )
+  if (invoices.length === 0) {
+    return { invoices, consumedInvoiceNumbers: [] }
+  }
+
+  const { data: consumed, error: consumedError } = await supabase
+    .from('payment_invoicing')
+    .select('payment_id,wimax_factura_numero,estado')
+    .in('wimax_factura_numero', invoices.map((invoice) => invoice.numero))
+    .neq('payment_id', job.payment_id)
+    .in('estado', ['facturada_total', 'facturada_parcial'])
+  if (consumedError) throw new Error(`CLOUD_DEDUP: ${consumedError.message}`)
+  return {
+    invoices,
+    consumedInvoiceNumbers: (consumed ?? [])
+      .map((row) => row.wimax_factura_numero)
+      .filter(Boolean),
+  }
 }
 
 function wimaxWindows(desktop, profile) {
@@ -358,8 +377,13 @@ async function processJob({
   let unsafeUiState = false
 
   try {
-    const cloudInvoices = await cloudInvoicesForJob(supabase, job)
-    const preflight = await preflightDedup({ job, cloudInvoices, wimaxDir })
+    const cloudDedup = await cloudDedupContextForJob(supabase, job)
+    const preflight = await preflightDedup({
+      job,
+      cloudInvoices: cloudDedup.invoices,
+      consumedInvoiceNumbers: cloudDedup.consumedInvoiceNumbers,
+      wimaxDir,
+    })
     await rpc(supabase, 'robot_wimax_registrar_preflight', {
       p_job_id: job.id,
       p_lease_token: job.lease_token,
@@ -369,7 +393,7 @@ async function processJob({
     })
     if (preflight.status !== 'limpio') {
       console.log(`Trabajo ${job.id.slice(0, 8)} bloqueado por deduplicacion`)
-      return
+      return { emitted: false }
     }
     await heartbeat(supabase, job, 'preflight_limpio')
 
@@ -410,9 +434,11 @@ async function processJob({
 
     // A second authoritative read closes the race between preparation and the
     // human approval. Any new FE aborts before the DIAN step.
+    const secondCloudDedup = await cloudDedupContextForJob(supabase, job)
     const secondPreflight = await preflightDedup({
       job,
-      cloudInvoices: await cloudInvoicesForJob(supabase, job),
+      cloudInvoices: secondCloudDedup.invoices,
+      consumedInvoiceNumbers: secondCloudDedup.consumedInvoiceNumbers,
       wimaxDir,
     })
     if (secondPreflight.status !== 'limpio') {
@@ -506,6 +532,7 @@ async function processJob({
       })
       console.error(`Trabajo ${job.id.slice(0, 8)} emitido; CUFE pendiente`)
     }
+    return { emitted: true, cufePending: !cufe }
   } catch (error) {
     if (uiStarted && !irreversibleStarted && context) {
       const aborted = await abortPreparedUi(workflow, context, profile)
@@ -546,10 +573,19 @@ async function main() {
   const verificationTimeoutSeconds = integerEnv('WIMAX_VERIFY_TIMEOUT_SECONDS', 120, 30, 600)
   const cufeGraceSeconds = integerEnv('WIMAX_CUFE_GRACE_SECONDS', 15, 1, 60)
   const colfactLookupTimeoutSeconds = integerEnv(
-    'COLFACT_LOOKUP_TIMEOUT_SECONDS', 90, 5, 600
+    'COLFACT_LOOKUP_TIMEOUT_SECONDS', 5, 5, 600
   )
   const colfactLookupPollSeconds = integerEnv(
     'COLFACT_LOOKUP_POLL_SECONDS', 3, 1, 60
+  )
+  const colfactPostBatchDelaySeconds = integerEnv(
+    'COLFACT_POST_BATCH_DELAY_SECONDS', 120, 30, 900
+  )
+  const colfactPostBatchAttempts = integerEnv(
+    'COLFACT_POST_BATCH_ATTEMPTS', 3, 1, 10
+  )
+  const colfactReconcileLimit = integerEnv(
+    'COLFACT_RECONCILE_LIMIT', 10, 1, 50
   )
   const screenshotRetentionHours = integerEnv('WIMAX_SCREENSHOT_RETENTION_HOURS', 24, 1, 168)
   const agentId = (process.env.WIMAX_AGENT_ID || `${hostname()}-session1`)
@@ -564,12 +600,38 @@ async function main() {
     ? createColfactClientFromEnv(process.env)
     : null
   const driver = new GuiDriver({ scriptPath: path.join(ROOT, 'gui-driver.ps1') })
+  let colfactReconcileDueAt = colfactClient
+    ? Date.now() + colfactPostBatchDelaySeconds * 1_000
+    : 0
+  let colfactAttemptsRemaining = colfactClient ? 1 : 0
   console.log(`${AGENT_VERSION}; agent=${agentId}; supervised=true`)
 
   await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
 
   do {
     try {
+      // Portal reconciliation never touches the WiMAX GUI. Emissions debounce
+      // this one-shot batch so several consecutive invoices are checked
+      // together instead of running a permanent five-minute task.
+      if (
+        colfactClient &&
+        colfactReconcileDueAt > 0 &&
+        Date.now() >= colfactReconcileDueAt
+      ) {
+        const stats = await reconcilePendingColfactJobs({
+          supabase,
+          client: colfactClient,
+          limit: colfactReconcileLimit,
+        })
+        console.log(`ColFact post-lote: ${JSON.stringify(stats)}`)
+        colfactAttemptsRemaining -= 1
+        if ((stats.pending > 0 || stats.failed > 0) && colfactAttemptsRemaining > 0) {
+          colfactReconcileDueAt = Date.now() + colfactPostBatchDelaySeconds * 1_000
+        } else {
+          colfactReconcileDueAt = 0
+        }
+      }
+
       if (!withinAllowedHours(process.env.WIMAX_ALLOWED_HOURS)) {
         if (runOnce) console.log('Fuera de la ventana horaria configurada')
       } else {
@@ -582,7 +644,7 @@ async function main() {
           })
           const job = claimed?.job
           if (job) {
-            await processJob({
+            const result = await processJob({
               supabase,
               driver,
               profile,
@@ -596,6 +658,10 @@ async function main() {
               colfactLookupPollSeconds,
               job,
             })
+            if (result?.emitted && colfactClient) {
+              colfactReconcileDueAt = Date.now() + colfactPostBatchDelaySeconds * 1_000
+              colfactAttemptsRemaining = colfactPostBatchAttempts
+            }
             await cleanupLocalEvidence(stateDir, screenshotRetentionHours)
           } else if (runOnce) {
             console.log('No hay trabajos WiMAX listos')

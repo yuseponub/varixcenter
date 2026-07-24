@@ -93,7 +93,7 @@ test('cualquier FE reciente de la cedula bloquea incluso con otro monto', async 
   }
 })
 
-test('una colision del codigo calculado se bloquea como ambigua', async () => {
+test('una colision usa un codigo alterno determinista y libre', async () => {
   const data = await fixture({
     customers: [{ CLAVE: '99ROB', DIREC4: '99999999', NOMBRE: 'Otra Persona' }],
   })
@@ -103,8 +103,31 @@ test('una colision del codigo calculado se bloquea como ambigua', async () => {
       cloudInvoices: [],
       wimaxDir: data.center,
     })
+    assert.equal(result.status, 'limpio')
+    assert.equal(result.customerCode, '99ROP')
+    assert.equal(result.evidence.customer_code_fallback, true)
+  } finally {
+    await rm(data.root, { recursive: true })
+  }
+})
+
+test('bloquea si todos los codigos deterministas estan ocupados', async () => {
+  const data = await fixture({
+    customers: [
+      { CLAVE: '99ROB', DIREC4: '99999991', NOMBRE: 'Otra Uno' },
+      { CLAVE: '99ROP', DIREC4: '99999992', NOMBRE: 'Otra Dos' },
+      { CLAVE: '99RPR', DIREC4: '99999993', NOMBRE: 'Otra Tres' },
+      { CLAVE: '01ROB', DIREC4: '99999994', NOMBRE: 'Otra Cuatro' },
+    ],
+  })
+  try {
+    const result = await preflightDedup({
+      job: data.job,
+      cloudInvoices: [],
+      wimaxDir: data.center,
+    })
     assert.equal(result.status, 'ambiguo')
-    assert.equal(result.evidence.reason, 'colision_codigo_cliente')
+    assert.equal(result.evidence.reason, 'colision_todos_codigos_cliente')
   } finally {
     await rm(data.root, { recursive: true })
   }
@@ -127,6 +150,30 @@ test('wimax_facturas tambien bloquea aunque trafac aun no lo refleje', async () 
     })
     assert.equal(result.status, 'duplicado')
     assert.equal(result.evidence.exact_amount_candidates, 1)
+  } finally {
+    await rm(data.root, { recursive: true })
+  }
+})
+
+test('ignora una FE ya consumida por otro pago enlazado', async () => {
+  const data = await fixture({ invoice: { numero: 'FE9994', total: 100000 } })
+  try {
+    const result = await preflightDedup({
+      job: data.job,
+      cloudInvoices: [
+        {
+          numero: 'FE9994',
+          emision: dateOnly(new Date()),
+          cedula: '99006801',
+          total: 100000,
+        },
+      ],
+      consumedInvoiceNumbers: ['FE9994'],
+      wimaxDir: data.center,
+    })
+    assert.equal(result.status, 'limpio')
+    assert.deepEqual(result.evidence.recent_invoices, [])
+    assert.deepEqual(result.evidence.consumed_prior_invoices, ['FE9994'])
   } finally {
     await rm(data.root, { recursive: true })
   }

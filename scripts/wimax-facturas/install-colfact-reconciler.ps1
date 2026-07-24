@@ -2,8 +2,6 @@ param(
   [string]$AppDir = 'C:\varix-facturas\app',
   [string]$NodeExe = 'C:\varix-facturas\node\node.exe',
   [string]$TaskName = 'VarixWimaxColfact',
-  [ValidateRange(2, 60)]
-  [int]$IntervalMinutes = 5,
   [switch]$Enable
 )
 
@@ -50,11 +48,6 @@ $action = New-ScheduledTaskAction `
   -Execute 'powershell.exe' `
   -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command `"$command`"" `
   -WorkingDirectory $AppDir
-$trigger = New-ScheduledTaskTrigger `
-  -Once `
-  -At (Get-Date).AddMinutes(1) `
-  -RepetitionInterval (New-TimeSpan -Minutes $IntervalMinutes) `
-  -RepetitionDuration (New-TimeSpan -Days 3650)
 $principal = New-ScheduledTaskPrincipal `
   -UserId $userId `
   -LogonType Interactive `
@@ -68,17 +61,15 @@ $settings = New-ScheduledTaskSettingsSet `
 Register-ScheduledTask `
   -TaskName $TaskName `
   -Action $action `
-  -Trigger $trigger `
   -Principal $principal `
   -Settings $settings `
   -Force | Out-Null
 
 if ($Enable) {
   Enable-ScheduledTask -TaskName $TaskName | Out-Null
-  Start-ScheduledTask -TaskName $TaskName
-  Write-Output "Tarea $TaskName habilitada cada $IntervalMinutes minutos"
+  Write-Output "Tarea $TaskName habilitada solo para ejecucion manual"
 }
 else {
   Disable-ScheduledTask -TaskName $TaskName | Out-Null
-  Write-Output "Tarea $TaskName instalada y deshabilitada"
+  Write-Output "Tarea $TaskName instalada sin horario y deshabilitada"
 }

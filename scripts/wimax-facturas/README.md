@@ -27,12 +27,20 @@ El flujo tiene dos barreras independientes:
 
 1. Antes de tocar la UI compara la cedula contra `wimax_facturas` y, de forma
    directa y solo lectura, contra `tmdir.dbf` y los `trafacMM.dbf` de la ventana
-   del pago. Cualquier FE reciente bloquea el trabajo; nunca se sobreescribe la
-   decision de dedup por monto.
+   del pago. Una FE reciente no consumida bloquea el trabajo; las FE que ya
+   estan enlazadas uno-a-uno a otro pago se excluyen con evidencia auditable.
+   El monto nunca se usa para ignorar un posible duplicado.
+   Si el codigo de cliente calculado ya pertenece a otra cedula, prueba una
+   secuencia determinista con la inicial del apellido y registra el fallback.
 2. El robot prepara cliente, encabezado, items, deposito y banco, pero se detiene
    en **Asignacion de asiento contable**. Un Admin o Secretaria debe revisar el
    escritorio y pulsar **Autorizar emision** en VarixCenter. Solo entonces se
    acepta el paso irreversible.
+
+El modal permite escoger un monto positivo hasta el total del pago, ajustar las
+lineas y exige una segunda pantalla de confirmacion. Si el monto confirmado es
+menor, la conciliacion termina como `facturada_parcial`; nunca puede superar el
+pago registrado.
 
 Despues de emitir, el pago sigue pendiente hasta observar la nueva FE en
 `trafac` y confirmar su CUFE. El robot intenta primero el DBF temporal
@@ -40,10 +48,12 @@ Despues de emitir, el pago sigue pendiente hasta observar la nueva FE en
 ColFact y valida numero, fecha, cedula, monto, estado y el CUFE SHA-384 dentro del
 XML oficial. Solo entonces enlaza la FE y marca el pago como facturado.
 
-El conciliador de portal tambien revisa trabajos `emitida_sin_cufe`, de modo que
-una respuesta tardia de ColFact se concilia en background sin volver a emitir.
-Si el portal no esta disponible o cualquier dato difiere, el trabajo permanece
-protegido y el CUFE se puede completar manualmente desde VarixCenter.
+El conciliador de portal tambien revisa trabajos `emitida_sin_cufe`. El robot lo
+ejecuta por lote despues de un periodo sin nuevas emisiones (120 segundos por
+defecto), con reintentos limitados. Asi varias FE consecutivas se consultan
+juntas y no queda un sondeo permanente cada cinco minutos. Si el portal no esta
+disponible o cualquier dato difiere, el trabajo permanece protegido y el CUFE
+se puede completar manualmente desde VarixCenter.
 
 El watcher empieza antes del paso irreversible, consulta `tmfecufe.dbf` con alta
 frecuencia y permanece activo durante `WIMAX_CUFE_GRACE_SECONDS` despues de ver
@@ -55,11 +65,13 @@ Las credenciales de ColFact se configuran exclusivamente en `.env` mediante
 `https://nube.conexusit.com` para impedir el envio accidental de credenciales a
 otro host.
 
-Instalar el conciliador independiente cada cinco minutos (no usa la GUI ni
-puede emitir facturas):
+El conciliador independiente queda disponible solo como recuperacion manual
+(no usa la GUI ni puede emitir facturas), sin horario periodico:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install-colfact-reconciler.ps1 -Enable
+# Ejecutarlo cuando sea necesario:
+Start-ScheduledTask -TaskName VarixWimaxColfact
 ```
 
 ### Salvaguardas operativas

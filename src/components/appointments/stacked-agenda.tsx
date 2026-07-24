@@ -63,7 +63,7 @@ const rangeTitleFmt = new Intl.DateTimeFormat('es-CO', {
 })
 
 const OUTLOOK_COLOR = 'oklch(0.45 0.12 210)'
-const DEFAULT_MIN_HOUR = 7
+const DEFAULT_MIN_HOUR = 8
 const DEFAULT_MAX_HOUR = 19
 
 /** Fecha civil (Bogotá) de `date` como mediodía UTC, para navegar sin tz. */

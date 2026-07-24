@@ -229,6 +229,10 @@ namespace Varix.Wimax {
       return true;
     }
 
+    public static bool Restore(long rawWindow) {
+      return ShowWindowAsync(new IntPtr(rawWindow), 9);
+    }
+
     public static string[] ListItems(long rawList) {
       var list = new IntPtr(rawList);
       int count = SendMessage(list, 0x018B, IntPtr.Zero, IntPtr.Zero).ToInt32();
@@ -439,8 +443,13 @@ function Get-StartupState([object]$Profile) {
     $base.reason = 'ventana_principal_inesperada'
     return [pscustomobject]$base
   }
+  if ($main[0].Minimized) {
+    $base.state = 'minimized'
+    $base.reason = $null
+    $base.mainHandle = $main[0].Handle
+    return [pscustomobject]$base
+  }
   if (
-    $main[0].Minimized -or
     $main[0].Width -ne [int]$Profile.window.width -or
     $main[0].Height -ne [int]$Profile.window.height
   ) {
@@ -667,6 +676,13 @@ while ((Get-Date) -lt $deadline) {
       $unknownChecks = 0
     }
     'loading' {
+      $unknownChecks = 0
+    }
+    'minimized' {
+      if (-not [Varix.Wimax.StartupGui]::Restore([long]$state.mainHandle)) {
+        throw 'Windows no pudo restaurar WiMAX'
+      }
+      $lastActionAt = Get-Date
       $unknownChecks = 0
     }
     'company_unselected' {

@@ -398,7 +398,7 @@ export function CalendarView({
               : 'hover:bg-accent'
           }`}
         >
-          Filas
+          Calendario
         </button>
         <button
           type="button"
@@ -409,7 +409,7 @@ export function CalendarView({
               : 'hover:bg-accent'
           }`}
         >
-          Cuadrícula
+          Clásico (arrastrar)
         </button>
       </div>
 

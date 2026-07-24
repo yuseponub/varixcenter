@@ -1,15 +1,15 @@
 'use client'
 
 /**
- * Stacked Agenda (vista "Filas")
+ * Cuadrícula de citas apiladas en FILAS (vista "Calendario" propia)
  *
- * Vista de calendario alterna a FullCalendar: muestra las citas APILADAS EN
- * FILAS (una debajo de otra), ordenadas por hora. Cuando dos citas coinciden
- * en la misma hora igual quedan una arriba y otra abajo (nunca en "bloques"
- * lado a lado como hace el timeGrid de FullCalendar).
+ * Igual que un calendario clásico: el eje de HORAS va en la columna izquierda
+ * (07:00, 08:00, …) y a la derecha cada día. Pero cuando hay varias citas en
+ * la misma hora, se apilan UNA DEBAJO DE OTRA (filas) dentro de esa banda de
+ * hora — nunca en "bloques" lado a lado como hace el timeGrid de FullCalendar.
  *
- * Zona horaria: Colombia es UTC−5 fijo. Guardamos la fecha "civil" del cursor
- * como mediodía UTC y leemos con getUTC* (mediodía UTC = 07:00 Bogotá, mismo
+ * Zona horaria: Colombia es UTC−5 fijo. El cursor se guarda como mediodía UTC
+ * de la fecha civil y se lee con getUTC* (mediodía UTC = 07:00 Bogotá, mismo
  * día civil), así la navegación no se corre por zona horaria.
  */
 
@@ -34,6 +34,11 @@ const dayKeyFmt = new Intl.DateTimeFormat('en-CA', {
   month: '2-digit',
   day: '2-digit',
 })
+const hourFmt = new Intl.DateTimeFormat('en-GB', {
+  timeZone: TZ,
+  hour: '2-digit',
+  hour12: false,
+})
 const timeFmt = new Intl.DateTimeFormat('es-CO', {
   timeZone: TZ,
   hour: 'numeric',
@@ -46,6 +51,11 @@ const dayTitleFmt = new Intl.DateTimeFormat('es-CO', {
   day: 'numeric',
   month: 'long',
 })
+const dayShortFmt = new Intl.DateTimeFormat('es-CO', {
+  timeZone: TZ,
+  weekday: 'short',
+  day: 'numeric',
+})
 const rangeTitleFmt = new Intl.DateTimeFormat('es-CO', {
   timeZone: TZ,
   day: 'numeric',
@@ -53,6 +63,8 @@ const rangeTitleFmt = new Intl.DateTimeFormat('es-CO', {
 })
 
 const OUTLOOK_COLOR = 'oklch(0.45 0.12 210)'
+const DEFAULT_MIN_HOUR = 7
+const DEFAULT_MAX_HOUR = 19
 
 /** Fecha civil (Bogotá) de `date` como mediodía UTC, para navegar sin tz. */
 function toCivilNoon(date: Date): Date {
@@ -86,6 +98,59 @@ function civilToBogotaMidnightUTC(civilNoon: Date): Date {
   )
 }
 
+/** Hora (0-23) del evento en Bogotá. */
+function bogotaHour(iso: string | Date): number {
+  return Number(hourFmt.format(new Date(iso)))
+}
+
+/** Tarjeta individual de cita (misma para día y semana). */
+function CitaCard({
+  ev,
+  compact,
+  onClick,
+}: {
+  ev: CalendarEvent
+  compact: boolean
+  onClick: () => void
+}) {
+  const isOutlook = ev.extendedProps.source === 'outlook'
+  const accent = isOutlook ? OUTLOOK_COLOR : ev.borderColor || 'var(--primary)'
+  const name =
+    ev.extendedProps.matchedPatientName ||
+    ev.extendedProps.patientName ||
+    ev.title
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={`${timeFmt.format(new Date(ev.start))} · ${name}`}
+      className="flex w-full items-center gap-2 rounded-md border border-border bg-card px-2 py-1 text-left shadow-sm hover:bg-accent/60"
+      style={{ borderLeft: `4px solid ${accent}` }}
+    >
+      <span className="shrink-0 text-[11px] font-semibold tabular-nums text-muted-foreground">
+        {timeFmt.format(new Date(ev.start))}
+      </span>
+      <span className="min-w-0 flex-1 truncate text-xs font-medium">{name}</span>
+      {!compact &&
+        (isOutlook ? (
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            style={{
+              backgroundColor: `color-mix(in oklch, ${OUTLOOK_COLOR} 15%, transparent)`,
+              color: OUTLOOK_COLOR,
+            }}
+          >
+            Outlook
+          </span>
+        ) : (
+          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+            {STATUS_LABELS[ev.extendedProps.estado] ?? ev.extendedProps.estado}
+          </span>
+        ))}
+    </button>
+  )
+}
+
 export function StackedAgenda({
   events,
   onEventClick,
@@ -106,6 +171,8 @@ export function StackedAgenda({
     return Array.from({ length: 6 }, (_, i) => addDays(monday, i)) // Lun..Sáb
   }, [cursor, mode])
 
+  const dayKeys = useMemo(() => visibleDays.map(civilKey), [visibleDays])
+
   // Notificar rango al padre cuando cambie.
   useEffect(() => {
     const first = visibleDays[0]
@@ -115,24 +182,43 @@ export function StackedAgenda({
     onRangeChange(start, end)
   }, [visibleDays, onRangeChange])
 
-  // Agrupar citas por día civil (Bogotá) y ordenarlas por hora.
-  const eventsByDay = useMemo(() => {
-    const map = new Map<string, CalendarEvent[]>()
+  // Índice: día -> hora -> citas (ordenadas por hora exacta).
+  const { grid, hours } = useMemo(() => {
+    const visibleKeys = new Set(dayKeys)
+    const byDayHour = new Map<string, Map<number, CalendarEvent[]>>()
+    let minHour = DEFAULT_MIN_HOUR
+    let maxHour = DEFAULT_MAX_HOUR
+
     for (const ev of events) {
-      const startDate = new Date(ev.start)
-      if (Number.isNaN(startDate.getTime())) continue
-      const key = dayKeyFmt.format(startDate)
-      const list = map.get(key)
+      const start = new Date(ev.start)
+      if (Number.isNaN(start.getTime())) continue
+      const dKey = dayKeyFmt.format(start)
+      if (!visibleKeys.has(dKey)) continue
+      const h = bogotaHour(start)
+      if (h < minHour) minHour = h
+      if (h > maxHour) maxHour = h
+      let hourMap = byDayHour.get(dKey)
+      if (!hourMap) {
+        hourMap = new Map()
+        byDayHour.set(dKey, hourMap)
+      }
+      const list = hourMap.get(h)
       if (list) list.push(ev)
-      else map.set(key, [ev])
+      else hourMap.set(h, [ev])
     }
-    for (const list of map.values()) {
-      list.sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-      )
+
+    for (const hourMap of byDayHour.values()) {
+      for (const list of hourMap.values()) {
+        list.sort(
+          (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+        )
+      }
     }
-    return map
-  }, [events])
+
+    const hoursArr: number[] = []
+    for (let h = minHour; h <= maxHour; h++) hoursArr.push(h)
+    return { grid: byDayHour, hours: hoursArr }
+  }, [events, dayKeys])
 
   const goToday = useCallback(() => setCursor(toCivilNoon(new Date())), [])
   const goPrev = useCallback(
@@ -154,11 +240,14 @@ export function StackedAgenda({
         )}`
 
   const todayKey = civilKey(toCivilNoon(new Date()))
+  const cols = mode === 'day' ? 1 : visibleDays.length
+  // Grilla CSS: [columna de horas] + una columna por día visible.
+  const gridCols = `56px repeat(${cols}, minmax(0, 1fr))`
 
   return (
     <div className="flex h-full flex-col">
       {/* Encabezado delgado y fijo */}
-      <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-border bg-card px-2 py-1.5">
+      <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-card px-2 py-1.5">
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -215,79 +304,74 @@ export function StackedAgenda({
         </div>
       </div>
 
-      {/* Filas de citas por día */}
+      {/* Cuadrícula: horas a la izquierda, citas apiladas en filas por hora */}
       <div className="flex-1 overflow-auto">
-        {visibleDays.map((day) => {
-          const key = civilKey(day)
-          const dayEvents = eventsByDay.get(key) ?? []
-          const isToday = key === todayKey
-          return (
-            <div key={key} className="border-b border-border last:border-b-0">
-              <div
-                className={`sticky top-0 z-10 px-3 py-1 text-xs font-semibold capitalize ${
-                  isToday
-                    ? 'bg-primary/10 text-primary'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {dayTitleFmt.format(civilToBogotaMidnightUTC(day))}
-                {isToday && ' · hoy'}
-              </div>
-
-              {dayEvents.length === 0 ? (
-                <div className="px-3 py-2 text-xs italic text-muted-foreground">
-                  Sin citas
+        {/* Cabecera de días (solo en semana) */}
+        {mode === 'week' && (
+          <div
+            className="sticky top-0 z-20 grid border-b border-border bg-muted"
+            style={{ gridTemplateColumns: gridCols }}
+          >
+            <div className="border-r border-border" />
+            {visibleDays.map((day) => {
+              const key = civilKey(day)
+              const isToday = key === todayKey
+              return (
+                <div
+                  key={key}
+                  className={`border-r border-border px-1 py-1 text-center text-[11px] font-semibold capitalize last:border-r-0 ${
+                    isToday ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  {dayShortFmt.format(civilToBogotaMidnightUTC(day))}
                 </div>
-              ) : (
-                <ul className="divide-y divide-border/60">
-                  {dayEvents.map((ev) => {
-                    const isOutlook = ev.extendedProps.source === 'outlook'
-                    const accent = isOutlook
-                      ? OUTLOOK_COLOR
-                      : ev.borderColor || 'var(--primary)'
-                    const name =
-                      ev.extendedProps.matchedPatientName ||
-                      ev.extendedProps.patientName ||
-                      ev.title
-                    return (
-                      <li key={ev.id}>
-                        <button
-                          type="button"
-                          onClick={() => onEventClick(ev)}
-                          className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent/60"
-                          style={{ borderLeft: `4px solid ${accent}` }}
-                        >
-                          <span className="w-16 shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
-                            {timeFmt.format(new Date(ev.start))}
-                          </span>
-                          <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                            {name}
-                          </span>
-                          {isOutlook ? (
-                            <span
-                              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                              style={{
-                                backgroundColor: `color-mix(in oklch, ${OUTLOOK_COLOR} 15%, transparent)`,
-                                color: OUTLOOK_COLOR,
-                              }}
-                            >
-                              Outlook
-                            </span>
-                          ) : (
-                            <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                              {STATUS_LABELS[ev.extendedProps.estado] ??
-                                ev.extendedProps.estado}
-                            </span>
-                          )}
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
+              )
+            })}
+          </div>
+        )}
+
+        {/* Filas de horas */}
+        {hours.map((h) => (
+          <div
+            key={h}
+            className="grid border-b border-border/70"
+            style={{ gridTemplateColumns: gridCols }}
+          >
+            {/* Etiqueta de hora */}
+            <div className="border-r border-border px-1 py-1 text-right text-[11px] font-medium tabular-nums text-muted-foreground">
+              {String(h).padStart(2, '0')}:00
             </div>
-          )
-        })}
+            {/* Una celda por día, con las citas de esa hora apiladas */}
+            {visibleDays.map((day) => {
+              const key = civilKey(day)
+              const isToday = key === todayKey
+              const citas = grid.get(key)?.get(h) ?? []
+              return (
+                <div
+                  key={key}
+                  className={`min-h-[2.5rem] space-y-1 border-r border-border/60 p-1 last:border-r-0 ${
+                    isToday ? 'bg-primary/5' : ''
+                  }`}
+                >
+                  {citas.map((ev) => (
+                    <CitaCard
+                      key={ev.id}
+                      ev={ev}
+                      compact={mode === 'week'}
+                      onClick={() => onEventClick(ev)}
+                    />
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        ))}
+
+        {hours.length === 0 && (
+          <div className="px-3 py-6 text-center text-sm italic text-muted-foreground">
+            Sin citas en este rango
+          </div>
+        )}
       </div>
     </div>
   )

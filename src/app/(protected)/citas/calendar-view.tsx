@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { EventClickArg, DateSelectArg, EventDropArg, DatesSetArg } from '@fullcalendar/core'
 import { AppointmentCalendar } from '@/components/appointments/appointment-calendar'
+import { StackedAgenda } from '@/components/appointments/stacked-agenda'
 import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { OutlookEventDialog } from '@/components/appointments/outlook-event-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
@@ -84,6 +85,22 @@ export function CalendarView({
   // State for detail dialog
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  // Vista: "filas" (agenda apilada, por defecto) o "grid" (cuadrícula FullCalendar)
+  const [viewMode, setViewMode] = useState<'filas' | 'grid'>('filas')
+
+  // Abrir el diálogo correcto a partir de un CalendarEvent.
+  const openEvent = useCallback((event: CalendarEvent) => {
+    setSelectedEvent(event)
+    setDialogOpen(true)
+  }, [])
+
+  // Cambio de rango desde la agenda de filas (recibe ISO ya calculado).
+  const handleAgendaRange = useCallback((start: string, end: string) => {
+    setDateRange((prev) =>
+      prev.start === start && prev.end === end ? prev : { start, end }
+    )
+  }, [])
 
   useEffect(() => {
     if (!initialOutlookNotice) return
@@ -370,16 +387,51 @@ export function CalendarView({
           )}
       </div>
 
+      {/* Selector de vista: Filas (apilada) o Cuadrícula (FullCalendar) */}
+      <div className="flex items-center gap-1 rounded-md border border-input p-0.5 w-fit text-xs">
+        <button
+          type="button"
+          onClick={() => setViewMode('filas')}
+          className={`h-7 rounded px-3 font-medium ${
+            viewMode === 'filas'
+              ? 'bg-primary text-primary-foreground'
+              : 'hover:bg-accent'
+          }`}
+        >
+          Filas
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode('grid')}
+          className={`h-7 rounded px-3 font-medium ${
+            viewMode === 'grid'
+              ? 'bg-primary text-primary-foreground'
+              : 'hover:bg-accent'
+          }`}
+        >
+          Cuadrícula
+        </button>
+      </div>
+
       {/* Calendar */}
-      <div className="h-[calc(100vh-240px)] min-h-[500px] overflow-auto rounded-xl bg-card shadow-card">
-        <AppointmentCalendar
-          events={events}
-          onEventClick={handleEventClick}
-          onDateSelect={handleDateSelect}
-          onEventDrop={handleEventDrop}
-          onDatesSet={handleDatesSet}
-          editable={true}
-        />
+      <div className="h-[calc(100vh-280px)] min-h-[500px] overflow-auto rounded-xl bg-card shadow-card">
+        {viewMode === 'filas' ? (
+          <StackedAgenda
+            events={events}
+            onEventClick={openEvent}
+            onRangeChange={handleAgendaRange}
+            initialDate={dateRange.start}
+          />
+        ) : (
+          <AppointmentCalendar
+            events={events}
+            onEventClick={handleEventClick}
+            onDateSelect={handleDateSelect}
+            onEventDrop={handleEventDrop}
+            onDatesSet={handleDatesSet}
+            editable={true}
+          />
+        )}
       </div>
 
       {/* Detail Dialog */}

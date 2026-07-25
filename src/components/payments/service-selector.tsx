@@ -74,17 +74,16 @@ export function ServiceSelector({
     ))
   }, [items, onChange])
 
+  // El precio se puede ajustar en cualquier servicio (decision del dueno,
+  // migracion 061): el default del catalogo se muestra siempre como referencia.
   const handlePriceChange = useCallback((serviceId: string, price: number) => {
-    const service = services.find(s => s.id === serviceId)
-    if (!service?.precio_variable) return
-
     // Allow free typing - validation happens on blur
     onChange(items.map(item =>
       item.service_id === serviceId
         ? { ...item, unit_price: price }
         : item
     ))
-  }, [services, items, onChange])
+  }, [items, onChange])
 
   const handlePriceBlur = useCallback((serviceId: string) => {
     const service = services.find(s => s.id === serviceId)
@@ -153,21 +152,27 @@ export function ServiceSelector({
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex-1">
                     <p className="font-medium text-sm">{item.service_name}</p>
-                    {isVariable && service && (
+                    {/* Default del catalogo siempre visible como referencia */}
+                    {service && (
                       <p className="text-xs text-muted-foreground">
-                        Rango: {formatCurrency(service.precio_minimo || 0)} - {formatCurrency(service.precio_maximo || 0)}
+                        Precio de lista: {formatCurrency(service.precio_base)}
+                        {isVariable && (
+                          <>
+                            {' · '}Rango: {formatCurrency(service.precio_minimo || 0)} - {formatCurrency(service.precio_maximo || 0)}
+                          </>
+                        )}
                       </p>
                     )}
                   </div>
 
-                  {/* Price input (editable for variable) */}
+                  {/* Price input (editable en todos los servicios) */}
                   <div className="w-32">
                     <Input
                       type="number"
                       value={item.unit_price}
                       onChange={e => handlePriceChange(item.service_id, parseFloat(e.target.value) || 0)}
                       onBlur={() => handlePriceBlur(item.service_id)}
-                      disabled={disabled || !isVariable}
+                      disabled={disabled}
                       className="text-right"
                       min={service?.precio_minimo || 0}
                       max={service?.precio_maximo || undefined}

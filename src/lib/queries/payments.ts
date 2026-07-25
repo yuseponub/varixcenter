@@ -10,8 +10,11 @@ export async function getPayments(options: {
   limit?: number
   patientId?: string
   estado?: 'activo' | 'anulado'
+  /** Rango por fecha de creacion (ISO). startDate inclusivo, endDate exclusivo. */
+  startDate?: string
+  endDate?: string
 } = {}): Promise<{ payments: PaymentWithDetails[]; total: number }> {
-  const { page = 1, limit = 20, patientId, estado } = options
+  const { page = 1, limit = 20, patientId, estado, startDate, endDate } = options
   const offset = (page - 1) * limit
 
   const supabase = await createClient()
@@ -50,6 +53,14 @@ export async function getPayments(options: {
 
   if (estado) {
     query = query.eq('estado', estado)
+  }
+
+  if (startDate) {
+    query = query.gte('created_at', startDate)
+  }
+
+  if (endDate) {
+    query = query.lt('created_at', endDate)
   }
 
   const { data, error, count } = await query

@@ -109,6 +109,8 @@ export interface CalendarEvent {
     estado: AppointmentStatus
     motivoConsulta: string | null
     notas: string | null
+    /** Procedimientos agendados ("Sesion Piernas ×2") para mostrar en la card. */
+    servicios?: string[]
     outlookEventId?: string
     outlookWebLink?: string | null
     outlookLocation?: string | null

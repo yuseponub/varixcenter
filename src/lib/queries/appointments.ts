@@ -60,6 +60,10 @@ export async function getAppointmentsForCalendar(
         nombre,
         apellido,
         celular
+      ),
+      appointment_services (
+        service_name,
+        cantidad
       )
     `)
     .gte('fecha_hora_inicio', startDate)
@@ -87,6 +91,13 @@ export async function getAppointmentsForCalendar(
     }
     const colors = STATUS_COLORS[appointment.estado as AppointmentStatus]
 
+    // Procedimientos agendados: "Sesion Piernas ×2", para mostrar en la card.
+    const servicios = (
+      (appointment as unknown as {
+        appointment_services?: { service_name: string; cantidad: number }[]
+      }).appointment_services ?? []
+    ).map((s) => (s.cantidad > 1 ? `${s.service_name} ×${s.cantidad}` : s.service_name))
+
     return {
       id: appointment.id,
       title: `${patient.nombre} ${patient.apellido}`,
@@ -108,6 +119,7 @@ export async function getAppointmentsForCalendar(
         estado: appointment.estado as AppointmentStatus,
         motivoConsulta: appointment.motivo_consulta,
         notas: appointment.notas,
+        servicios,
       },
     }
   })

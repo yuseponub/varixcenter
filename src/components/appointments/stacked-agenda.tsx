@@ -189,13 +189,21 @@ function CitaCard({
       >
         {timeFmt.format(new Date(ev.start))}
       </span>
-      <span
-        className="min-w-0 flex-1 truncate rounded px-1 text-xs font-medium"
-        style={
-          nameTint ? { backgroundColor: nameTint.bg, color: nameTint.color } : undefined
-        }
-      >
-        {name}
+      <span className="min-w-0 flex-1">
+        <span
+          className="block truncate rounded px-1 text-xs font-medium"
+          style={
+            nameTint ? { backgroundColor: nameTint.bg, color: nameTint.color } : undefined
+          }
+        >
+          {name}
+        </span>
+        {/* Procedimientos agendados, debajo del nombre */}
+        {ev.extendedProps.servicios && ev.extendedProps.servicios.length > 0 && (
+          <span className="block truncate px-1 text-[10px] leading-tight text-muted-foreground">
+            {ev.extendedProps.servicios.join(' · ')}
+          </span>
+        )}
       </span>
       {!compact &&
         (isOutlook ? (

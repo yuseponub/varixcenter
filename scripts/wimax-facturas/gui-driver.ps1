@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('Inspect', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'Click', 'Screenshot', 'PromptUrgent')]
+  [ValidateSet('Inspect', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'SetInlineFields', 'Click', 'RightClick', 'Screenshot', 'PromptUrgent')]
   [string]$Action,
 
   [string]$OutputPath,
@@ -42,11 +42,24 @@ namespace Varix.Wimax {
     public long Handle { get; set; }
     public string Title { get; set; }
     public string ClassName { get; set; }
+    public string ChildText { get; set; }
     public int ProcessId { get; set; }
     public string ProcessName { get; set; }
     public int SessionId { get; set; }
     public bool Visible { get; set; }
     public bool Minimized { get; set; }
+    public int Left { get; set; }
+    public int Top { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+  }
+
+  public sealed class ControlInfo {
+    public long Handle { get; set; }
+    public string Text { get; set; }
+    public string ClassName { get; set; }
+    public int ControlId { get; set; }
+    public bool Enabled { get; set; }
     public int Left { get; set; }
     public int Top { get; set; }
     public int Width { get; set; }
@@ -73,6 +86,9 @@ namespace Varix.Wimax {
     [DllImport("user32.dll")]
     private static extern bool EnumWindows(EnumWindowsProc callback, IntPtr lParam);
 
+    [DllImport("user32.dll")]
+    private static extern bool EnumChildWindows(IntPtr parent, EnumWindowsProc callback, IntPtr lParam);
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
@@ -84,6 +100,9 @@ namespace Varix.Wimax {
 
     [DllImport("user32.dll")]
     private static extern bool IsWindowVisible(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsWindowEnabled(IntPtr hWnd);
 
     [DllImport("user32.dll")]
     private static extern bool IsIconic(IntPtr hWnd);
@@ -102,6 +121,12 @@ namespace Varix.Wimax {
 
     [DllImport("user32.dll")]
     private static extern bool BringWindowToTop(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SetFocus(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetFocus();
 
     [DllImport("user32.dll")]
     private static extern bool AttachThreadInput(uint sourceThread, uint targetThread, bool attach);
@@ -130,12 +155,39 @@ namespace Varix.Wimax {
     [DllImport("user32.dll")]
     public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extraInfo);
 
-    private static WindowInfo Describe(IntPtr hWnd) {
-      var title = new StringBuilder(1024);
-      var className = new StringBuilder(256);
-      GetWindowText(hWnd, title, title.Capacity);
-      GetClassName(hWnd, className, className.Capacity);
+    [DllImport("user32.dll")]
+    private static extern int GetDlgCtrlID(IntPtr hWnd);
 
+    [DllImport("user32.dll")]
+    private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, StringBuilder lParam);
+
+    private static string Text(IntPtr hWnd) {
+      var value = new StringBuilder(2048);
+      GetWindowText(hWnd, value, value.Capacity);
+      return value.ToString();
+    }
+
+    private static string Class(IntPtr hWnd) {
+      var value = new StringBuilder(512);
+      GetClassName(hWnd, value, value.Capacity);
+      return value.ToString();
+    }
+
+    private static string ChildText(IntPtr parent) {
+      var result = new List<string>();
+      EnumChildWindows(parent, delegate(IntPtr hWnd, IntPtr ignored) {
+        if (!IsWindowVisible(hWnd)) return true;
+        var value = Text(hWnd).Trim();
+        if (!String.IsNullOrWhiteSpace(value)) result.Add(value);
+        return true;
+      }, IntPtr.Zero);
+      return String.Join("\n", result.ToArray());
+    }
+
+    private static WindowInfo Describe(IntPtr hWnd) {
       uint processId;
       GetWindowThreadProcessId(hWnd, out processId);
       string processName = null;
@@ -151,8 +203,9 @@ namespace Varix.Wimax {
       GetWindowRect(hWnd, out rect);
       return new WindowInfo {
         Handle = hWnd.ToInt64(),
-        Title = title.ToString(),
-        ClassName = className.ToString(),
+        Title = Text(hWnd),
+        ClassName = Class(hWnd),
+        ChildText = ChildText(hWnd),
         ProcessId = (int)processId,
         ProcessName = processName,
         SessionId = sessionId,
@@ -170,9 +223,32 @@ namespace Varix.Wimax {
       EnumWindows(delegate(IntPtr hWnd, IntPtr ignored) {
         var info = Describe(hWnd);
         if (info.Visible && (!String.IsNullOrWhiteSpace(info.Title) ||
-            String.Equals(info.ProcessName, "WIMAXP~1", StringComparison.OrdinalIgnoreCase))) {
+            !String.IsNullOrWhiteSpace(info.ProcessName))) {
           result.Add(info);
         }
+        return true;
+      }, IntPtr.Zero);
+      return result.ToArray();
+    }
+
+    public static ControlInfo[] Controls(long rawParent) {
+      var result = new List<ControlInfo>();
+      var parent = new IntPtr(rawParent);
+      EnumChildWindows(parent, delegate(IntPtr hWnd, IntPtr ignored) {
+        if (!IsWindowVisible(hWnd)) return true;
+        RECT rect;
+        GetWindowRect(hWnd, out rect);
+        result.Add(new ControlInfo {
+          Handle = hWnd.ToInt64(),
+          Text = Text(hWnd),
+          ClassName = Class(hWnd),
+          ControlId = GetDlgCtrlID(hWnd),
+          Enabled = IsWindowEnabled(hWnd),
+          Left = rect.Left,
+          Top = rect.Top,
+          Width = Math.Max(0, rect.Right - rect.Left),
+          Height = Math.Max(0, rect.Bottom - rect.Top)
+        });
         return true;
       }, IntPtr.Zero);
       return result.ToArray();
@@ -211,6 +287,41 @@ namespace Varix.Wimax {
 
     public static bool Minimize(long rawHandle) {
       return ShowWindowAsync(new IntPtr(rawHandle), 6); // SW_MINIMIZE
+    }
+
+    public static bool FocusControl(long rawDialog, long rawControl) {
+      var dialog = new IntPtr(rawDialog);
+      var control = new IntPtr(rawControl);
+      if (!ForceForeground(rawDialog)) return false;
+      uint processId;
+      var targetThread = GetWindowThreadProcessId(control, out processId);
+      var currentThread = GetCurrentThreadId();
+      var attached = currentThread != targetThread &&
+        AttachThreadInput(currentThread, targetThread, true);
+      try {
+        SetFocus(control);
+        return GetFocus() == control;
+      }
+      finally {
+        if (attached) AttachThreadInput(currentThread, targetThread, false);
+      }
+    }
+
+    public static string TextValue(long rawEdit) {
+      var edit = new IntPtr(rawEdit);
+      int length = SendMessage(edit, 0x000E, IntPtr.Zero, IntPtr.Zero).ToInt32();
+      var value = new StringBuilder(Math.Max(2, length + 1));
+      SendMessage(edit, 0x000D, new IntPtr(value.Capacity), value);
+      return value.ToString();
+    }
+
+    public static bool ClearEdit(long rawEdit) {
+      var edit = new IntPtr(rawEdit);
+      // Xbase++ mirrors keyboard-style selection/clear into its internal
+      // buffer; WM_SETTEXT alone only changes the native window caption.
+      SendMessage(edit, 0x00B1, IntPtr.Zero, new IntPtr(-1)); // EM_SETSEL
+      SendMessage(edit, 0x0303, IntPtr.Zero, IntPtr.Zero); // WM_CLEAR
+      return TextValue(rawEdit).Length == 0;
     }
 
     public static uint IdleSeconds() {
@@ -334,6 +445,42 @@ function Write-Result([object]$Value) {
   [Console]::Out.WriteLine($json)
 }
 
+function Escape-SendKeys([string]$Value) {
+  return [regex]::Replace(
+    $Value,
+    '[+^%~(){}\[\]]',
+    [System.Text.RegularExpressions.MatchEvaluator]{
+      param($match)
+      return '{' + $match.Value + '}'
+    }
+  )
+}
+
+function Test-InlineNumericValue([string]$Expected, [string]$Actual) {
+  if ($Actual.Trim() -ceq $Expected.Trim()) { return $true }
+  $styles = [System.Globalization.NumberStyles]::Number
+  [decimal]$expectedNumber = 0
+  if (-not [decimal]::TryParse(
+    $Expected,
+    $styles,
+    [System.Globalization.CultureInfo]::InvariantCulture,
+    [ref]$expectedNumber
+  )) {
+    return $false
+  }
+  foreach ($cultureName in @('es-CO', 'en-US')) {
+    [decimal]$actualNumber = 0
+    $culture = [System.Globalization.CultureInfo]::GetCultureInfo($cultureName)
+    if (
+      [decimal]::TryParse($Actual, $styles, $culture, [ref]$actualNumber) -and
+      $actualNumber -eq $expectedNumber
+    ) {
+      return $true
+    }
+  }
+  return $false
+}
+
 function Find-Window([object]$Payload) {
   if ($Payload.foreground) {
     $foreground = [Varix.Wimax.NativeGui]::Foreground()
@@ -341,7 +488,8 @@ function Find-Window([object]$Payload) {
     $processMatches = -not $Payload.process -or $foreground.ProcessName -ieq [string]$Payload.process
     $titleMatches = -not $Payload.titlePattern -or $foreground.Title -match [string]$Payload.titlePattern
     $classMatches = -not $Payload.classPattern -or $foreground.ClassName -match [string]$Payload.classPattern
-    if (-not ($processMatches -and $titleMatches -and $classMatches)) {
+    $textMatches = -not $Payload.textPattern -or $foreground.ChildText -match [string]$Payload.textPattern
+    if (-not ($processMatches -and $titleMatches -and $classMatches -and $textMatches)) {
       throw 'La ventana en primer plano no coincide con el perfil'
     }
     return $foreground
@@ -351,7 +499,8 @@ function Find-Window([object]$Payload) {
     $processMatches = -not $Payload.process -or $_.ProcessName -ieq [string]$Payload.process
     $titleMatches = -not $Payload.titlePattern -or $_.Title -match [string]$Payload.titlePattern
     $classMatches = -not $Payload.classPattern -or $_.ClassName -match [string]$Payload.classPattern
-    $processMatches -and $titleMatches -and $classMatches
+    $textMatches = -not $Payload.textPattern -or $_.ChildText -match [string]$Payload.textPattern
+    $processMatches -and $titleMatches -and $classMatches -and $textMatches
   })
   if ($matches.Count -ne 1) {
     throw "Se esperaba una ventana y se encontraron $($matches.Count)"
@@ -421,16 +570,86 @@ switch ($Action) {
     if (-not $payload.keys) { throw 'Falta keys' }
     $window = Find-Window $payload
     [void][Varix.Wimax.NativeGui]::ForceForeground($window.Handle)
-    Start-Sleep -Milliseconds 150
+    Start-Sleep -Milliseconds 600
     [System.Windows.Forms.SendKeys]::SendWait([string]$payload.keys)
     $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
     Start-Sleep -Milliseconds $delay
     Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })
   }
+  'SetInlineFields' {
+    if (-not $payload.control) { throw 'Falta control' }
+    if ($null -eq $payload.values) { throw 'Falta values' }
+    $window = Find-Window $payload
+    $control = $payload.control
+    if ($control.orderBy -and [string]$control.orderBy -cne 'left') {
+      throw 'Solo se admite ordenar Edit por left'
+    }
+    $expectedCount = [int]$control.expectedCount
+    if ($expectedCount -ne 3) {
+      throw 'SetInlineFields exige exactamente tres Edit'
+    }
+    $classPattern = if ($control.classPattern) { [string]$control.classPattern } else { '^Edit$' }
+    $edits = @(
+      [Varix.Wimax.NativeGui]::Controls($window.Handle) |
+        Where-Object { $_.Enabled -and $_.ClassName -match $classPattern } |
+        Sort-Object Left, Top, ControlId
+    )
+    if ($edits.Count -ne $expectedCount) {
+      throw "Se esperaban $expectedCount controles Edit y se encontraron $($edits.Count)"
+    }
+    $values = @($payload.values)
+    if ($values.Count -ne $expectedCount) {
+      throw "Se esperaban $expectedCount valores y se recibieron $($values.Count)"
+    }
+
+    if (-not [Varix.Wimax.NativeGui]::ForceForeground($window.Handle)) {
+      throw 'Windows no concedio el foco al editor de la linea'
+    }
+    Start-Sleep -Milliseconds 350
+    $fieldDelay = if ($payload.delayMs) { [int]$payload.delayMs } else { 200 }
+    if ($fieldDelay -lt 100 -or $fieldDelay -gt 2000) {
+      throw 'delayMs de SetInlineFields fuera de rango'
+    }
+    $commitDelay = if ($payload.commitDelayMs) { [int]$payload.commitDelayMs } else { 1200 }
+    if ($commitDelay -lt 500 -or $commitDelay -gt 5000) {
+      throw 'commitDelayMs de SetInlineFields fuera de rango'
+    }
+
+    for ($index = 0; $index -lt $expectedCount; $index++) {
+      $edit = $edits[$index]
+      if ($edit.Width -lt 4 -or $edit.Height -lt 4) {
+        throw "El Edit ordinal $($index + 1) no tiene un area valida"
+      }
+      $x = $edit.Left + [Math]::Max(2, [int]($edit.Width / 2))
+      $y = $edit.Top + [Math]::Max(2, [int]($edit.Height / 2))
+      [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+      Start-Sleep -Milliseconds $fieldDelay
+      [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+      [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+      Start-Sleep -Milliseconds $fieldDelay
+      [System.Windows.Forms.SendKeys]::SendWait('^a')
+      [System.Windows.Forms.SendKeys]::SendWait((Escape-SendKeys ([string]$values[$index])))
+      Start-Sleep -Milliseconds $fieldDelay
+      $observed = [Varix.Wimax.NativeGui]::TextValue([long]$edit.Handle)
+      if (-not (Test-InlineNumericValue ([string]$values[$index]) $observed)) {
+        throw "El Edit ordinal $($index + 1) no confirmo el valor esperado"
+      }
+    }
+    # The third field is Discount. Enter commits the whole line and WiMAX
+    # immediately opens the next blank line; keep this three-field edit atomic.
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+    Start-Sleep -Milliseconds $commitDelay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      editedControls = $expectedCount
+      valueLengths = @($values | ForEach-Object { ([string]$_).Length })
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
   'Click' {
     $window = Find-Window $payload
     [void][Varix.Wimax.NativeGui]::ForceForeground($window.Handle)
-    Start-Sleep -Milliseconds 150
+    Start-Sleep -Milliseconds 350
     $x = $window.Left + [int]$payload.x
     $y = $window.Top + [int]$payload.y
     if ($x -lt $window.Left -or $x -ge ($window.Left + $window.Width) -or
@@ -438,8 +657,29 @@ switch ($Action) {
       throw 'Las coordenadas estan fuera de la ventana objetivo'
     }
     [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+    # Xbase++ ignores a click if the pointer move and button event arrive in
+    # the same input tick. Give its event loop time to observe the hover.
+    Start-Sleep -Milliseconds 600
     [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
     [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })
+  }
+  'RightClick' {
+    $window = Find-Window $payload
+    [void][Varix.Wimax.NativeGui]::ForceForeground($window.Handle)
+    Start-Sleep -Milliseconds 350
+    $x = $window.Left + [int]$payload.x
+    $y = $window.Top + [int]$payload.y
+    if ($x -lt $window.Left -or $x -ge ($window.Left + $window.Width) -or
+        $y -lt $window.Top -or $y -ge ($window.Top + $window.Height)) {
+      throw 'Las coordenadas estan fuera de la ventana objetivo'
+    }
+    [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+    Start-Sleep -Milliseconds 600
+    [Varix.Wimax.NativeGui]::mouse_event(0x0008, 0, 0, 0, [UIntPtr]::Zero)
+    [Varix.Wimax.NativeGui]::mouse_event(0x0010, 0, 0, 0, [UIntPtr]::Zero)
     $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
     Start-Sleep -Milliseconds $delay
     Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })

@@ -93,10 +93,23 @@ powershell -ExecutionPolicy Bypass -File .\install-colfact-reconciler.ps1 -Enabl
 Start-ScheduledTask -TaskName VarixWimaxColfact
 ```
 
+Si una FE fue emitida bajo supervision directa durante una calibracion, existe
+una recuperacion explicita que no toca la GUI ni descubre coincidencias por si
+sola. Cada trabajo debe emparejarse con su numero FE exacto; el script vuelve a
+leer `tmdir`/`trafac`, exige cedula y total exactos, registra el vinculo mediante
+la RPC restringida de la migracion 072 y despues usa la conciliacion XML normal:
+
+```powershell
+& C:\varix-facturas\node\node.exe .\recover-observed-emissions.mjs `
+  JOB_UUID=FE1234
+```
+
 ### Salvaguardas operativas
 
 - `WIMAX_ROBOT_ENABLED` debe ser literalmente `true`.
-- El perfil UI debe tener `calibrated: true`; el ejemplo se entrega bloqueado.
+- El perfil UI debe tener `calibrated: true`. El perfil de CONTABILIDAD incluido
+  solo es valido para la resolucion, sesion y version de WiMAX cuya metadata
+  declara; cualquier cambio exige volver a calibrarlo.
 - El proceso y la ventana de WiMAX deben pertenecer a la sesion interactiva
   configurada. En un PC fijo se recomienda `sessionId: 1`; en RDS/nube se usa
   `sessionId: "current"` para validar la sesion donde corre el propio agente.
@@ -112,9 +125,10 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
   `WIMAX_ALLOWED_HOURS`, si se configuro.
 - Una urgente omite el contador de inactividad solamente despues de que la
   persona del PC pulsa **Facturar ahora**. Una sesion bloqueada nunca emite.
-- El cierre usa su propia barrera `WIMAX_END_OF_DAY_MIN_IDLE_SECONDS`. Para una
-  cola no vacia, el usuario debe dejar la sesion iniciada y desbloqueada, WiMAX
-  abierto en su unica pantalla principal y la resolucion calibrada.
+- El cierre se autoriza por su hora fija `WIMAX_END_OF_DAY_TIME`; con
+  `WIMAX_END_OF_DAY_MIN_IDLE_SECONDS=0` comienza sin esperar inactividad. La
+  sesion debe quedar iniciada y desbloqueada y la resolucion debe ser la
+  calibrada. Puede configurarse una barrera mayor que cero si se desea.
 - El PC no se apaga si queda una factura en cola, error, duplicado, revision,
   verificacion o pendiente de CUFE, ni mientras haya conciliacion programada.
   Tambien vuelve a exigir inactividad justo antes de ejecutar el apagado.
@@ -134,15 +148,15 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 
 ### Instalacion segura en CONTABILIDAD
 
-1. Aplicar primero la migracion `068_wimax_invoicing_robot.sql` y ejecutar su
-   prueba SQL en staging.
+1. Aplicar en orden las migraciones `068` a `072` y ejecutar sus pruebas SQL.
 2. Copiar esta carpeta completa a `C:\varix-facturas\app` y ejecutar `npm ci`.
 3. Fusionar las variables nuevas de `.env.example` en `.env`, inicialmente con
    `WIMAX_ROBOT_ENABLED=false`.
 4. Copiar `robot-profile.contabilidad.example.json` como
-   `robot-profile.contabilidad.json`. Verificar paso a paso atajos, titulos,
-   orden TAB y screenshots en la sesion 1. Solo entonces cambiar
-   `calibrated` a `true`.
+   `robot-profile.contabilidad.json`. Verificar que sesion, resolucion, titulos,
+   estructura de controles y coordenadas siguen coincidiendo con la terminal
+   calibrada. Si alguno cambia, poner `calibrated: false` hasta repetir la
+   validacion.
    Para autoarranque, copiar tambien `wimax-startup.contabilidad.example.json`
    como `wimax-startup.contabilidad.json`, confirmar la huella del ejecutable y
    completar `WIMAX_COMPANY_PASSWORD` exclusivamente en el `.env` local.
@@ -157,13 +171,20 @@ Start-ScheduledTask -TaskName VarixWimaxColfact
 
    ```powershell
    $env:WIMAX_ROBOT_ENABLED='true'
-   & C:\varix-facturas\node\node.exe .\robot.mjs --once
+   & C:\varix-facturas\node\node.exe .\robot.mjs --once --authorized-now
    ```
 
    El arranque se puede validar por separado, sin consultar ni reclamar la cola:
 
    ```powershell
-   & C:\varix-facturas\node\node.exe .\robot.mjs --ensure-wimax
+   & C:\varix-facturas\node\node.exe .\robot.mjs --ensure-wimax --authorized-now
+   ```
+
+   Para comprobar ademas que abre Facturacion General y vuelve a la pantalla
+   principal sin ingresar cliente, items ni grabar, usar la prueba reversible:
+
+   ```powershell
+   & C:\varix-facturas\node\node.exe .\robot.mjs --smoke-ui --authorized-now
    ```
 
 7. Tras validar una emision completa (FE en `trafac`, CUFE y estado en

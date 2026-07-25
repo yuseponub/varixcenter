@@ -28,10 +28,18 @@ function validProfile() {
       height: 1055,
     },
     company: { exactName: 'VARIX CENTER S.A.S 2026' },
+    prefix: {
+      exactName: 'FE FACTURACION ELECTRONICA',
+      keyboardCode: 'fe',
+      promptTextPattern: '^Seleccione Prefijo a utilizar( \\d+)?$',
+    },
     companyLink: { x: 950, y: 58 },
     dialogs: {
       companySelectorTitle: 'Seleccionar Empresa',
       loginTitlePattern: '^Acceso empresa$',
+      prefixSelectorTitlePattern: '^\\s*Facturaci.n\\s*$',
+      dailyReportTitlePattern: '^\\s*Estado actual\\s*$',
+      auditTitlePattern: '^\\s*Auditoria General\\s*$',
       reorganizationTitle: 'Grupo Wimax',
       acceptButton: 'Aceptar',
       declineButton: 'No',

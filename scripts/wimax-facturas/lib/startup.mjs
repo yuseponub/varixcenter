@@ -104,8 +104,14 @@ export function validateStartupProfile(profile, invoiceProfile) {
   }
   if (
     !nonEmpty(profile.company?.exactName) ||
+    !nonEmpty(profile.prefix?.exactName) ||
+    !/^[A-Za-z0-9]{1,8}$/.test(profile.prefix?.keyboardCode ?? '') ||
+    !nonEmpty(profile.prefix?.promptTextPattern) ||
     !nonEmpty(profile.dialogs?.companySelectorTitle) ||
     !nonEmpty(profile.dialogs?.loginTitlePattern) ||
+    !nonEmpty(profile.dialogs?.prefixSelectorTitlePattern) ||
+    !nonEmpty(profile.dialogs?.dailyReportTitlePattern) ||
+    !nonEmpty(profile.dialogs?.auditTitlePattern) ||
     !nonEmpty(profile.dialogs?.reorganizationTitle) ||
     !nonEmpty(profile.dialogs?.acceptButton) ||
     !nonEmpty(profile.dialogs?.declineButton) ||

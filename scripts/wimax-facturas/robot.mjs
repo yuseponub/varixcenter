@@ -3,7 +3,7 @@
  *
  * Safety invariants:
  * - C:\wimax is only opened through dbffile in read mode.
- * - Urgent jobs require explicit desktop consent; close jobs require idle time.
+ * - Urgent jobs require explicit desktop consent; scheduled jobs run at their configured time.
  * - Cloud + tmdir/trafac dedup runs before typing and again before emission.
  * - The irreversible accounting acceptance requires an audited exact snapshot approval.
  * - payment_invoicing completes only after trafac FE + CUFE are both observed.
@@ -34,7 +34,7 @@ import {
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/2.5.0'
+const AGENT_VERSION = 'wimax-facturas/3.0.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -81,6 +81,8 @@ function loadProfile(file) {
     throw new Error('CONFIG: sessionId debe ser un entero positivo o current')
   }
   for (const flow of [
+    'openInvoice',
+    'openCustomerDirectory',
     'createCustomer',
     'prepareInvoice',
     'addItem',
@@ -242,8 +244,14 @@ async function desktopReady(driver, profile, minIdleSeconds) {
   return { ready: true, desktop }
 }
 
-function contextFor(job, customerCode) {
+export function contextFor(job, customerCode) {
   const names = splitPatientName(job.paciente)
+  const paymentReference = String(job.paciente?.payment_numero ?? '').trim()
+  const fullName = [job.paciente?.nombre, job.paciente?.apellido]
+    .map((value) => String(value ?? '').trim())
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
   return {
     customer: {
       code: customerCode,
@@ -257,13 +265,54 @@ function contextFor(job, customerCode) {
       city: 'Bucaramanga',
       postalCode: '680011',
       regimen: 'P',
+      legalPerson: 'N',
+      declarant: 'N',
+      status: 'A',
     },
     invoice: {
       total: Number(job.monto),
+      typeCode: 'FE',
+      methodCode: '1',
+      paymentType: 'DP',
       bankAccount: '1.1.10.05.01.03',
+      paymentReference,
+      paymentDetail: `${paymentReference} ${fullName}`.trim().slice(0, 80),
     },
     item: null,
   }
+}
+
+export async function prepareJobUi({
+  workflow,
+  context,
+  customerExists,
+  items,
+  onHeartbeat = async () => {},
+}) {
+  await workflow.run('openInvoice', context)
+  await onHeartbeat('facturacion_abierta')
+
+  if (!customerExists) {
+    await workflow.run('openCustomerDirectory', context)
+    await workflow.run('createCustomer', context)
+    await onHeartbeat('cliente_preparado')
+  }
+
+  await workflow.run('prepareInvoice', context)
+  await onHeartbeat('encabezado_preparado')
+  for (const item of items) {
+    await workflow.run('addItem', {
+      ...context,
+      item: {
+        reference: item.referencia,
+        description: item.descripcion,
+        quantity: Number(item.cantidad),
+        unitPrice: Number(item.precio_unitario),
+      },
+    })
+    await onHeartbeat('item_preparado')
+  }
+  await workflow.run('finishBeforeApproval', context)
 }
 
 async function currentJobState(supabase, jobId) {
@@ -427,25 +476,13 @@ async function processJob({
     )
 
     uiStarted = true
-    if (!preflight.evidence.customer_exists) {
-      await workflow.run('createCustomer', context)
-      await heartbeat(supabase, job, 'cliente_preparado')
-    }
-    await workflow.run('prepareInvoice', context)
-    await heartbeat(supabase, job, 'encabezado_preparado')
-    for (const item of job.items) {
-      await workflow.run('addItem', {
-        ...context,
-        item: {
-          reference: item.referencia,
-          description: item.descripcion,
-          quantity: Number(item.cantidad),
-          unitPrice: Number(item.precio_unitario),
-        },
-      })
-      await heartbeat(supabase, job, 'item_preparado')
-    }
-    await workflow.run('finishBeforeApproval', context)
+    await prepareJobUi({
+      workflow,
+      context,
+      customerExists: preflight.evidence.customer_exists,
+      items: job.items,
+      onHeartbeat: (step) => heartbeat(supabase, job, step),
+    })
     await workflow.capture('esperando-aprobacion')
     await rpc(supabase, 'robot_wimax_esperar_aprobacion', {
       p_job_id: job.id,
@@ -656,10 +693,16 @@ async function main() {
     'WIMAX_STARTUP_TIMEOUT_SECONDS', 120, 30, 300
   )
   const ensureWimaxOnly = process.argv.includes('--ensure-wimax')
+  const smokeUiOnly = process.argv.includes('--smoke-ui')
+  const runOnce = process.argv.includes('--once')
+  const authorizedNow = process.argv.includes('--authorized-now')
+  if (authorizedNow && !ensureWimaxOnly && !smokeUiOnly && !runOnce) {
+    throw new Error('CONFIG: --authorized-now requiere --once, --ensure-wimax o --smoke-ui')
+  }
   let startup = null
-  if (autoStartEnabled || ensureWimaxOnly) {
+  if (autoStartEnabled || ensureWimaxOnly || smokeUiOnly) {
     if (!autoStartEnabled) {
-      throw new Error('CONFIG: --ensure-wimax requiere WIMAX_AUTO_START_ENABLED=true')
+      throw new Error('CONFIG: la prueba de arranque requiere WIMAX_AUTO_START_ENABLED=true')
     }
     const companyPassword = required('WIMAX_COMPANY_PASSWORD')
     const startupProfilePath = path.resolve(ROOT, required('WIMAX_STARTUP_PROFILE'))
@@ -675,11 +718,46 @@ async function main() {
     delete process.env.WIMAX_COMPANY_PASSWORD
   }
 
-  if (ensureWimaxOnly) {
-    const result = await startup.ensure(minIdleSeconds)
+  if (ensureWimaxOnly || smokeUiOnly) {
+    const result = await startup.ensure(authorizedNow ? 0 : minIdleSeconds)
     console.log(
       `Arranque WiMAX verificado; opened=${result.launched}; reorg_no=${result.reorganizationsDeclined}`
     )
+    if (ensureWimaxOnly) return
+
+    const smokeDriver = new GuiDriver({ scriptPath: path.join(ROOT, 'gui-driver.ps1') })
+    const smokeWorkflow = new WimaxWorkflow({
+      driver: smokeDriver,
+      profile,
+      stateDir,
+      jobId: '00000000-0000-4000-8000-000000000000',
+    })
+    const smokeContext = contextFor({
+      monto: 1,
+      paciente: {
+        cedula: '99999',
+        nombre: 'PRUEBA',
+        apellido: 'REVERSIBLE',
+        payment_numero: 'SMOKE-UI',
+      },
+    }, '99PRU')
+    let smokeError = null
+    try {
+      await smokeWorkflow.run('openInvoice', smokeContext)
+      await smokeWorkflow.capture('facturacion-abierta-sin-datos')
+    } catch (error) {
+      smokeError = error
+    }
+    try {
+      await smokeWorkflow.run('abort', smokeContext)
+    } catch (error) {
+      smokeError ??= error
+    }
+    if (smokeError) throw smokeError
+    if (!cleanWimaxDesktop(await smokeDriver.inspect(), profile)) {
+      throw new Error('UI_SMOKE: WiMAX no regreso limpio despues de cancelar')
+    }
+    console.log('Prueba UI reversible completada; no se ingreso ni grabo una factura')
     return
   }
 
@@ -698,7 +776,7 @@ async function main() {
     'WIMAX_END_OF_DAY_WINDOW_MINUTES', 360, 60, 720
   )
   const endOfDayMinIdleSeconds = integerEnv(
-    'WIMAX_END_OF_DAY_MIN_IDLE_SECONDS', 600, 60, 86400
+    'WIMAX_END_OF_DAY_MIN_IDLE_SECONDS', 0, 0, 86400
   )
   const endOfDayQuietSeconds = integerEnv(
     'WIMAX_END_OF_DAY_QUIET_SECONDS', 120, 30, 900
@@ -729,7 +807,6 @@ async function main() {
   const agentId = (process.env.WIMAX_AGENT_ID || `${hostname()}-session1`)
     .replace(/[^A-Za-z0-9._-]/g, '-')
     .slice(0, 80)
-  const runOnce = process.argv.includes('--once')
 
   // Validate schedule syntax once at startup instead of producing a repeated
   // configuration error every polling cycle.
@@ -904,7 +981,7 @@ async function main() {
         } else {
           const outcome = await processNext(
             ['urgente', 'cierre', 'supervisada'],
-            minIdleSeconds
+            authorizedNow ? 0 : minIdleSeconds
           )
           if (!outcome.processed) console.log(`Sin reclamar: ${outcome.reason}`)
         }

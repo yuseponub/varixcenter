@@ -93,6 +93,10 @@ namespace Varix.Wimax {
     [DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
     [DllImport("user32.dll")]
+    private static extern IntPtr SetFocus(IntPtr hWnd);
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetFocus();
+    [DllImport("user32.dll")]
     private static extern bool BringWindowToTop(IntPtr hWnd);
     [DllImport("user32.dll")]
     private static extern bool ShowWindowAsync(IntPtr hWnd, int command);
@@ -224,6 +228,26 @@ namespace Varix.Wimax {
       if (!GetWindowRect(handle, out rect)) return false;
       if (!ForceForeground(handle)) return false;
       if (!SetCursorPos(rect.Left + relativeX, rect.Top + relativeY)) return false;
+      // Xbase++ needs to observe the pointer move before the button event.
+      System.Threading.Thread.Sleep(150);
+      mouse_event(0x0002, 0, 0, 0, UIntPtr.Zero);
+      mouse_event(0x0004, 0, 0, 0, UIntPtr.Zero);
+      // The Xbase++ company hyperlink is wired to its double-click event.
+      System.Threading.Thread.Sleep(100);
+      mouse_event(0x0002, 0, 0, 0, UIntPtr.Zero);
+      mouse_event(0x0004, 0, 0, 0, UIntPtr.Zero);
+      return true;
+    }
+
+    public static bool ClickControl(long rawDialog, long rawControl) {
+      var dialog = new IntPtr(rawDialog);
+      var control = new IntPtr(rawControl);
+      RECT rect;
+      if (!GetWindowRect(control, out rect)) return false;
+      if (!ForceForeground(dialog)) return false;
+      if (!SetCursorPos(rect.Left + (rect.Right - rect.Left) / 2,
+                        rect.Top + (rect.Bottom - rect.Top) / 2)) return false;
+      System.Threading.Thread.Sleep(150);
       mouse_event(0x0002, 0, 0, 0, UIntPtr.Zero);
       mouse_event(0x0004, 0, 0, 0, UIntPtr.Zero);
       return true;
@@ -231,6 +255,28 @@ namespace Varix.Wimax {
 
     public static bool Restore(long rawWindow) {
       return ShowWindowAsync(new IntPtr(rawWindow), 9);
+    }
+
+    public static bool Focus(long rawWindow) {
+      return ForceForeground(new IntPtr(rawWindow));
+    }
+
+    public static bool FocusControl(long rawDialog, long rawControl) {
+      var dialog = new IntPtr(rawDialog);
+      var control = new IntPtr(rawControl);
+      if (!ForceForeground(dialog)) return false;
+      uint processId;
+      var targetThread = GetWindowThreadProcessId(control, out processId);
+      var currentThread = GetCurrentThreadId();
+      var attached = currentThread != targetThread &&
+        AttachThreadInput(currentThread, targetThread, true);
+      try {
+        SetFocus(control);
+        return GetFocus() == control;
+      }
+      finally {
+        if (attached) AttachThreadInput(currentThread, targetThread, false);
+      }
     }
 
     public static string[] ListItems(long rawList) {
@@ -268,7 +314,26 @@ namespace Varix.Wimax {
     }
 
     public static int TextLength(long rawEdit) {
-      return GetWindowTextLength(new IntPtr(rawEdit));
+      // GetWindowTextLength cannot inspect an Edit owned by another process.
+      // WM_GETTEXTLENGTH is the supported cross-process control message.
+      return SendMessage(new IntPtr(rawEdit), 0x000E, IntPtr.Zero, IntPtr.Zero).ToInt32();
+    }
+
+    public static string TextValue(long rawEdit) {
+      var edit = new IntPtr(rawEdit);
+      int length = SendMessage(edit, 0x000E, IntPtr.Zero, IntPtr.Zero).ToInt32();
+      var value = new StringBuilder(Math.Max(2, length + 1));
+      SendMessage(edit, 0x000D, new IntPtr(value.Capacity), value);
+      return value.ToString();
+    }
+
+    public static bool ClearEdit(long rawEdit) {
+      var edit = new IntPtr(rawEdit);
+      // EM_SETSEL + WM_CLEAR exercises the Edit control's change path, unlike
+      // WM_SETTEXT, which Xbase++ does not mirror into its internal buffer.
+      SendMessage(edit, 0x00B1, IntPtr.Zero, new IntPtr(-1));
+      SendMessage(edit, 0x0303, IntPtr.Zero, IntPtr.Zero);
+      return TextLength(rawEdit) == 0;
     }
 
     public static BlueSignature AnalyzeBlue(
@@ -354,6 +419,17 @@ function Write-Result([object]$Value) {
     [System.IO.File]::WriteAllText($OutputPath, $json, [System.Text.UTF8Encoding]::new($false))
   }
   [Console]::Out.WriteLine($json)
+}
+
+function Escape-SendKeys([string]$Value) {
+  return [regex]::Replace(
+    $Value,
+    '[+^%~(){}\[\]]',
+    [System.Text.RegularExpressions.MatchEvaluator]{
+      param($match)
+      return '{' + $match.Value + '}'
+    }
+  )
 }
 
 function Expected-Session([object]$Profile) {
@@ -461,6 +537,15 @@ function Get-StartupState([object]$Profile) {
   $login = @($windows | Where-Object {
     [regex]::IsMatch($_.Title, [string]$Profile.dialogs.loginTitlePattern, 'IgnoreCase')
   })
+  $prefix = @($windows | Where-Object {
+    [regex]::IsMatch($_.Title, [string]$Profile.dialogs.prefixSelectorTitlePattern, 'IgnoreCase')
+  })
+  $dailyReport = @($windows | Where-Object {
+    [regex]::IsMatch($_.Title, [string]$Profile.dialogs.dailyReportTitlePattern, 'IgnoreCase')
+  })
+  $audit = @($windows | Where-Object {
+    [regex]::IsMatch($_.Title, [string]$Profile.dialogs.auditTitlePattern, 'IgnoreCase')
+  })
   $reorganization = @($windows | Where-Object {
     $_.Title -ceq [string]$Profile.dialogs.reorganizationTitle
   })
@@ -475,6 +560,28 @@ function Get-StartupState([object]$Profile) {
     $base.state = 'company_password'
     $base.reason = $null
     $base.dialogHandle = $login[0].Handle
+    return [pscustomobject]$base
+  }
+  if ($windows.Count -eq 2 -and $prefix.Count -eq 1) {
+    $base.state = 'prefix_selector'
+    $base.reason = $null
+    $base.dialogHandle = $prefix[0].Handle
+    return [pscustomobject]$base
+  }
+  if ($windows.Count -eq 2 -and $dailyReport.Count -eq 1) {
+    $base.state = 'daily_report'
+    $base.reason = $null
+    $base.dialogHandle = $dailyReport[0].Handle
+    $base.dialogWidth = $dailyReport[0].Width
+    $base.dialogHeight = $dailyReport[0].Height
+    return [pscustomobject]$base
+  }
+  if ($windows.Count -eq 2 -and $audit.Count -eq 1) {
+    $base.state = 'audit'
+    $base.reason = $null
+    $base.dialogHandle = $audit[0].Handle
+    $base.dialogWidth = $audit[0].Width
+    $base.dialogHeight = $audit[0].Height
     return [pscustomobject]$base
   }
   if ($windows.Count -eq 2 -and $reorganization.Count -eq 1) {
@@ -543,20 +650,64 @@ function Assert-Executable([object]$Profile) {
   }
 }
 
+function Stop-StaleHeadlessWorker([object]$State, [object]$Profile) {
+  $expectedPath = Join-Path ([string]$Profile.executable.workingDirectory) 'WX.EXE'
+  $processes = @(Get-Process -Name ([string]$Profile.window.process) -ErrorAction SilentlyContinue)
+  $launcher = @(Get-Process -Name 'WIMAX' -ErrorAction SilentlyContinue)
+  if ($processes.Count -ne 1 -or $processes[0].Id -ne [int]$State.processId) {
+    throw 'El proceso WiMAX sin ventana cambio durante la recuperacion'
+  }
+  if ($processes[0].SessionId -ne (Expected-Session $Profile)) {
+    throw 'El proceso WiMAX sin ventana esta en otra sesion'
+  }
+  if ($launcher.Count -ne 0) {
+    throw 'El lanzador WiMAX sigue activo; no se retirara el proceso'
+  }
+  $windows = @([Varix.Wimax.StartupGui]::WindowsForProcess($processes[0].Id))
+  if ($windows.Count -ne 0 -or [long]$processes[0].MainWindowHandle -ne 0) {
+    throw 'WiMAX recupero una ventana durante la validacion'
+  }
+  $worker = Get-CimInstance Win32_Process -Filter "ProcessId=$($processes[0].Id)"
+  if (
+    -not $worker -or
+    $worker.Name -cne 'WX.EXE' -or
+    -not [string]::Equals(
+      [string]$worker.ExecutablePath,
+      $expectedPath,
+      [StringComparison]::OrdinalIgnoreCase
+    )
+  ) {
+    throw 'El proceso sin ventana no coincide con el WX.EXE calibrado'
+  }
+  Stop-Process -Id $processes[0].Id -Force
+  Wait-Process -Id $processes[0].Id -Timeout 10 -ErrorAction SilentlyContinue
+}
+
 function Select-Company([object]$State, [object]$Profile) {
+  # Xbase++ publishes the top-level dialog before all owner-drawn controls.
+  Start-Sleep -Milliseconds 800
   $controls = @([Varix.Wimax.StartupGui]::Controls([long]$State.dialogHandle))
   $lists = @($controls | Where-Object { $_.ClassName -ceq 'ListBox' -and $_.Enabled })
+  $buttons = @($controls | Where-Object { $_.ClassName -ceq 'Button' -and $_.Enabled })
   $accept = @($controls | Where-Object {
     $_.ClassName -ceq 'Button' -and $_.Enabled -and
     $_.Text.Trim() -ceq [string]$Profile.dialogs.acceptButton
   })
+  $blankButtons = @($buttons | Where-Object { [string]::IsNullOrWhiteSpace($_.Text) })
+  if ($accept.Count -eq 0 -and $blankButtons.Count -eq 2) {
+    # These owner-drawn Xbase++ buttons expose no Win32 caption. In this exact
+    # two-button dialog, Aceptar is the leftmost control and Cancelar the right.
+    $accept = @($blankButtons | Sort-Object Left | Select-Object -First 1)
+  }
   if ($lists.Count -ne 1 -or $accept.Count -ne 1) {
     throw 'La seleccion de empresa no tiene la estructura calibrada'
   }
   $items = @([Varix.Wimax.StartupGui]::ListItems($lists[0].Handle))
   $matches = @()
   for ($index = 0; $index -lt $items.Count; $index++) {
-    if ($items[$index] -ceq [string]$Profile.company.exactName) { $matches += $index }
+    if ($items[$index].Trim() -ceq ([string]$Profile.company.exactName).Trim()) {
+      $matches += $index
+    }
   }
   if ($matches.Count -ne 1) {
     throw 'La empresa WiMAX exacta no aparece una sola vez'
@@ -565,7 +716,15 @@ function Select-Company([object]$State, [object]$Profile) {
   if ([Varix.Wimax.StartupGui]::SelectedListIndex($lists[0].Handle) -ne $matches[0]) {
     throw 'WiMAX no confirmo la empresa seleccionada'
   }
-  [Varix.Wimax.StartupGui]::ClickButton($State.dialogHandle, $accept[0].Handle)
+  # Xbase++ queues the list selection callback. Clicking in the same input
+  # cycle leaves the button visible but the dialog does not advance.
+  Start-Sleep -Milliseconds 350
+  if (-not [Varix.Wimax.StartupGui]::ClickControl(
+    [long]$State.dialogHandle,
+    [long]$accept[0].Handle
+  )) {
+    throw 'Windows no pudo pulsar Aceptar en la seleccion de empresa'
+  }
 }
 
 function Submit-CompanyPassword([object]$State, [object]$Profile) {
@@ -574,25 +733,132 @@ function Submit-CompanyPassword([object]$State, [object]$Profile) {
     throw 'Falta la clave local de empresa WiMAX'
   }
   try {
+    # The dialog and its native controls appear well before Xbase++ finishes
+    # wiring the password/Accept callbacks during a cold launch.
+    Start-Sleep -Milliseconds 2500
     $controls = @([Varix.Wimax.StartupGui]::Controls([long]$State.dialogHandle))
     $edits = @($controls | Where-Object { $_.ClassName -ceq 'Edit' -and $_.Enabled })
+    $buttons = @($controls | Where-Object { $_.ClassName -ceq 'Button' -and $_.Enabled })
     $accept = @($controls | Where-Object {
       $_.ClassName -ceq 'Button' -and $_.Enabled -and
       $_.Text.Trim() -ceq [string]$Profile.dialogs.acceptButton
     })
+    $blankButtons = @($buttons | Where-Object { [string]::IsNullOrWhiteSpace($_.Text) })
+    if ($accept.Count -eq 0 -and $blankButtons.Count -eq 2) {
+      $accept = @($blankButtons | Sort-Object Left | Select-Object -First 1)
+    }
     if ($edits.Count -ne 1 -or $accept.Count -ne 1) {
       throw 'El acceso WiMAX no tiene la estructura calibrada'
     }
-    [Varix.Wimax.StartupGui]::SetText($edits[0].Handle, $secret)
-    if ([Varix.Wimax.StartupGui]::TextLength($edits[0].Handle) -ne $secret.Length) {
-      throw 'WiMAX no recibio la clave completa'
+    if (-not [Varix.Wimax.StartupGui]::ClickControl(
+      [long]$State.dialogHandle,
+      [long]$edits[0].Handle
+    )) {
+      throw 'Windows no concedio el foco al acceso WiMAX'
     }
-    [Varix.Wimax.StartupGui]::ClickButton($State.dialogHandle, $accept[0].Handle)
+    if (-not [Varix.Wimax.StartupGui]::FocusControl(
+      [long]$State.dialogHandle,
+      [long]$edits[0].Handle
+    )) {
+      throw 'Windows no concedio el foco de teclado al acceso WiMAX'
+    }
+    Start-Sleep -Milliseconds 150
+    [void][Varix.Wimax.StartupGui]::ClearEdit([long]$edits[0].Handle)
+    [System.Windows.Forms.SendKeys]::SendWait('{END}')
+    for ($index = 0; $index -lt 32; $index++) {
+      [System.Windows.Forms.SendKeys]::SendWait('{BACKSPACE}')
+    }
+    Start-Sleep -Milliseconds 200
+    [System.Windows.Forms.SendKeys]::SendWait((Escape-SendKeys $secret))
+    Start-Sleep -Milliseconds 300
+    # This Xbase++ password control exposes a fixed mask length, not the real
+    # input length. Commit with a physical click: BM_CLICK repaints this
+    # owner-drawn button but does not consistently run its Xbase++ callback.
+    if (-not [Varix.Wimax.StartupGui]::ClickControl(
+      [long]$State.dialogHandle,
+      [long]$accept[0].Handle
+    )) {
+      throw 'Windows no pudo pulsar Aceptar en el acceso WiMAX'
+    }
+    Start-Sleep -Milliseconds 1500
+    $afterSubmit = Get-StartupState $Profile
+    if (
+      $afterSubmit.state -ceq 'company_password' -and
+      [long]$afterSubmit.dialogHandle -eq [long]$State.dialogHandle
+    ) {
+      # On the first cold-start paint, WiMAX can consume the mouse event before
+      # the Xbase++ callback is attached. A second physical click is safe only
+      # while the exact same access dialog remains active.
+      if (-not [Varix.Wimax.StartupGui]::ClickControl(
+        [long]$State.dialogHandle,
+        [long]$accept[0].Handle
+      )) {
+        throw 'Windows no pudo reintentar Aceptar en el acceso WiMAX'
+      }
+    }
   }
   finally {
     $secret = $null
     $env:WIMAX_COMPANY_PASSWORD = $null
   }
+}
+
+function Select-Prefix([object]$State, [object]$Profile) {
+  Start-Sleep -Milliseconds 800
+  $controls = @([Varix.Wimax.StartupGui]::Controls([long]$State.dialogHandle))
+  $lists = @($controls | Where-Object { $_.ClassName -ceq 'ListBox' -and $_.Enabled })
+  $cellGroups = @($controls | Where-Object { $_.ClassName -ceq 'XbpCellGroup' -and $_.Enabled })
+  $prompts = @($controls | Where-Object {
+    $_.ClassName -ceq 'XbpStatic' -and
+    [regex]::IsMatch($_.Text, [string]$Profile.prefix.promptTextPattern, 'IgnoreCase')
+  })
+  $buttons = @($controls | Where-Object { $_.ClassName -ceq 'Button' -and $_.Enabled })
+  $accept = @($buttons | Where-Object {
+    $_.Text.Trim() -ceq [string]$Profile.dialogs.acceptButton
+  })
+  $blankButtons = @($buttons | Where-Object { [string]::IsNullOrWhiteSpace($_.Text) })
+  if ($accept.Count -eq 0 -and $blankButtons.Count -eq 2) {
+    $accept = @($blankButtons | Sort-Object Left | Select-Object -First 1)
+  }
+  if ($accept.Count -ne 1) {
+    throw 'La seleccion de prefijo no tiene la estructura calibrada'
+  }
+
+  if ($lists.Count -eq 1 -and $cellGroups.Count -eq 0) {
+    $items = @([Varix.Wimax.StartupGui]::ListItems($lists[0].Handle))
+    $matches = @()
+    for ($index = 0; $index -lt $items.Count; $index++) {
+      if ($items[$index].Trim() -ceq ([string]$Profile.prefix.exactName).Trim()) {
+        $matches += $index
+      }
+    }
+    if ($matches.Count -ne 1) {
+      throw 'El prefijo FE exacto no aparece una sola vez'
+    }
+    [Varix.Wimax.StartupGui]::SelectListItem($lists[0].Handle, $matches[0])
+    if ([Varix.Wimax.StartupGui]::SelectedListIndex($lists[0].Handle) -ne $matches[0]) {
+      throw 'WiMAX no confirmo el prefijo FE seleccionado'
+    }
+    Start-Sleep -Milliseconds 350
+    if (-not [Varix.Wimax.StartupGui]::ClickControl(
+      [long]$State.dialogHandle,
+      [long]$accept[0].Handle
+    )) {
+      throw 'Windows no pudo pulsar Aceptar en la seleccion de prefijo'
+    }
+    return
+  }
+
+  if ($lists.Count -ne 0 -or $cellGroups.Count -ne 2 -or $prompts.Count -ne 1) {
+    throw 'La grilla de prefijo no coincide con la calibracion'
+  }
+  if (-not [Varix.Wimax.StartupGui]::Focus([long]$State.dialogHandle)) {
+    throw 'Windows no concedio el foco para seleccionar el prefijo FE'
+  }
+  Start-Sleep -Milliseconds 200
+  [System.Windows.Forms.SendKeys]::SendWait([string]$Profile.prefix.keyboardCode)
+  Start-Sleep -Milliseconds 250
+  [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
 }
 
 function Decline-Reorganization([object]$State, [object]$Profile) {
@@ -613,7 +879,87 @@ function Decline-Reorganization([object]$State, [object]$Profile) {
   if ($buttons.Count -ne 2 -or $decline.Count -ne 1 -or $recommended.Count -ne 1) {
     throw 'El aviso Grupo Wimax no coincide con una reorganizacion conocida'
   }
-  [Varix.Wimax.StartupGui]::ClickButton($State.dialogHandle, $decline[0].Handle)
+  if (-not [Varix.Wimax.StartupGui]::ClickControl(
+    [long]$State.dialogHandle,
+    [long]$decline[0].Handle
+  )) {
+    throw 'Windows no pudo pulsar No en la reorganizacion'
+  }
+}
+
+function Dismiss-DailyReport([object]$State, [object]$Profile) {
+  # Igual que Auditoria General, este XbpDialog aparece antes de terminar de
+  # enlazar el boton Aceptar durante un arranque en frio.
+  Start-Sleep -Milliseconds 2500
+  if (
+    [int]$State.dialogWidth -lt 400 -or [int]$State.dialogWidth -gt 440 -or
+    [int]$State.dialogHeight -lt 440 -or [int]$State.dialogHeight -gt 480
+  ) {
+    throw 'El reporte diario no tiene el tamano calibrado'
+  }
+  $controls = @([Varix.Wimax.StartupGui]::Controls([long]$State.dialogHandle))
+  $buttons = @($controls | Where-Object { $_.ClassName -ceq 'Button' -and $_.Enabled })
+  if ($buttons.Count -ne 1 -or -not [string]::IsNullOrWhiteSpace($buttons[0].Text)) {
+    throw 'El reporte diario no tiene la estructura calibrada'
+  }
+  if (-not [Varix.Wimax.StartupGui]::ClickControl(
+    [long]$State.dialogHandle,
+    [long]$buttons[0].Handle
+  )) {
+    throw 'Windows no pudo cerrar el reporte diario'
+  }
+  Start-Sleep -Milliseconds 1500
+  $afterDismiss = Get-StartupState $Profile
+  if (
+    $afterDismiss.state -ceq 'daily_report' -and
+    [long]$afterDismiss.dialogHandle -eq [long]$State.dialogHandle
+  ) {
+    if (-not [Varix.Wimax.StartupGui]::ClickControl(
+      [long]$State.dialogHandle,
+      [long]$buttons[0].Handle
+    )) {
+      throw 'Windows no pudo reintentar el cierre del reporte diario'
+    }
+  }
+}
+
+function Dismiss-Audit([object]$State, [object]$Profile) {
+  # Xbase++ pinta los controles antes de terminar de enlazar sus callbacks.
+  # En un arranque en frio el boton puede verse y aun ignorar el primer click.
+  Start-Sleep -Milliseconds 2500
+  if (
+    [int]$State.dialogWidth -lt 780 -or [int]$State.dialogWidth -gt 820 -or
+    [int]$State.dialogHeight -lt 520 -or [int]$State.dialogHeight -gt 560
+  ) {
+    throw 'Auditoria General no tiene el tamano calibrado'
+  }
+  $controls = @([Varix.Wimax.StartupGui]::Controls([long]$State.dialogHandle))
+  $buttons = @($controls | Where-Object { $_.ClassName -ceq 'Button' -and $_.Enabled })
+  $blankButtons = @($buttons | Where-Object { [string]::IsNullOrWhiteSpace($_.Text) })
+  $checkboxes = @($buttons | Where-Object { $_.Text.Trim() -ceq 'No volver a mostrar este mensaje' })
+  if ($blankButtons.Count -ne 2 -or $checkboxes.Count -ne 1) {
+    throw 'Auditoria General no tiene la estructura calibrada'
+  }
+  $accept = @($blankButtons | Sort-Object Left -Descending | Select-Object -First 1)
+  if (-not [Varix.Wimax.StartupGui]::ClickControl(
+    [long]$State.dialogHandle,
+    [long]$accept[0].Handle
+  )) {
+    throw 'Windows no pudo cerrar Auditoria General'
+  }
+  Start-Sleep -Milliseconds 1500
+  $afterDismiss = Get-StartupState $Profile
+  if (
+    $afterDismiss.state -ceq 'audit' -and
+    [long]$afterDismiss.dialogHandle -eq [long]$State.dialogHandle
+  ) {
+    if (-not [Varix.Wimax.StartupGui]::ClickControl(
+      [long]$State.dialogHandle,
+      [long]$accept[0].Handle
+    )) {
+      throw 'Windows no pudo reintentar el cierre de Auditoria General'
+    }
+  }
 }
 
 $payload = Read-Payload
@@ -641,22 +987,39 @@ $launched = $false
 $companyRequests = 0
 $companySelected = $false
 $passwordSubmitted = $false
+$prefixSelected = $false
 $reorganizationsDeclined = 0
+$dailyReportsDismissed = 0
+$auditsDismissed = 0
+$staleWorkersStopped = 0
+$headlessProcessId = $null
+$headlessSince = $null
 $unknownChecks = 0
 $lastReorganization = $null
 $lastActionAt = Get-Date
+$readySince = $null
 
 while ((Get-Date) -lt $deadline) {
   $state = Get-StartupState $profile
+  if ($state.state -cne 'ready') { $readySince = $null }
   switch ($state.state) {
     'ready' {
+      if (-not $readySince) {
+        $readySince = Get-Date
+        break
+      }
+      if (((Get-Date) - $readySince).TotalSeconds -lt 3) { break }
       Write-Result ([pscustomobject]@{
         ok = $true
         ready = $true
         launched = $launched
         companySelected = $companySelected
         passwordSubmitted = $passwordSubmitted
+        prefixSelected = $prefixSelected
         reorganizationsDeclined = $reorganizationsDeclined
+        dailyReportsDismissed = $dailyReportsDismissed
+        auditsDismissed = $auditsDismissed
+        staleWorkersStopped = $staleWorkersStopped
         processId = $state.processId
         sessionId = $state.sessionId
       })
@@ -676,6 +1039,19 @@ while ((Get-Date) -lt $deadline) {
       $unknownChecks = 0
     }
     'loading' {
+      if ($headlessProcessId -ne $state.processId) {
+        $headlessProcessId = $state.processId
+        $headlessSince = Get-Date
+      }
+      elseif (((Get-Date) - $headlessSince).TotalSeconds -ge 15) {
+        if ($staleWorkersStopped -ge 1) {
+          throw 'WiMAX volvio a quedar sin ventana despues de recuperarlo'
+        }
+        Stop-StaleHeadlessWorker $state $profile
+        $staleWorkersStopped++
+        $headlessProcessId = $null
+        $headlessSince = $null
+      }
       $unknownChecks = 0
     }
     'minimized' {
@@ -724,6 +1100,43 @@ while ((Get-Date) -lt $deadline) {
       if (-not $passwordSubmitted) {
         Submit-CompanyPassword $state $profile
         $passwordSubmitted = $true
+        $lastActionAt = Get-Date
+      }
+      $unknownChecks = 0
+    }
+    'prefix_selector' {
+      if ($prefixSelected -and ((Get-Date) - $lastActionAt).TotalSeconds -ge 5) {
+        throw 'La seleccion de prefijo FE no avanzo'
+      }
+      if (-not $prefixSelected) {
+        Select-Prefix $state $profile
+        $prefixSelected = $true
+        $lastActionAt = Get-Date
+      }
+      $unknownChecks = 0
+    }
+    'daily_report' {
+      if ($dailyReportsDismissed -ge 1) {
+        if (((Get-Date) - $lastActionAt).TotalSeconds -ge 5) {
+          throw 'El reporte diario reaparecio despues de cerrarlo'
+        }
+      }
+      else {
+        Dismiss-DailyReport $state $profile
+        $dailyReportsDismissed++
+        $lastActionAt = Get-Date
+      }
+      $unknownChecks = 0
+    }
+    'audit' {
+      if ($auditsDismissed -ge 1) {
+        if (((Get-Date) - $lastActionAt).TotalSeconds -ge 5) {
+          throw 'Auditoria General reaparecio despues de cerrarla'
+        }
+      }
+      else {
+        Dismiss-Audit $state $profile
+        $auditsDismissed++
         $lastActionAt = Get-Date
       }
       $unknownChecks = 0

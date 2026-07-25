@@ -2244,6 +2244,18 @@ export type Database = {
         Args: { p_job_id: string }
         Returns: Json
       }
+      robot_wimax_registrar_emision_observada: {
+        Args: {
+          p_cedula: string
+          p_emision: string
+          p_evidence?: Json
+          p_job_id: string
+          p_nombre: string
+          p_numero: string
+          p_total: number
+        }
+        Returns: Json
+      }
       robot_wimax_registrar_preflight: {
         Args: {
           p_cliente_codigo: string | null

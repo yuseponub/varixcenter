@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "calibrated": false,
+  "calibrated": true,
   "sessionId": 1,
   "display": {
     "width": 1920,
@@ -8,70 +8,259 @@
   },
   "window": {
     "process": "WX",
-    "titlePattern": "Wimax Software",
-    "classPattern": "XbpDialog"
+    "titlePattern": "^\\s*Wimax Software",
+    "classPattern": "^XbpDialog$"
   },
   "notes": [
-    "Perfil declarativo de la terminal CONTABILIDAD.",
-    "No cambiar calibrated a true hasta verificar cada tecla, titulo y screenshot en sesion 1.",
-    "La pausa obligatoria ocurre en Asignacion de asiento contable, antes de Aceptar."
+    "Perfil calibrado en CONTABILIDAD el 24-07-2026, sesion 1, 1920x1080.",
+    "El arranque autenticado selecciona y verifica el prefijo FE antes de estos flujos.",
+    "Aceptar Asignacion de asiento contable es el primer paso irreversible.",
+    "Si cambia WiMAX, la resolucion, los titulos o la estructura de controles, poner calibrated=false."
   ],
   "flows": {
-    "createCustomer": [
+    "openInvoice": [
       {
-        "name": "enfocar-wimax",
+        "name": "enfocar-principal",
         "action": "focus",
         "target": {
           "process": "WX",
-          "titlePattern": "Wimax Software",
-          "classPattern": "XbpDialog"
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
         }
       },
       {
-        "name": "abrir-gestion",
+        "name": "abrir-facturacion-atomico",
         "action": "keys",
-        "keys": "%g"
-      },
-      {
-        "name": "abrir-directorio",
-        "action": "keys",
-        "keys": "d",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "%m{DOWN}{RIGHT}{ENTER}",
+        "delayMs": 1500,
+        "expectTimeoutMs": 30000,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Directorio"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
         },
         "capture": true
+      }
+    ],
+    "openCustomerDirectory": [
+      {
+        "name": "tipo-fe-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 25,
+        "y": 61
       },
       {
-        "name": "nuevo-cliente",
+        "name": "tipo-fe-reemplazar",
         "action": "keys",
-        "keys": "%n",
+        "keys": "^a"
+      },
+      {
+        "name": "tipo-fe-texto",
+        "action": "text",
+        "value": "{{invoice.typeCode}}"
+      },
+      {
+        "name": "abrir-tipos-factura",
+        "action": "keys",
+        "keys": "{TAB}",
+        "delayMs": 700,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Datos Generales|Directorio"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Tipos de Factura|Venta de Contado"
         }
       },
       {
-        "name": "cuenta",
+        "name": "venta-contado-primera",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 700
+      },
+      {
+        "name": "cuenta-cliente-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 345,
+        "y": 61
+      },
+      {
+        "name": "cuenta-cliente-inexistente",
         "action": "text",
         "value": "{{customer.code}}"
       },
       {
-        "name": "identificacion",
+        "name": "abrir-directorio-en-factura",
         "action": "keys",
-        "keys": "{TAB}{HOME}c{TAB}"
+        "keys": "{ENTER}",
+        "delayMs": 1000,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "capture": true
+      }
+    ],
+    "createCustomer": [
+      {
+        "name": "codigo-directorio",
+        "action": "text",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.code}}"
       },
       {
-        "name": "cedula",
+        "name": "tipo-cedula-ciudadania",
+        "action": "click",
+        "x": 84,
+        "y": 68
+      },
+      {
+        "name": "cedula-campo",
+        "action": "click",
+        "x": 76,
+        "y": 149
+      },
+      {
+        "name": "cedula-texto",
         "action": "text",
         "value": "{{customer.cedula}}"
       },
       {
-        "name": "datos-persona",
+        "name": "persona-juridica-campo",
+        "action": "click",
+        "x": 288,
+        "y": 149
+      },
+      {
+        "name": "persona-juridica-no",
+        "action": "text",
+        "value": "{{customer.legalPerson}}"
+      },
+      {
+        "name": "persona-juridica-selector",
         "action": "keys",
-        "keys": "{TAB}{TAB}n{TAB}n{TAB}a{TAB}"
+        "keys": "{TAB}",
+        "delayMs": 500,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "persona-juridica-primera",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 500
+      },
+      {
+        "name": "declarante-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 427,
+        "y": 149
+      },
+      {
+        "name": "declarante-no",
+        "action": "text",
+        "value": "{{customer.declarant}}"
+      },
+      {
+        "name": "declarante-selector",
+        "action": "keys",
+        "keys": "{TAB}",
+        "delayMs": 500,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "declarante-primera",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 500
+      },
+      {
+        "name": "estado-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 567,
+        "y": 149
+      },
+      {
+        "name": "estado-activo",
+        "action": "text",
+        "value": "{{customer.status}}"
+      },
+      {
+        "name": "estado-selector",
+        "action": "keys",
+        "keys": "{TAB}",
+        "delayMs": 500,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "estado-primera",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 500
+      },
+      {
+        "name": "primer-apellido-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 91,
+        "y": 199
       },
       {
         "name": "primer-apellido",
@@ -79,107 +268,166 @@
         "value": "{{customer.primerApellido}}"
       },
       {
-        "name": "segundo-apellido",
+        "name": "ir-segundo-apellido",
         "action": "keys",
         "keys": "{TAB}"
       },
       {
-        "name": "segundo-apellido-texto",
+        "name": "segundo-apellido",
         "action": "text",
         "value": "{{customer.segundoApellido}}"
       },
       {
-        "name": "primer-nombre",
+        "name": "ir-primer-nombre",
         "action": "keys",
         "keys": "{TAB}"
       },
       {
-        "name": "primer-nombre-texto",
+        "name": "primer-nombre",
         "action": "text",
         "value": "{{customer.primerNombre}}"
       },
       {
-        "name": "segundo-nombre",
+        "name": "ir-segundo-nombre",
         "action": "keys",
         "keys": "{TAB}"
       },
       {
-        "name": "segundo-nombre-texto",
+        "name": "segundo-nombre",
         "action": "text",
         "value": "{{customer.segundoNombre}}"
       },
       {
-        "name": "ubicacion-y-celular",
-        "action": "keys",
-        "keys": "{TAB}{{customer.department}}{TAB}{{customer.city}}{TAB}{{customer.postalCode}}{TAB}{{customer.celular}}"
+        "name": "departamento-abrir",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 500,
+        "y": 361
       },
       {
-        "name": "datos-tributarios",
-        "action": "keys",
-        "keys": "^{TAB}p{TAB}{ENTER}",
+        "name": "departamento-buscar",
+        "action": "text",
+        "value": "{{customer.department}}"
+      },
+      {
+        "name": "departamento-confirmar-fisico",
+        "action": "click",
+        "x": 500,
+        "y": 385,
+        "delayMs": 1000
+      },
+      {
+        "name": "ciudad-abrir",
+        "action": "click",
+        "x": 665,
+        "y": 361
+      },
+      {
+        "name": "ciudad-bucaramanga-primera",
+        "action": "click",
+        "x": 665,
+        "y": 385,
+        "delayMs": 1000
+      },
+      {
+        "name": "pestana-datos-tributarios",
+        "action": "click",
+        "x": 260,
+        "y": 37,
+        "delayMs": 600
+      },
+      {
+        "name": "regimen-natural",
+        "action": "click",
+        "x": 38,
+        "y": 163
+      },
+      {
+        "name": "guardar-cliente",
+        "action": "click",
+        "x": 620,
+        "y": 527,
+        "delayMs": 1200,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Directorio|Wimax Software"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
         },
         "capture": true
+      },
+      {
+        "name": "otra-factura-si",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        }
       }
     ],
     "prepareInvoice": [
       {
-        "name": "enfocar-wimax",
-        "action": "focus",
+        "name": "tipo-fe-campo",
+        "action": "click",
         "target": {
-          "process": "WX",
-          "titlePattern": "Wimax Software",
-          "classPattern": "XbpDialog"
-        }
-      },
-      {
-        "name": "movimientos-ventas-facturacion",
-        "action": "keys",
-        "keys": "%m"
-      },
-      {
-        "name": "seleccionar-ventas",
-        "action": "keys",
-        "keys": "v"
-      },
-      {
-        "name": "facturacion-general",
-        "action": "keys",
-        "keys": "f",
-        "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Auditoria|Auditoría|Reportes|Prefijo|Factur"
-        }
-      },
-      {
-        "name": "cerrar-auditoria",
-        "action": "keys",
-        "keys": "{ENTER}"
-      },
-      {
-        "name": "cerrar-reportes",
-        "action": "keys",
-        "keys": "{ENTER}"
-      },
-      {
-        "name": "prefijo-fe",
-        "action": "keys",
-        "keys": "fe{ENTER}",
-        "expect": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "Factur"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
         },
-        "capture": true
+        "x": 25,
+        "y": 61
       },
       {
-        "name": "tipo-contado-metodo",
+        "name": "tipo-fe-reemplazar",
         "action": "keys",
-        "keys": "{TAB}c{ENTER}{TAB}1{TAB}"
+        "keys": "^a"
+      },
+      {
+        "name": "tipo-fe-texto",
+        "action": "text",
+        "value": "{{invoice.typeCode}}"
+      },
+      {
+        "name": "abrir-tipos-factura",
+        "action": "keys",
+        "keys": "{TAB}",
+        "delayMs": 700,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Tipos de Factura|Venta de Contado"
+        }
+      },
+      {
+        "name": "venta-contado-primera",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 700
+      },
+      {
+        "name": "cuenta-cliente-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 345,
+        "y": 61
       },
       {
         "name": "cuenta-cliente",
@@ -190,86 +438,303 @@
         "name": "cargar-cliente",
         "action": "keys",
         "keys": "{ENTER}",
+        "delayMs": 1000
+      },
+      {
+        "name": "metodo-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 25,
+        "y": 182
+      },
+      {
+        "name": "metodo-instrumento-no-definido",
+        "action": "text",
+        "value": "{{invoice.methodCode}}"
+      },
+      {
+        "name": "abrir-metodos-pago",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 700,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "metodo-primero",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 700
+      },
+      {
+        "name": "aceptar-encabezado",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 620,
+        "y": 518,
+        "delayMs": 700,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Detalle para el asiento"
+        }
+      },
+      {
+        "name": "detalle-encabezado",
+        "action": "text",
+        "value": "{{invoice.paymentDetail}}"
+      },
+      {
+        "name": "confirmar-detalle-encabezado",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
         "capture": true
       }
     ],
     "addItem": [
       {
-        "name": "nuevo-item",
-        "action": "keys",
-        "keys": "%n{ENTER}",
-        "expect": {
+        "name": "referencia-item",
+        "action": "text",
+        "target": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Inventario"
-        }
-      },
-      {
-        "name": "referencia",
-        "action": "text",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
         "value": "{{item.reference}}"
       },
       {
-        "name": "aceptar-referencia",
+        "name": "resolver-referencia",
         "action": "keys",
-        "keys": "{ENTER}{ENTER}",
+        "keys": "{ENTER}",
+        "delayMs": 900,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Factur"
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
         }
       },
       {
-        "name": "cantidad-precio",
-        "action": "keys",
-        "keys": "{TAB}{{item.quantity}}{TAB}{{item.unitPrice}}{ENTER}",
+        "name": "cantidad-precio-descuento-atomico",
+        "action": "setInlineFields",
+        "control": {
+          "classPattern": "^Edit$",
+          "expectedCount": 3,
+          "orderBy": "left"
+        },
+        "values": [
+          "{{item.quantity}}",
+          "{{item.unitPrice}}",
+          "0"
+        ],
+        "delayMs": 200,
+        "commitDelayMs": 1200,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
         "capture": true
       }
     ],
     "finishBeforeApproval": [
       {
+        "name": "cancelar-linea-vacia",
+        "action": "keys",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "delayMs": 600,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
         "name": "terminar-items",
         "action": "keys",
-        "keys": "t{ENTER}",
+        "keys": "t",
+        "delayMs": 700,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "FORMA DE PAGO"
+          "titlePattern": "^\\s*Impuestos\\s*$",
+          "classPattern": "^XbpDialog$"
         }
       },
       {
-        "name": "nuevo-tipo-deposito",
+        "name": "aceptar-impuestos",
+        "action": "click",
+        "x": 205,
+        "y": 451,
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^FORMA DE PAGO$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "nuevo-medio-pago",
+        "action": "click",
+        "x": 193,
+        "y": 270,
+        "delayMs": 600,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "abrir-tipo-deposito",
         "action": "keys",
-        "keys": "%n",
+        "keys": "{ENTER}",
+        "delayMs": 600,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Tipos"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
         }
       },
       {
-        "name": "deposito",
+        "name": "seleccionar-dp",
         "action": "keys",
         "keys": "dp{ENTER}",
+        "delayMs": 700,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Caja|Bancos"
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
         }
       },
       {
-        "name": "bancolombia-corriente",
-        "action": "text",
-        "value": "{{invoice.bankAccount}}"
-      },
-      {
-        "name": "aceptar-banco",
+        "name": "abrir-cuentas-bancarias",
         "action": "keys",
-        "keys": "{ENTER}{ENTER}t",
+        "keys": "{ENTER}",
+        "delayMs": 700,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Asignaci.n de asiento contable"
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "bancolombia-corriente-fila-4",
+        "action": "click",
+        "x": 100,
+        "y": 146,
+        "delayMs": 500
+      },
+      {
+        "name": "aceptar-cuenta-bancaria",
+        "action": "click",
+        "x": 520,
+        "y": 357,
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "ir-numero-deposito",
+        "action": "keys",
+        "keys": "{TAB 2}"
+      },
+      {
+        "name": "numero-deposito-varix",
+        "action": "text",
+        "value": "{{invoice.paymentReference}}"
+      },
+      {
+        "name": "ir-detalle-deposito",
+        "action": "keys",
+        "keys": "{TAB}"
+      },
+      {
+        "name": "detalle-deposito-varix",
+        "action": "text",
+        "value": "{{invoice.paymentDetail}}"
+      },
+      {
+        "name": "ir-valor-deposito",
+        "action": "keys",
+        "keys": "{TAB 2}{ENTER}",
+        "delayMs": 600
+      },
+      {
+        "name": "confirmar-deposito",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "cancelar-deposito-vacio",
+        "action": "keys",
+        "keys": "{ESC}",
+        "delayMs": 600,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^FORMA DE PAGO$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "terminar-forma-pago",
+        "action": "keys",
+        "keys": "t",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Asignaci.n de asiento contable$",
+          "classPattern": "^XbpDialog$"
         },
         "capture": true
       }
@@ -277,27 +742,322 @@
     "emit": [
       {
         "name": "aceptar-asiento-irreversible",
-        "action": "keys",
-        "keys": "{ENTER}",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Asignaci.n de asiento contable$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 120,
+        "y": 198,
+        "delayMs": 1000,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "Imprimir|Factur|Wimax Software"
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Imprimir|impresi.n"
+        }
+      },
+      {
+        "name": "confirmar-impresion",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "formato-modfv",
+        "action": "keys",
+        "keys": "{DOWN 2}{ENTER}",
+        "delayMs": 800,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Archivo a generar Factura Venta"
+        }
+      },
+      {
+        "name": "generar-factura-venta",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 1500,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^FEFE[0-9]+$",
+          "classPattern": "^#32770$",
+          "textPattern": "Factura de venta enviada exitosamente a ColFact"
         },
         "capture": true
       },
       {
-        "name": "imprimir",
+        "name": "confirmar-exito-colfact",
         "action": "keys",
         "keys": "{ENTER}",
+        "delayMs": 900,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "formato-gere1",
+        "action": "keys",
+        "keys": "{DOWN}{ENTER}",
+        "delayMs": 800,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Archivo a generar Comprobante de Ingreso"
+        }
+      },
+      {
+        "name": "generar-comprobante-ingreso",
+        "action": "keys",
+        "keys": "{ENTER}",
+        "delayMs": 1200,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "cerrar-buscar-restante",
+        "action": "keys",
+        "keys": "{ESC}",
+        "delayMs": 700,
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        }
+      },
+      {
+        "name": "otra-factura-no-primera",
+        "action": "click",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        },
+        "x": 210,
+        "y": 123,
+        "retryIfSameMs": 1500,
+        "delayMs": 700
+      },
+      {
+        "name": "otra-factura-no-segunda-opcional",
+        "action": "clickIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        },
+        "x": 210,
+        "y": 123,
+        "retryIfSameMs": 1500,
+        "ifTimeoutMs": 2500,
+        "delayMs": 900
+      },
+      {
+        "name": "enfocar-principal-despues-emision",
+        "action": "focus",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "principal-limpia-despues-emision",
+        "action": "assert",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        },
+        "timeoutMs": 10000,
         "capture": true
       }
     ],
     "abort": [
       {
-        "name": "cerrar-dialogos-sin-grabar",
-        "action": "keys",
-        "keys": "{ESC}{ESC}{ESC}",
+        "name": "cancelar-asiento-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^Asignaci.n de asiento contable$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-editor-superior-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-buscar-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-impuestos-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Impuestos\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-forma-pago-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^FORMA DE PAGO$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-editor-interno-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-directorio-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "no-guardar-directorio-opcional",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "classPattern": "^#32770$",
+          "textPattern": "(guardar|grabar).*(cambio|registro)"
+        },
+        "keys": "{TAB}{ENTER}",
+        "ifTimeoutMs": 1000
+      },
+      {
+        "name": "cancelar-selector-factura-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "cancelar-factura-si-sigue-abierta",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "keys": "{ESC}",
+        "ifTimeoutMs": 500
+      },
+      {
+        "name": "otra-factura-no-abort-primera",
+        "action": "clickIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        },
+        "x": 210,
+        "y": 123,
+        "retryIfSameMs": 1500,
+        "ifTimeoutMs": 1200
+      },
+      {
+        "name": "otra-factura-no-abort-segunda",
+        "action": "clickIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        },
+        "x": 210,
+        "y": 123,
+        "retryIfSameMs": 1500,
+        "ifTimeoutMs": 1200
+      },
+      {
+        "name": "enfocar-principal-despues-abort",
+        "action": "focus",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        }
+      },
+      {
+        "name": "principal-limpia-despues-abort",
+        "action": "assert",
+        "expect": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        },
+        "timeoutMs": 10000,
         "capture": true
       }
     ]

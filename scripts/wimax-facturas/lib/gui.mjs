@@ -74,6 +74,16 @@ export class GuiDriver {
     return this.run('Click', { ...selector, x, y, delayMs })
   }
 
+  setInlineFields(selector, control, values, delayMs = 200, commitDelayMs = 1_200) {
+    return this.run('SetInlineFields', {
+      ...selector,
+      control,
+      values: values.map((value) => String(value)),
+      delayMs,
+      commitDelayMs,
+    })
+  }
+
   screenshot(file) {
     return this.run('Screenshot', { path: file })
   }
@@ -114,7 +124,29 @@ function selectorMatches(window, selector = {}) {
   if (selector.classPattern && !new RegExp(selector.classPattern, 'i').test(window.ClassName ?? '')) {
     return false
   }
+  if (selector.textPattern && !new RegExp(selector.textPattern, 'i').test(window.ChildText ?? '')) {
+    return false
+  }
   return true
+}
+
+function desktopMatch(desktop, selector) {
+  if (selector.foreground) {
+    return selectorMatches(desktop.foreground, selector) ? desktop.foreground : null
+  }
+  const matches = (desktop.windows ?? []).filter((window) => selectorMatches(window, selector))
+  if (matches.length > 1) {
+    throw new Error('UI_EXPECTATION: varias ventanas coinciden con el selector')
+  }
+  return matches[0] ?? null
+}
+
+function explicitOptionalTarget(target) {
+  return (
+    target &&
+    typeof target === 'object' &&
+    ['process', 'titlePattern', 'classPattern', 'textPattern'].some((key) => target[key])
+  )
 }
 
 export class WimaxWorkflow {
@@ -130,13 +162,22 @@ export class WimaxWorkflow {
     const deadline = Date.now() + timeoutMs
     while (Date.now() < deadline) {
       const desktop = await this.driver.inspect()
-      const match = selector.foreground
-        ? selectorMatches(desktop.foreground, selector)
-        : desktop.windows?.find((window) => selectorMatches(window, selector))
+      const match = desktopMatch(desktop, selector)
       if (match) return match
       await new Promise((resolve) => setTimeout(resolve, 250))
     }
     throw new Error('UI_EXPECTATION: la ventana esperada no aparecio')
+  }
+
+  async waitForOptional(selector, timeoutMs = 0) {
+    const boundedTimeout = Math.min(Math.max(Number(timeoutMs) || 0, 0), 10_000)
+    const deadline = Date.now() + boundedTimeout
+    do {
+      const match = desktopMatch(await this.driver.inspect(), selector)
+      if (match) return match
+      if (Date.now() >= deadline) return null
+      await new Promise((resolve) => setTimeout(resolve, 250))
+    } while (true)
   }
 
   async capture(label) {
@@ -159,32 +200,90 @@ export class WimaxWorkflow {
     for (const [index, step] of steps.entries()) {
       const label = step.name || `${flowName}-${index + 1}`
       const target = step.target ?? { foreground: true, process: this.profile.window.process }
+      let executed = true
       if (step.action === 'focus') {
         await this.driver.focus(step.target ?? this.profile.window)
       } else if (step.action === 'keys') {
         await this.driver.sendKeys(target, template(step.keys, context), step.delayMs)
+      } else if (step.action === 'keysIf') {
+        if (!explicitOptionalTarget(step.target)) {
+          throw new Error(`UI_PROFILE: ${label} requiere target explicito`)
+        }
+        if (await this.waitForOptional(step.target, step.ifTimeoutMs)) {
+          await this.driver.sendKeys(step.target, template(step.keys, context), step.delayMs)
+        } else {
+          executed = false
+        }
       } else if (step.action === 'text') {
-        await this.driver.sendKeys(
-          target,
-          escapeSendKeysText(template(step.value, context)),
-          step.delayMs
-        )
+        const value = escapeSendKeysText(template(step.value, context))
+        if (value) {
+          await this.driver.sendKeys(target, value, step.delayMs)
+        } else {
+          executed = false
+        }
       } else if (step.action === 'click') {
         await this.driver.click(target, step.x, step.y, step.delayMs)
+        if (step.retryIfSameMs !== undefined) {
+          if (!explicitOptionalTarget(step.target)) {
+            throw new Error(`UI_PROFILE: ${label} requiere target explicito para reintentar`)
+          }
+          const retryDelay = Math.min(Math.max(Number(step.retryIfSameMs) || 0, 250), 5_000)
+          await new Promise((resolve) => setTimeout(resolve, retryDelay))
+          if (await this.waitForOptional(step.target, 0)) {
+            await this.driver.click(target, step.x, step.y, step.delayMs)
+          }
+        }
+      } else if (step.action === 'clickIf') {
+        if (!explicitOptionalTarget(step.target)) {
+          throw new Error(`UI_PROFILE: ${label} requiere target explicito`)
+        }
+        if (await this.waitForOptional(step.target, step.ifTimeoutMs)) {
+          await this.driver.click(step.target, step.x, step.y, step.delayMs)
+          if (step.retryIfSameMs !== undefined) {
+            const retryDelay = Math.min(
+              Math.max(Number(step.retryIfSameMs) || 0, 250),
+              5_000
+            )
+            await new Promise((resolve) => setTimeout(resolve, retryDelay))
+            if (await this.waitForOptional(step.target, 0)) {
+              await this.driver.click(step.target, step.x, step.y, step.delayMs)
+            }
+          }
+        } else {
+          executed = false
+        }
+      } else if (step.action === 'setInlineFields') {
+        if (
+          !step.control ||
+          step.control.expectedCount !== 3 ||
+          !Array.isArray(step.values) ||
+          step.values.length !== 3
+        ) {
+          throw new Error(`UI_PROFILE: ${label} requiere exactamente tres Edit`)
+        }
+        await this.driver.setInlineFields(
+          target,
+          step.control,
+          step.values.map((value) => template(value, context)),
+          step.delayMs,
+          step.commitDelayMs
+        )
       } else if (step.action === 'wait') {
         const delay = Math.min(Math.max(Number(step.ms) || 0, 0), 10_000)
         await new Promise((resolve) => setTimeout(resolve, delay))
       } else if (step.action === 'assert') {
-        await this.waitFor(step.expect, step.timeoutMs)
+        if (!step.expect) throw new Error(`UI_PROFILE: ${label} requiere expect`)
       } else if (step.action === 'screenshot') {
         await this.capture(label)
       } else {
         throw new Error(`UI_PROFILE: accion desconocida ${step.action}`)
       }
 
-      if (step.expect) await this.waitFor(step.expect, step.timeoutMs)
-      if (step.capture === true) await this.capture(label)
-      this.evidence.push({ step: label, ok: true })
+      if (executed && step.expect) {
+        await this.waitFor(step.expect, step.expectTimeoutMs ?? step.timeoutMs)
+      }
+      if (executed && step.capture === true) await this.capture(label)
+      this.evidence.push({ step: label, ok: true, ...(executed ? {} : { skipped: true }) })
     }
   }
 }

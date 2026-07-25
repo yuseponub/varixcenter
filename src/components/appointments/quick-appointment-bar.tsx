@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Zap, Loader2, UserPlus } from 'lucide-react'
+import { Zap, Loader2, UserPlus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -31,7 +31,21 @@ interface Doctor {
 interface Service {
   id: string
   nombre: string
+  precio_base?: number
+  precio_variable?: boolean
+  precio_minimo?: number | null
+  precio_maximo?: number | null
 }
+
+/** Una fila de procedimiento en la barra: servicio + cantidad + precio libre. */
+interface ProcRow {
+  serviceId: string
+  cantidad: number
+  /** Solo aplica para servicios de precio variable (ej. ECOR); '' = precio base. */
+  precio: string
+}
+
+const EMPTY_ROW: ProcRow = { serviceId: '', cantidad: 1, precio: '' }
 
 interface PatientHit {
   id: string
@@ -71,8 +85,18 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
   const [fecha, setFecha] = useState(todayBogota())
   const [hora, setHora] = useState('')
   const [duracion, setDuracion] = useState('30')
-  const [serviceId, setServiceId] = useState('')
+  const [procs, setProcs] = useState<ProcRow[]>([{ ...EMPTY_ROW }])
   const [doctorId, setDoctorId] = useState('')
+
+  const updateProc = useCallback((index: number, patch: Partial<ProcRow>) => {
+    setProcs((prev) => prev.map((row, i) => (i === index ? { ...row, ...patch } : row)))
+  }, [])
+  const addProc = useCallback(() => {
+    setProcs((prev) => (prev.length >= 5 ? prev : [...prev, { ...EMPTY_ROW }]))
+  }, [])
+  const removeProc = useCallback((index: number) => {
+    setProcs((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)))
+  }, [])
 
   // Busqueda con debounce
   useEffect(() => {
@@ -154,6 +178,15 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       nuevoApellido = words.slice(mid).join(' ')
     }
 
+    // Procedimientos elegidos (filas con servicio); cantidad y precio libre.
+    const servicios = procs
+      .filter((row) => row.serviceId)
+      .map((row) => ({
+        service_id: row.serviceId,
+        cantidad: row.cantidad || 1,
+        precio_unitario: row.precio ? Number(row.precio) : undefined,
+      }))
+
     startTransition(async () => {
       const result = await quickCreateAppointment({
         patient_id: patientId,
@@ -165,7 +198,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
         hora,
         duracion_min: Number(duracion),
         doctor_id: doctorId,
-        service_id: serviceId,
+        servicios,
       })
 
       if (result.error) {
@@ -182,13 +215,13 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       // varias citas seguidas el mismo dia
       clearPatient()
       setHora('')
-      setServiceId('')
+      setProcs([{ ...EMPTY_ROW }])
       router.refresh()
       onCreated?.()
     })
   }, [
     patientId, newPatientMode, patientQuery, nuevoCelular, nuevaCedula,
-    fecha, hora, duracion, doctorId, serviceId, startTransition, router,
+    fecha, hora, duracion, doctorId, procs, startTransition, router,
     clearPatient, onCreated,
   ])
 
@@ -280,20 +313,85 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
           </SelectContent>
         </Select>
 
-        {/* Servicio (opcional) */}
-        <Select value={serviceId || 'none'} onValueChange={(v) => setServiceId(v === 'none' ? '' : v)}>
-          <SelectTrigger className="w-[170px]">
-            <SelectValue placeholder="Servicio (opcional)" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">Sin servicio</SelectItem>
-            {services.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Procedimientos: servicio + cantidad + precio libre (variables) */}
+        {procs.map((row, i) => {
+          const svc = services.find((s) => s.id === row.serviceId)
+          return (
+            <div key={i} className="flex items-center gap-1">
+              <Select
+                value={row.serviceId || 'none'}
+                onValueChange={(v) => {
+                  const nextId = v === 'none' ? '' : v
+                  const nextSvc = services.find((s) => s.id === nextId)
+                  updateProc(i, {
+                    serviceId: nextId,
+                    // Prefill del precio base solo para servicios variables (editable).
+                    precio: nextSvc?.precio_variable ? String(nextSvc.precio_base ?? '') : '',
+                  })
+                }}
+              >
+                <SelectTrigger className="w-[170px]">
+                  <SelectValue placeholder={i === 0 ? 'Procedimiento (opcional)' : 'Procedimiento...'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{i === 0 ? 'Sin procedimiento' : 'Quitar'}</SelectItem>
+                  {services.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {row.serviceId && (
+                <Input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={row.cantidad}
+                  onChange={(e) => updateProc(i, { cantidad: Math.max(1, parseInt(e.target.value) || 1) })}
+                  title="Cantidad (ej. 2 sesiones)"
+                  className="w-[58px] px-1 text-center"
+                />
+              )}
+              {svc?.precio_variable && (
+                <Input
+                  type="number"
+                  min={0}
+                  value={row.precio}
+                  onChange={(e) => updateProc(i, { precio: e.target.value })}
+                  title="Precio (libre para este procedimiento)"
+                  placeholder="Precio"
+                  className="w-[100px] px-1"
+                />
+              )}
+              {i > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeProc(i)}
+                  className="h-7 w-7 text-muted-foreground"
+                  title="Quitar procedimiento"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          )
+        })}
+        {/* Boton discreto para agregar otro procedimiento (uso ocasional) */}
+        {procs.length < 5 && procs[procs.length - 1].serviceId && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={addProc}
+            className="h-7 w-7 text-muted-foreground"
+            title="Agregar otro procedimiento"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
 
         {/* Doctor (opcional) */}
         <Select value={doctorId || 'none'} onValueChange={(v) => setDoctorId(v === 'none' ? '' : v)}>

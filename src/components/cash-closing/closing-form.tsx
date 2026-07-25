@@ -72,7 +72,9 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Ya existe un cierre</AlertTitle>
         <AlertDescription>
-          Ya existe un cierre para esta fecha.{' '}
+          Ya existe un cierre para esta fecha. Si hay que corregirlo, un
+          administrador debe reabrirlo desde la lista de cierres y luego se
+          puede volver a hacer.{' '}
           <a href={`/cierres/${summary.existing_closing_id}`} className="underline">
             Ver cierre existente
           </a>
@@ -94,8 +96,23 @@ export function ClosingForm({ fecha, summary }: ClosingFormProps) {
     )
   }
 
+  const esRecierre = summary.existing_closing_estado === 'reabierto'
+
   return (
     <form action={handleSubmit} className="space-y-6">
+      {/* Aviso: se esta REHACIENDO un cierre que un admin reabrio */}
+      {esRecierre && (
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Rehaciendo el cierre de este dia</AlertTitle>
+          <AlertDescription>
+            Un administrador reabrio el cierre de esta fecha. Al guardar se
+            recalculan los totales con los pagos actuales y el cierre vuelve a
+            quedar cerrado, conservando su mismo numero.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Summary Card */}
       <ClosingSummaryCard
         summary={summary}

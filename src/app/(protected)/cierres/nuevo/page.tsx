@@ -1,5 +1,6 @@
 import { getClosingSummaryForDate, getPaymentsForDate } from '@/lib/queries/cash-closings'
 import { ClosingForm } from '@/components/cash-closing/closing-form'
+import { ClosingDateNav } from '@/components/cash-closing/closing-date-nav'
 import { PaymentsBreakdownTable, type DayPayment } from '@/components/cash-closing/payments-breakdown-table'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -91,11 +92,15 @@ export default async function NuevoCierrePage({ searchParams }: NuevoCierrePageP
       </Breadcrumb>
 
       {/* Header */}
-      <div>
-        <h1 className="text-[22px] font-bold tracking-tight">Nuevo Cierre de Caja</h1>
-        <p className="text-muted-foreground">
-          {formatDate(fecha)}
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight">Nuevo Cierre de Caja</h1>
+          <p className="capitalize text-muted-foreground">
+            {formatDate(fecha)}
+          </p>
+        </div>
+        {/* Permite hacer el cierre de un dia anterior */}
+        <ClosingDateNav fecha={fecha} hoy={getTodayDate()} />
       </div>
 
       {/* Form */}

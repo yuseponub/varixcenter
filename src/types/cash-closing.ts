@@ -100,8 +100,11 @@ export interface ClosingSummary {
   total_anulaciones: number
   grand_total: number
   payment_count: number
+  /** Solo true si el cierre del dia esta CERRADO. Un cierre reabierto se puede rehacer. */
   has_existing_closing: boolean
   existing_closing_id: string | null
+  /** Estado del cierre existente ('cerrado' | 'reabierto'), si hay uno. */
+  existing_closing_estado?: 'cerrado' | 'reabierto' | null
 }
 
 /**

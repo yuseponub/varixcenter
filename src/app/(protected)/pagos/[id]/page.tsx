@@ -9,6 +9,7 @@ import { AnulacionDialog } from '@/components/payments/anulacion-dialog'
 import { PaymentReceipt } from '@/components/payments/payment-receipt'
 import { PaymentNota } from '@/components/payments/payment-nota'
 import { CreateWimaxInvoiceDialog } from '@/components/payments/create-wimax-invoice-dialog'
+import { EditMethodsDialog } from '@/components/payments/edit-methods-dialog'
 import { PAYMENT_METHOD_LABELS } from '@/types/payments'
 import {
   Breadcrumb,
@@ -58,6 +59,25 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
 
   const userCanAnular = userRole === 'admin' || userRole === 'medico'
   const userCanManageWimax = userRole === 'admin' || userRole === 'secretaria'
+
+  // Corregir el METODO de pago: tambien lo puede hacer secretaria (no borrar
+  // el pago, que sigue siendo anulacion de admin/medico). Bloqueado si el pago
+  // esta anulado o si ya se facturo en WiMAX (la factura ya salio asi).
+  const userCanEditMethods =
+    userRole === 'admin' || userRole === 'medico' || userRole === 'secretaria'
+  const yaFacturado = Boolean(
+    payment.payment_invoicing?.wimax_factura_numero ||
+      ['facturada_total', 'facturada_parcial'].includes(
+        payment.payment_invoicing?.estado ?? ''
+      )
+  )
+  const editMethodsBlockedReason = !userCanEditMethods
+    ? undefined
+    : payment.estado === 'anulado'
+      ? 'Pago anulado: no se puede editar'
+      : yaFacturado
+        ? 'Ya facturado en WiMAX: no se puede cambiar'
+        : undefined
 
   return (
     <div className="space-y-6">
@@ -201,8 +221,17 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
 
       {/* Payment methods */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
           <CardTitle className="text-lg">Metodos de Pago</CardTitle>
+          {userCanEditMethods && (
+            <EditMethodsDialog
+              paymentId={payment.id}
+              total={payment.total}
+              methods={payment.payment_methods}
+              disabled={Boolean(editMethodsBlockedReason)}
+              disabledReason={editMethodsBlockedReason}
+            />
+          )}
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

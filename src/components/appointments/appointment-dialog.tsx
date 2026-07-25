@@ -292,8 +292,19 @@ export function AppointmentDialog({
             <span>{extendedProps.patientName}</span>
             <StatusBadge status={displayStatus} size="sm" />
           </DialogTitle>
-          <DialogDescription>
-            Cedula: {extendedProps.patientCedula}
+          <DialogDescription asChild>
+            <div>
+              <span className="block">Cedula: {extendedProps.patientCedula}</span>
+              {/* Telefono debajo de la cedula, listo para llamar */}
+              {extendedProps.patientCelular && (
+                <a
+                  href={`tel:${extendedProps.patientCelular}`}
+                  className="block text-primary hover:underline"
+                >
+                  Tel: {extendedProps.patientCelular}
+                </a>
+              )}
+            </div>
           </DialogDescription>
         </DialogHeader>
 

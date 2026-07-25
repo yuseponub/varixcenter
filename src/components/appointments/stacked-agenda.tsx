@@ -198,10 +198,15 @@ function CitaCard({
         >
           {name}
         </span>
-        {/* Procedimientos agendados, debajo del nombre */}
-        {ev.extendedProps.servicios && ev.extendedProps.servicios.length > 0 && (
+        {/* Procedimientos agendados y telefono, debajo del nombre */}
+        {(ev.extendedProps.servicios?.length || ev.extendedProps.patientCelular) && (
           <span className="block truncate px-1 text-[10px] leading-tight text-muted-foreground">
-            {ev.extendedProps.servicios.join(' · ')}
+            {[
+              ...(ev.extendedProps.servicios ?? []),
+              ev.extendedProps.patientCelular,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </span>
         )}
       </span>

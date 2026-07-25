@@ -302,6 +302,61 @@ export async function updatePaymentNota(
 }
 
 /**
+ * Corregir el METODO de pago de un pago ya registrado (ej. se registro como
+ * efectivo pero fue tarjeta). NO cambia el total ni elimina el pago: la suma
+ * de los metodos debe seguir siendo igual al total.
+ *
+ * El control real de rol (admin/medico/secretaria), el estado del pago y la
+ * auditoria los hace el RPC `editar_metodos_pago` (migracion 074).
+ */
+const editMethodsSchema = z.object({
+  payment_id: z.string().uuid('Pago invalido'),
+  methods: z
+    .array(
+      z.object({
+        metodo: z.enum(['efectivo', 'tarjeta', 'transferencia', 'nequi']),
+        monto: z.number().positive('El monto debe ser mayor a cero'),
+        comprobante_path: z.string().nullable().optional(),
+      })
+    )
+    .min(1, 'Debe incluir al menos un metodo de pago'),
+})
+
+export async function editPaymentMethods(input: {
+  payment_id: string
+  methods: { metodo: string; monto: number; comprobante_path?: string | null }[]
+}): Promise<{ success?: boolean; error?: string }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autorizado. Por favor inicie sesion.' }
+
+  const validated = editMethodsSchema.safeParse(input)
+  if (!validated.success) {
+    return { error: validated.error.issues[0]?.message ?? 'Datos invalidos' }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).rpc('editar_metodos_pago', {
+    p_payment_id: validated.data.payment_id,
+    p_methods: validated.data.methods,
+  })
+
+  if (error) {
+    console.error('Editar metodos de pago error:', error)
+    // Los mensajes del RPC ya vienen en espanol y son seguros de mostrar.
+    return { error: error.message?.replace(/^.*?:\s*/, '') || 'Error al editar el metodo de pago' }
+  }
+
+  revalidatePath(`/pagos/${validated.data.payment_id}`)
+  revalidatePath('/pagos')
+  revalidatePath('/cierres')
+  return { success: true }
+}
+
+/**
  * Canonicalize and enqueue the editable WiMAX invoice lines. PostgreSQL owns
  * the final catalog/total/dedup validation; this validation only gives the UI
  * fast, readable errors.

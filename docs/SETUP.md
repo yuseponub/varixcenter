@@ -4,8 +4,8 @@ Esta guia explica como configurar el entorno de desarrollo para VarixClinic.
 
 ## Requisitos Previos
 
-- Node.js 18+ (recomendado 20 LTS)
-- npm o pnpm
+- Node.js 20.9+ (recomendado: la versión indicada por el equipo)
+- npm 10+
 - Cuenta de Supabase (https://supabase.com)
 - Git
 - Docker (opcional, para desarrollo local con Supabase CLI)
@@ -13,9 +13,10 @@ Esta guia explica como configurar el entorno de desarrollo para VarixClinic.
 ## 1. Clonar y Configurar el Proyecto
 
 ```bash
-git clone <url-del-repositorio>
-cd varix-clinic
-npm install
+git clone https://github.com/yuseponub/varixcenter.git
+cd varixcenter
+git switch mejoras-2026-07
+npm ci
 ```
 
 ## 2. Configurar Supabase
@@ -57,42 +58,31 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...tu-service-role-key
 
 ## 3. Aplicar Migraciones a la Base de Datos
 
-### Opcion A: Via Supabase Dashboard (Recomendado para Produccion)
-
-1. Ir a SQL Editor en Supabase Dashboard
-2. Ejecutar cada archivo de migracion en orden:
-
-```
-supabase/migrations/001_user_roles.sql
-supabase/migrations/002_audit_infrastructure.sql
-supabase/migrations/003_custom_access_token_hook.sql
-supabase/migrations/004_audit_user_roles.sql
-supabase/migrations/005_rls_verification.sql
-supabase/seed.sql
-```
-
-> **Nota:** Copiar el contenido de cada archivo y pegarlo en el SQL Editor.
-> Ejecutar uno a la vez y verificar que no haya errores.
-
-### Opcion B: Via Supabase CLI (Desarrollo Local)
+### Opcion A: Via Supabase CLI (Recomendado)
 
 ```bash
-# Instalar Supabase CLI si no esta instalado
-npm install -g supabase
-
 # Vincular al proyecto remoto
-supabase login
-supabase link --project-ref <tu-project-ref>
+npx supabase@latest login
+npx supabase@latest link --project-ref gojqjfuszghfqvdnjjxa
 
-# Aplicar migraciones al proyecto remoto
-supabase db push
+# Revisar siempre antes de aplicar
+npx supabase@latest migration list --linked
+npx supabase@latest db push --dry-run
+
+# Aplicar solo cuando el dry-run contiene exactamente lo esperado
+npx supabase@latest db push
 ```
 
-### Opcion C: Desarrollo Local con Docker
+No se deben pegar migraciones manualmente en producción: eso desalinearía el
+historial que usan los demás computadores. Si un cambio urgente se aplicó desde
+SQL Editor, hay que registrar inmediatamente su versión con `migration repair`
+y dejar evidencia en el mismo commit.
+
+### Opcion B: Desarrollo Local con Docker
 
 ```bash
 # Iniciar Supabase local (requiere Docker)
-supabase start
+npx supabase@latest start
 
 # Las migraciones se aplican automaticamente desde supabase/migrations/
 ```

@@ -125,12 +125,10 @@ anterior deja de ser descifrable.
 7. Abrir `/citas`: debe aparecer el indicador verde con la hora de la última
    sincronización y los eventos Outlook en violeta.
 
-Importante para este proyecto: el historial remoto de migraciones no está
-alineado con los archivos locales; el `dry-run` actual intenta volver a enviar
-desde `001`. No se debe ejecutar `supabase db push` directamente. Hay que aplicar
-solo `065_outlook_calendar_sync.sql` y `066_outlook_delegated_oauth.sql`, en ese
-orden, mediante consulta directa o el SQL Editor de Supabase; otra opción es
-reparar primero el historial de migraciones.
+El historial remoto quedó alineado con las migraciones locales `001`–`077` el
+27 de julio de 2026. Antes de cualquier cambio futuro se debe ejecutar
+`supabase migration list --linked` y `supabase db push --dry-run`; sólo se hace
+el `db push` real si el plan contiene exclusivamente migraciones nuevas.
 
 La primera ejecución hace la lectura completa de 30 días hacia atrás y 400
 días hacia adelante. Después usa el token incremental opaco guardado solo para

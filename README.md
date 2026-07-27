@@ -13,7 +13,7 @@ Digitalizar y asegurar los procesos de:
 
 ## Stack Tecnológico
 
-- **Frontend**: Next.js 15 + React 19 + TypeScript
+- **Frontend**: Next.js 16 + React 19 + TypeScript
 - **UI Components**: shadcn/ui (generado con v0.dev)
 - **Backend**: Next.js Server Actions + API Routes
 - **Base de Datos**: Supabase (PostgreSQL)
@@ -51,6 +51,7 @@ Digitalizar y asegurar los procesos de:
 - [Guía de UI](./docs/UI_GUIDE.md) - Pantallas y componentes
 - [Prompts para v0](./docs/V0_PROMPTS.md) - Prompts para generar UI
 - [Sincronización Outlook ↔ Varix](./docs/OUTLOOK-SYNC.md) - Configuración, seguridad y activación
+- [Trabajar desde otro computador](./docs/WORKING-FROM-ANOTHER-PC.md) - Clon limpio, Vercel, Supabase y acceso al robot
 
 ## Estructura del Proyecto
 
@@ -156,17 +157,19 @@ Ver [Sistema de Auditoría](./docs/security/AUDIT_SYSTEM.md) para detalles compl
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/yuseponub/varix-clinic.git
-cd varix-clinic
+git clone https://github.com/yuseponub/varixcenter.git
+cd varixcenter
+git switch mejoras-2026-07
 
 # Instalar dependencias
-npm install
+npm ci
 
 # Configurar variables de entorno
-cp .env.example .env.local
+cp .env.local.example .env.local
 
-# Ejecutar migraciones en Supabase
-# (Usar SQL de docs/database/SCHEMA.sql)
+# Antes de desplegar migraciones, comprobar el plan
+npx supabase@latest link --project-ref gojqjfuszghfqvdnjjxa
+npx supabase@latest db push --dry-run
 
 # Ejecutar en desarrollo
 npm run dev

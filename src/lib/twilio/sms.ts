@@ -3,7 +3,11 @@
  *
  * Wraps Twilio API with proper error handling and logging.
  */
-import { twilioClient, TWILIO_PHONE_NUMBER, isTwilioConfigured } from './client'
+import {
+  getTwilioClient,
+  getTwilioPhoneNumber,
+  isTwilioConfigured,
+} from './client'
 import type { SendSMSResult } from '@/types/notifications'
 
 // Twilio error codes that should NOT be retried
@@ -34,18 +38,20 @@ export async function sendSMS(to: string, body: string): Promise<SendSMSResult> 
     }
   }
 
-  if (!twilioClient || !TWILIO_PHONE_NUMBER) {
-    return {
-      success: false,
-      errorCode: 0,
-      errorMessage: 'Twilio client not initialized',
-    }
-  }
-
   try {
+    const twilioClient = getTwilioClient()
+    const phoneNumber = getTwilioPhoneNumber()
+    if (!twilioClient || !phoneNumber) {
+      return {
+        success: false,
+        errorCode: 0,
+        errorMessage: 'Twilio client not initialized',
+      }
+    }
+
     const message = await twilioClient.messages.create({
       body,
-      from: TWILIO_PHONE_NUMBER,
+      from: phoneNumber,
       to,
     })
 

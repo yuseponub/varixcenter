@@ -36,11 +36,19 @@ clon y traer sus variables de desarrollo:
 ```bash
 npx vercel@latest login
 npx vercel@latest link --project varixcenter-v2
-npx vercel@latest env pull .env.local
+npx vercel@latest env pull .env.local --environment=production
 ```
 
 `.env.local` y `.vercel/` están ignorados por Git. Nunca copiarlos a un commit,
-un chat o una carpeta compartida. Para arrancar y validar:
+un chat o una carpeta compartida. Vercel no permite volver a descargar el valor
+real de variables marcadas como **Sensitive**: en ese caso `env pull` escribe un
+marcador cifrado que no sirve para desarrollo local. Las credenciales faltantes
+se deben transferir desde el `.env.local` autorizado mediante un gestor de
+contraseñas o un canal cifrado y comprobar contra `.env.local.example`. El
+despliegue remoto sí recibe los valores reales directamente de Vercel.
+
+El build, los tipos y el lint no necesitan secretos; las integraciones sólo los
+leen al ejecutarse. Para arrancar y validar:
 
 ```bash
 npm run type-check

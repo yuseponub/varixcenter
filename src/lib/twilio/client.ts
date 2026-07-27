@@ -9,26 +9,35 @@
  */
 import twilio from 'twilio'
 
-// Validate environment variables at module load time
-// This will throw during build if env vars are missing (which is desired)
-const accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-export const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER
+let twilioClient: ReturnType<typeof twilio> | null = null
 
-// In development, allow missing credentials with warning
-if (!accountSid || !authToken) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Missing Twilio credentials: TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required')
-  }
-  console.warn('[Twilio] Missing credentials - SMS sending will be disabled')
+/**
+ * Read credentials only when an SMS is actually going to be sent. Next.js
+ * evaluates route modules while building, so constructing the client at module
+ * load made a clean checkout impossible to validate without production secrets.
+ */
+export function getTwilioClient(): ReturnType<typeof twilio> | null {
+  if (twilioClient) return twilioClient
+
+  const accountSid = process.env.TWILIO_ACCOUNT_SID?.trim()
+  const authToken = process.env.TWILIO_AUTH_TOKEN?.trim()
+  if (!accountSid || !authToken) return null
+
+  twilioClient = twilio(accountSid, authToken)
+  return twilioClient
 }
 
-// Create client only if credentials exist
-export const twilioClient = accountSid && authToken ? twilio(accountSid, authToken) : null
+export function getTwilioPhoneNumber(): string | null {
+  return process.env.TWILIO_PHONE_NUMBER?.trim() || null
+}
 
 /**
  * Check if Twilio is configured
  */
 export function isTwilioConfigured(): boolean {
-  return twilioClient !== null && !!TWILIO_PHONE_NUMBER
+  return Boolean(
+    process.env.TWILIO_ACCOUNT_SID?.trim() &&
+    process.env.TWILIO_AUTH_TOKEN?.trim() &&
+    getTwilioPhoneNumber()
+  )
 }

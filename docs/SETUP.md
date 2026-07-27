@@ -56,6 +56,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...tu-anon-key
 SUPABASE_SERVICE_ROLE_KEY=eyJ...tu-service-role-key
 ```
 
+Las variables sensibles de Vercel pueden descargarse como marcadores cifrados,
+no como su valor real. Para trabajar localmente, transferir el `.env.local`
+autorizado mediante un gestor de contraseñas o un canal cifrado; nunca por Git
+o chat. La lista completa y valores ficticios están en `.env.local.example`.
+
 ## 3. Aplicar Migraciones a la Base de Datos
 
 ### Opcion A: Via Supabase CLI (Recomendado)

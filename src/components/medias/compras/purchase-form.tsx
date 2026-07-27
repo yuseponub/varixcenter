@@ -148,7 +148,7 @@ export function PurchaseForm({
         <CardContent>
           {items.length === 0 ? (
             <p className="text-center text-muted-foreground py-4">
-              No hay productos. Haga clic en "Agregar" para comenzar.
+              No hay productos. Haga clic en «Agregar» para comenzar.
             </p>
           ) : (
             <div className="space-y-3">

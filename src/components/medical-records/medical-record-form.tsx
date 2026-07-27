@@ -123,7 +123,7 @@ export function MedicalRecordForm({
       }
       return createMedicalRecord(prevState, formData)
     },
-    [mode, initialData?.id]
+    [mode, initialData]
   )
 
   const [state, formAction, isPending] = useActionState<MedicalRecordActionState | null, FormData>(

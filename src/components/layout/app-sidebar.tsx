@@ -135,7 +135,7 @@ export function AppSidebar({
   const isMediasActive = pathname.startsWith("/medias")
 
   const showAdmin = role === "admin" || role === "medico"
-  const showCierres = showAdmin || role === "enfermera"
+  const showCierres = showAdmin || role === "enfermera" || role === "secretaria"
   const showBilling = role === "admin" || role === "secretaria"
 
   const buildNavItems = () => {
@@ -143,7 +143,7 @@ export function AppSidebar({
       showBilling && item.href === "/pagos" ? [item, billingNavItem] : [item]
     )
     if (showCierres && !showAdmin) {
-      // Enfermera: only add Cierres from admin items
+      // Personal autorizado no administrativo: mostrar solo Cierres.
       items.push({ href: "/cierres", label: "Cierres", icon: <Vault className="h-4 w-4 shrink-0" /> })
     }
     if (showAdmin) {

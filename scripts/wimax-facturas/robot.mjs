@@ -20,7 +20,11 @@ import {
   createColfactClientFromEnv,
   waitForColfactInvoice,
 } from './lib/colfact-client.mjs'
-import { reconcilePendingColfactJobs } from './lib/colfact-reconcile.mjs'
+import { storeInvoicePdf } from './lib/colfact-pdf.mjs'
+import {
+  reconcileMissingColfactPdfs,
+  reconcilePendingColfactJobs,
+} from './lib/colfact-reconcile.mjs'
 import { preflightDedup } from './lib/dedup.mjs'
 import { readCufeBuffer, readDirectory, readInvoices } from './lib/dbf-reader.mjs'
 import { GuiDriver, WimaxWorkflow } from './lib/gui.mjs'
@@ -31,10 +35,11 @@ import {
   amountEqual,
   dateOnly,
   digitsOnly,
+  normalizeWimaxAddress,
   splitPatientName,
 } from './lib/normalize.mjs'
 
-const AGENT_VERSION = 'wimax-facturas/3.0.0'
+const AGENT_VERSION = 'wimax-facturas/3.2.0'
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
 function loadEnv() {
@@ -84,6 +89,7 @@ function loadProfile(file) {
     'openInvoice',
     'openCustomerDirectory',
     'createCustomer',
+    'validateCreatedCustomer',
     'prepareInvoice',
     'addItem',
     'finishBeforeApproval',
@@ -257,6 +263,7 @@ export function contextFor(job, customerCode) {
       code: customerCode,
       cedula: digitsOnly(job.paciente.cedula),
       celular: digitsOnly(job.paciente.celular) ?? '',
+      address: normalizeWimaxAddress(job.paciente?.direccion),
       primerNombre: names.primerNombre,
       segundoNombre: names.segundoNombre,
       primerApellido: names.primerApellido,
@@ -296,9 +303,16 @@ export async function prepareJobUi({
     await workflow.run('openCustomerDirectory', context)
     await workflow.run('createCustomer', context)
     await onHeartbeat('cliente_preparado')
+    // Saving a new Directory entry returns to Facturacion with the FE type,
+    // customer and warehouse already loaded. Replaying prepareInvoice here
+    // can type FE into the currently focused Bodega field.
+    await workflow.run('validateCreatedCustomer', context)
+    await workflow.run('prepareInvoice', context, {
+      startAt: 'metodo-campo',
+    })
+  } else {
+    await workflow.run('prepareInvoice', context)
   }
-
-  await workflow.run('prepareInvoice', context)
   await onHeartbeat('encabezado_preparado')
   for (const item of items) {
     await workflow.run('addItem', {
@@ -536,9 +550,11 @@ async function processJob({
     let cufe = cufeWatcher.captured.get(newInvoice.numero)
     let cufeSource = cufe ? 'tmfecufe' : null
     let colfactError = null
-    if (!cufe && colfactClient) {
+    let portalInvoice = null
+    let portalPdf = null
+    if (colfactClient) {
       try {
-        const portalInvoice = await waitForColfactInvoice({
+        portalInvoice = await waitForColfactInvoice({
           client: colfactClient,
           invoice: {
             numero: newInvoice.numero,
@@ -550,8 +566,16 @@ async function processJob({
           pollMs: colfactLookupPollSeconds * 1_000,
         })
         if (portalInvoice) {
+          if (cufe && cufe.toLowerCase() !== portalInvoice.cufe.toLowerCase()) {
+            throw new Error('COLFACT_MISMATCH: CUFE temporal y XML no coinciden')
+          }
           cufe = portalInvoice.cufe
           cufeSource = 'colfact_xml'
+          portalPdf = await storeInvoicePdf({
+            supabase,
+            invoice: portalInvoice,
+            pdfBytes: await colfactClient.downloadInvoicePdf(portalInvoice),
+          })
         }
       } catch (error) {
         colfactError = errorCode(error)
@@ -564,6 +588,8 @@ async function processJob({
       tmfecufe_captured: cufeSource === 'tmfecufe',
       colfact_checked: Boolean(colfactClient),
       colfact_xml_confirmed: cufeSource === 'colfact_xml',
+      colfact_pdf_saved: Boolean(portalPdf),
+      colfact_pdf_sha256: portalPdf?.sha256 ?? null,
       colfact_error: colfactError,
     }
     if (cufe) {
@@ -578,6 +604,31 @@ async function processJob({
         p_cufe: cufe,
         p_evidence: evidence,
       })
+      if (portalInvoice && portalPdf) {
+        const { error: pdfError } = await supabase.rpc(
+          'robot_wimax_registrar_documento_colfact',
+          {
+            p_numero: newInvoice.numero,
+            p_emision: newInvoice.emision,
+            p_cedula: newInvoice.cedula,
+            p_total: newInvoice.total,
+            p_cufe: portalInvoice.cufe,
+            p_pdf_path: portalPdf.path,
+            p_pdf_sha256: portalPdf.sha256,
+            p_pdf_size: portalPdf.size,
+            p_evidence: {
+              colfact_confirmed: true,
+              xml_cufe_verified: portalInvoice.xmlCufeVerified,
+              pdf_verified: true,
+              pdf_sha256: portalPdf.sha256,
+              checked_at: new Date().toISOString(),
+            },
+          },
+        )
+        if (pdfError) {
+          console.error(`PDF pendiente para trabajo ${job.id.slice(0, 8)}: COLFACT_DB`)
+        }
+      }
       console.log(`Trabajo ${job.id.slice(0, 8)} completado como ${newInvoice.numero}`)
     } else {
       await rpc(supabase, 'robot_wimax_emitida_sin_cufe', {
@@ -961,14 +1012,23 @@ async function main() {
         colfactReconcileDueAt > 0 &&
         Date.now() >= colfactReconcileDueAt
       ) {
-        const stats = await reconcilePendingColfactJobs({
+        const jobs = await reconcilePendingColfactJobs({
           supabase,
           client: colfactClient,
           limit: colfactReconcileLimit,
         })
+        const pdfs = await reconcileMissingColfactPdfs({
+          supabase,
+          client: colfactClient,
+          limit: colfactReconcileLimit,
+        })
+        const stats = { jobs, pdfs }
         console.log(`ColFact post-lote: ${JSON.stringify(stats)}`)
         colfactAttemptsRemaining -= 1
-        if ((stats.pending > 0 || stats.failed > 0) && colfactAttemptsRemaining > 0) {
+        if (
+          (jobs.pending > 0 || jobs.failed > 0 || pdfs.pending > 0 || pdfs.failed > 0) &&
+          colfactAttemptsRemaining > 0
+        ) {
           colfactReconcileDueAt = Date.now() + colfactPostBatchDelaySeconds * 1_000
         } else {
           colfactReconcileDueAt = 0

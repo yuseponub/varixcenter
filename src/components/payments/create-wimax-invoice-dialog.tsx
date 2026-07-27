@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Clock3,
+  Download,
   FileCheck2,
   FilePlus2,
   Loader2,
@@ -275,9 +276,16 @@ export function CreateWimaxInvoiceDialog({
   const router = useRouter()
   const job = payment.wimax_invoice_jobs
   const invoicing = payment.payment_invoicing
-  const isCard = payment.payment_methods.some((method) => method.metodo === 'tarjeta')
-  const isEligible = payment.estado === 'activo' && (isCard || Boolean(invoicing?.pidio_factura))
-  const initialTargetAmount = invoicing?.monto_a_facturar ?? payment.total
+  const electronicInvoiceAmount = payment.payment_methods
+    .filter((method) => ['tarjeta', 'transferencia'].includes(method.metodo))
+    .reduce((sum, method) => sum + method.monto, 0)
+  const hasInvoicePaymentMethod = electronicInvoiceAmount > 0
+  const isEligible = payment.estado === 'activo' &&
+    (hasInvoicePaymentMethod || Boolean(invoicing?.pidio_factura))
+  const suggestedAmount = electronicInvoiceAmount > 0
+    ? electronicInvoiceAmount
+    : payment.total
+  const initialTargetAmount = invoicing?.monto_a_facturar ?? suggestedAmount
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<WimaxInvoiceItemInput[]>(() =>
     defaultWimaxItems(payment.payment_items, initialTargetAmount)
@@ -294,12 +302,12 @@ export function CreateWimaxInvoiceDialog({
 
   useEffect(() => {
     if (open) {
-      const target = invoicing?.monto_a_facturar ?? payment.total
+      const target = invoicing?.monto_a_facturar ?? suggestedAmount
       setTargetAmount(target)
       setItems(defaultWimaxItems(payment.payment_items, target))
       setConfirming(false)
     }
-  }, [open, invoicing?.monto_a_facturar, payment.payment_items, payment.total])
+  }, [open, invoicing?.monto_a_facturar, payment.payment_items, payment.total, suggestedAmount])
 
   const invoiceTotal = useMemo(
     () => items.reduce((sum, item) => sum + item.cantidad * item.precio_unitario, 0),
@@ -326,11 +334,31 @@ export function CreateWimaxInvoiceDialog({
   if (!isEligible || !invoicing) return null
 
   if (invoicing.estado === 'facturada_total' || invoicing.estado === 'facturada_parcial') {
+    const pdfAvailable = Boolean(invoicing.wimax_facturas?.pdf_storage_path)
     return (
-      <Badge className="bg-success text-success-foreground">
-        <FileCheck2 />
-        {invoicing.wimax_factura_numero ?? 'Facturada'}
-      </Badge>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge className="bg-success text-success-foreground">
+          <FileCheck2 />
+          {invoicing.wimax_factura_numero ?? 'Facturada'}
+        </Badge>
+        {pdfAvailable && invoicing.wimax_factura_numero && (
+          <Button asChild type="button" size="sm" variant="outline">
+            <a
+              href={`/api/wimax-facturas/${encodeURIComponent(invoicing.wimax_factura_numero)}/pdf`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Download />
+              PDF
+            </a>
+          </Button>
+        )}
+        {!pdfAvailable && invoicing.colfact_revision_estado === 'coincidencia_ambigua' && (
+          <Badge className="bg-warning text-warning-foreground">
+            Revisar ColFact
+          </Badge>
+        )}
+      </div>
     )
   }
   if (invoicing.estado === 'descartada') {
@@ -456,6 +484,18 @@ export function CreateWimaxInvoiceDialog({
             <AlertTitle>Falta mapear un tratamiento</AlertTitle>
             <AlertDescription>
               Seleccione la referencia WiMAX correcta en las filas marcadas.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!confirming && invoicing.colfact_revision_estado === 'coincidencia_ambigua' && (
+          <Alert className="border-warning-foreground/40 bg-warning text-warning-foreground">
+            <AlertTriangle />
+            <AlertTitle>ColFact encontró facturas que requieren revisión</AlertTitle>
+            <AlertDescription>
+              No emita todavía. Existe al menos una FE reciente para esta cédula,
+              pero el valor o la asignación entre pagos no es único. El robot la
+              bloqueará antes de tocar WiMAX para evitar un duplicado.
             </AlertDescription>
           </Alert>
         )}

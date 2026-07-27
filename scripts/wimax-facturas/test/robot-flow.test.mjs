@@ -6,25 +6,27 @@ function sampleJob() {
   return {
     monto: 190000,
     paciente: {
-      cedula: '63.451.563',
-      celular: '320 915 1572',
-      nombre: 'FLOR NIDIA ',
-      apellido: 'JAIMES CARILLO',
-      payment_numero: 'FAC-001126',
+      cedula: '99.007.701',
+      celular: '300 000 7701',
+      nombre: 'MARIA JOSE ',
+      apellido: 'PRUEBA ROBOT',
+      direccion: '  Carrera 27 # 45-10  ',
+      payment_numero: 'TEST-077-ADDRESS',
     },
   }
 }
 
 test('contextFor carries the immutable Varix payment identity into WiMAX', () => {
-  const context = contextFor(sampleJob(), '63FLO')
+  const context = contextFor(sampleJob(), '99MAR')
   assert.deepEqual(context.customer, {
-    code: '63FLO',
-    cedula: '63451563',
-    celular: '3209151572',
-    primerNombre: 'FLOR',
-    segundoNombre: 'NIDIA',
-    primerApellido: 'JAIMES',
-    segundoApellido: 'CARILLO',
+    code: '99MAR',
+    cedula: '99007701',
+    celular: '3000007701',
+    address: 'Carrera 27 # 45-10',
+    primerNombre: 'MARIA',
+    segundoNombre: 'JOSE',
+    primerApellido: 'PRUEBA',
+    segundoApellido: 'ROBOT',
     department: 'Santander',
     city: 'Bucaramanga',
     postalCode: '680011',
@@ -33,34 +35,45 @@ test('contextFor carries the immutable Varix payment identity into WiMAX', () =>
     declarant: 'N',
     status: 'A',
   })
-  assert.equal(context.invoice.paymentReference, 'FAC-001126')
-  assert.equal(context.invoice.paymentDetail, 'FAC-001126 FLOR NIDIA JAIMES CARILLO')
+  assert.equal(context.invoice.paymentReference, 'TEST-077-ADDRESS')
+  assert.equal(context.invoice.paymentDetail, 'TEST-077-ADDRESS MARIA JOSE PRUEBA ROBOT')
   assert.equal(context.invoice.paymentType, 'DP')
   assert.equal(context.invoice.bankAccount, '1.1.10.05.01.03')
+})
+
+test('contextFor deja vacia una direccion que no existe', () => {
+  const job = sampleJob()
+  job.paciente.direccion = null
+  assert.equal(contextFor(job, '99MAR').customer.address, '')
 })
 
 test('prepareJobUi creates a missing customer inside an already open invoice', async () => {
   const calls = []
   const workflow = {
-    async run(flow, context) {
-      calls.push({ flow, item: context.item?.reference ?? null })
+    async run(flow, context, options) {
+      calls.push({
+        flow,
+        item: context.item?.reference ?? null,
+        startAt: options?.startAt ?? null,
+      })
     },
   }
   await prepareJobUi({
     workflow,
-    context: contextFor(sampleJob(), '63FLO'),
+    context: contextFor(sampleJob(), '99MAR'),
     customerExists: false,
     items: [
       { referencia: 'SES', descripcion: 'SESION', cantidad: 2, precio_unitario: 95000 },
     ],
   })
   assert.deepEqual(calls, [
-    { flow: 'openInvoice', item: null },
-    { flow: 'openCustomerDirectory', item: null },
-    { flow: 'createCustomer', item: null },
-    { flow: 'prepareInvoice', item: null },
-    { flow: 'addItem', item: 'SES' },
-    { flow: 'finishBeforeApproval', item: null },
+    { flow: 'openInvoice', item: null, startAt: null },
+    { flow: 'openCustomerDirectory', item: null, startAt: null },
+    { flow: 'createCustomer', item: null, startAt: null },
+    { flow: 'validateCreatedCustomer', item: null, startAt: null },
+    { flow: 'prepareInvoice', item: null, startAt: 'metodo-campo' },
+    { flow: 'addItem', item: 'SES', startAt: null },
+    { flow: 'finishBeforeApproval', item: null, startAt: null },
   ])
 })
 
@@ -69,7 +82,7 @@ test('prepareJobUi skips Directory for an existing customer', async () => {
   const workflow = { async run(flow) { calls.push(flow) } }
   await prepareJobUi({
     workflow,
-    context: contextFor(sampleJob(), '63FLO'),
+    context: contextFor(sampleJob(), '99MAR'),
     customerExists: true,
     items: [],
   })

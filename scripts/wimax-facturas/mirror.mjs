@@ -11,6 +11,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { hostname } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { WIMAX_DBF_ENCODING } from './lib/dbf-reader.mjs'
 import { dbfDateOnly } from './lib/normalize.mjs'
 
 const AGENT_VERSION = 'wimax-facturas/1.0.0'
@@ -118,7 +119,9 @@ async function readDbf(file) {
   if (!existsSync(file)) throw new Error(`No existe el archivo DBF: ${file}`)
 
   const dbf = await DBFFile.open(file, {
-    encoding: 'win1252',
+    // WiMAX's DBFs use the DOS/OEM CP850 code page and do not declare it in
+    // their header. This preserves Ñ/ñ and accents when mirroring to UTF-8.
+    encoding: WIMAX_DBF_ENCODING,
     readMode: 'loose',
     includeDeletedRecords: false,
   })
@@ -234,8 +237,33 @@ async function readInvoiceMonth(source, directory, syncAt) {
 }
 
 async function upsertInvoices(invoices) {
+  const protectedIdentity = new Map()
   for (let offset = 0; offset < invoices.length; offset += BATCH_SIZE) {
-    const batch = invoices.slice(offset, offset + BATCH_SIZE)
+    const numbers = invoices.slice(offset, offset + BATCH_SIZE).map((invoice) => invoice.numero)
+    const { data, error } = await supabase
+      .from('wimax_facturas')
+      .select('numero,emision,cedula,nombre,total,mes_origen,estado_dian')
+      .in('numero', numbers)
+      .in('estado_dian', ['observada_portal', 'confirmada_portal'])
+    if (error) throw new Error(`Consulta identidad ColFact: ${error.message}`)
+    for (const invoice of data ?? []) protectedIdentity.set(invoice.numero, invoice)
+  }
+
+  const safeInvoices = invoices.map((invoice) => {
+    const official = protectedIdentity.get(invoice.numero)
+    if (!official) return invoice
+    return {
+      ...invoice,
+      emision: official.emision,
+      cedula: official.cedula,
+      nombre: official.nombre,
+      total: official.total,
+      mes_origen: official.mes_origen,
+    }
+  })
+
+  for (let offset = 0; offset < safeInvoices.length; offset += BATCH_SIZE) {
+    const batch = safeInvoices.slice(offset, offset + BATCH_SIZE)
     const { error } = await supabase
       .from('wimax_facturas')
       .upsert(batch, { onConflict: 'numero', defaultToNull: false })

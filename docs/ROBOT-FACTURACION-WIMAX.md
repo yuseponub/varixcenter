@@ -3,14 +3,20 @@
 **Mapeo inicial:** 2026-07-23 · **Calibración integral:** 2026-07-24 · **Rama base:** `mejoras-2026-07` · **SHA:** `0271cfc52c97b53163d4377ffbf839bd8a17298a`
 
 **Estado:** implementado con arranque autenticado desde WiMAX cerrado, cola
-urgente/cierre, deduplicación DBF+nube, emisión por UI en sesión 1 y
-conciliación CUFE contra XML oficial de ColFact.
+urgente/cierre, deduplicación DBF+nube, emisión por UI en sesión 1,
+conciliación CUFE contra XML oficial de ColFact y almacenamiento privado del
+PDF oficial dentro de VarixCenter.
 
 ## Objetivo
 
-Automatizar la emisión de facturas electrónicas (DIAN) en **WiMAX** (app contable Xbase++ de la clínica) a partir de los **pagos con tarjeta** registrados en VarixCenter. Meta: un botón **"Crear factura"** dentro del módulo **Pagos** de VarixCenter que, con los tratamientos+valores del pago pre-cargados (editables), dispare un **robot en background** que replica el flujo manual en WiMAX y emite la factura.
+Automatizar la emisión de facturas electrónicas (DIAN) en **WiMAX** (app contable Xbase++ de la clínica) a partir de los pagos con **tarjeta o transferencia** registrados en VarixCenter. Meta: un botón **"Crear factura"** dentro del módulo **Pagos** de VarixCenter que, con los tratamientos+valores del pago pre-cargados (editables), dispare un **robot en background** que replica el flujo manual en WiMAX y emite la factura.
 
-**Regla de negocio:** se factura cuando el pago fue por **tarjeta** (o el paciente pide factura). Los pagos en efectivo NO se facturan salvo solicitud. El "valor real" a facturar es el que la persona pagó en VarixCenter (editable), NO el precio del catálogo de WiMAX.
+**Regla de negocio:** se ofrece facturar cuando cualquier porción del pago fue
+por **tarjeta o transferencia** (o el paciente pide factura). Un pago compuesto
+propone inicialmente la suma tarjeta+transferencia, aunque el valor sigue siendo
+editable hasta el total del pago. Los pagos únicamente en efectivo o Nequi NO se
+facturan salvo solicitud. El "valor real" a facturar es el valor confirmado en
+VarixCenter, NO el precio del catálogo de WiMAX.
 
 ## Acceso e infraestructura
 
@@ -22,7 +28,12 @@ Automatizar la emisión de facturas electrónicas (DIAN) en **WiMAX** (app conta
 
 ## Fuente de datos (qué facturar)
 
-Cola `payment_invoicing` (migración 064): trigger crea fila `pendiente` cuando un `payment_methods.metodo='tarjeta'`. RPC `cruzar_facturacion_wimax()` empareja pendientes con facturas ya en `wimax_facturas` por cédula+ventana de fechas+monto.
+Cola `payment_invoicing` (migraciones 064/073): el trigger crea una fila
+`pendiente` cuando existe cualquier método `tarjeta` o `transferencia`, incluso
+si representa solo una porción del pago. La migración 073 también incorporó el
+histórico que ya existía. La RPC `cruzar_facturacion_wimax()` empareja únicamente
+una factura exacta, única y no disputada por cédula+ventana de fechas+monto; si
+hay más de una posibilidad conserva el pendiente para revisión.
 
 El falso positivo histórico del cruce quedó cubierto en las migraciones
 068/070: cada FE se consume una sola vez y, antes de tocar la UI, el agente
@@ -59,7 +70,14 @@ Pestaña **Datos Generales**:
 - Tipo de identificación: **Cédula Ciudadanía**. No. Cédula = la cédula. D.V. vacío.
 - Persona Jurídica = **N**, Declarante Renta = **N**, Estado = **A**.
 - Primer Apellido, Segundo Apellido, Primer Nombre, Segundo Nombre. (Razón social se autollena con el nombre completo.)
+- **Dirección** = copia de la dirección existente en la ficha del paciente de
+  VarixCenter al pulsar **Crear factura**. Se normalizan espacios y se limita a
+  40 caracteres como límite conservador para `DIREC1`; si la ficha no tiene
+  dirección, el campo queda vacío. El robot verifica el valor antes de guardar.
 - Depto **Santander** / Ciudad **Bucaramanga** / Código Postal **680011** (defaults). Celular del paciente.
+
+La dirección se copia únicamente cuando el robot crea un cliente. Si la cédula
+ya existe en el Directorio de WiMAX, se conserva intacta su dirección actual.
 
 Pestaña **Datos Tributarios**: **Régimen = "Natural o Unipersonal"** (código P; el 95% de clientes). Mapa: C=Común, S=Simplificado, G=Gubernamental, P=Natural. → **Aceptar**.
 
@@ -90,7 +108,13 @@ WiMAX es **Xbase++** (ventanas clase `XbpDialog`, campos `XbpStatic`). Solo reci
 
 ## UX del botón "Crear factura" (módulo Pagos de VarixCenter)
 
-Al dar clic en un pago (tarjeta, no facturado), el modal muestra los **tratamientos + valores del pago pre-seleccionados** pero **editables** (tratamiento/cantidad/precio). Default = un clic. El backend encola el trabajo (cédula, nombres, lista de ítems código+cantidad+precio) para que el robot lo ejecute en WiMAX. Marcar el pago como facturado (con número FE + CUFE) solo cuando el robot confirme éxito.
+Al dar clic en un pago elegible (tarjeta, transferencia o solicitud expresa),
+el modal muestra los **tratamientos + valores del pago pre-seleccionados** pero
+**editables** (tratamiento/cantidad/precio). En pagos mixtos propone la porción
+electrónica. El backend encola el trabajo (cédula, nombres, dirección vigente
+de la ficha y lista de ítems código+cantidad+precio) para que el robot lo
+ejecute en WiMAX. Marcar el pago
+como facturado (con número FE + CUFE) solo cuando el robot confirme éxito.
 
 ## Verificación / ver facturas emitidas
 
@@ -100,10 +124,21 @@ Al dar clic en un pago (tarjeta, no facturado), el modal muestra los **tratamien
 El agente inicia un watcher de `tmfecufe.dbf` antes de aceptar el asiento. Si el
 buffer temporal no conserva el CUFE, espera el final del lote y consulta la FE
 exacta en ColFact; valida número, fecha, cédula, total, estado completado y que
-el `CodigoTransaccion` coincida con el UUID `CUFE-SHA384` del XML oficial. La
-migración 072 ofrece una recuperación explícita para una FE ya observada en
-`trafac` durante calibración; nunca emite y tampoco completa el pago antes del
-CUFE.
+el `CodigoTransaccion` coincida con el UUID `CUFE-SHA384` del XML oficial. Luego
+descarga el PDF oficial, valida contenido y límite de 10 MB, calcula SHA-256 y lo
+guarda en el bucket privado e inmutable `wimax-invoices`. Admin y Secretaría
+pueden descargarlo desde el botón **PDF** en Pagos o Facturación mediante un
+enlace firmado de cinco minutos. La migración 072 ofrece una recuperación
+explícita para una FE ya observada en `trafac` durante calibración; nunca emite y
+tampoco completa el pago antes del CUFE.
+
+La consolidación histórica se ejecuta con
+`npm run consolidate:colfact -- --apply`. Por defecto el comando es solo
+lectura. Antes de enlazar exige una
+coincidencia uno-a-uno por cédula, monto y ventana de fecha, verifica XML/CUFE y
+PDF, y registra los demás pagos como `sin_coincidencia` o
+`coincidencia_ambigua`. Importar identidades del portal amplía la deduplicación,
+pero este comando nunca abre WiMAX ni emite facturas.
 
 ### Validación supervisada del 24 de julio de 2026
 

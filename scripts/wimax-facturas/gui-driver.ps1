@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('Inspect', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'SetInlineFields', 'Click', 'RightClick', 'Screenshot', 'PromptUrgent')]
+  [ValidateSet('Inspect', 'InspectControls', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'MoveEdit', 'AssertEditValue', 'SetInlineFields', 'Click', 'PressButton', 'InvokeButton', 'TabButton', 'TabUntilChange', 'RightClick', 'Screenshot', 'PromptUrgent')]
   [string]$Action,
 
   [string]$OutputPath,
@@ -26,8 +26,19 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Node writes the JSON payload to stdin as UTF-8. Windows PowerShell 5.1
+# otherwise decodes redirected stdin with the OEM code page, turning Ñ/ñ into
+# two unrelated characters before SendKeys sees the text.
+$utf8 = [System.Text.UTF8Encoding]::new($false)
+[Console]::InputEncoding = $utf8
+[Console]::OutputEncoding = $utf8
+$OutputEncoding = $utf8
+
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName Accessibility
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
 
 if (-not ('Varix.Wimax.NativeGui' -as [type])) {
   Add-Type -TypeDefinition @'
@@ -56,6 +67,7 @@ namespace Varix.Wimax {
 
   public sealed class ControlInfo {
     public long Handle { get; set; }
+    public long ParentHandle { get; set; }
     public string Text { get; set; }
     public string ClassName { get; set; }
     public int ControlId { get; set; }
@@ -126,6 +138,9 @@ namespace Varix.Wimax {
     private static extern IntPtr SetFocus(IntPtr hWnd);
 
     [DllImport("user32.dll")]
+    private static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
     private static extern IntPtr GetFocus();
 
     [DllImport("user32.dll")]
@@ -159,10 +174,24 @@ namespace Varix.Wimax {
     private static extern int GetDlgCtrlID(IntPtr hWnd);
 
     [DllImport("user32.dll")]
+    private static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool PostMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, StringBuilder lParam);
+
+    [DllImport("oleacc.dll")]
+    private static extern int AccessibleObjectFromWindow(
+      IntPtr hWnd,
+      uint objectId,
+      ref Guid interfaceId,
+      [MarshalAs(UnmanagedType.Interface)] out object accessible
+    );
 
     private static string Text(IntPtr hWnd) {
       var value = new StringBuilder(2048);
@@ -240,6 +269,7 @@ namespace Varix.Wimax {
         GetWindowRect(hWnd, out rect);
         result.Add(new ControlInfo {
           Handle = hWnd.ToInt64(),
+          ParentHandle = GetParent(hWnd).ToInt64(),
           Text = Text(hWnd),
           ClassName = Class(hWnd),
           ControlId = GetDlgCtrlID(hWnd),
@@ -254,6 +284,101 @@ namespace Varix.Wimax {
       return result.ToArray();
     }
 
+    public static bool PostButtonClick(long rawHandle) {
+      const uint BM_CLICK = 0x00F5;
+      return PostMessage(new IntPtr(rawHandle), BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+    }
+
+    public static bool PostButtonCommand(long rawParent, long rawButton, int controlId) {
+      const uint WM_COMMAND = 0x0111;
+      // BN_CLICKED is zero, so LOWORD(wParam) only carries the control id.
+      var wParam = new IntPtr(controlId & 0xFFFF);
+      return PostMessage(
+        new IntPtr(rawParent),
+        WM_COMMAND,
+        wParam,
+        new IntPtr(rawButton)
+      );
+    }
+
+    public static bool FocusButtonAndPressSpace(long rawDialog, long rawButton) {
+      var dialog = new IntPtr(rawDialog);
+      var button = new IntPtr(rawButton);
+      uint processId;
+      var targetThread = GetWindowThreadProcessId(button, out processId);
+      var currentThread = GetCurrentThreadId();
+      var attached = currentThread != targetThread &&
+        AttachThreadInput(currentThread, targetThread, true);
+      try {
+        ShowWindowAsync(dialog, 9); // SW_RESTORE
+        BringWindowToTop(dialog);
+        SetForegroundWindow(dialog);
+        SetActiveWindow(dialog);
+        SetFocus(button);
+        if (GetFocus() != button) return false;
+        keybd_event(0x20, 0x39, 0, UIntPtr.Zero); // VK_SPACE down
+        System.Threading.Thread.Sleep(120);
+        keybd_event(0x20, 0x39, 0x0002, UIntPtr.Zero); // KEYEVENTF_KEYUP
+        return true;
+      }
+      finally {
+        if (attached) AttachThreadInput(currentThread, targetThread, false);
+      }
+    }
+
+    public static bool FocusButton(long rawDialog, long rawButton) {
+      var dialog = new IntPtr(rawDialog);
+      var button = new IntPtr(rawButton);
+      uint processId;
+      var targetThread = GetWindowThreadProcessId(button, out processId);
+      var currentThread = GetCurrentThreadId();
+      var attached = currentThread != targetThread &&
+        AttachThreadInput(currentThread, targetThread, true);
+      try {
+        ShowWindowAsync(dialog, 9); // SW_RESTORE
+        BringWindowToTop(dialog);
+        SetForegroundWindow(dialog);
+        SetActiveWindow(dialog);
+        SetFocus(button);
+        return GetFocus() == button;
+      }
+      finally {
+        if (attached) AttachThreadInput(currentThread, targetThread, false);
+      }
+    }
+
+    public static long FocusedHandle(long rawWindow) {
+      var window = new IntPtr(rawWindow);
+      uint processId;
+      var targetThread = GetWindowThreadProcessId(window, out processId);
+      var currentThread = GetCurrentThreadId();
+      var attached = false;
+      if (currentThread != targetThread) {
+        attached = AttachThreadInput(currentThread, targetThread, true);
+        if (!attached) return 0;
+      }
+      try {
+        return GetFocus().ToInt64();
+      }
+      finally {
+        if (attached) AttachThreadInput(currentThread, targetThread, false);
+      }
+    }
+
+    public static object AccessibleObject(long rawHandle) {
+      const uint OBJID_CLIENT = 0xFFFFFFFC;
+      var iid = new Guid("618736E0-3C3D-11CF-810C-00AA00389B71");
+      object accessible;
+      var result = AccessibleObjectFromWindow(
+        new IntPtr(rawHandle),
+        OBJID_CLIENT,
+        ref iid,
+        out accessible
+      );
+      if (result < 0) Marshal.ThrowExceptionForHR(result);
+      return accessible;
+    }
+
     public static WindowInfo Foreground() {
       var handle = GetForegroundWindow();
       return handle == IntPtr.Zero ? null : Describe(handle);
@@ -261,6 +386,13 @@ namespace Varix.Wimax {
 
     public static bool ForceForeground(long rawHandle) {
       var handle = new IntPtr(rawHandle);
+      // Re-synthesizing ALT while the target is already foreground can leak
+      // into Xbase++'s next keystroke and open a native/system menu. Preserve
+      // the existing child focus when no foreground handoff is necessary.
+      if (GetForegroundWindow() == handle) {
+        ShowWindowAsync(handle, 9); // SW_RESTORE
+        return true;
+      }
       uint processId;
       var targetThread = GetWindowThreadProcessId(handle, out processId);
       var currentThread = GetCurrentThreadId();
@@ -459,6 +591,10 @@ function Escape-SendKeys([string]$Value) {
 function Test-InlineNumericValue([string]$Expected, [string]$Actual) {
   if ($Actual.Trim() -ceq $Expected.Trim()) { return $true }
   $styles = [System.Globalization.NumberStyles]::Number
+  $normalizedActual = [regex]::Replace($Actual.Trim(), '\s+', '')
+  if ($normalizedActual -match '[,.]$') {
+    $normalizedActual += '0'
+  }
   [decimal]$expectedNumber = 0
   if (-not [decimal]::TryParse(
     $Expected,
@@ -472,7 +608,7 @@ function Test-InlineNumericValue([string]$Expected, [string]$Actual) {
     [decimal]$actualNumber = 0
     $culture = [System.Globalization.CultureInfo]::GetCultureInfo($cultureName)
     if (
-      [decimal]::TryParse($Actual, $styles, $culture, [ref]$actualNumber) -and
+      [decimal]::TryParse($normalizedActual, $styles, $culture, [ref]$actualNumber) -and
       $actualNumber -eq $expectedNumber
     ) {
       return $true
@@ -481,31 +617,69 @@ function Test-InlineNumericValue([string]$Expected, [string]$Actual) {
   return $false
 }
 
+function Test-ExpectedInlineStockWarning([object]$Window) {
+  return (
+    $Window -and
+    $Window.ProcessName -ieq 'WX' -and
+    $Window.ClassName -ceq '#32770' -and
+    $Window.Title -match '^\s*Facturaci.n\b' -and
+    $Window.ChildText -match 'PRECAUCION!' -and
+    $Window.ChildText -match 'Cantidad mayor que la existencia actual'
+  )
+}
+
 function Find-Window([object]$Payload) {
   if ($Payload.foreground) {
     $foreground = [Varix.Wimax.NativeGui]::Foreground()
     if (-not $foreground) { throw 'No hay ventana en primer plano' }
+    $handleMatches = -not $Payload.handle -or $foreground.Handle -eq [long]$Payload.handle
     $processMatches = -not $Payload.process -or $foreground.ProcessName -ieq [string]$Payload.process
     $titleMatches = -not $Payload.titlePattern -or $foreground.Title -match [string]$Payload.titlePattern
     $classMatches = -not $Payload.classPattern -or $foreground.ClassName -match [string]$Payload.classPattern
     $textMatches = -not $Payload.textPattern -or $foreground.ChildText -match [string]$Payload.textPattern
-    if (-not ($processMatches -and $titleMatches -and $classMatches -and $textMatches)) {
+    if (-not ($handleMatches -and $processMatches -and $titleMatches -and $classMatches -and $textMatches)) {
       throw 'La ventana en primer plano no coincide con el perfil'
     }
     return $foreground
   }
   $windows = [Varix.Wimax.NativeGui]::Windows()
   $matches = @($windows | Where-Object {
+    $handleMatches = -not $Payload.handle -or $_.Handle -eq [long]$Payload.handle
     $processMatches = -not $Payload.process -or $_.ProcessName -ieq [string]$Payload.process
     $titleMatches = -not $Payload.titlePattern -or $_.Title -match [string]$Payload.titlePattern
     $classMatches = -not $Payload.classPattern -or $_.ClassName -match [string]$Payload.classPattern
     $textMatches = -not $Payload.textPattern -or $_.ChildText -match [string]$Payload.textPattern
-    $processMatches -and $titleMatches -and $classMatches -and $textMatches
+    $handleMatches -and $processMatches -and $titleMatches -and $classMatches -and $textMatches
   })
   if ($matches.Count -ne 1) {
     throw "Se esperaba una ventana y se encontraron $($matches.Count)"
   }
   return $matches[0]
+}
+
+function Wait-MatchingEdit([object]$Window, [object]$Spec, [int]$TimeoutMs) {
+  if ($null -eq $Spec -or $null -eq $Spec.relativeLeft -or $null -eq $Spec.relativeTop) {
+    throw 'MoveEdit requiere relativeLeft y relativeTop'
+  }
+  $tolerance = if ($null -ne $Spec.tolerance) { [int]$Spec.tolerance } else { 5 }
+  if ($tolerance -lt 0 -or $tolerance -gt 20) { throw 'Tolerancia MoveEdit invalida' }
+  $classPattern = if ($Spec.classPattern) { [string]$Spec.classPattern } else { '^Edit$' }
+  $deadline = [DateTime]::UtcNow.AddMilliseconds([Math]::Min([Math]::Max($TimeoutMs, 250), 10000))
+  do {
+    $matches = @(
+      [Varix.Wimax.NativeGui]::Controls($Window.Handle) |
+        Where-Object {
+          $_.Enabled -and
+          $_.ClassName -match $classPattern -and
+          [Math]::Abs(($_.Left - $Window.Left) - [int]$Spec.relativeLeft) -le $tolerance -and
+          [Math]::Abs(($_.Top - $Window.Top) - [int]$Spec.relativeTop) -le $tolerance
+        }
+    )
+    if ($matches.Count -eq 1) { return $matches[0] }
+    if ($matches.Count -gt 1) { throw 'MoveEdit encontro varios controles en la posicion esperada' }
+    Start-Sleep -Milliseconds 100
+  } while ([DateTime]::UtcNow -lt $deadline)
+  throw 'MoveEdit no encontro el control esperado'
 }
 
 $payload = if ($PayloadPath) {
@@ -545,6 +719,15 @@ switch ($Action) {
       }
     })
   }
+  'InspectControls' {
+    $window = Find-Window $payload
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      window = $window
+      focusedHandle = [Varix.Wimax.NativeGui]::FocusedHandle($window.Handle)
+      controls = [Varix.Wimax.NativeGui]::Controls($window.Handle)
+    })
+  }
   'Foreground' {
     Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })
   }
@@ -575,6 +758,62 @@ switch ($Action) {
     $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
     Start-Sleep -Milliseconds $delay
     Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })
+  }
+  'MoveEdit' {
+    if (-not $payload.control -or -not $payload.control.from -or -not $payload.control.to) {
+      throw 'MoveEdit requiere controles from y to'
+    }
+    if ([string]$payload.keys -cne '{TAB}') { throw 'MoveEdit solo admite una tecla TAB' }
+    $window = Find-Window $payload
+    $timeout = if ($payload.timeoutMs) { [int]$payload.timeoutMs } else { 5000 }
+    $source = Wait-MatchingEdit $window $payload.control.from $timeout
+    if (-not [Varix.Wimax.NativeGui]::ForceForeground($window.Handle)) {
+      throw 'Windows no concedio el foco para MoveEdit'
+    }
+    Start-Sleep -Milliseconds 350
+    $x = $source.Left + [Math]::Max(2, [int]($source.Width / 2))
+    $y = $source.Top + [Math]::Max(2, [int]($source.Height / 2))
+    [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+    Start-Sleep -Milliseconds 600
+    [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+    [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+    Start-Sleep -Milliseconds 350
+    [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
+    $target = Wait-MatchingEdit $window $payload.control.to $timeout
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      source = [pscustomobject]@{ left = $source.Left; top = $source.Top }
+      target = [pscustomobject]@{ left = $target.Left; top = $target.Top }
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'AssertEditValue' {
+    if (-not $payload.control) { throw 'AssertEditValue requiere control' }
+    if ($null -eq $payload.value) { throw 'AssertEditValue requiere value' }
+    $window = Find-Window $payload
+    $timeout = if ($payload.timeoutMs) { [int]$payload.timeoutMs } else { 5000 }
+    $edit = Wait-MatchingEdit $window $payload.control $timeout
+    $expected = [string]$payload.value
+    $observed = [Varix.Wimax.NativeGui]::TextValue([long]$edit.Handle)
+    if ([string]$payload.normalize -ceq 'digits') {
+      $expected = [regex]::Replace($expected, '\D', '')
+      $observed = [regex]::Replace($observed, '\D', '')
+    }
+    elseif ($payload.normalize) {
+      throw 'Normalizacion AssertEditValue no soportada'
+    }
+    if ($observed.Trim() -ine $expected.Trim()) {
+      throw 'AssertEditValue no confirmo el valor esperado'
+    }
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      observedLength = $observed.Length
+      relativeLeft = $edit.Left - $window.Left
+      relativeTop = $edit.Top - $window.Top
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
   }
   'SetInlineFields' {
     if (-not $payload.control) { throw 'Falta control' }
@@ -627,20 +866,80 @@ switch ($Action) {
       [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
       [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
       Start-Sleep -Milliseconds $fieldDelay
+
+      # WiMAX validates stock when focus leaves Quantity. For the calibrated
+      # SES service it can show a warning because its inventory is negative.
+      # Accept only that exact modal, then click the intended field again.
+      $afterClick = [Varix.Wimax.NativeGui]::Foreground()
+      if ($afterClick.Handle -ne $window.Handle) {
+        if ($index -ne 1 -or -not (Test-ExpectedInlineStockWarning $afterClick)) {
+          throw "Ventana inesperada al enfocar el Edit ordinal $($index + 1)"
+        }
+        [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+        Start-Sleep -Milliseconds ([Math]::Max(500, $fieldDelay))
+        $afterWarning = [Varix.Wimax.NativeGui]::Foreground()
+        if ($afterWarning.Handle -ne $window.Handle) {
+          throw 'La advertencia esperada de existencias no se cerro'
+        }
+        [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+        [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+        [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+        Start-Sleep -Milliseconds $fieldDelay
+        if ([Varix.Wimax.NativeGui]::Foreground().Handle -ne $window.Handle) {
+          throw "El Edit ordinal $($index + 1) no recupero el foco"
+        }
+      }
       [System.Windows.Forms.SendKeys]::SendWait('^a')
       [System.Windows.Forms.SendKeys]::SendWait((Escape-SendKeys ([string]$values[$index])))
       Start-Sleep -Milliseconds $fieldDelay
       $observed = [Varix.Wimax.NativeGui]::TextValue([long]$edit.Handle)
       if (-not (Test-InlineNumericValue ([string]$values[$index]) $observed)) {
-        throw "El Edit ordinal $($index + 1) no confirmo el valor esperado"
+        $safeObserved = $observed.Replace("`r", '').Replace("`n", '').Substring(
+          0,
+          [Math]::Min($observed.Length, 32)
+        )
+        throw "El Edit ordinal $($index + 1) no confirmo el valor esperado; observado=[$safeObserved]"
       }
     }
-    # The third field is Discount. Enter commits the whole line and WiMAX
-    # immediately opens the next blank line; keep this three-field edit atomic.
+    # The third field is Discount. The first Enter advances to the calculated
+    # Total editor; the second commits the row and opens a fresh Reference row.
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+    Start-Sleep -Milliseconds ([Math]::Max(350, $fieldDelay))
+    $totalEditorWindow = [Varix.Wimax.NativeGui]::Foreground()
+    $totalEditors = @(
+      [Varix.Wimax.NativeGui]::Controls($window.Handle) |
+        Where-Object { $_.Enabled -and $_.ClassName -match $classPattern }
+    )
+    if (
+      $totalEditorWindow.Handle -ne $window.Handle -or
+      $totalEditors.Count -ne 1
+    ) {
+      throw 'WiMAX no avanzo al editor calculado de Valor Total'
+    }
     [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
     Start-Sleep -Milliseconds $commitDelay
+    $nextRowWindow = [Varix.Wimax.NativeGui]::Foreground()
+    $nextRowEditors = if (
+      $nextRowWindow -and
+      $nextRowWindow.ProcessName -ieq 'WX' -and
+      $nextRowWindow.ClassName -ceq 'XbpDialog' -and
+      $nextRowWindow.Title -match '^\s*$' -and
+      $nextRowWindow.Handle -ne $window.Handle
+    ) {
+      @(
+        [Varix.Wimax.NativeGui]::Controls($nextRowWindow.Handle) |
+          Where-Object { $_.Enabled -and $_.ClassName -match $classPattern }
+      )
+    }
+    else {
+      @()
+    }
+    if ($nextRowEditors.Count -ne 1) {
+      throw 'WiMAX no confirmo el renglon ni abrio la siguiente Referencia'
+    }
     Write-Result ([pscustomobject]@{
       ok = $true
+      committed = $true
       editedControls = $expectedCount
       valueLengths = @($values | ForEach-Object { ([string]$_).Length })
       foreground = [Varix.Wimax.NativeGui]::Foreground()
@@ -665,6 +964,213 @@ switch ($Action) {
     $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
     Start-Sleep -Milliseconds $delay
     Write-Result ([pscustomobject]@{ ok = $true; foreground = [Varix.Wimax.NativeGui]::Foreground() })
+  }
+  'PressButton' {
+    $window = Find-Window $payload
+    [void][Varix.Wimax.NativeGui]::ForceForeground($window.Handle)
+    Start-Sleep -Milliseconds 350
+    $x = $window.Left + [int]$payload.x
+    $y = $window.Top + [int]$payload.y
+    if ($x -lt $window.Left -or $x -ge ($window.Left + $window.Width) -or
+        $y -lt $window.Top -or $y -ge ($window.Top + $window.Height)) {
+      throw 'Las coordenadas estan fuera de la ventana objetivo'
+    }
+    [void][Varix.Wimax.NativeGui]::SetCursorPos($x, $y)
+    Start-Sleep -Milliseconds 600
+    [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+    Start-Sleep -Milliseconds 120
+    [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+    Start-Sleep -Milliseconds 600
+    $afterClick = [Varix.Wimax.NativeGui]::Foreground()
+    $secondClickSent = $false
+    if ($afterClick -and $afterClick.Handle -eq $window.Handle) {
+      [Varix.Wimax.NativeGui]::mouse_event(0x0002, 0, 0, 0, [UIntPtr]::Zero)
+      Start-Sleep -Milliseconds 120
+      [Varix.Wimax.NativeGui]::mouse_event(0x0004, 0, 0, 0, [UIntPtr]::Zero)
+      $secondClickSent = $true
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      secondClickSent = $secondClickSent
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'InvokeButton' {
+    $window = Find-Window $payload
+    $x = $window.Left + [int]$payload.x
+    $y = $window.Top + [int]$payload.y
+    if ($x -lt $window.Left -or $x -ge ($window.Left + $window.Width) -or
+        $y -lt $window.Top -or $y -ge ($window.Top + $window.Height)) {
+      throw 'Las coordenadas estan fuera de la ventana objetivo'
+    }
+    $buttons = @(
+      [Varix.Wimax.NativeGui]::Controls($window.Handle) |
+        Where-Object {
+          $_.Enabled -and $_.ClassName -eq 'Button' -and
+          $x -ge $_.Left -and $x -lt ($_.Left + $_.Width) -and
+          $y -ge $_.Top -and $y -lt ($_.Top + $_.Height)
+        }
+    )
+    if ($buttons.Count -ne 1) {
+      throw "Se esperaba un unico Button en la coordenada calibrada y se encontraron $($buttons.Count)"
+    }
+    if (-not [Varix.Wimax.NativeGui]::ForceForeground($window.Handle)) {
+      throw 'Windows no concedio el foco para InvokeButton'
+    }
+    Start-Sleep -Milliseconds 350
+    $button = $buttons[0]
+    $element = [System.Windows.Automation.AutomationElement]::FromHandle(
+      [IntPtr]$button.Handle
+    )
+    if ($null -eq $element) {
+      throw 'UI Automation no encontro el Button calibrado'
+    }
+    $activation = 'uia-invoke'
+    try {
+      $pattern = $element.GetCurrentPattern(
+        [System.Windows.Automation.InvokePattern]::Pattern
+      )
+      ([System.Windows.Automation.InvokePattern]$pattern).Invoke()
+    }
+    catch {
+      $accessible = [Varix.Wimax.NativeGui]::AccessibleObject($button.Handle)
+      $accessible.accDoDefaultAction(0)
+      $activation = 'msaa-default-action'
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      activation = $activation
+      button = [pscustomobject]@{
+        className = $button.ClassName
+        directChild = $button.ParentHandle -eq $window.Handle
+        left = $button.Left - $window.Left
+        top = $button.Top - $window.Top
+        width = $button.Width
+        height = $button.Height
+      }
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'TabButton' {
+    $window = Find-Window $payload
+    $x = $window.Left + [int]$payload.x
+    $y = $window.Top + [int]$payload.y
+    if ($x -lt $window.Left -or $x -ge ($window.Left + $window.Width) -or
+        $y -lt $window.Top -or $y -ge ($window.Top + $window.Height)) {
+      throw 'Las coordenadas estan fuera de la ventana objetivo'
+    }
+    $buttons = @(
+      [Varix.Wimax.NativeGui]::Controls($window.Handle) |
+        Where-Object {
+          $_.Enabled -and $_.ClassName -eq 'Button' -and
+          $x -ge $_.Left -and $x -lt ($_.Left + $_.Width) -and
+          $y -ge $_.Top -and $y -lt ($_.Top + $_.Height)
+        }
+    )
+    if ($buttons.Count -ne 1) {
+      throw "Se esperaba un unico Button en la coordenada calibrada y se encontraron $($buttons.Count)"
+    }
+    $maxTabs = if ($null -ne $payload.maxTabs) { [int]$payload.maxTabs } else { 40 }
+    if ($maxTabs -lt 0 -or $maxTabs -gt 60) {
+      throw 'maxTabs de TabButton fuera de rango'
+    }
+    if (-not [Varix.Wimax.NativeGui]::ForceForeground($window.Handle)) {
+      throw 'Windows no concedio el foco para TabButton'
+    }
+    Start-Sleep -Milliseconds 350
+    $button = $buttons[0]
+    $controls = @([Varix.Wimax.NativeGui]::Controls($window.Handle))
+    $focusPath = @()
+    $tabCount = 0
+    $transitioned = $false
+    while ($tabCount -le $maxTabs) {
+      $focusedHandle = [Varix.Wimax.NativeGui]::FocusedHandle($window.Handle)
+      $focusedControl = @($controls | Where-Object { $_.Handle -eq $focusedHandle }) | Select-Object -First 1
+      $focusPath += [pscustomobject]@{
+        tab = $tabCount
+        handle = $focusedHandle
+        className = if ($focusedControl) { $focusedControl.ClassName } else { $null }
+        text = if ($focusedControl) { $focusedControl.Text } else { $null }
+        left = if ($focusedControl) { $focusedControl.Left - $window.Left } else { $null }
+        top = if ($focusedControl) { $focusedControl.Top - $window.Top } else { $null }
+      }
+      if ($focusedHandle -eq $button.Handle) { break }
+      if ($tabCount -eq $maxTabs) {
+        throw "TabButton no alcanzo el Button calibrado despues de $maxTabs TAB"
+      }
+      [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
+      Start-Sleep -Milliseconds 150
+      $tabCount++
+      $afterTab = [Varix.Wimax.NativeGui]::Foreground()
+      if ($afterTab -and $afterTab.Handle -ne $window.Handle) {
+        $transitioned = $true
+        break
+      }
+    }
+    if (-not $transitioned) {
+      # Xbase++ only dispatches activate after its own TAB navigation has put
+      # the XbpPushButton in the active focus chain. Space is the documented
+      # keyboard activation and cannot select a different/default button.
+      [System.Windows.Forms.SendKeys]::SendWait(' ')
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      tabCount = $tabCount
+      transitioned = $transitioned
+      focusPath = $focusPath
+      button = [pscustomobject]@{
+        className = $button.ClassName
+        directChild = $button.ParentHandle -eq $window.Handle
+        left = $button.Left - $window.Left
+        top = $button.Top - $window.Top
+        width = $button.Width
+        height = $button.Height
+      }
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'TabUntilChange' {
+    $window = Find-Window $payload
+    $maxTabs = if ($null -ne $payload.maxTabs) { [int]$payload.maxTabs } else { 30 }
+    if ($maxTabs -lt 1 -or $maxTabs -gt 60) {
+      throw 'maxTabs de TabUntilChange fuera de rango'
+    }
+    $tabDelay = if ($null -ne $payload.tabDelayMs) { [int]$payload.tabDelayMs } else { 150 }
+    if ($tabDelay -lt 100 -or $tabDelay -gt 1000) {
+      throw 'tabDelayMs de TabUntilChange fuera de rango'
+    }
+    if (-not [Varix.Wimax.NativeGui]::ForceForeground($window.Handle)) {
+      throw 'Windows no concedio el foco para TabUntilChange'
+    }
+    Start-Sleep -Milliseconds 350
+    $tabCount = 0
+    $transitioned = $false
+    while ($tabCount -lt $maxTabs) {
+      [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
+      Start-Sleep -Milliseconds $tabDelay
+      $tabCount++
+      $foreground = [Varix.Wimax.NativeGui]::Foreground()
+      if ($foreground -and $foreground.Handle -ne $window.Handle) {
+        $transitioned = $true
+        break
+      }
+    }
+    if (-not $transitioned) {
+      throw "TabUntilChange no produjo una transicion despues de $maxTabs TAB"
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 350 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      tabCount = $tabCount
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
   }
   'RightClick' {
     $window = Find-Window $payload

@@ -26,7 +26,15 @@ export async function getPayments(options: {
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
       payment_methods(*),
-      payment_invoicing(estado, monto_a_facturar, pidio_factura, wimax_factura_numero),
+      payment_invoicing(
+        estado,
+        monto_a_facturar,
+        pidio_factura,
+        wimax_factura_numero,
+        colfact_revision_estado,
+        colfact_evidence,
+        wimax_facturas(pdf_storage_path)
+      ),
       wimax_invoice_jobs(
         id,
         estado,
@@ -89,7 +97,15 @@ export async function getPaymentWithDetails(id: string): Promise<PaymentWithDeta
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
       payment_methods(*),
-      payment_invoicing(estado, monto_a_facturar, pidio_factura, wimax_factura_numero),
+      payment_invoicing(
+        estado,
+        monto_a_facturar,
+        pidio_factura,
+        wimax_factura_numero,
+        colfact_revision_estado,
+        colfact_evidence,
+        wimax_facturas(pdf_storage_path)
+      ),
       wimax_invoice_jobs(
         id,
         estado,

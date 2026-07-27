@@ -5,21 +5,42 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { DBFFile } from 'dbffile'
 import { preflightDedup } from '../lib/dedup.mjs'
-import { readCufeBuffer } from '../lib/dbf-reader.mjs'
+import {
+  readCufeBuffer,
+  readDirectory,
+  readInvoices,
+  WIMAX_DBF_ENCODING,
+} from '../lib/dbf-reader.mjs'
 import { dateOnly } from '../lib/normalize.mjs'
+
+function localCalendarNoon(reference = new Date()) {
+  return new Date(
+    reference.getFullYear(),
+    reference.getMonth(),
+    reference.getDate(),
+    12,
+  )
+}
 
 async function fixture({ invoice = null, customers = null } = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'varix-robot-dedup-'))
-  const now = new Date()
+  // DBF dates do not carry a timezone. Keep both the local and UTC calendar
+  // components on the same day so this fixture remains deterministic when
+  // the test host is between local midnight and UTC midnight.
+  const now = localCalendarNoon()
   const center = path.join(root, `CENTER${String(now.getFullYear()).slice(-2)}`)
   const { mkdir } = await import('node:fs/promises')
   await mkdir(center, { recursive: true })
 
-  const directory = await DBFFile.create(path.join(center, 'tmdir.dbf'), [
-    { name: 'CLAVE', type: 'C', size: 5 },
-    { name: 'DIREC4', type: 'C', size: 20 },
-    { name: 'NOMBRE', type: 'C', size: 60 },
-  ])
+  const directory = await DBFFile.create(
+    path.join(center, 'tmdir.dbf'),
+    [
+      { name: 'CLAVE', type: 'C', size: 5 },
+      { name: 'DIREC4', type: 'C', size: 20 },
+      { name: 'NOMBRE', type: 'C', size: 60 },
+    ],
+    { encoding: 'cp850' },
+  )
   await directory.appendRecords(
     customers ?? [{ CLAVE: '99ROB', DIREC4: '99.006.801', NOMBRE: 'Robot Prueba' }]
   )
@@ -37,7 +58,7 @@ async function fixture({ invoice = null, customers = null } = {}) {
       {
         TIPO: 'FE',
         NUMERO: invoice.numero,
-        EMISION: now,
+        EMISION: invoice.emision ?? now,
         CLIENTE: invoice.cliente ?? '99ROB',
         TOTAL_FAC: invoice.total,
       },
@@ -77,6 +98,19 @@ test('preflight limpio encuentra el cliente pero ninguna FE', async () => {
   }
 })
 
+test('lee la eñe del directorio WiMAX usando su codificacion CP850', async () => {
+  assert.equal(WIMAX_DBF_ENCODING, 'cp850')
+  const data = await fixture({
+    customers: [{ CLAVE: '99QUI', DIREC4: '99.006.801', NOMBRE: 'Quiñonez Peña' }],
+  })
+  try {
+    const directory = await readDirectory(data.center)
+    assert.equal(directory.byCode.get('99QUI').nombre, 'Quiñonez Peña')
+  } finally {
+    await rm(data.root, { recursive: true })
+  }
+})
+
 test('cualquier FE reciente de la cedula bloquea incluso con otro monto', async () => {
   const data = await fixture({ invoice: { numero: 'FE9991', total: 350000 } })
   try {
@@ -88,6 +122,28 @@ test('cualquier FE reciente de la cedula bloquea incluso con otro monto', async 
     assert.equal(result.status, 'duplicado')
     assert.equal(result.evidence.recent_invoices[0].numero, 'FE9991')
     assert.equal(result.evidence.exact_amount_candidates, 0)
+  } finally {
+    await rm(data.root, { recursive: true })
+  }
+})
+
+test('ignora una FE anterior al rango aunque este en el mismo trafac mensual', async () => {
+  const now = new Date()
+  const oldDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 2))
+  const data = await fixture({
+    invoice: { numero: 'FE9990', total: 100000, emision: oldDate },
+  })
+  try {
+    const year = now.getUTCFullYear()
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0')
+    const directory = await readDirectory(data.center)
+    const result = await readInvoices(
+      data.center,
+      `${year}-${month}-20`,
+      `${year}-${month}-25`,
+      directory,
+    )
+    assert.deepEqual(result.invoices, [])
   } finally {
     await rm(data.root, { recursive: true })
   }

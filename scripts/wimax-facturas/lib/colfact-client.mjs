@@ -2,6 +2,7 @@ import { amountEqual, digitsOnly } from './normalize.mjs'
 
 const DEFAULT_BASE_URL = 'https://nube.conexusit.com/admin'
 const CUFE_SHA384 = /^[0-9a-f]{96}$/
+const MAX_PDF_BYTES = 10 * 1024 * 1024
 
 function portalError(code, message) {
   return new Error(`${code}: ${message}`)
@@ -240,6 +241,101 @@ export class ColfactClient {
       idSegmento: Number(row.IdSegmento),
       idTransaccion: Number(row.IdTransaccion),
     }
+  }
+
+  async listInvoiceRows({ from, to, maxPages = 1_000 }) {
+    const fromPortal = portalDate(from)
+    const toPortal = portalDate(to)
+    if (from > to || !Number.isInteger(maxPages) || maxPages < 1 || maxPages > 1_000) {
+      throw portalError('COLFACT_INPUT', 'rango o limite de paginas invalido')
+    }
+
+    const rows = []
+    const seen = new Set()
+    for (let page = 1; page <= maxPages; page += 1) {
+      const response = await this.request('/Comprobantes/ExtraerDatos', {
+        accept: 'application/json',
+        searchParams: {
+          IdentificacionEmisor: this.emisorNit,
+          IdentificacionComprador: '',
+          TipoTransaccion: 'FAC',
+          NroDocumento: '',
+          TipoFecha: 'FechaEmisionDocumento',
+          Estado: '0',
+          FechaInicial: fromPortal,
+          FechaFinal: toPortal,
+          FormaPago: '',
+          Pagina: String(page),
+        },
+      })
+
+      let payload
+      try {
+        payload = await response.json()
+      } catch {
+        throw portalError('COLFACT_RESPONSE', 'respuesta paginada de comprobantes invalida')
+      }
+      if (!Array.isArray(payload?.data)) {
+        throw portalError('COLFACT_RESPONSE', 'el portal no devolvio comprobantes paginados')
+      }
+      if (payload.data.length === 0) return rows
+
+      let added = 0
+      for (const row of payload.data) {
+        const key = [row?.IdSegmento, row?.IdTransaccion, row?.NumeroTransaccion].join(':')
+        if (seen.has(key)) continue
+        seen.add(key)
+        rows.push(row)
+        added += 1
+      }
+      // Some ColFact deployments repeat the final page instead of returning
+      // an empty one. Stop only after proving that the page added no rows.
+      if (added === 0) return rows
+    }
+
+    throw portalError('COLFACT_RESPONSE', 'la consulta excedio el limite seguro de paginas')
+  }
+
+  async downloadInvoicePdf({ numero, cufe, idSegmento, idTransaccion }) {
+    const expectedNumber = normalizedInvoice(numero)
+    const expectedCufe = String(cufe ?? '').trim().toLowerCase()
+    const segment = Number(idSegmento)
+    const transaction = Number(idTransaccion)
+    if (
+      !/^FE\d+$/.test(expectedNumber) ||
+      !CUFE_SHA384.test(expectedCufe) ||
+      !Number.isSafeInteger(segment) ||
+      segment <= 0 ||
+      !Number.isSafeInteger(transaction) ||
+      transaction <= 0
+    ) {
+      throw portalError('COLFACT_INPUT', 'identidad de PDF incompleta')
+    }
+
+    const response = await this.request('/Comprobantes/DescargarPDF', {
+      accept: 'application/pdf',
+      searchParams: {
+        IdSegmento: segment,
+        IdTransaccion: transaction,
+        CodigoTransaccion: expectedCufe,
+        TipoTransaccion: 'FAC',
+        NumeroTransaccion: expectedNumber,
+      },
+    })
+    const type = response.headers.get('content-type') ?? ''
+    if (!/\bapplication\/pdf\b/i.test(type)) {
+      throw portalError('COLFACT_PDF', 'el portal no devolvio un PDF oficial')
+    }
+
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    if (
+      bytes.byteLength < 5 ||
+      bytes.byteLength > MAX_PDF_BYTES ||
+      String.fromCharCode(...bytes.subarray(0, 5)) !== '%PDF-'
+    ) {
+      throw portalError('COLFACT_PDF', 'el archivo descargado no es un PDF valido')
+    }
+    return bytes
   }
 }
 

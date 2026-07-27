@@ -59,13 +59,17 @@ El flujo tiene dos barreras independientes:
 El modal permite escoger un monto positivo hasta el total del pago, ajustar las
 lineas y exige una segunda pantalla de confirmacion. Si el monto confirmado es
 menor, la conciliacion termina como `facturada_parcial`; nunca puede superar el
-pago registrado.
+pago registrado. El boton aparece cuando cualquier porcion se pago con tarjeta
+o transferencia, o cuando se marco la solicitud explicita. En un pago mixto el
+monto inicial es la suma de esas dos porciones electronicas.
 
 Despues de emitir, el pago sigue pendiente hasta observar la nueva FE en
 `trafac` y confirmar su CUFE. El robot intenta primero el DBF temporal
 `tmfecufe.dbf`; si la version de WiMAX no lo llena, consulta la factura exacta en
 ColFact y valida numero, fecha, cedula, monto, estado y el CUFE SHA-384 dentro del
-XML oficial. Solo entonces enlaza la FE y marca el pago como facturado.
+XML oficial. Tambien descarga y valida el PDF, calcula su SHA-256 y lo guarda en
+el bucket privado `wimax-invoices`; VarixCenter entrega una descarga autenticada
+a Admin y Secretaria. Solo entonces enlaza la FE y marca el pago como facturado.
 
 El conciliador de portal tambien revisa trabajos `emitida_sin_cufe`. El robot lo
 ejecuta por lote despues de un periodo sin nuevas emisiones (120 segundos por
@@ -93,6 +97,18 @@ powershell -ExecutionPolicy Bypass -File .\install-colfact-reconciler.ps1 -Enabl
 Start-ScheduledTask -TaskName VarixWimaxColfact
 ```
 
+La auditoria historica completa es solo lectura salvo que se pase `--apply`:
+
+```powershell
+# Informe sin cambios
+npm run consolidate:colfact
+# Enlaza solo coincidencias unicas verificadas y recupera sus PDFs
+npm run consolidate:colfact -- --apply
+```
+
+Los casos sin factura o con mas de una candidata permanecen pendientes y se
+etiquetan para revision; el consolidador nunca abre WiMAX ni emite una FE.
+
 Si una FE fue emitida bajo supervision directa durante una calibracion, existe
 una recuperacion explicita que no toca la GUI ni descubre coincidencias por si
 sola. Cada trabajo debe emparejarse con su numero FE exacto; el script vuelve a
@@ -107,6 +123,9 @@ la RPC restringida de la migracion 072 y despues usa la conciliacion XML normal:
 ### Salvaguardas operativas
 
 - `WIMAX_ROBOT_ENABLED` debe ser literalmente `true`.
+- El botón captura `direccion`, `ciudad` y `pais` desde la ficha de Varix en el
+  snapshot del trabajo. Solo los clientes nuevos reciben `direccion` en WiMAX;
+  una dirección ausente queda vacía y los clientes existentes no se modifican.
 - El perfil UI debe tener `calibrated: true`. El perfil de CONTABILIDAD incluido
   solo es valido para la resolucion, sesion y version de WiMAX cuya metadata
   declara; cualquier cambio exige volver a calibrarlo.
@@ -148,7 +167,7 @@ la RPC restringida de la migracion 072 y despues usa la conciliacion XML normal:
 
 ### Instalacion segura en CONTABILIDAD
 
-1. Aplicar en orden las migraciones `068` a `072` y ejecutar sus pruebas SQL.
+1. Aplicar en orden las migraciones `068` a `077` y ejecutar sus pruebas SQL.
 2. Copiar esta carpeta completa a `C:\varix-facturas\app` y ejecutar `npm ci`.
 3. Fusionar las variables nuevas de `.env.example` en `.env`, inicialmente con
    `WIMAX_ROBOT_ENABLED=false`.

@@ -7,6 +7,12 @@ export const INVOICING_STATES = [
 
 export type InvoicingState = (typeof INVOICING_STATES)[number]
 
+export type ColfactReviewState =
+  | 'no_revisada'
+  | 'sin_coincidencia'
+  | 'coincidencia_ambigua'
+  | 'confirmada'
+
 export const WIMAX_JOB_STATES = [
   'en_cola',
   'preparando',
@@ -53,6 +59,11 @@ export interface PaymentInvoicingSummary {
   monto_a_facturar: number | null
   pidio_factura: boolean
   wimax_factura_numero: string | null
+  colfact_revision_estado: ColfactReviewState
+  colfact_evidence: Record<string, unknown>
+  wimax_facturas: {
+    pdf_storage_path: string | null
+  } | null
 }
 
 export interface InvoicingService {
@@ -83,6 +94,8 @@ export interface PendingInvoicingItem {
   estado: 'pendiente'
   monto_a_facturar: number | null
   pidio_factura: boolean
+  colfact_revision_estado: ColfactReviewState
+  colfact_evidence: Record<string, unknown>
   created_at: string
   updated_at: string
   payment: InvoicingPayment
@@ -95,12 +108,14 @@ export interface RecentInvoicingItem {
   estado: 'facturada_total' | 'facturada_parcial'
   monto_a_facturar: number | null
   wimax_factura_numero: string
+  colfact_revision_estado: ColfactReviewState
   updated_at: string
   payment: InvoicingPayment
   wimax_factura: {
     numero: string
     emision: string
     total: number
+    pdf_storage_path: string | null
   } | null
 }
 

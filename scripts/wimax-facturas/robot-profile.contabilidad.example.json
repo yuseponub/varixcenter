@@ -47,6 +47,18 @@
           "classPattern": "^XbpDialog$"
         },
         "capture": true
+      },
+      {
+        "name": "esperar-carga-archivos-facturacion",
+        "action": "waitTextAbsent",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        },
+        "textPattern": "Abriendo archivos",
+        "timeoutMs": 60000,
+        "stableMs": 3000
       }
     ],
     "openCustomerDirectory": [
@@ -93,15 +105,30 @@
       },
       {
         "name": "cuenta-cliente-campo",
-        "action": "click",
+        "action": "moveEdit",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^XbpDialog$"
         },
-        "x": 345,
-        "y": 61
+        "keys": "{TAB}",
+        "control": {
+          "from": {
+            "classPattern": "^Edit$",
+            "relativeLeft": 220,
+            "relativeTop": 50,
+            "tolerance": 6
+          },
+          "to": {
+            "classPattern": "^Edit$",
+            "relativeLeft": 330,
+            "relativeTop": 50,
+            "tolerance": 6
+          }
+        },
+        "timeoutMs": 5000,
+        "delayMs": 500
       },
       {
         "name": "cuenta-cliente-inexistente",
@@ -298,6 +325,102 @@
         "value": "{{customer.segundoNombre}}"
       },
       {
+        "name": "confirmar-cedula-directorio",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.cedula}}",
+        "normalize": "digits",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-primer-nombre-directorio",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.primerNombre}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-segundo-nombre-directorio",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.segundoNombre}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-primer-apellido-directorio",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.primerApellido}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-segundo-apellido-directorio",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.segundoApellido}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "direccion-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 120,
+        "y": 361
+      },
+      {
+        "name": "direccion-paciente",
+        "action": "text",
+        "value": "{{customer.address}}"
+      },
+      {
+        "name": "confirmar-direccion",
+        "action": "assertEditValue",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 12,
+          "relativeTop": 350,
+          "tolerance": 12
+        },
+        "value": "{{customer.address}}",
+        "timeoutMs": 5000
+      },
+      {
         "name": "departamento-abrir",
         "action": "click",
         "target": {
@@ -315,10 +438,9 @@
         "value": "{{customer.department}}"
       },
       {
-        "name": "departamento-confirmar-fisico",
-        "action": "click",
-        "x": 500,
-        "y": 385,
+        "name": "departamento-confirmar",
+        "action": "keys",
+        "keys": "{ENTER}",
         "delayMs": 1000
       },
       {
@@ -328,11 +450,52 @@
         "y": 361
       },
       {
-        "name": "ciudad-bucaramanga-primera",
-        "action": "click",
-        "x": 665,
-        "y": 385,
+        "name": "ciudad-buscar",
+        "action": "text",
+        "value": "{{customer.city}}"
+      },
+      {
+        "name": "ciudad-confirmar",
+        "action": "keys",
+        "keys": "{ENTER}",
         "delayMs": 1000
+      },
+      {
+        "name": "confirmar-departamento",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.department}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-ciudad",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.city}}",
+        "timeoutMs": 2000
+      },
+      {
+        "name": "confirmar-codigo-postal",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.postalCode}}",
+        "normalize": "digits",
+        "timeoutMs": 2000
       },
       {
         "name": "pestana-datos-tributarios",
@@ -349,22 +512,59 @@
       },
       {
         "name": "guardar-cliente",
-        "action": "click",
-        "x": 620,
-        "y": 527,
-        "delayMs": 1200,
-        "expect": {
+        "action": "invokeButton",
+        "target": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
-          "classPattern": "^#32770$",
-          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
         },
+        "x": 620,
+        "y": 527,
+        "delayMs": 1200
+      },
+      {
+        "name": "clasificar-salida-guardar-cliente",
+        "action": "waitAny",
+        "rememberAs": "salida-guardar-cliente",
+        "timeoutMs": 15000,
+        "branches": [
+          {
+            "name": "pregunta-otra-factura",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^\\s*Facturaci.n\\s*$",
+              "classPattern": "^#32770$",
+              "textPattern": "Desea trabajar con otra factura\\s*\\?"
+            }
+          },
+          {
+            "name": "facturacion-directa",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+              "classPattern": "^XbpDialog$"
+            }
+          }
+        ],
         "capture": true
       },
       {
         "name": "otra-factura-si",
         "action": "keys",
+        "when": {
+          "decision": "salida-guardar-cliente",
+          "is": "pregunta-otra-factura"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea trabajar con otra factura\\s*\\?"
+        },
         "keys": "{ENTER}",
         "delayMs": 900,
         "expect": {
@@ -373,6 +573,46 @@
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^XbpDialog$"
         }
+      }
+    ],
+    "validateCreatedCustomer": [
+      {
+        "name": "confirmar-cuenta-creada",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.code}}",
+        "timeoutMs": 3000
+      },
+      {
+        "name": "confirmar-cedula-creada",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.cedula}}",
+        "normalize": "digits",
+        "timeoutMs": 3000
+      },
+      {
+        "name": "confirmar-ciudad-creada",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.city}}",
+        "timeoutMs": 3000,
+        "capture": true
       }
     ],
     "prepareInvoice": [
@@ -419,15 +659,30 @@
       },
       {
         "name": "cuenta-cliente-campo",
-        "action": "click",
+        "action": "moveEdit",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^XbpDialog$"
         },
-        "x": 345,
-        "y": 61
+        "keys": "{TAB}",
+        "control": {
+          "from": {
+            "classPattern": "^Edit$",
+            "relativeLeft": 220,
+            "relativeTop": 50,
+            "tolerance": 6
+          },
+          "to": {
+            "classPattern": "^Edit$",
+            "relativeLeft": 330,
+            "relativeTop": 50,
+            "tolerance": 6
+          }
+        },
+        "timeoutMs": 5000,
+        "delayMs": 500
       },
       {
         "name": "cuenta-cliente",
@@ -441,6 +696,48 @@
         "delayMs": 1000
       },
       {
+        "name": "confirmar-cliente-cargado",
+        "action": "assertControlAbsent",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n",
+          "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 330,
+          "relativeTop": 50,
+          "tolerance": 6
+        },
+        "timeoutMs": 5000
+      },
+      {
+        "name": "confirmar-cuenta-encabezado",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.code}}",
+        "timeoutMs": 3000
+      },
+      {
+        "name": "confirmar-cedula-encabezado",
+        "action": "assertText",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
+          "classPattern": "^XbpDialog$"
+        },
+        "value": "{{customer.cedula}}",
+        "normalize": "digits",
+        "timeoutMs": 3000
+      },
+      {
         "name": "metodo-campo",
         "action": "click",
         "target": {
@@ -450,7 +747,9 @@
           "classPattern": "^XbpDialog$"
         },
         "x": 25,
-        "y": 182
+        "y": 182,
+        "retryIfSameMs": 600,
+        "delayMs": 500
       },
       {
         "name": "metodo-instrumento-no-definido",
@@ -477,15 +776,15 @@
       },
       {
         "name": "aceptar-encabezado",
-        "action": "click",
+        "action": "tabUntilChange",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^XbpDialog$"
         },
-        "x": 620,
-        "y": 518,
+        "maxTabs": 30,
+        "tabDelayMs": 150,
         "delayMs": 700,
         "expect": {
           "foreground": true,
@@ -595,7 +894,7 @@
       },
       {
         "name": "aceptar-impuestos",
-        "action": "click",
+        "action": "invokeButton",
         "x": 205,
         "y": 451,
         "delayMs": 900,
@@ -664,7 +963,7 @@
       },
       {
         "name": "aceptar-cuenta-bancaria",
-        "action": "click",
+        "action": "invokeButton",
         "x": 520,
         "y": 357,
         "delayMs": 900,
@@ -742,7 +1041,7 @@
     "emit": [
       {
         "name": "aceptar-asiento-irreversible",
-        "action": "click",
+        "action": "invokeButton",
         "target": {
           "foreground": true,
           "process": "WX",
@@ -751,30 +1050,75 @@
         },
         "x": 120,
         "y": 198,
-        "delayMs": 1000,
-        "expect": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
-          "classPattern": "^#32770$",
-          "textPattern": "Imprimir|impresi.n"
-        }
+        "delayMs": 1000
+      },
+      {
+        "name": "clasificar-salida-asiento",
+        "action": "waitAny",
+        "rememberAs": "salida-asiento",
+        "timeoutMs": 20000,
+        "branches": [
+          {
+            "name": "impresion",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^\\s*Facturaci.n\\s*$",
+              "classPattern": "^#32770$",
+              "textPattern": "Desea imprimir la factura\\s*\\?"
+            }
+          },
+          {
+            "name": "opciones-colfact",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^\\s*$",
+              "classPattern": "^XbpDialog$",
+              "textPattern": "(?=[\\s\\S]*Rendondea IVA en representacion Grafica)(?=[\\s\\S]*Observaciones)"
+            }
+          }
+        ],
+        "capture": true
       },
       {
         "name": "confirmar-impresion",
         "action": "keys",
+        "when": {
+          "decision": "salida-asiento",
+          "is": "impresion"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea imprimir la factura\\s*\\?"
+        },
         "keys": "{ENTER}",
         "delayMs": 900,
         "expect": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^Buscar$",
-          "classPattern": "^XbpDialog$"
+          "classPattern": "^XbpDialog$",
+          "textPattern": "4\\. Tabla de Formatos"
         }
       },
       {
         "name": "formato-modfv",
         "action": "keys",
+        "when": {
+          "decision": "salida-asiento",
+          "is": "impresion"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "4\\. Tabla de Formatos"
+        },
         "keys": "{DOWN 2}{ENTER}",
         "delayMs": 800,
         "expect": {
@@ -788,93 +1132,264 @@
       {
         "name": "generar-factura-venta",
         "action": "keys",
-        "keys": "{ENTER}",
-        "delayMs": 1500,
-        "expect": {
+        "when": {
+          "decision": "salida-asiento",
+          "is": "impresion"
+        },
+        "target": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "^FEFE[0-9]+$",
-          "classPattern": "^#32770$",
-          "textPattern": "Factura de venta enviada exitosamente a ColFact"
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Archivo a generar Factura Venta"
         },
+        "keys": "{ENTER}",
+        "delayMs": 1500
+      },
+      {
+        "name": "aceptar-opciones-colfact-directas",
+        "action": "invokeButton",
+        "when": {
+          "decision": "salida-asiento",
+          "is": "opciones-colfact"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "(?=[\\s\\S]*Rendondea IVA en representacion Grafica)(?=[\\s\\S]*Observaciones)"
+        },
+        "x": 323,
+        "y": 184,
+        "delayMs": 1500
+      },
+      {
+        "name": "clasificar-respuesta-colfact",
+        "action": "waitAny",
+        "rememberAs": "respuesta-colfact",
+        "timeoutMs": 330000,
+        "branches": [
+          {
+            "name": "exito",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^FEFE[0-9]+\\b",
+              "classPattern": "^#32770$",
+              "textPattern": "Factura de venta enviada exitosamente a ColFact"
+            }
+          },
+          {
+            "name": "error-6500",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^ERROR EN UN COMPONENTE EXTERNO DEL SISTEMA WIMAX$",
+              "classPattern": "^#32770$",
+              "textPattern": "(?=[\\s\\S]*FV_COLFACT)(?=[\\s\\S]*Codigo Interno:\\s*6500)"
+            }
+          },
+          {
+            "name": "opciones-colfact",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^\\s*$",
+              "classPattern": "^XbpDialog$",
+              "textPattern": "(?=[\\s\\S]*Rendondea IVA en representacion Grafica)(?=[\\s\\S]*Observaciones)"
+            }
+          }
+        ],
         "capture": true
       },
       {
-        "name": "confirmar-exito-colfact",
+        "name": "aceptar-opciones-colfact-posteriores",
+        "action": "invokeButton",
+        "when": {
+          "decision": "respuesta-colfact",
+          "is": "opciones-colfact"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "(?=[\\s\\S]*Rendondea IVA en representacion Grafica)(?=[\\s\\S]*Observaciones)"
+        },
+        "x": 323,
+        "y": 184,
+        "delayMs": 1500
+      },
+      {
+        "name": "clasificar-respuesta-despues-opciones",
+        "action": "waitAny",
+        "when": {
+          "decision": "respuesta-colfact",
+          "is": "opciones-colfact"
+        },
+        "rememberAs": "respuesta-colfact-despues-opciones",
+        "timeoutMs": 330000,
+        "branches": [
+          {
+            "name": "exito",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^FEFE[0-9]+\\b",
+              "classPattern": "^#32770$",
+              "textPattern": "Factura de venta enviada exitosamente a ColFact"
+            }
+          },
+          {
+            "name": "error-6500",
+            "target": {
+              "foreground": true,
+              "process": "WX",
+              "titlePattern": "^ERROR EN UN COMPONENTE EXTERNO DEL SISTEMA WIMAX$",
+              "classPattern": "^#32770$",
+              "textPattern": "(?=[\\s\\S]*FV_COLFACT)(?=[\\s\\S]*Codigo Interno:\\s*6500)"
+            }
+          }
+        ],
+        "capture": true
+      },
+      {
+        "name": "confirmar-exito-colfact-directo",
         "action": "keys",
+        "when": {
+          "decision": "respuesta-colfact",
+          "is": "exito"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^FEFE[0-9]+\\b",
+          "classPattern": "^#32770$",
+          "textPattern": "Factura de venta enviada exitosamente a ColFact"
+        },
         "keys": "{ENTER}",
-        "delayMs": 900,
+        "delayMs": 900
+      },
+      {
+        "name": "confirmar-error-colfact-6500-directo",
+        "action": "keys",
+        "when": {
+          "decision": "respuesta-colfact",
+          "is": "error-6500"
+        },
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^ERROR EN UN COMPONENTE EXTERNO DEL SISTEMA WIMAX$",
+          "classPattern": "^#32770$",
+          "textPattern": "(?=[\\s\\S]*FV_COLFACT)(?=[\\s\\S]*Codigo Interno:\\s*6500)"
+        },
+        "keys": "{ENTER}",
+        "delayMs": 900
+      },
+      {
+        "name": "confirmar-exito-colfact-despues-opciones",
+        "action": "keysIf",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^FEFE[0-9]+\\b",
+          "classPattern": "^#32770$",
+          "textPattern": "Factura de venta enviada exitosamente a ColFact"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 0,
+        "delayMs": 900
+      },
+      {
+        "name": "confirmar-error-colfact-6500-despues-opciones",
+        "action": "keysIf",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^ERROR EN UN COMPONENTE EXTERNO DEL SISTEMA WIMAX$",
+          "classPattern": "^#32770$",
+          "textPattern": "(?=[\\s\\S]*FV_COLFACT)(?=[\\s\\S]*Codigo Interno:\\s*6500)"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 0,
+        "delayMs": 900
+      },
+      {
+        "name": "confirmar-selector-comprobante-ingreso",
+        "action": "assert",
         "expect": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^Buscar$",
-          "classPattern": "^XbpDialog$"
-        }
+          "classPattern": "^XbpDialog$",
+          "textPattern": "3\\. Tabla de Formatos"
+        },
+        "timeoutMs": 15000
       },
       {
         "name": "formato-gere1",
         "action": "keys",
-        "keys": "{DOWN}{ENTER}",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^Buscar$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "3\\. Tabla de Formatos"
+        },
+        "keys": "{HOME}{DOWN}{ENTER}",
         "delayMs": 800,
         "expect": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^\\s*$",
           "classPattern": "^XbpDialog$",
-          "textPattern": "Archivo a generar Comprobante de Ingreso"
+          "textPattern": "Archivo a generar Com(?:pr|rp)obante de Ingreso"
         }
       },
       {
-        "name": "generar-comprobante-ingreso",
+        "name": "cerrar-comprobante-ingreso-sin-exportar",
         "action": "keys",
-        "keys": "{ENTER}",
-        "delayMs": 1200,
-        "expect": {
+        "target": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "^Buscar$",
-          "classPattern": "^XbpDialog$"
-        }
-      },
-      {
-        "name": "cerrar-buscar-restante",
-        "action": "keys",
+          "titlePattern": "^\\s*$",
+          "classPattern": "^XbpDialog$",
+          "textPattern": "Archivo a generar Com(?:pr|rp)obante de Ingreso"
+        },
         "keys": "{ESC}",
         "delayMs": 700,
         "expect": {
           "foreground": true,
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
           "classPattern": "^#32770$",
           "textPattern": "Desea trabajar con otra factura\\s*\\?"
         }
       },
       {
         "name": "otra-factura-no-primera",
-        "action": "click",
+        "action": "keys",
         "target": {
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
           "classPattern": "^#32770$",
           "textPattern": "Desea trabajar con otra factura\\s*\\?"
         },
-        "x": 210,
-        "y": 123,
-        "retryIfSameMs": 1500,
+        "keys": "{TAB}{ENTER}",
         "delayMs": 700
       },
       {
         "name": "otra-factura-no-segunda-opcional",
-        "action": "clickIf",
+        "action": "keysIf",
         "target": {
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
           "classPattern": "^#32770$",
           "textPattern": "Desea trabajar con otra factura\\s*\\?"
         },
-        "x": 210,
-        "y": 123,
-        "retryIfSameMs": 1500,
+        "keys": "{TAB}{ENTER}",
         "ifTimeoutMs": 2500,
         "delayMs": 900
       },
@@ -901,6 +1416,40 @@
       }
     ],
     "abort": [
+      {
+        "name": "aceptar-error-bodega-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "classPattern": "^#32770$",
+          "textPattern": "Bodega\\s+[A-Z0-9]+\\s+no existe"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "aceptar-aviso-rango-dian-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "classPattern": "^#32770$",
+          "textPattern": "rango de autorizaci.n de la Dian[\\s\\S]*no posible elaborar facturas"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 0
+      },
+      {
+        "name": "aceptar-error-consecutivo-si-existe",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^Consecutivo\\s+Vers\\.",
+          "classPattern": "^#32770$",
+          "textPattern": "Prefijo .* no existe en la tabla de consecutivos"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 0
+      },
       {
         "name": "cancelar-asiento-si-existe",
         "action": "keysIf",
@@ -994,7 +1543,7 @@
         "action": "keysIf",
         "target": {
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
           "classPattern": "^XbpDialog$"
         },
         "keys": "{ESC}",
@@ -1005,38 +1554,70 @@
         "action": "keysIf",
         "target": {
           "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n",
+          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
           "classPattern": "^XbpDialog$"
         },
-        "keys": "{ESC}",
+        "keys": "{ESC}{ESC}",
         "ifTimeoutMs": 500
       },
       {
+        "name": "salir-documento-aceptar-primera",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea salir del documento\\s*\\?"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 1200
+      },
+      {
+        "name": "salir-documento-aceptar-segunda",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea salir del documento\\s*\\?"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 1200
+      },
+      {
+        "name": "salir-documento-aceptar-tercera",
+        "action": "keysIf",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Facturaci.n\\s*$",
+          "classPattern": "^#32770$",
+          "textPattern": "Desea salir del documento\\s*\\?"
+        },
+        "keys": "{ENTER}",
+        "ifTimeoutMs": 1200
+      },
+      {
         "name": "otra-factura-no-abort-primera",
-        "action": "clickIf",
+        "action": "keysIf",
         "target": {
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^#32770$",
           "textPattern": "Desea trabajar con otra factura\\s*\\?"
         },
-        "x": 210,
-        "y": 123,
-        "retryIfSameMs": 1500,
+        "keys": "{TAB}{ENTER}",
         "ifTimeoutMs": 1200
       },
       {
         "name": "otra-factura-no-abort-segunda",
-        "action": "clickIf",
+        "action": "keysIf",
         "target": {
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n",
           "classPattern": "^#32770$",
           "textPattern": "Desea trabajar con otra factura\\s*\\?"
         },
-        "x": 210,
-        "y": 123,
-        "retryIfSameMs": 1500,
+        "keys": "{TAB}{ENTER}",
         "ifTimeoutMs": 1200
       },
       {

@@ -21,10 +21,24 @@ DECLARE
   v_claim JSONB;
   v_cufe TEXT := repeat('a', 96);
   v_guard_blocked BOOLEAN := false;
+  v_test_at TIMESTAMPTZ;
 BEGIN
   SELECT id INTO v_user FROM auth.users ORDER BY created_at LIMIT 1;
   IF v_user IS NULL THEN
     RAISE EXCEPTION 'Staging necesita al menos un auth.users';
+  END IF;
+
+  SELECT (((current_date - candidate.days) + TIME '12:00') AT TIME ZONE 'America/Bogota')
+  INTO v_test_at
+  FROM generate_series(0, 30) AS candidate(days)
+  WHERE NOT EXISTS (
+    SELECT 1 FROM public.cash_closings
+    WHERE fecha_cierre = current_date - candidate.days AND estado = 'cerrado'
+  )
+  ORDER BY candidate.days
+  LIMIT 1;
+  IF v_test_at IS NULL THEN
+    RAISE EXCEPTION 'La prueba necesita una fecha abierta para crear sus fixtures';
   END IF;
 
   INSERT INTO public.patients (
@@ -42,10 +56,10 @@ BEGIN
     id, patient_id, numero_factura, subtotal, descuento, total, created_by, created_at
   )
   VALUES
-    (v_payment, v_patient, 'TEST-068-ROBOT', 100000, 0, 100000, v_user, now() - interval '1 day'),
-    (v_duplicate_payment, v_duplicate_patient, 'TEST-068-DUP', 200000, 0, 200000, v_user, now()),
-    (v_large_payment, v_large_patient, 'TEST-068-LARGE', 200000, 0, 200000, v_user, now() - interval '2 days'),
-    (v_exact_payment, v_large_patient, 'TEST-068-EXACT', 100000, 0, 100000, v_user, now() - interval '1 day');
+    (v_payment, v_patient, 'TEST-068-ROBOT', 100000, 0, 100000, v_user, v_test_at),
+    (v_duplicate_payment, v_duplicate_patient, 'TEST-068-DUP', 200000, 0, 200000, v_user, v_test_at),
+    (v_large_payment, v_large_patient, 'TEST-068-LARGE', 200000, 0, 200000, v_user, v_test_at),
+    (v_exact_payment, v_large_patient, 'TEST-068-EXACT', 100000, 0, 100000, v_user, v_test_at);
 
   INSERT INTO public.payment_methods (payment_id, metodo, monto)
   VALUES

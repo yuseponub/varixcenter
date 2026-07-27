@@ -21,10 +21,24 @@ DECLARE
   v_claim JSONB;
   v_result JSONB;
   v_lease UUID;
+  v_test_at TIMESTAMPTZ;
 BEGIN
   SELECT id INTO v_user FROM auth.users ORDER BY created_at LIMIT 1;
   IF v_user IS NULL THEN
     RAISE EXCEPTION 'Staging necesita al menos un auth.users';
+  END IF;
+
+  SELECT (((current_date - candidate.days) + TIME '12:00') AT TIME ZONE 'America/Bogota')
+  INTO v_test_at
+  FROM generate_series(0, 30) AS candidate(days)
+  WHERE NOT EXISTS (
+    SELECT 1 FROM public.cash_closings
+    WHERE fecha_cierre = current_date - candidate.days AND estado = 'cerrado'
+  )
+  ORDER BY candidate.days
+  LIMIT 1;
+  IF v_test_at IS NULL THEN
+    RAISE EXCEPTION 'La prueba necesita una fecha abierta para crear sus fixtures';
   END IF;
 
   INSERT INTO public.patients (
@@ -40,10 +54,10 @@ BEGIN
   INSERT INTO public.payments (
     id, patient_id, numero_factura, subtotal, descuento, total, created_by, created_at
   ) VALUES
-    (v_payment_close, v_patient_close, 'TEST-071-CLOSE', 100000, 0, 100000, v_user, now()),
-    (v_payment_urgent, v_patient_urgent, 'TEST-071-URGENT', 100000, 0, 100000, v_user, now()),
-    (v_payment_deferred, v_patient_deferred, 'TEST-071-DEFER', 100000, 0, 100000, v_user, now()),
-    (v_payment_supervised, v_patient_supervised, 'TEST-071-SUP', 100000, 0, 100000, v_user, now());
+    (v_payment_close, v_patient_close, 'TEST-071-CLOSE', 100000, 0, 100000, v_user, v_test_at),
+    (v_payment_urgent, v_patient_urgent, 'TEST-071-URGENT', 100000, 0, 100000, v_user, v_test_at),
+    (v_payment_deferred, v_patient_deferred, 'TEST-071-DEFER', 100000, 0, 100000, v_user, v_test_at),
+    (v_payment_supervised, v_patient_supervised, 'TEST-071-SUP', 100000, 0, 100000, v_user, v_test_at);
 
   INSERT INTO public.payment_methods (payment_id, metodo, monto) VALUES
     (v_payment_close, 'tarjeta', 100000),

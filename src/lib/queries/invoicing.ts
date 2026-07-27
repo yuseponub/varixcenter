@@ -35,6 +35,8 @@ type PendingRow = {
   estado: string
   monto_a_facturar: number | null
   pidio_factura: boolean
+  colfact_revision_estado: string
+  colfact_evidence: Record<string, unknown>
   created_at: string
   updated_at: string
   payments: PaymentRelation
@@ -46,6 +48,7 @@ type RecentRow = PendingRow & {
     numero: string
     emision: string
     total: number
+    pdf_storage_path: string | null
   } | null
 }
 
@@ -76,6 +79,8 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
         estado,
         monto_a_facturar,
         pidio_factura,
+        colfact_revision_estado,
+        colfact_evidence,
         created_at,
         updated_at,
         payments!inner(
@@ -114,6 +119,8 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
         estado,
         monto_a_facturar,
         pidio_factura,
+        colfact_revision_estado,
+        colfact_evidence,
         created_at,
         updated_at,
         wimax_factura_numero,
@@ -142,7 +149,7 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
             updated_at
           )
         ),
-        wimax_facturas(numero, emision, total)
+        wimax_facturas(numero, emision, total, pdf_storage_path)
       `)
       .in('estado', ['facturada_total', 'facturada_parcial'])
       .order('updated_at', { ascending: false })
@@ -167,6 +174,9 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
       monto_a_facturar:
         row.monto_a_facturar === null ? null : Number(row.monto_a_facturar),
       pidio_factura: row.pidio_factura,
+      colfact_revision_estado:
+        row.colfact_revision_estado as PendingInvoicingItem['colfact_revision_estado'],
+      colfact_evidence: row.colfact_evidence ?? {},
       created_at: row.created_at,
       updated_at: row.updated_at,
       payment: mapPayment(row.payments),
@@ -191,6 +201,8 @@ export async function getInvoicingQueue(): Promise<InvoicingQueueData> {
       monto_a_facturar:
         row.monto_a_facturar === null ? null : Number(row.monto_a_facturar),
       wimax_factura_numero: row.wimax_factura_numero as string,
+      colfact_revision_estado:
+        row.colfact_revision_estado as RecentInvoicingItem['colfact_revision_estado'],
       updated_at: row.updated_at,
       payment: mapPayment(row.payments),
       wimax_factura: row.wimax_facturas

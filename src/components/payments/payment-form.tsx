@@ -388,7 +388,7 @@ export function PaymentForm({
               </Label>
               <p className="text-sm text-muted-foreground">
                 Envia este pago a la cola de facturacion WiMAX. Los pagos con
-                tarjeta se envian automaticamente.
+                tarjeta o transferencia se envian automaticamente.
               </p>
             </div>
           </div>

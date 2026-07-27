@@ -6,6 +6,7 @@ import {
   dbfDateOnly,
   normalizeInvoiceNumber,
   normalizeName,
+  normalizeWimaxAddress,
   splitPatientName,
 } from '../lib/normalize.mjs'
 import { escapeSendKeysText } from '../lib/gui.mjs'
@@ -27,6 +28,22 @@ test('normaliza nombres e identificadores FE', () => {
   assert.equal(normalizeInvoiceNumber('FE', ' FE7862 '), 'FE7862')
 })
 
+test('normaliza la direccion para el campo DIREC1 sin inventar valores', () => {
+  assert.equal(
+    normalizeWimaxAddress('  Calle 45 # 27-10\nApto 302  '),
+    'Calle 45 # 27-10 Apto 302'
+  )
+  assert.equal(normalizeWimaxAddress(null), '')
+  assert.equal(
+    normalizeWimaxAddress('Calle Peñón + Torre 1'),
+    'Calle Peñón + Torre 1'
+  )
+  assert.equal(
+    normalizeWimaxAddress('A'.repeat(45)),
+    'A'.repeat(40)
+  )
+})
+
 test('conserva el dia calendario de una fecha DBF en equipos de Bogota', () => {
   const dbfDate = new Date(Date.UTC(2026, 6, 23))
   assert.equal(dbfDateOnly(dbfDate), '2026-07-23')
@@ -46,6 +63,7 @@ test('separa los cuatro campos de nombre de tmdir', () => {
 
 test('escapa metacaracteres de SendKeys sin ejecutar atajos', () => {
   assert.equal(escapeSendKeysText('A+B^(1)'), 'A{+}B{^}{(}1{)}')
+  assert.equal(escapeSendKeysText('Quiñonez Peña'), 'Quiñonez Peña')
 })
 
 test('solo considera limpia una unica ventana principal de WiMAX', () => {

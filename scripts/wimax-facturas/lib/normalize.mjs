@@ -22,6 +22,21 @@ export function normalizeName(value) {
     .trim()
 }
 
+export const WIMAX_ADDRESS_MAX_LENGTH = 40
+
+export function normalizeWimaxAddress(value) {
+  const address = String(value ?? '')
+    .normalize('NFC')
+    .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return Array.from(address)
+    .slice(0, WIMAX_ADDRESS_MAX_LENGTH)
+    .join('')
+    .trim()
+}
+
 export function numericValue(value) {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null
   if (value === null || value === undefined) return null

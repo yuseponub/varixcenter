@@ -10,6 +10,8 @@ import {
   textOrNull,
 } from './normalize.mjs'
 
+export const WIMAX_DBF_ENCODING = 'cp850'
+
 function upperRecord(record) {
   return new Map(
     Object.entries(record).map(([key, value]) => [key.trim().toUpperCase(), value])
@@ -29,7 +31,10 @@ function firstValue(record, aliases) {
 
 export async function readDbf(file) {
   const dbf = await DBFFile.open(file, {
-    encoding: 'win1252',
+    // WiMAX/Xbase stores its character fields with the DOS/OEM CP850 code
+    // page (for example, uppercase Ñ is byte 0xA5). The DBFs do not declare a
+    // language driver, so treating them as Windows-1252 turns Ñ into ¥.
+    encoding: WIMAX_DBF_ENCODING,
     readMode: 'loose',
     includeDeletedRecords: false,
   })
@@ -148,6 +153,10 @@ export async function readInvoices(wimaxDir, startDate, endDate, directory) {
         firstValue(row, ['CLAVE', 'CODCLI', 'CLIENTE'])
       )
       if (!number || !emission || total === null || total < 0) continue
+      // A monthly trafac file contains every invoice from that month. Keep
+      // only the requested date window so an older invoice for the same
+      // patient does not become a false duplicate for a newer payment.
+      if (emission < startDate || emission > endDate) continue
       const customer = directory.byCode.get(customerCode)
       invoices.push({
         numero: number,

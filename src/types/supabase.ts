@@ -1268,6 +1268,9 @@ export type Database = {
       }
       payment_invoicing: {
         Row: {
+          colfact_evidence: Json
+          colfact_revision_at: string | null
+          colfact_revision_estado: string
           created_at: string
           descartada_at: string | null
           descartada_por: string | null
@@ -1281,6 +1284,9 @@ export type Database = {
           wimax_factura_numero: string | null
         }
         Insert: {
+          colfact_evidence?: Json
+          colfact_revision_at?: string | null
+          colfact_revision_estado?: string
           created_at?: string
           descartada_at?: string | null
           descartada_por?: string | null
@@ -1294,6 +1300,9 @@ export type Database = {
           wimax_factura_numero?: string | null
         }
         Update: {
+          colfact_evidence?: Json
+          colfact_revision_at?: string | null
+          colfact_revision_estado?: string
           created_at?: string
           descartada_at?: string | null
           descartada_por?: string | null
@@ -1616,6 +1625,10 @@ export type Database = {
           mes_origen: string
           nombre: string | null
           numero: string
+          pdf_saved_at: string | null
+          pdf_sha256: string | null
+          pdf_size_bytes: number | null
+          pdf_storage_path: string | null
           sync_at: string
           total: number
         }
@@ -1627,6 +1640,10 @@ export type Database = {
           mes_origen: string
           nombre?: string | null
           numero: string
+          pdf_saved_at?: string | null
+          pdf_sha256?: string | null
+          pdf_size_bytes?: number | null
+          pdf_storage_path?: string | null
           sync_at?: string
           total: number
         }
@@ -1638,6 +1655,10 @@ export type Database = {
           mes_origen?: string
           nombre?: string | null
           numero?: string
+          pdf_saved_at?: string | null
+          pdf_sha256?: string | null
+          pdf_size_bytes?: number | null
+          pdf_storage_path?: string | null
           sync_at?: string
           total?: number
         }

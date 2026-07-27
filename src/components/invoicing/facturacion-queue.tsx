@@ -6,6 +6,7 @@ import Link from 'next/link'
 import {
   Check,
   Clipboard,
+  Download,
   FileCheck2,
   FileClock,
   Loader2,
@@ -211,6 +212,14 @@ function PendingCard({ item }: { item: PendingInvoicingItem }) {
             {item.job && (
               <Badge variant="outline">Robot: {item.job.estado.replaceAll('_', ' ')}</Badge>
             )}
+            {item.colfact_revision_estado === 'sin_coincidencia' && (
+              <Badge variant="outline">No encontrada en ColFact</Badge>
+            )}
+            {item.colfact_revision_estado === 'coincidencia_ambigua' && (
+              <Badge className="bg-warning text-warning-foreground">
+                Revisar coincidencia ColFact
+              </Badge>
+            )}
             <Badge className="bg-warning text-warning-foreground">Pendiente</Badge>
           </div>
         </div>
@@ -374,6 +383,30 @@ function RecentCard({ item }: { item: RecentInvoicingItem }) {
       >
         {item.estado === 'facturada_total' ? 'Total' : 'Parcial'}
       </Badge>
+      {item.wimax_factura?.pdf_storage_path && (
+        <Button asChild size="sm" variant="outline">
+          <a
+            href={`/api/wimax-facturas/${encodeURIComponent(item.wimax_factura_numero)}/pdf`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Download />
+            PDF
+          </a>
+        </Button>
+      )}
+      {!item.wimax_factura?.pdf_storage_path &&
+        item.colfact_revision_estado === 'sin_coincidencia' && (
+          <Badge className="w-fit bg-warning text-warning-foreground">
+            No encontrada en ColFact
+          </Badge>
+        )}
+      {!item.wimax_factura?.pdf_storage_path &&
+        item.colfact_revision_estado === 'coincidencia_ambigua' && (
+          <Badge className="w-fit bg-warning text-warning-foreground">
+            Revisar coincidencia ColFact
+          </Badge>
+        )}
     </div>
   )
 }
@@ -434,7 +467,7 @@ export function FacturacionQueue({ pending, recent }: FacturacionQueueProps) {
               <Check className="mb-3 h-8 w-8 text-success-foreground" />
               <p className="font-medium">No hay pagos pendientes</p>
               <p className="text-sm text-muted-foreground">
-                Los pagos con tarjeta y las solicitudes nuevas apareceran aqui.
+                Los pagos con tarjeta o transferencia y las solicitudes nuevas apareceran aqui.
               </p>
             </CardContent>
           </Card>

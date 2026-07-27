@@ -9,7 +9,10 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createColfactClientFromEnv } from './lib/colfact-client.mjs'
-import { reconcilePendingColfactJobs } from './lib/colfact-reconcile.mjs'
+import {
+  reconcileMissingColfactPdfs,
+  reconcilePendingColfactJobs,
+} from './lib/colfact-reconcile.mjs'
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url))
 
@@ -43,9 +46,11 @@ export async function main() {
   )
   const client = createColfactClientFromEnv(process.env)
   const limit = Number(process.env.COLFACT_RECONCILE_LIMIT ?? 10)
-  const stats = await reconcilePendingColfactJobs({ supabase, client, limit })
+  const jobs = await reconcilePendingColfactJobs({ supabase, client, limit })
+  const pdfs = await reconcileMissingColfactPdfs({ supabase, client, limit })
+  const stats = { jobs, pdfs }
   console.log(`ColFact: ${JSON.stringify(stats)}`)
-  if (stats.failed > 0) {
+  if (jobs.failed > 0 || pdfs.failed > 0) {
     throw new Error('COLFACT_RECONCILE: uno o mas trabajos requieren revision')
   }
   return { enabled: true, ...stats }

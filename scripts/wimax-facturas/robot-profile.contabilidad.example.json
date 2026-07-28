@@ -29,6 +29,22 @@
         }
       },
       {
+        "name": "seleccionar-modulo-facturacion",
+        "action": "invokeMenuPosition",
+        "target": {
+          "process": "WX",
+          "titlePattern": "^\\s*Wimax Software",
+          "classPattern": "^XbpDialog$"
+        },
+        "menu": {
+          "topIndex": 1,
+          "itemIndex": 0,
+          "expectedTopCount": 8,
+          "expectedItemCount": 16
+        },
+        "delayMs": 1500
+      },
+      {
         "name": "abrir-facturacion-atomico",
         "action": "keys",
         "target": {

@@ -121,6 +121,10 @@ export class GuiDriver {
     })
   }
 
+  invokeMenuPosition(selector, menu, delayMs = 1_000) {
+    return this.run('InvokeMenuPosition', { ...selector, ...menu, delayMs })
+  }
+
   screenshot(file) {
     return this.run('Screenshot', { path: file })
   }
@@ -512,6 +516,15 @@ export class WimaxWorkflow {
           template(step.value, context),
           step.delayMs,
           step.timeoutMs,
+        )
+      } else if (step.action === 'invokeMenuPosition') {
+        if (!step.menu) {
+          throw new Error(`UI_PROFILE: ${label} requiere menu`)
+        }
+        await this.driver.invokeMenuPosition(
+          target,
+          step.menu,
+          step.delayMs,
         )
       } else if (step.action === 'moveEdit') {
         if (!step.control?.from || !step.control?.to || step.keys !== '{TAB}') {

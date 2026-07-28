@@ -62,6 +62,10 @@ class FakeDriver {
   async selectComboExact(target, control, value, delayMs, timeoutMs) {
     this.calls.push(['select-combo-exact', target, control, value, delayMs, timeoutMs])
   }
+
+  async invokeMenuPosition(target, menu, delayMs) {
+    this.calls.push(['invoke-menu-position', target, menu, delayMs])
+  }
 }
 
 function workflow(driver, steps) {
@@ -218,6 +222,26 @@ test('selectComboExact exige y envia el valor exacto al control nativo', async (
 
   assert.deepEqual(driver.calls, [
     ['select-combo-exact', target, control, 'Santander', 800, 5000],
+  ])
+})
+
+test('invokeMenuPosition selecciona una ruta solo con la estructura calibrada', async () => {
+  const driver = new FakeDriver()
+  const target = { process: 'WX', titlePattern: '^\\s*Wimax Software' }
+  const subject = workflow(driver, [{
+    name: 'modulo',
+    action: 'invokeMenuPosition',
+    target,
+    menu: { topIndex: 1, itemIndex: 0, expectedTopCount: 8, expectedItemCount: 16 },
+    delayMs: 1500,
+  }])
+
+  await subject.run('test', {})
+
+  assert.deepEqual(driver.calls, [
+    ['invoke-menu-position', target, {
+      topIndex: 1, itemIndex: 0, expectedTopCount: 8, expectedItemCount: 16,
+    }, 1500],
   ])
 })
 
@@ -544,10 +568,23 @@ test('el perfil de CONTABILIDAD conserva el flujo frio y las barreras calibradas
 
   assert.equal(profile.calibrated, true)
   assert.deepEqual(Object.keys(profile.flows).sort(), requiredFlows.sort())
-  assert.equal(profile.flows.openInvoice[1].keys, '%m{DOWN}{RIGHT}{ENTER}')
-  assert.equal(profile.flows.openInvoice[1].expectTimeoutMs, 30_000)
+  const moduleSelection = profile.flows.openInvoice.find(
+    (step) => step.name === 'seleccionar-modulo-facturacion'
+  )
+  const invoiceOpening = profile.flows.openInvoice.find(
+    (step) => step.name === 'abrir-facturacion-atomico'
+  )
+  assert.equal(moduleSelection.action, 'invokeMenuPosition')
+  assert.deepEqual(moduleSelection.menu, {
+    topIndex: 1,
+    itemIndex: 0,
+    expectedTopCount: 8,
+    expectedItemCount: 16,
+  })
+  assert.equal(invoiceOpening.keys, '%m{DOWN}{RIGHT}{ENTER}')
+  assert.equal(invoiceOpening.expectTimeoutMs, 30_000)
   assert.match(' Facturacion -Ventas - VARIX CENTER S.A.S 2026', new RegExp(
-    profile.flows.openInvoice[1].expect.titlePattern,
+    invoiceOpening.expect.titlePattern,
     'i'
   ))
   const loadingBarrier = profile.flows.openInvoice.find(

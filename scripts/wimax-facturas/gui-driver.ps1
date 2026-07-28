@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('Inspect', 'InspectControls', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'MoveEdit', 'AssertEditValue', 'SelectComboExact', 'SetInlineFields', 'Click', 'PressButton', 'InvokeButton', 'TabButton', 'TabUntilChange', 'RightClick', 'Screenshot', 'PromptUrgent')]
+  [ValidateSet('Inspect', 'InspectControls', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'MoveEdit', 'AssertEditValue', 'SelectComboExact', 'InvokeMenuPosition', 'SetInlineFields', 'Click', 'PressButton', 'InvokeButton', 'TabButton', 'TabUntilChange', 'RightClick', 'Screenshot', 'PromptUrgent')]
   [string]$Action,
 
   [string]$OutputPath,
@@ -175,6 +175,23 @@ namespace Varix.Wimax {
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetMenu(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetSubMenu(IntPtr hMenu, int position);
+
+    [DllImport("user32.dll")]
+    private static extern int GetMenuItemCount(IntPtr hMenu);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetMenuItemID(IntPtr hMenu, int position);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int GetMenuString(
+      IntPtr hMenu, uint item, StringBuilder value, int maxCount, uint flags
+    );
 
     [DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam);
@@ -503,6 +520,32 @@ namespace Varix.Wimax {
       var selectedValue = new StringBuilder(selectedLength + 1);
       SendMessage(combo, CB_GETLBTEXT, new IntPtr(selected), selectedValue);
       return selectedValue.ToString();
+    }
+
+    private static string MenuText(IntPtr menu, int position) {
+      const uint MF_BYPOSITION = 0x00000400;
+      var value = new StringBuilder(256);
+      GetMenuString(menu, (uint)position, value, value.Capacity, MF_BYPOSITION);
+      return value.ToString().Replace("&", "").Trim();
+    }
+
+    public static bool InvokeMenuPosition(
+      long rawWindow, int topIndex, int itemIndex, int expectedTopCount, int expectedItemCount
+    ) {
+      const uint WM_COMMAND = 0x0111;
+      var window = new IntPtr(rawWindow);
+      var menu = GetMenu(window);
+      if (menu == IntPtr.Zero) return false;
+      var topCount = GetMenuItemCount(menu);
+      if (topCount != expectedTopCount || topIndex < 0 || topIndex >= topCount) return false;
+      var submenu = GetSubMenu(menu, topIndex);
+      if (submenu == IntPtr.Zero) return false;
+      var itemCount = GetMenuItemCount(submenu);
+      if (itemCount != expectedItemCount || itemIndex < 0 || itemIndex >= itemCount) return false;
+      var commandId = GetMenuItemID(submenu, itemIndex);
+      if (commandId == 0xffffffff) return false;
+      SendMessage(window, WM_COMMAND, new IntPtr((long)commandId), IntPtr.Zero);
+      return true;
     }
 
     public static uint IdleSeconds() {
@@ -884,6 +927,30 @@ switch ($Action) {
       observed = $observed
       relativeLeft = $combo.Left - $window.Left
       relativeTop = $combo.Top - $window.Top
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'InvokeMenuPosition' {
+    foreach ($field in @('topIndex', 'itemIndex', 'expectedTopCount', 'expectedItemCount')) {
+      if ($null -eq $payload.$field) { throw "InvokeMenuPosition requiere $field" }
+    }
+    $window = Find-Window $payload
+    $invoked = [Varix.Wimax.NativeGui]::InvokeMenuPosition(
+      [long]$window.Handle,
+      [int]$payload.topIndex,
+      [int]$payload.itemIndex,
+      [int]$payload.expectedTopCount,
+      [int]$payload.expectedItemCount
+    )
+    if (-not $invoked) {
+      throw 'InvokeMenuPosition no confirmo la estructura calibrada'
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 1000 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      topIndex = [int]$payload.topIndex
+      itemIndex = [int]$payload.itemIndex
       foreground = [Varix.Wimax.NativeGui]::Foreground()
     })
   }

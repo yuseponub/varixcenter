@@ -625,6 +625,7 @@ test('el perfil de CONTABILIDAD conserva el flujo frio y las barreras calibradas
       'confirmar-primer-apellido-directorio',
       'confirmar-segundo-apellido-directorio',
       'confirmar-direccion',
+      'confirmar-codigo-postal',
     ]
   )
   for (const name of [

@@ -185,9 +185,6 @@ namespace Varix.Wimax {
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, StringBuilder lParam);
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
-
     [DllImport("oleacc.dll")]
     private static extern int AccessibleObjectFromWindow(
       IntPtr hWnd,
@@ -460,7 +457,7 @@ namespace Varix.Wimax {
     }
 
     public static string SelectComboExact(long rawCombo, string expected) {
-      const uint CB_FINDSTRINGEXACT = 0x0158;
+      const uint CB_GETCOUNT = 0x0146;
       const uint CB_SETCURSEL = 0x014E;
       const uint CB_GETCURSEL = 0x0147;
       const uint CB_GETLBTEXTLEN = 0x0149;
@@ -468,22 +465,44 @@ namespace Varix.Wimax {
       const uint WM_COMMAND = 0x0111;
       const int CBN_SELCHANGE = 1;
       var combo = new IntPtr(rawCombo);
-      var index = SendMessage(combo, CB_FINDSTRINGEXACT, new IntPtr(-1), expected).ToInt32();
+      var count = unchecked((int)SendMessage(combo, CB_GETCOUNT, IntPtr.Zero, IntPtr.Zero).ToInt64());
+      if (count <= 0 || count > 10000) return null;
+      var index = -1;
+      for (var candidate = 0; candidate < count; candidate++) {
+        var length = unchecked((int)SendMessage(
+          combo, CB_GETLBTEXTLEN, new IntPtr(candidate), IntPtr.Zero
+        ).ToInt64());
+        if (length < 0 || length > 500) continue;
+        var candidateValue = new StringBuilder(length + 1);
+        SendMessage(combo, CB_GETLBTEXT, new IntPtr(candidate), candidateValue);
+        if (string.Equals(
+          candidateValue.ToString().Trim(), expected.Trim(), StringComparison.OrdinalIgnoreCase
+        )) {
+          index = candidate;
+          break;
+        }
+      }
       if (index < 0) return null;
-      if (SendMessage(combo, CB_SETCURSEL, new IntPtr(index), IntPtr.Zero).ToInt32() < 0) {
+      if (unchecked((int)SendMessage(
+        combo, CB_SETCURSEL, new IntPtr(index), IntPtr.Zero
+      ).ToInt64()) < 0) {
         return null;
       }
       var parent = GetParent(combo);
       var id = GetDlgCtrlID(combo);
       var command = new IntPtr((CBN_SELCHANGE << 16) | (id & 0xffff));
       SendMessage(parent, WM_COMMAND, command, combo);
-      var selected = SendMessage(combo, CB_GETCURSEL, IntPtr.Zero, IntPtr.Zero).ToInt32();
+      var selected = unchecked((int)SendMessage(
+        combo, CB_GETCURSEL, IntPtr.Zero, IntPtr.Zero
+      ).ToInt64());
       if (selected < 0) return null;
-      var length = SendMessage(combo, CB_GETLBTEXTLEN, new IntPtr(selected), IntPtr.Zero).ToInt32();
-      if (length < 0 || length > 500) return null;
-      var value = new StringBuilder(length + 1);
-      SendMessage(combo, CB_GETLBTEXT, new IntPtr(selected), value);
-      return value.ToString();
+      var selectedLength = unchecked((int)SendMessage(
+        combo, CB_GETLBTEXTLEN, new IntPtr(selected), IntPtr.Zero
+      ).ToInt64());
+      if (selectedLength < 0 || selectedLength > 500) return null;
+      var selectedValue = new StringBuilder(selectedLength + 1);
+      SendMessage(combo, CB_GETLBTEXT, new IntPtr(selected), selectedValue);
+      return selectedValue.ToString();
     }
 
     public static uint IdleSeconds() {

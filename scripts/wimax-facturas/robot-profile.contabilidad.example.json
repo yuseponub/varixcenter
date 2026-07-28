@@ -489,6 +489,47 @@
         "delayMs": 800
       },
       {
+        "name": "codigo-postal-campo",
+        "action": "click",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "x": 199,
+        "y": 400
+      },
+      {
+        "name": "codigo-postal-reemplazar",
+        "action": "keys",
+        "keys": "^a"
+      },
+      {
+        "name": "codigo-postal-texto",
+        "action": "text",
+        "value": "{{customer.postalCode}}"
+      },
+      {
+        "name": "confirmar-codigo-postal",
+        "action": "assertEditValue",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 169,
+          "relativeTop": 390,
+          "tolerance": 12
+        },
+        "value": "{{customer.postalCode}}",
+        "normalize": "digits",
+        "timeoutMs": 5000
+      },
+      {
         "name": "pestana-datos-tributarios",
         "action": "click",
         "x": 260,

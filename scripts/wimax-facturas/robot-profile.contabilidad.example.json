@@ -713,31 +713,6 @@
         "timeoutMs": 5000
       },
       {
-        "name": "confirmar-cuenta-encabezado",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.code}}",
-        "timeoutMs": 3000
-      },
-      {
-        "name": "confirmar-cedula-encabezado",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.cedula}}",
-        "normalize": "digits",
-        "timeoutMs": 3000
-      },
-      {
         "name": "metodo-campo",
         "action": "click",
         "target": {

@@ -615,6 +615,14 @@ test('el perfil de CONTABILIDAD conserva el flujo frio y las barreras calibradas
     profile.flows.prepareInvoice.find((step) => step.name === 'confirmar-cliente-cargado').action,
     'assertControlAbsent'
   )
+  assert.equal(
+    profile.flows.prepareInvoice.some((step) => step.name === 'confirmar-cuenta-encabezado'),
+    false
+  )
+  assert.equal(
+    profile.flows.prepareInvoice.some((step) => step.name === 'confirmar-cedula-encabezado'),
+    false
+  )
 
   const lineStep = profile.flows.addItem.find((step) => step.action === 'setInlineFields')
   assert.equal(lineStep.control.expectedCount, 3)

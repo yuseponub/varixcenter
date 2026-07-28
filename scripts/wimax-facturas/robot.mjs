@@ -289,19 +289,55 @@ export function contextFor(job, customerCode) {
   }
 }
 
+export async function verifyCreatedCustomerPersisted({
+  context,
+  wimaxDir,
+  readDirectoryImpl = readDirectory,
+  sleepImpl = sleep,
+  attempts = 10,
+}) {
+  const expectedCode = String(context.customer.code ?? '').trim().toUpperCase()
+  const expectedCedula = digitsOnly(context.customer.cedula)
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const directory = await readDirectoryImpl(wimaxDir)
+      const stored = directory.byCode.get(expectedCode)
+      const identityMatches = directory.byCedula.get(expectedCedula) ?? []
+      if (
+        stored?.cedula === expectedCedula &&
+        identityMatches.length === 1 &&
+        identityMatches[0].code === expectedCode
+      ) {
+        return stored
+      }
+    } catch {
+      // Xbase may hold tmdir briefly while the save is being flushed.
+    }
+    if (attempt < attempts) await sleepImpl(500)
+  }
+  throw new Error(
+    'CUSTOMER_PERSISTENCE: tmdir no confirmo una unica cuenta con la cedula esperada'
+  )
+}
+
 export async function prepareJobUi({
   workflow,
   context,
   customerExists,
   items,
+  verifyCreatedCustomer,
   onHeartbeat = async () => {},
 }) {
   await workflow.run('openInvoice', context)
   await onHeartbeat('facturacion_abierta')
 
   if (!customerExists) {
+    if (typeof verifyCreatedCustomer !== 'function') {
+      throw new Error('CONFIG: falta verificacion persistida del cliente nuevo')
+    }
     await workflow.run('openCustomerDirectory', context)
     await workflow.run('createCustomer', context)
+    await verifyCreatedCustomer()
     await onHeartbeat('cliente_preparado')
     // Saving a new Directory entry returns to Facturacion with the FE type,
     // customer and warehouse already loaded. Replaying prepareInvoice here
@@ -495,6 +531,10 @@ async function processJob({
       context,
       customerExists: preflight.evidence.customer_exists,
       items: job.items,
+      verifyCreatedCustomer: () => verifyCreatedCustomerPersisted({
+        context,
+        wimaxDir,
+      }),
       onHeartbeat: (step) => heartbeat(supabase, job, step),
     })
     await workflow.capture('esperando-aprobacion')

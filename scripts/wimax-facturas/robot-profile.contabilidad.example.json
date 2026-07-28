@@ -326,12 +326,18 @@
       },
       {
         "name": "confirmar-cedula-directorio",
-        "action": "assertText",
+        "action": "assertEditValue",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 12,
+          "relativeTop": 139,
+          "tolerance": 12
         },
         "value": "{{customer.cedula}}",
         "normalize": "digits",
@@ -339,48 +345,72 @@
       },
       {
         "name": "confirmar-primer-nombre-directorio",
-        "action": "assertText",
+        "action": "assertEditValue",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 407,
+          "relativeTop": 189,
+          "tolerance": 12
         },
         "value": "{{customer.primerNombre}}",
         "timeoutMs": 2000
       },
       {
         "name": "confirmar-segundo-nombre-directorio",
-        "action": "assertText",
+        "action": "assertEditValue",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 577,
+          "relativeTop": 189,
+          "tolerance": 12
         },
         "value": "{{customer.segundoNombre}}",
         "timeoutMs": 2000
       },
       {
         "name": "confirmar-primer-apellido-directorio",
-        "action": "assertText",
+        "action": "assertEditValue",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
         },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 12,
+          "relativeTop": 189,
+          "tolerance": 12
+        },
         "value": "{{customer.primerApellido}}",
         "timeoutMs": 2000
       },
       {
         "name": "confirmar-segundo-apellido-directorio",
-        "action": "assertText",
+        "action": "assertEditValue",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 237,
+          "relativeTop": 189,
+          "tolerance": 12
         },
         "value": "{{customer.segundoApellido}}",
         "timeoutMs": 2000
@@ -577,41 +607,21 @@
     ],
     "validateCreatedCustomer": [
       {
-        "name": "confirmar-cuenta-creada",
-        "action": "assertText",
+        "name": "confirmar-cliente-creado-cargado",
+        "action": "assertControlAbsent",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^\\s*Facturaci.n.*-Ventas",
           "classPattern": "^XbpDialog$"
         },
-        "value": "{{customer.code}}",
-        "timeoutMs": 3000
-      },
-      {
-        "name": "confirmar-cedula-creada",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
-          "classPattern": "^XbpDialog$"
+        "control": {
+          "classPattern": "^Edit$",
+          "relativeLeft": 330,
+          "relativeTop": 50,
+          "tolerance": 6
         },
-        "value": "{{customer.cedula}}",
-        "normalize": "digits",
-        "timeoutMs": 3000
-      },
-      {
-        "name": "confirmar-ciudad-creada",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^\\s*Facturaci.n.*-Ventas",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.city}}",
-        "timeoutMs": 3000,
+        "timeoutMs": 5000,
         "capture": true
       }
     ],

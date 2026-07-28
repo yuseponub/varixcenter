@@ -595,10 +595,23 @@ test('el perfil de CONTABILIDAD conserva el flujo frio y las barreras calibradas
       'confirmar-codigo-postal',
     ]
   )
+  for (const name of [
+    'confirmar-cedula-directorio',
+    'confirmar-primer-nombre-directorio',
+    'confirmar-segundo-nombre-directorio',
+    'confirmar-primer-apellido-directorio',
+    'confirmar-segundo-apellido-directorio',
+  ]) {
+    assert.equal(
+      profile.flows.createCustomer.find((step) => step.name === name).action,
+      'assertEditValue'
+    )
+  }
   assert.deepEqual(
     profile.flows.validateCreatedCustomer.map((step) => step.name),
-    ['confirmar-cuenta-creada', 'confirmar-cedula-creada', 'confirmar-ciudad-creada']
+    ['confirmar-cliente-creado-cargado']
   )
+  assert.equal(profile.flows.validateCreatedCustomer[0].action, 'assertControlAbsent')
   assert.equal(
     profile.flows.prepareInvoice.find((step) => step.name === 'cargar-cliente').keys,
     '{ENTER}'

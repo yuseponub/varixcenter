@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('Inspect', 'InspectControls', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'MoveEdit', 'AssertEditValue', 'SetInlineFields', 'Click', 'PressButton', 'InvokeButton', 'TabButton', 'TabUntilChange', 'RightClick', 'Screenshot', 'PromptUrgent')]
+  [ValidateSet('Inspect', 'InspectControls', 'Foreground', 'Focus', 'Minimize', 'SendKeys', 'MoveEdit', 'AssertEditValue', 'SelectComboExact', 'SetInlineFields', 'Click', 'PressButton', 'InvokeButton', 'TabButton', 'TabUntilChange', 'RightClick', 'Screenshot', 'PromptUrgent')]
   [string]$Action,
 
   [string]$OutputPath,
@@ -184,6 +184,9 @@ namespace Varix.Wimax {
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, StringBuilder lParam);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, uint message, IntPtr wParam, string lParam);
 
     [DllImport("oleacc.dll")]
     private static extern int AccessibleObjectFromWindow(
@@ -454,6 +457,33 @@ namespace Varix.Wimax {
       SendMessage(edit, 0x00B1, IntPtr.Zero, new IntPtr(-1)); // EM_SETSEL
       SendMessage(edit, 0x0303, IntPtr.Zero, IntPtr.Zero); // WM_CLEAR
       return TextValue(rawEdit).Length == 0;
+    }
+
+    public static string SelectComboExact(long rawCombo, string expected) {
+      const uint CB_FINDSTRINGEXACT = 0x0158;
+      const uint CB_SETCURSEL = 0x014E;
+      const uint CB_GETCURSEL = 0x0147;
+      const uint CB_GETLBTEXTLEN = 0x0149;
+      const uint CB_GETLBTEXT = 0x0148;
+      const uint WM_COMMAND = 0x0111;
+      const int CBN_SELCHANGE = 1;
+      var combo = new IntPtr(rawCombo);
+      var index = SendMessage(combo, CB_FINDSTRINGEXACT, new IntPtr(-1), expected).ToInt32();
+      if (index < 0) return null;
+      if (SendMessage(combo, CB_SETCURSEL, new IntPtr(index), IntPtr.Zero).ToInt32() < 0) {
+        return null;
+      }
+      var parent = GetParent(combo);
+      var id = GetDlgCtrlID(combo);
+      var command = new IntPtr((CBN_SELCHANGE << 16) | (id & 0xffff));
+      SendMessage(parent, WM_COMMAND, command, combo);
+      var selected = SendMessage(combo, CB_GETCURSEL, IntPtr.Zero, IntPtr.Zero).ToInt32();
+      if (selected < 0) return null;
+      var length = SendMessage(combo, CB_GETLBTEXTLEN, new IntPtr(selected), IntPtr.Zero).ToInt32();
+      if (length < 0 || length > 500) return null;
+      var value = new StringBuilder(length + 1);
+      SendMessage(combo, CB_GETLBTEXT, new IntPtr(selected), value);
+      return value.ToString();
     }
 
     public static uint IdleSeconds() {
@@ -812,6 +842,29 @@ switch ($Action) {
       observedLength = $observed.Length
       relativeLeft = $edit.Left - $window.Left
       relativeTop = $edit.Top - $window.Top
+      foreground = [Varix.Wimax.NativeGui]::Foreground()
+    })
+  }
+  'SelectComboExact' {
+    if (-not $payload.control) { throw 'SelectComboExact requiere control' }
+    if ([string]::IsNullOrWhiteSpace([string]$payload.value)) {
+      throw 'SelectComboExact requiere value'
+    }
+    $window = Find-Window $payload
+    $timeout = if ($payload.timeoutMs) { [int]$payload.timeoutMs } else { 5000 }
+    $combo = Wait-MatchingEdit $window $payload.control $timeout
+    $expected = ([string]$payload.value).Trim()
+    $observed = [Varix.Wimax.NativeGui]::SelectComboExact([long]$combo.Handle, $expected)
+    if ([string]::IsNullOrWhiteSpace($observed) -or $observed.Trim() -ine $expected) {
+      throw 'SelectComboExact no confirmo el valor exacto'
+    }
+    $delay = if ($payload.delayMs) { [int]$payload.delayMs } else { 500 }
+    Start-Sleep -Milliseconds $delay
+    Write-Result ([pscustomobject]@{
+      ok = $true
+      observed = $observed
+      relativeLeft = $combo.Left - $window.Left
+      relativeTop = $combo.Top - $window.Top
       foreground = [Varix.Wimax.NativeGui]::Foreground()
     })
   }

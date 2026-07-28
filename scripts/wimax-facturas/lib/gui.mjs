@@ -111,6 +111,16 @@ export class GuiDriver {
     })
   }
 
+  selectComboExact(selector, control, value, delayMs = 500, timeoutMs = 5_000) {
+    return this.run('SelectComboExact', {
+      ...selector,
+      control,
+      value: String(value),
+      delayMs,
+      timeoutMs,
+    })
+  }
+
   screenshot(file) {
     return this.run('Screenshot', { path: file })
   }
@@ -492,6 +502,17 @@ export class WimaxWorkflow {
           normalize: step.normalize,
           timeoutMs: step.timeoutMs,
         })
+      } else if (step.action === 'selectComboExact') {
+        if (!step.control || step.value === undefined) {
+          throw new Error(`UI_PROFILE: ${label} requiere control y value`)
+        }
+        await this.driver.selectComboExact(
+          target,
+          step.control,
+          template(step.value, context),
+          step.delayMs,
+          step.timeoutMs,
+        )
       } else if (step.action === 'moveEdit') {
         if (!step.control?.from || !step.control?.to || step.keys !== '{TAB}') {
           throw new Error(`UI_PROFILE: ${label} requiere from, to y una tecla TAB`)

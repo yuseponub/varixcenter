@@ -58,6 +58,10 @@ class FakeDriver {
   async setInlineFields(target, control, values, delayMs, commitDelayMs) {
     this.calls.push(['inline', target, control, values, delayMs, commitDelayMs])
   }
+
+  async selectComboExact(target, control, value, delayMs, timeoutMs) {
+    this.calls.push(['select-combo-exact', target, control, value, delayMs, timeoutMs])
+  }
 }
 
 function workflow(driver, steps) {
@@ -193,6 +197,27 @@ test('invokeButton y su variante opcional activan el control nativo calibrado', 
     ['invoke-button', target, 210, 123, 700],
     ['inspect'],
     ['invoke-button', target, 210, 123, undefined],
+  ])
+})
+
+test('selectComboExact exige y envia el valor exacto al control nativo', async () => {
+  const driver = new FakeDriver()
+  const target = { process: 'WX', titlePattern: '^El Directorio Principal$' }
+  const control = { classPattern: '^ComboBox$', relativeLeft: 447, relativeTop: 350 }
+  const subject = workflow(driver, [{
+    name: 'departamento',
+    action: 'selectComboExact',
+    target,
+    control,
+    value: '{{customer.department}}',
+    delayMs: 800,
+    timeoutMs: 5000,
+  }])
+
+  await subject.run('test', { customer: { department: 'Santander' } })
+
+  assert.deepEqual(driver.calls, [
+    ['select-combo-exact', target, control, 'Santander', 800, 5000],
   ])
 })
 
@@ -559,13 +584,23 @@ test('el perfil de CONTABILIDAD conserva el flujo frio y las barreras calibradas
     profile.flows.createCustomer.find((step) => step.name === 'otra-factura-si').when,
     { decision: 'salida-guardar-cliente', is: 'pregunta-otra-factura' }
   )
-  assert.equal(
-    profile.flows.createCustomer.find((step) => step.name === 'departamento-confirmar').keys,
-    '{ENTER}'
+  const departmentSelection = profile.flows.createCustomer.find(
+    (step) => step.name === 'departamento-seleccionar-exacto'
   )
-  assert.equal(
-    profile.flows.createCustomer.find((step) => step.name === 'ciudad-buscar').value,
-    '{{customer.city}}'
+  const citySelection = profile.flows.createCustomer.find(
+    (step) => step.name === 'ciudad-seleccionar-exacta'
+  )
+  assert.equal(departmentSelection.action, 'selectComboExact')
+  assert.equal(departmentSelection.value, '{{customer.department}}')
+  assert.deepEqual(
+    [departmentSelection.control.relativeLeft, departmentSelection.control.relativeTop],
+    [447, 350]
+  )
+  assert.equal(citySelection.action, 'selectComboExact')
+  assert.equal(citySelection.value, '{{customer.city}}')
+  assert.deepEqual(
+    [citySelection.control.relativeLeft, citySelection.control.relativeTop],
+    [607, 350]
   )
   const addressInput = profile.flows.createCustomer.find(
     (step) => step.name === 'direccion-paciente'

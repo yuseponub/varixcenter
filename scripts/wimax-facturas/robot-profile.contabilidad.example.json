@@ -451,44 +451,42 @@
         "timeoutMs": 5000
       },
       {
-        "name": "departamento-abrir",
-        "action": "click",
+        "name": "departamento-seleccionar-exacto",
+        "action": "selectComboExact",
         "target": {
           "foreground": true,
           "process": "WX",
           "titlePattern": "^El Directorio Principal$",
           "classPattern": "^XbpDialog$"
         },
-        "x": 500,
-        "y": 361
+        "control": {
+          "classPattern": "^ComboBox$",
+          "relativeLeft": 447,
+          "relativeTop": 350,
+          "tolerance": 15
+        },
+        "value": "{{customer.department}}",
+        "timeoutMs": 5000,
+        "delayMs": 800
       },
       {
-        "name": "departamento-buscar",
-        "action": "text",
-        "value": "{{customer.department}}"
-      },
-      {
-        "name": "departamento-confirmar",
-        "action": "keys",
-        "keys": "{ENTER}",
-        "delayMs": 1000
-      },
-      {
-        "name": "ciudad-abrir",
-        "action": "click",
-        "x": 665,
-        "y": 361
-      },
-      {
-        "name": "ciudad-buscar",
-        "action": "text",
-        "value": "{{customer.city}}"
-      },
-      {
-        "name": "ciudad-confirmar",
-        "action": "keys",
-        "keys": "{ENTER}",
-        "delayMs": 1000
+        "name": "ciudad-seleccionar-exacta",
+        "action": "selectComboExact",
+        "target": {
+          "foreground": true,
+          "process": "WX",
+          "titlePattern": "^El Directorio Principal$",
+          "classPattern": "^XbpDialog$"
+        },
+        "control": {
+          "classPattern": "^ComboBox$",
+          "relativeLeft": 607,
+          "relativeTop": 350,
+          "tolerance": 15
+        },
+        "value": "{{customer.city}}",
+        "timeoutMs": 5000,
+        "delayMs": 800
       },
       {
         "name": "pestana-datos-tributarios",

@@ -86,7 +86,18 @@ test('prepareJobUi creates a missing customer inside an already open invoice', a
 
 test('verifyCreatedCustomerPersisted exige una unica cuenta y cedula exactas', async () => {
   const context = contextFor(sampleJob(), '99MAR')
-  const stored = { code: '99MAR', cedula: '99007701', nombre: 'MARIA JOSE PRUEBA ROBOT' }
+  const stored = {
+    code: '99MAR',
+    cedula: '99007701',
+    nombre: 'MARIA JOSE PRUEBA ROBOT',
+    primerApellido: 'PRUEBA',
+    segundoApellido: 'ROBOT',
+    primerNombre: 'MARIA',
+    segundoNombre: 'JOSE',
+    direccion: 'Carrera 27 # 45-10',
+    departamento: 'Santander',
+    codigoPostal: '680011',
+  }
   const readDirectoryImpl = async () => ({
     byCode: new Map([['99MAR', stored]]),
     byCedula: new Map([['99007701', [stored]]]),

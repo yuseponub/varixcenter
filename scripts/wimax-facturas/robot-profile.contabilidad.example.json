@@ -491,43 +491,6 @@
         "delayMs": 1000
       },
       {
-        "name": "confirmar-departamento",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^El Directorio Principal$",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.department}}",
-        "timeoutMs": 2000
-      },
-      {
-        "name": "confirmar-ciudad",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^El Directorio Principal$",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.city}}",
-        "timeoutMs": 2000
-      },
-      {
-        "name": "confirmar-codigo-postal",
-        "action": "assertText",
-        "target": {
-          "foreground": true,
-          "process": "WX",
-          "titlePattern": "^El Directorio Principal$",
-          "classPattern": "^XbpDialog$"
-        },
-        "value": "{{customer.postalCode}}",
-        "normalize": "digits",
-        "timeoutMs": 2000
-      },
-      {
         "name": "pestana-datos-tributarios",
         "action": "click",
         "x": 260,

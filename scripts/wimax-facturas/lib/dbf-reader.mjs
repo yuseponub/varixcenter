@@ -75,6 +75,13 @@ export async function readDirectory(wimaxDir) {
       code,
       cedula: digitsOnly(firstValue(row, ['DIREC4'])),
       nombre: textOrNull(firstValue(row, ['NOMBRE', 'RAZON', 'RAZONSOC'])),
+      primerApellido: textOrNull(firstValue(row, ['APELLIDO1'])),
+      segundoApellido: textOrNull(firstValue(row, ['APELLIDO2'])),
+      primerNombre: textOrNull(firstValue(row, ['NOMBRE1'])),
+      segundoNombre: textOrNull(firstValue(row, ['NOMBRE2'])),
+      direccion: textOrNull(firstValue(row, ['DIREC1'])),
+      departamento: textOrNull(firstValue(row, ['DPTO'])),
+      codigoPostal: digitsOnly(firstValue(row, ['COD_POSTAL'])),
     }
     byCode.set(code, customer)
     if (customer.cedula) {

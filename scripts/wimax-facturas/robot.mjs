@@ -298,6 +298,19 @@ export async function verifyCreatedCustomerPersisted({
 }) {
   const expectedCode = String(context.customer.code ?? '').trim().toUpperCase()
   const expectedCedula = digitsOnly(context.customer.cedula)
+  const normalizeText = (value) => String(value ?? '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toUpperCase()
+  const expectedFields = {
+    primerApellido: normalizeText(context.customer.primerApellido),
+    segundoApellido: normalizeText(context.customer.segundoApellido),
+    primerNombre: normalizeText(context.customer.primerNombre),
+    segundoNombre: normalizeText(context.customer.segundoNombre),
+    direccion: normalizeText(context.customer.address),
+    departamento: normalizeText(context.customer.department),
+    codigoPostal: digitsOnly(context.customer.postalCode),
+  }
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const directory = await readDirectoryImpl(wimaxDir)
@@ -306,7 +319,12 @@ export async function verifyCreatedCustomerPersisted({
       if (
         stored?.cedula === expectedCedula &&
         identityMatches.length === 1 &&
-        identityMatches[0].code === expectedCode
+        identityMatches[0].code === expectedCode &&
+        Object.entries(expectedFields).every(([field, expected]) =>
+          field === 'codigoPostal'
+            ? stored[field] === expected
+            : normalizeText(stored[field]) === expected
+        )
       ) {
         return stored
       }

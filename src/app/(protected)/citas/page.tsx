@@ -3,7 +3,6 @@ import { getDoctors, getAppointmentsForCalendar } from '@/lib/queries/appointmen
 import { getActiveServices } from '@/lib/queries/services'
 import { getOutlookSyncStatus } from '@/lib/queries/outlook'
 import { CalendarView } from './calendar-view'
-import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
 
 /**
@@ -64,10 +63,7 @@ export default async function CitasPage({ searchParams }: CitasPageProps) {
         </Link>
       </div>
 
-      {/* Cita rapida en un renglon */}
-      <QuickAppointmentBar doctors={doctors} services={services} />
-
-      {/* Calendar View (client component) */}
+      {/* Calendar View (client component) — incluye la barra de cita rapida */}
       <CalendarView
         doctors={doctors}
         initialEvents={events}

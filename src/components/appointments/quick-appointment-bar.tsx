@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Zap, Loader2, UserPlus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,14 +12,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { quickCreateAppointment } from '@/app/(protected)/citas/quick-actions'
+import type { QuickCreateResult } from '@/lib/appointments/quick-create'
 
 /**
  * Barra de "cita en un renglon": la secretaria llena un solo renglon
  * (paciente + fecha + hora + duracion + servicio/doctor opcionales),
  * presiona Enter y la cita queda creada.
  * Si el paciente no existe, se despliegan 3 campos minimos para crearlo inline.
+ *
+ * El agendado no bloquea: el renglon se limpia de inmediato y la peticion viaja
+ * con `keepalive`, asi termina en el servidor aunque se cambie de pagina. Cada
+ * envio lleva un `request_id`; repetir el mismo renglon reusa ese id, de modo
+ * que un doble Enter nunca agenda dos veces (indice unico, migracion 079).
  */
+
+/** Ventana en la que un renglon identico se considera el mismo agendamiento. */
+const DEDUP_WINDOW_MS = 60_000
+
+function newRequestId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Navegadores sin contexto seguro (ej. el PC de recepcion por IP local).
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
 
 interface Doctor {
   id: string
@@ -67,8 +86,11 @@ function todayBogota(): string {
 }
 
 export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppointmentBarProps) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  // Citas viajando al servidor. No bloquea el renglon: se puede seguir
+  // agendando mientras la anterior termina de guardarse.
+  const [inFlight, setInFlight] = useState(0)
+  /** Renglones enviados hace poco → su request_id, para no duplicar. */
+  const recentRef = useRef<{ key: string; requestId: string; at: number }[]>([])
 
   // Paciente
   const [patientQuery, setPatientQuery] = useState('')
@@ -187,50 +209,116 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
         precio_unitario: row.precio ? Number(row.precio) : undefined,
       }))
 
-    startTransition(async () => {
-      const result = await quickCreateAppointment({
-        patient_id: patientId,
-        nuevo_nombre: nuevoNombre,
-        nuevo_apellido: nuevoApellido,
-        nuevo_celular: nuevoCelular,
-        nueva_cedula: nuevaCedula,
-        fecha,
-        hora,
-        duracion_min: Number(duracion),
-        doctor_id: doctorId,
-        servicios,
+    // Mismo renglon enviado dos veces seguidas (doble Enter, clic + Enter) →
+    // se reusa el request_id, y el servidor devuelve la cita que ya creo.
+    const now = Date.now()
+    recentRef.current = recentRef.current.filter((r) => now - r.at < DEDUP_WINDOW_MS)
+    const key = [
+      patientId || `${nuevoNombre} ${nuevoApellido}`.toLowerCase(),
+      fecha,
+      hora,
+      doctorId,
+    ].join('|')
+    const previous = recentRef.current.find((r) => r.key === key)
+    const requestId = previous?.requestId ?? newRequestId()
+    if (previous) previous.at = now
+    else recentRef.current.push({ key, requestId, at: now })
+
+    const payload = {
+      request_id: requestId,
+      patient_id: patientId,
+      nuevo_nombre: nuevoNombre,
+      nuevo_apellido: nuevoApellido,
+      nuevo_celular: nuevoCelular,
+      nueva_cedula: nuevaCedula,
+      fecha,
+      hora,
+      duracion_min: Number(duracion),
+      doctor_id: doctorId,
+      servicios,
+    }
+
+    // El renglon se libera ya: la cita se termina de guardar en segundo plano.
+    const etiqueta = patientQuery.trim() || 'la cita'
+    clearPatient()
+    setHora('')
+    setProcs([{ ...EMPTY_ROW }])
+    setInFlight((n) => n + 1)
+
+    const enviar = () =>
+      fetch('/citas/api/rapida', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        // Sobrevive a cerrar la pestana o navegar a otra pagina.
+        keepalive: true,
       })
 
-      if (result.error) {
-        toast.error(result.error)
-        return
-      }
+    enviar()
+      .then(async (res) => {
+        const result = (await res.json().catch(() => ({}))) as QuickCreateResult
 
-      toast.success(
-        result.data?.created_patient
-          ? 'Cita creada y paciente nuevo registrado'
-          : 'Cita creada'
-      )
-      // Limpiar solo el paciente y la hora: la secretaria suele agendar
-      // varias citas seguidas el mismo dia
-      clearPatient()
-      setHora('')
-      setProcs([{ ...EMPTY_ROW }])
-      router.refresh()
-      onCreated?.()
-    })
+        if (!res.ok || result.error) {
+          toast.error(result.error || 'Error al crear la cita', {
+            description: `${etiqueta} · ${fecha} ${hora}`,
+            duration: 15_000,
+            action: {
+              label: 'Reintentar',
+              onClick: () => {
+                void enviar()
+                  .then(async (r) => {
+                    const again = (await r.json().catch(() => ({}))) as QuickCreateResult
+                    if (r.ok && !again.error) {
+                      toast.success('Cita creada')
+                      onCreated?.()
+                    } else {
+                      toast.error(again.error || 'Error al crear la cita')
+                    }
+                  })
+                  .catch(() => toast.error('Sin conexion con el servidor'))
+              },
+            },
+          })
+          return
+        }
+
+        if (result.data?.duplicate) {
+          // El mismo renglon ya estaba agendado; no se creo una segunda cita.
+          toast.info('Esa cita ya estaba agendada')
+        } else {
+          toast.success(
+            result.data?.created_patient
+              ? 'Cita creada y paciente nuevo registrado'
+              : 'Cita creada'
+          )
+        }
+        if (result.warning) {
+          toast.warning(result.warning, { duration: 8_000 })
+        }
+        onCreated?.()
+      })
+      .catch(() => {
+        toast.error('No se pudo confirmar el agendado', {
+          description: `${etiqueta} · ${fecha} ${hora} — revise la agenda antes de repetirlo`,
+          duration: 15_000,
+        })
+      })
+      .finally(() => setInFlight((n) => Math.max(0, n - 1)))
   }, [
     patientId, newPatientMode, patientQuery, nuevoCelular, nuevaCedula,
-    fecha, hora, duracion, doctorId, procs, startTransition, router,
-    clearPatient, onCreated,
+    fecha, hora, duracion, doctorId, procs, clearPatient, onCreated,
   ])
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !showDropdown) {
-        e.preventDefault()
-        submit()
-      }
+      if (e.key !== 'Enter' || showDropdown) return
+      // Los desplegables (duracion, procedimiento, doctor) se pintan en un
+      // portal: su Enter llega hasta aca por el arbol de React aunque no este
+      // dentro del renglon. Ese Enter elige una opcion, no agenda.
+      if (e.defaultPrevented) return
+      if (!e.currentTarget.contains(e.target as Node)) return
+      e.preventDefault()
+      submit()
     },
     [showDropdown, submit]
   )
@@ -240,6 +328,12 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
         <Zap className="h-4 w-4 text-warning-foreground" />
         Cita rapida — llene el renglon y presione Enter
+        {inFlight > 0 && (
+          <span className="flex items-center gap-1 text-xs font-normal">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Guardando {inFlight > 1 ? `${inFlight} citas` : 'la cita'} en segundo plano…
+          </span>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -408,8 +502,8 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
           </SelectContent>
         </Select>
 
-        <Button onClick={submit} disabled={isPending} className="min-w-[90px]">
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Crear'}
+        <Button onClick={submit} className="min-w-[90px]">
+          Crear
         </Button>
       </div>
 

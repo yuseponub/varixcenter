@@ -64,6 +64,21 @@ export async function createAppointment(
     }
   }
 
+  // Un mismo paciente no puede tener dos citas que arranquen al mismo instante:
+  // es un doble envio del formulario, no dos citas distintas.
+  const { data: existing } = await supabase
+    .from('appointments')
+    .select('id')
+    .eq('patient_id', validated.data.patient_id)
+    .eq('fecha_hora_inicio', validated.data.fecha_hora_inicio)
+    .neq('estado', 'cancelada')
+    .limit(1)
+    .maybeSingle()
+
+  if (existing) {
+    return { success: true, data: { id: existing.id } }
+  }
+
   // Prepare data for insert (handle empty strings -> null)
   const insertData = {
     patient_id: validated.data.patient_id,
@@ -192,14 +207,27 @@ export async function updateAppointmentStatus(
     .eq('id', appointmentId)
 
   if (updateError) {
+    // Solo puede ocurrir mientras la migracion 079 no este aplicada: antes de
+    // ella, revertir una cancelacion chocaba con la cita que ocupo el horario.
+    if (updateError.code === '23P01') {
+      return {
+        error:
+          'Otra cita del mismo doctor ocupa ese horario. Muevala o cambiele el doctor para poder revertir el estado.',
+      }
+    }
     console.error('Status update error:', updateError)
     return { error: 'Error al actualizar el estado de la cita' }
   }
 
-  // Revalidate citas pages
+  // Outlook: al cancelar se borra el evento; al revertir la cancelacion hay que
+  // volver a crearlo, o la cita quedaria viva en Varix e invisible en Outlook.
   if (newStatus === 'cancelada') {
     await queueOutlookAppointmentSync(supabase, appointmentId, 'delete')
+  } else if (currentStatus === 'cancelada') {
+    await queueOutlookAppointmentSync(supabase, appointmentId)
   }
+
+  // Revalidate citas pages
   revalidatePath('/citas')
 
   return { success: true }

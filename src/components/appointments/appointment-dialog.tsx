@@ -67,8 +67,14 @@ const SERVICE_ENABLED_STATES: AppointmentStatus[] = ['en_atencion', 'completada'
 /** States where medical record can be created */
 const MEDICAL_RECORD_ENABLED_STATES: AppointmentStatus[] = ['en_atencion', 'completada']
 
-/** Opciones de confirmación (dropdown independiente). */
+/**
+ * Opciones de confirmación (dropdown independiente).
+ * "Sin confirmar" es seleccionable a proposito: cancelar una cita por error
+ * tiene que poder deshacerse y dejarla como estaba, no solo pasarla a
+ * confirmada.
+ */
 const CONFIRM_OPTIONS: { value: AppointmentStatus; label: string }[] = [
+  { value: 'programada', label: 'Sin confirmar' },
   { value: 'confirmada', label: 'Confirmada' },
   { value: 'cancelada', label: 'Cancelada / Reagendada' },
 ]

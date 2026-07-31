@@ -22,6 +22,8 @@ import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { OutlookEventDialog } from '@/components/appointments/outlook-event-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
 import { AppointmentSearch } from '@/components/appointments/appointment-search'
+import { AgendaPrintDialog } from '@/components/appointments/agenda-print-dialog'
+import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
@@ -264,6 +266,14 @@ export function CalendarView({
     void fetchEvents()
   }, [fetchEvents])
 
+  /**
+   * Cita creada desde la barra rapida -> traer las citas otra vez sin bloquear
+   * la barra (la secretaria ya esta escribiendo la siguiente).
+   */
+  const handleAppointmentCreated = useCallback(() => {
+    void fetchEvents(true)
+  }, [fetchEvents])
+
   const outlookStatusLabel = (() => {
     if (!outlookStatus.enabled) return 'Outlook desactivado'
     if (!outlookStatus.configured) return 'Outlook pendiente de configurar'
@@ -331,6 +341,14 @@ export function CalendarView({
 
   return (
     <div className="space-y-4">
+      {/* Cita rapida en un renglon: al crear, refresca la agenda en segundo
+          plano (sin recargar la pagina completa). */}
+      <QuickAppointmentBar
+        doctors={doctors}
+        services={services}
+        onCreated={handleAppointmentCreated}
+      />
+
       {/* Toolbar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -342,6 +360,7 @@ export function CalendarView({
             className="w-64"
           />
           <AppointmentSearch onSelect={handleSearchSelect} />
+          <AgendaPrintDialog doctors={doctors} doctorId={selectedDoctorId} />
         </div>
 
         {isLoading && (

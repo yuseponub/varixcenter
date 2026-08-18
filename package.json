@@ -14,7 +14,9 @@
     "lint:all": "eslint --cache --cache-location .next/cache/eslint/.eslintcache",
     "security:audit": "npm audit --omit=dev",
     "type-check": "tsc --noEmit",
-    "test:outlook": "node --test test/outlook-*.test.mjs"
+    "test:outlook": "node --test test/outlook-*.test.mjs",
+    "test:agenda": "node --test test/agenda-search.test.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.20",

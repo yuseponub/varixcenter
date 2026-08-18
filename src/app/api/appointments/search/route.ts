@@ -2,9 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import {
   getPatientNameIndex,
-  normalizeName,
   type IndexedPatient,
 } from '@/lib/queries/patient-name-index'
+import {
+  scoreName,
+  searchTokens,
+  toAccentInsensitivePattern,
+} from '@/lib/appointments/name-match'
 import { STATUS_COLORS, cleanOutlookSubject } from '@/lib/queries/appointments'
 import type { AppointmentStatus, CalendarEvent } from '@/types/appointments'
 
@@ -50,52 +54,17 @@ interface SearchResultEvent extends CalendarEvent {
 }
 
 /**
- * Clases de caracteres para comparar sin tildes dentro de PostgreSQL. El asunto
- * de Outlook es texto libre escrito a mano: unas veces lleva tildes y otras no,
- * así que la comparación tiene que ser tolerante en las dos direcciones.
- */
-const ACCENT_CLASS: Record<string, string> = {
-  A: '[aáàäâãAÁÀÄÂÃ]',
-  E: '[eéèëêEÉÈËÊ]',
-  I: '[iíìïîIÍÌÏÎ]',
-  O: '[oóòöôõOÓÒÖÔÕ]',
-  U: '[uúùüûUÚÙÜÛ]',
-  N: '[nñNÑ]',
-  C: '[cçCÇ]',
-}
-
-/** Convierte un término normalizado en un regex POSIX tolerante a tildes. */
-function toAccentInsensitivePattern(token: string): string {
-  return token
-    .split('')
-    .map((char) => ACCENT_CLASS[char] ?? char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .join('')
-}
-
-/**
  * Puntúa a un paciente contra los términos buscados. Devuelve null si alguno de
  * los términos no aparece. Un término que arranca palabra puntúa más que uno
  * que cae a mitad de palabra, para que "gom" saque antes a GOMEZ que a ANGOMEZ.
  */
 function scorePatient(patient: IndexedPatient, tokens: string[], digits: string): number | null {
-  const normalized = patient.normalized
-  if (!normalized) return null
+  const direct = scoreName(patient.normalized, tokens)
+  if (direct !== null) return direct
 
-  let score = 0
-  for (const token of tokens) {
-    const position = normalized.indexOf(token)
-    if (position === -1) {
-      // Un término puramente numérico puede venir de la cédula o el celular.
-      if (digits && token === digits && matchesDigits(patient, digits)) {
-        score += 3
-        continue
-      }
-      return null
-    }
-    const startsWord = position === 0 || normalized[position - 1] === ' '
-    score += startsWord ? 2 : 1
-  }
-  return score
+  // Un texto puramente numérico puede venir de la cédula o del celular.
+  if (digits.length >= 4 && matchesDigits(patient, digits)) return 3
+  return null
 }
 
 function matchesDigits(patient: IndexedPatient, digits: string): boolean {
@@ -128,9 +97,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const rawQuery = searchParams.get('q')?.trim() || ''
 
-  const tokens = normalizeName(rawQuery)
-    .split(' ')
-    .filter((token) => token.length >= 2)
+  const tokens = searchTokens(rawQuery)
   const digits = rawQuery.replace(/\D/g, '')
 
   if (tokens.length === 0) {

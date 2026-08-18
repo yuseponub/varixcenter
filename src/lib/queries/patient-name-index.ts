@@ -1,4 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { normalizeName } from '@/lib/appointments/name-match'
+
+// El buscador de la agenda comparte esta normalización; se re-exporta para no
+// obligar a los llamadores existentes a cambiar de import.
+export { normalizeName }
 
 /**
  * Índice de nombres de pacientes para mapear eventos de Outlook (texto libre en
@@ -18,15 +23,7 @@ export interface IndexedPatient {
 const TTL_MS = 10 * 60 * 1000
 let cache: { at: number; patients: IndexedPatient[] } | null = null
 
-export function normalizeName(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, ' ')
-    .trim()
-    .replace(/\s+/g, ' ')
-}
+
 
 export async function getPatientNameIndex(): Promise<IndexedPatient[]> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.patients

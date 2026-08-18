@@ -24,6 +24,9 @@ interface StackedAgendaProps {
   /** Notifica el rango visible (ISO UTC) para que el padre recargue citas. */
   onRangeChange: (start: string, end: string) => void
   initialDate?: Date | string
+  /** Fecha a la que saltar cuando el buscador elige una cita. El contador
+   *  `seq` permite repetir el salto a la misma fecha. */
+  focus?: { date: string; seq: number } | null
 }
 
 const TZ = 'America/Bogota'
@@ -235,11 +238,22 @@ export function StackedAgenda({
   onEventClick,
   onRangeChange,
   initialDate,
+  focus = null,
 }: StackedAgendaProps) {
   const [mode, setMode] = useState<'day' | 'week'>('week')
   const [cursor, setCursor] = useState<Date>(() =>
     toCivilNoon(initialDate ? new Date(initialDate) : new Date())
   )
+
+  // Salto desde el buscador: mueve el cursor al día de la cita elegida. Se
+  // ajusta durante el render (no en un efecto) para no encadenar un segundo
+  // render con la semana equivocada ya pintada.
+  const [appliedFocusSeq, setAppliedFocusSeq] = useState(0)
+  if (focus && focus.seq !== appliedFocusSeq) {
+    const target = new Date(focus.date)
+    setAppliedFocusSeq(focus.seq)
+    if (!Number.isNaN(target.getTime())) setCursor(toCivilNoon(target))
+  }
 
   // Días visibles (mediodía-UTC cada uno). Semana = Lun..Sáb (sin domingo).
   const visibleDays = useMemo(() => {

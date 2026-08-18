@@ -38,6 +38,9 @@ interface AppointmentCalendarProps {
   initialDate?: Date | string
   /** Whether events are editable (draggable) */
   editable?: boolean
+  /** Fecha a la que saltar cuando el buscador elige una cita. El contador
+   *  `seq` permite repetir el salto a la misma fecha. */
+  focus?: { date: string; seq: number } | null
 }
 
 /**
@@ -59,8 +62,19 @@ export function AppointmentCalendar({
   initialView = 'listWeek',
   initialDate,
   editable = true,
+  focus = null,
 }: AppointmentCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null)
+
+  // Salto desde el buscador: lleva el calendario al día de la cita elegida.
+  const focusSeq = focus?.seq
+  const focusDate = focus?.date
+  useEffect(() => {
+    if (!focusDate) return
+    const target = new Date(focusDate)
+    if (Number.isNaN(target.getTime())) return
+    calendarRef.current?.getApi()?.gotoDate(target)
+  }, [focusDate, focusSeq])
 
   // Grosor de cada fila de hora, ajustable por el usuario (persistido). Filas
   // más gruesas dejan que las citas cercanas en el tiempo se apilen legibles.

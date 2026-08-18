@@ -10,6 +10,8 @@ export interface IndexedPatient {
   cedula: string
   celular: string
   name: string
+  /** Nombre completo normalizado (sin tildes, mayúsculas) para comparar. */
+  normalized: string
   tokens: string[]
 }
 
@@ -52,12 +54,14 @@ export async function getPatientNameIndex(): Promise<IndexedPatient[]> {
       celular: string | null
     }>) {
       const name = `${p.nombre ?? ''} ${p.apellido ?? ''}`.replace(/\s+/g, ' ').trim()
+      const normalized = normalizeName(name)
       patients.push({
         id: p.id,
         cedula: p.cedula ?? '',
         celular: p.celular ?? '',
         name,
-        tokens: normalizeName(name).split(' ').filter((token) => token.length >= 3),
+        normalized,
+        tokens: normalized.split(' ').filter((token) => token.length >= 3),
       })
     }
     if (data.length < pageSize) break

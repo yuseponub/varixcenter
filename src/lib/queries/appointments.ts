@@ -7,7 +7,7 @@ import { getPatientNameIndex, matchPatientBySubject } from '@/lib/queries/patien
  * Maps appointment status to FullCalendar-compatible colors.
  */
 // Paleta "Aqua clínica": fondos suaves + borde izquierdo saturado por estado.
-const STATUS_COLORS: Record<AppointmentStatus, { bg: string; border: string; text: string }> = {
+export const STATUS_COLORS: Record<AppointmentStatus, { bg: string; border: string; text: string }> = {
   programada: { bg: 'oklch(0.94 0.03 210)', border: 'oklch(0.55 0.13 200)', text: 'oklch(0.35 0.08 210)' },
   confirmada: { bg: 'oklch(0.95 0.05 155)', border: 'oklch(0.62 0.15 165)', text: 'oklch(0.38 0.1 160)' },
   en_sala: { bg: 'oklch(0.97 0.05 90)', border: 'oklch(0.75 0.15 85)', text: 'oklch(0.5 0.12 78)' },
@@ -22,7 +22,7 @@ const STATUS_COLORS: Record<AppointmentStatus, { bg: string; border: string; tex
  * hora inicial ("8.00 NOMBRE" → "NOMBRE"). El color del evento ya indica que
  * proviene de Outlook, así que el título queda limpio con solo el nombre.
  */
-function cleanOutlookSubject(subject: string): string {
+export function cleanOutlookSubject(subject: string): string {
   const withoutTime = subject.replace(/^\s*\d{1,2}[.:hH]\d{2}\s*/, '').trim()
   return withoutTime || subject.trim()
 }

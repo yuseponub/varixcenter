@@ -21,7 +21,10 @@ import { StackedAgenda } from '@/components/appointments/stacked-agenda'
 import { AppointmentDialog } from '@/components/appointments/appointment-dialog'
 import { OutlookEventDialog } from '@/components/appointments/outlook-event-dialog'
 import { DoctorFilter } from '@/components/appointments/doctor-filter'
-import { AppointmentSearch } from '@/components/appointments/appointment-search'
+import {
+  AppointmentSearch,
+  type AppointmentSearchResult,
+} from '@/components/appointments/appointment-search'
 import { AgendaPrintDialog } from '@/components/appointments/agenda-print-dialog'
 import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
@@ -87,6 +90,10 @@ export function CalendarView({
   // State for detail dialog
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+
+  // Fecha a la que debe saltar la agenda al elegir un resultado del buscador.
+  // Lleva un contador para que elegir dos veces la misma cita vuelva a navegar.
+  const [focus, setFocus] = useState<{ date: string; seq: number } | null>(null)
 
   // Vista: "filas" (agenda apilada, por defecto) o "grid" (cuadrícula FullCalendar)
   const [viewMode, setViewMode] = useState<'filas' | 'grid'>('filas')
@@ -286,58 +293,20 @@ export function CalendarView({
   })()
 
   /**
-   * Handle search result selection.
-   * Navigates to the appointment's week and opens the dialog.
+   * Resultado del buscador: lleva la agenda al día de esa cita y abre su
+   * diálogo. Mover el foco cambia el rango visible, y eso hace que la agenda
+   * recargue las citas de esa semana por sí sola.
    */
-  const handleSearchSelect = useCallback((appointment: {
-    id: string
-    fecha_hora_inicio: string
-    fecha_hora_fin: string
-    estado: string
-    motivo_consulta: string | null
-    patient: { nombre: string; apellido: string; cedula: string; celular: string | null }
-    doctor: { nombre: string | null; apellido: string | null; email: string }
-  }) => {
-    // Create a CalendarEvent from search result
-    const calendarEvent: CalendarEvent = {
-      id: appointment.id,
-      title: `${appointment.patient.nombre} ${appointment.patient.apellido}`,
-      start: appointment.fecha_hora_inicio,
-      end: appointment.fecha_hora_fin,
-      extendedProps: {
-        source: 'varix',
-        appointmentId: appointment.id,
-        patientId: '', // Not needed for dialog display
-        patientName: `${appointment.patient.nombre} ${appointment.patient.apellido}`,
-        patientCedula: appointment.patient.cedula,
-        patientCelular: appointment.patient.celular || '',
-        doctorId: '', // Not needed for dialog display
-        estado: appointment.estado as CalendarEvent['extendedProps']['estado'],
-        motivoConsulta: appointment.motivo_consulta,
-        notas: null,
-      },
+  const handleSearchSelect = useCallback((appointment: AppointmentSearchResult) => {
+    // `sortKey` es siempre el instante real de inicio. `start`, en cambio,
+    // llega como 'YYYY-MM-DD' en los eventos de todo el día y al parsearlo
+    // como UTC caería en el día anterior en Bogotá.
+    const startsAt = new Date(appointment.sortKey || appointment.start)
+    if (!Number.isNaN(startsAt.getTime())) {
+      setFocus((prev) => ({ date: startsAt.toISOString(), seq: (prev?.seq ?? 0) + 1 }))
     }
-
-    // Update date range to show the appointment's week
-    const appointmentDate = new Date(appointment.fecha_hora_inicio)
-    const startOfWeek = new Date(appointmentDate)
-    const dayOfWeek = appointmentDate.getDay()
-    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
-    startOfWeek.setDate(appointmentDate.getDate() - daysFromMonday)
-    startOfWeek.setHours(0, 0, 0, 0)
-
-    const endOfWeek = new Date(startOfWeek)
-    endOfWeek.setDate(startOfWeek.getDate() + 7)
-
-    setDateRange({
-      start: startOfWeek.toISOString(),
-      end: endOfWeek.toISOString(),
-    })
-
-    // Open the dialog with the selected event
-    setSelectedEvent(calendarEvent)
-    setDialogOpen(true)
-  }, [])
+    openEvent(appointment)
+  }, [openEvent])
 
   return (
     <div className="space-y-4">
@@ -440,6 +409,7 @@ export function CalendarView({
             onEventClick={openEvent}
             onRangeChange={handleAgendaRange}
             initialDate={dateRange.start}
+            focus={focus}
           />
         ) : (
           <AppointmentCalendar
@@ -448,6 +418,7 @@ export function CalendarView({
             onDateSelect={handleDateSelect}
             onEventDrop={handleEventDrop}
             onDatesSet={handleDatesSet}
+            focus={focus}
             editable={true}
           />
         )}

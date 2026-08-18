@@ -83,3 +83,23 @@ test('el regex escapa los caracteres especiales del texto buscado', () => {
   const patron = toAccentInsensitivePattern(normalizeName('Perez (2)'))
   assert.doesNotThrow(() => new RegExp(patron))
 })
+
+test('un número suelto dentro de un nombre no convierte la búsqueda en documento', () => {
+  // 'Daniela 1005' no debe sacar a cualquiera cuya cédula contenga 1005.
+  const tokens = searchTokens('Daniela 1005')
+  assert.deepEqual(tokens, ['DANIELA', '1005'])
+  assert.ok(!tokens.every((token) => /^[0-9]+$/.test(token)))
+})
+
+test('un documento se reconoce como búsqueda numérica', () => {
+  const tokens = searchTokens('1005261216')
+  assert.deepEqual(tokens, ['1005261216'])
+  assert.ok(tokens.every((token) => /^[0-9]+$/.test(token)))
+})
+
+test('el respaldo con ilike encuentra cuando el texto viene sin tildes', () => {
+  // Si PostgREST no aceptara `imatch`, se cae a `ilike %TOKEN%`: pierde las
+  // tildes pero sigue encontrando lo que se escribió tal cual.
+  const token = searchTokens('paez')[0]
+  assert.ok('8.00 DANIELA PAEZ'.toUpperCase().includes(token))
+})

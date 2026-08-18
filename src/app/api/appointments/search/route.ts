@@ -62,8 +62,11 @@ function scorePatient(patient: IndexedPatient, tokens: string[], digits: string)
   const direct = scoreName(patient.normalized, tokens)
   if (direct !== null) return direct
 
-  // Un texto puramente numérico puede venir de la cédula o del celular.
-  if (digits.length >= 4 && matchesDigits(patient, digits)) return 3
+  // Documento o celular: solo si lo escrito es un número, no si son dígitos
+  // sueltos dentro de un nombre. Si no, "Daniela 1005" sacaría a cualquiera
+  // cuya cédula contenga 1005, con el nombre completamente ignorado.
+  const soloNumeros = tokens.every((token) => /^[0-9]+$/.test(token))
+  if (soloNumeros && digits.length >= 4 && matchesDigits(patient, digits)) return 3
   return null
 }
 
@@ -155,13 +158,6 @@ async function searchVarixAppointments(
   for (const patient of index) {
     const score = scorePatient(patient, tokens, digits)
     if (score !== null) scored.push({ patient, score })
-  }
-  // La búsqueda por documento o teléfono es exacta aunque el nombre no coincida.
-  if (digits.length >= 4) {
-    for (const patient of index) {
-      if (scored.some((entry) => entry.patient.id === patient.id)) continue
-      if (matchesDigits(patient, digits)) scored.push({ patient, score: 3 })
-    }
   }
   if (scored.length === 0) return []
 
@@ -267,7 +263,7 @@ async function searchOutlookEvents(
     match_status
   `
 
-  const base = () => {
+  const base = (modo: 'imatch' | 'ilike') => {
     let query = supabase
       .from(table)
       .select(select)
@@ -282,19 +278,38 @@ async function searchOutlookEvents(
         .or('appointment_id.is.null,match_status.eq.conflict')
     }
     for (const token of tokens) {
-      query = query.imatch('subject', toAccentInsensitivePattern(token))
+      query = modo === 'imatch'
+        ? query.imatch('subject', toAccentInsensitivePattern(token))
+        : query.ilike('subject', `%${token}%`)
     }
     return query
   }
 
-  const [upcoming, past] = await Promise.all([
-    base().gte('start_at', cutoff).order('start_at', { ascending: true }).limit(UPCOMING_PER_SOURCE),
-    base().lt('start_at', cutoff).order('start_at', { ascending: false }).limit(PAST_PER_SOURCE),
-  ])
+  const consultar = (modo: 'imatch' | 'ilike') =>
+    Promise.all([
+      base(modo).gte('start_at', cutoff).order('start_at', { ascending: true }).limit(UPCOMING_PER_SOURCE),
+      base(modo).lt('start_at', cutoff).order('start_at', { ascending: false }).limit(PAST_PER_SOURCE),
+    ])
+
+  // La tabla todavía no existe: código promovido antes de correr la migración.
+  const tablaAusente = (error: any) =>
+    error && (error.code === '42P01' || error.code === 'PGRST205')
+
+  let [upcoming, past] = await consultar('imatch')
+
+  // `imatch` (~*) es lo que hace la comparación tolerante a tildes. Si este
+  // PostgREST no lo acepta, la búsqueda en Outlook se caería entera y en
+  // silencio; se reintenta con `ilike`, que pierde las tildes pero encuentra.
+  const falloOperador = [upcoming, past].some(
+    (result) => result.error && !tablaAusente(result.error)
+  )
+  if (falloOperador) {
+    console.error(`[Buscador] ${table}: reintentando con ilike:`, upcoming.error || past.error)
+    ;[upcoming, past] = await consultar('ilike')
+  }
 
   for (const result of [upcoming, past]) {
-    // Permite promover código antes de correr la migración, igual que el calendario.
-    if (result.error && result.error.code !== '42P01' && result.error.code !== 'PGRST205') {
+    if (result.error && !tablaAusente(result.error)) {
       console.error(`[Buscador] ${table}:`, result.error)
     }
   }

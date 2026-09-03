@@ -201,11 +201,18 @@ function CitaCard({
         >
           {name}
         </span>
-        {/* Procedimientos agendados y telefono, debajo del nombre */}
-        {(ev.extendedProps.servicios?.length || ev.extendedProps.patientCelular) && (
-          <span className="block truncate px-1 text-[10px] leading-tight text-muted-foreground">
+        {/* Procedimientos, motivo de consulta y telefono, debajo del nombre.
+            El motivo va siempre: es lo que recepcion lee de un vistazo. */}
+        {(ev.extendedProps.servicios?.length ||
+          ev.extendedProps.motivoConsulta ||
+          ev.extendedProps.patientCelular) && (
+          <span
+            className="block truncate px-1 text-[10px] leading-tight text-muted-foreground"
+            title={ev.extendedProps.motivoConsulta ?? undefined}
+          >
             {[
               ...(ev.extendedProps.servicios ?? []),
+              ev.extendedProps.motivoConsulta,
               ev.extendedProps.patientCelular,
             ]
               .filter(Boolean)

@@ -104,6 +104,16 @@ la documentación difieren, manda lo que dice aquí:
   al menos 5 (`migrations/012`). Esas dos no se relajan. La foto del cierre, en
   cambio, es opcional desde `migrations/017` (y `026` para medias).
   Reabrir un cierre exige admin y queda registrado en `reopened_by`.
+- **Borrado de citas.** Por RLS solo admin borra filas de `appointments`
+  (`migrations/007`). Para los demás roles la única puerta es el RPC
+  `delete_duplicate_appointment` (`migrations/080`), que exige que ese mismo
+  día exista otra cita viva de la misma persona y que la borrada no tenga
+  historia, pagos ni procedimientos pagados. No abras otro camino de borrado;
+  lo que no es repetido se cancela.
+- **Procedimientos al agendar.** Desde `migrations/080` `secretaria` también
+  inserta en `appointment_services`; la barra de cita rápida depende de ello.
+  Los motivos sin precio ("Residuos", texto libre) viven en
+  `appointments.motivo_consulta`, no en el catálogo de servicios.
 - **RLS siempre.** El acceso a datos entra por dos puertas legítimas: los
   helpers de `src/lib/queries/` y las server actions de
   `src/app/(protected)/<módulo>/actions.ts`. Ambas usan el cliente SSR

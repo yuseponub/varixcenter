@@ -12,7 +12,7 @@
  * Uses sonner for toast notifications.
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { EventClickArg, DateSelectArg, EventDropArg, DatesSetArg } from '@fullcalendar/core'
@@ -29,6 +29,7 @@ import { AgendaPrintDialog } from '@/components/appointments/agenda-print-dialog
 import { QuickAppointmentBar } from '@/components/appointments/quick-appointment-bar'
 import { Button } from '@/components/ui/button'
 import { rescheduleAppointment } from '@/app/(protected)/citas/actions'
+import { findDuplicateOf } from '@/lib/appointments/duplicates'
 import type { CalendarEvent, Doctor } from '@/types/appointments'
 import type { OutlookSyncStatus } from '@/types/outlook'
 import type { ServiceOption } from '@/types/services'
@@ -297,6 +298,14 @@ export function CalendarView({
    * diálogo. Mover el foco cambia el rango visible, y eso hace que la agenda
    * recargue las citas de esa semana por sí sola.
    */
+  // Cita repetida: otra cita viva de la misma persona el mismo dia. Solo con
+  // esa copia a la vista el dialogo ofrece "Borrar cita repetida"; el servidor
+  // vuelve a comprobarlo antes de borrar.
+  const duplicateOf = useMemo(
+    () => (selectedEvent ? findDuplicateOf(selectedEvent, events) : null),
+    [selectedEvent, events]
+  )
+
   const handleSearchSelect = useCallback((appointment: AppointmentSearchResult) => {
     // `sortKey` es siempre el instante real de inicio. `start`, en cambio,
     // llega como 'YYYY-MM-DD' en los eventos de todo el día y al parsearlo
@@ -431,6 +440,7 @@ export function CalendarView({
         onOpenChange={setDialogOpen}
         onStatusUpdate={handleStatusUpdate}
         services={services}
+        duplicateOf={duplicateOf}
       />
       <OutlookEventDialog
         event={selectedEvent?.extendedProps.source === 'outlook' ? selectedEvent : null}

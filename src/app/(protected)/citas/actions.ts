@@ -7,10 +7,20 @@ import {
   appointmentRescheduleSchema,
 } from '@/lib/validations/appointment'
 import { patientSchema } from '@/lib/validations/patient'
+import { z } from 'zod'
 import { canTransition, STATUS_LABELS } from '@/lib/appointments/state-machine'
 import { queueOutlookAppointmentSync } from '@/lib/outlook/outbox'
 import type { AppointmentStatus } from '@/types/appointments'
 import { revalidatePath } from 'next/cache'
+
+/** Cedula colombiana: 6 a 10 digitos (mismo criterio que patientSchema). */
+const assignCedulaSchema = z.object({
+  patient_id: z.string().uuid('ID de paciente invalido'),
+  cedula: z
+    .string()
+    .trim()
+    .regex(/^\d{6,10}$/, 'La cedula debe tener entre 6 y 10 digitos'),
+})
 
 /**
  * Action state for useActionState pattern
@@ -447,6 +457,131 @@ export async function deleteAppointment(
   revalidatePath('/citas')
 
   return { success: true }
+}
+
+/**
+ * Borrar una cita REPETIDA (cualquier rol).
+ *
+ * El borrado fisico sigue reservado a admin por RLS; para los demas roles la
+ * unica puerta es el RPC `delete_duplicate_appointment` (migracion 080), que
+ * comprueba en el servidor que ese mismo dia exista otra cita viva de la misma
+ * persona (paciente, cedula, celular o nombre completo) y que la cita a borrar
+ * no tenga historia, pagos ni procedimientos pagados. Devuelve el id de la
+ * cita que se conserva.
+ */
+export async function deleteDuplicateAppointment(
+  appointmentId: string
+): Promise<ActionState> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  const validated = appointmentStatusSchema.shape.id.safeParse(appointmentId)
+  if (!validated.success) {
+    return { error: 'ID de cita invalido' }
+  }
+
+  const { data: keptId, error } = await supabase.rpc(
+    'delete_duplicate_appointment' as never,
+    { p_appointment_id: validated.data } as never
+  )
+
+  if (error) {
+    // Funcion inexistente: la migracion 080 todavia no esta aplicada.
+    if (error.code === '42883' || error.code === 'PGRST202') {
+      return { error: 'Borrar citas repetidas aun no esta habilitado en la base de datos.' }
+    }
+    if (error.code === '42501') {
+      return { error: 'No tiene permiso para borrar citas.' }
+    }
+    // Los mensajes de RAISE EXCEPTION del RPC estan escritos para la recepcion.
+    if (error.code === 'P0001' || error.code === 'P0002') {
+      return { error: error.message }
+    }
+    console.error('Delete duplicate appointment error:', error)
+    return { error: 'Error al borrar la cita. Por favor intente de nuevo.' }
+  }
+
+  revalidatePath('/citas')
+
+  return { success: true, data: { id: String(keptId) } }
+}
+
+/**
+ * Asignar la cedula a un paciente que aun no la tiene, desde la cita.
+ *
+ * Evita crear una cita nueva solo para registrar la cedula: el paciente queda
+ * identificado y el pago lo encuentra por cedula. Solo aplica cuando la cedula
+ * esta vacia; una vez fijada es inmutable (trigger de la migracion 041).
+ */
+export async function assignPatientCedula(
+  patientId: string,
+  cedula: string
+): Promise<ActionState> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'No autorizado. Por favor inicie sesion.' }
+  }
+
+  const validated = assignCedulaSchema.safeParse({ patient_id: patientId, cedula })
+  if (!validated.success) {
+    return { error: validated.error.issues[0]?.message ?? 'Datos invalidos' }
+  }
+
+  const { data: patient, error: fetchError } = await supabase
+    .from('patients')
+    .select('id, cedula')
+    .eq('id', validated.data.patient_id)
+    .maybeSingle()
+
+  if (fetchError) {
+    console.error('Fetch patient error:', fetchError)
+    return { error: 'Error al consultar el paciente' }
+  }
+  if (!patient) {
+    return { error: 'El paciente no existe' }
+  }
+  if (patient.cedula) {
+    return { error: `El paciente ya tiene cedula (${patient.cedula}); no se puede cambiar.` }
+  }
+
+  const { data: updated, error } = await supabase
+    .from('patients')
+    .update({ cedula: validated.data.cedula })
+    .eq('id', validated.data.patient_id)
+    .is('cedula', null)
+    .select('id')
+
+  if (error) {
+    if (error.code === '23505') {
+      return {
+        error:
+          'Esa cedula ya pertenece a otro paciente. Busquelo por cedula y reasigne la cita si es la misma persona.',
+      }
+    }
+    console.error('Assign cedula error:', error)
+    return { error: 'Error al guardar la cedula. Por favor intente de nuevo.' }
+  }
+  if (!updated || updated.length === 0) {
+    return { error: 'La cedula ya fue asignada por otra persona. Refresque la agenda.' }
+  }
+
+  revalidatePath('/citas')
+  revalidatePath('/pacientes')
+  revalidatePath(`/pacientes/${validated.data.patient_id}`)
+
+  return { success: true, data: { id: validated.data.patient_id } }
 }
 
 /**

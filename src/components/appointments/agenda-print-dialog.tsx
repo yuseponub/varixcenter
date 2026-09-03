@@ -5,7 +5,7 @@
  *
  * La recepcion trabaja sobre papel: se elige hoy, el siguiente dia habil o
  * cualquier fecha, y sale una hoja con una fila por cita (hora, paciente,
- * telefono, procedimientos, doctor) y una casilla para marcar a mano.
+ * telefono, motivo y procedimientos, doctor) y una casilla para marcar a mano.
  *
  * Las citas se piden a /citas/api, la misma ruta que alimenta la agenda, para
  * que la hoja incluya tambien los eventos del Outlook de recepcion. Las citas
@@ -143,10 +143,14 @@ export function AgendaPrintDialog({ doctors, doctorId }: AgendaPrintDialogProps)
             ev.extendedProps.matchedPatientName ||
             ev.extendedProps.patientName ||
             ev.title
-          const procedimientos =
-            ev.extendedProps.servicios?.join(', ') ||
-            ev.extendedProps.motivoConsulta ||
-            ''
+          // Procedimientos y motivo van juntos: antes el motivo solo salia
+          // cuando la cita no tenia procedimientos.
+          const procedimientos = [
+            ...(ev.extendedProps.servicios ?? []),
+            ev.extendedProps.motivoConsulta,
+          ]
+            .filter(Boolean)
+            .join(' · ')
           return `
             <tr>
               <td class="hora">${escapeHtml(timeFmt.format(new Date(ev.start)))}</td>
@@ -201,7 +205,7 @@ export function AgendaPrintDialog({ doctors, doctorId }: AgendaPrintDialogProps)
     <thead>
       <tr>
         <th>Hora</th><th>Paciente</th><th>Teléfono</th>
-        <th>Procedimientos</th><th>Dr.</th><th></th>
+        <th>Motivo / procedimientos</th><th>Dr.</th><th></th>
       </tr>
     </thead>
     <tbody>${rows.join('')}</tbody>
@@ -262,8 +266,8 @@ export function AgendaPrintDialog({ doctors, doctorId }: AgendaPrintDialogProps)
         <DialogHeader>
           <DialogTitle>Imprimir horario</DialogTitle>
           <DialogDescription>
-            Una hoja con las citas del día: hora, paciente, teléfono,
-            procedimientos y doctor. No incluye las canceladas.
+            Una hoja con las citas del día: hora, paciente, teléfono, motivo y
+            procedimientos, y doctor. No incluye las canceladas.
           </DialogDescription>
         </DialogHeader>
 

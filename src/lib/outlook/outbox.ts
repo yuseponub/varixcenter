@@ -17,6 +17,9 @@ interface OutboxRow {
   appointment_id: string
   operation: 'upsert' | 'delete'
   attempts: number
+  /** Snapshot del evento remoto cuando la cita ya fue borrada (migracion 080). */
+  connection_id?: string | null
+  graph_event_id?: string | null
 }
 
 interface AppointmentForOutlook {
@@ -73,9 +76,11 @@ export async function processOutlookOutbox(
   const db = client as any
   const result = { processed: 0, failed: 0 }
 
+  // `*` y no una lista de columnas: connection_id/graph_event_id llegan con la
+  // migracion 080 y el outbox debe seguir andando mientras no este aplicada.
   const { data: pending, error: pendingError } = await db
     .from('outlook_sync_outbox')
-    .select('id, appointment_id, operation, attempts')
+    .select('*')
     .is('processed_at', null)
     .lte('available_at', new Date().toISOString())
     .order('created_at', { ascending: true })
@@ -105,6 +110,31 @@ export async function processOutlookOutbox(
 
       const existing = mapping as ExistingMapping | null
       if (!appointment) {
+        // La cita se borro fisicamente (cita repetida): la orden trae el
+        // evento remoto a retirar, porque el espejo ya no apunta a la cita.
+        if (
+          item.operation === 'delete' &&
+          item.graph_event_id &&
+          item.connection_id === connection.id
+        ) {
+          try {
+            await graphRequest<void>(config, userEventPath(config, item.graph_event_id), {
+              method: 'DELETE',
+            })
+          } catch (error) {
+            if (!(error instanceof GraphRequestError) || error.status !== 404) throw error
+          }
+
+          const { error: mirrorDeleteError } = await db
+            .from('outlook_events')
+            .update({ is_cancelled: true, deleted_at: new Date().toISOString(), synced_at: new Date().toISOString() })
+            .eq('connection_id', connection.id)
+            .eq('graph_event_id', item.graph_event_id)
+          if (mirrorDeleteError) {
+            throw new Error(`No se pudo cerrar el espejo Outlook: ${mirrorDeleteError.message}`)
+          }
+        }
+
         await markProcessed(db.from('outlook_sync_outbox'), item.id)
         result.processed++
         continue

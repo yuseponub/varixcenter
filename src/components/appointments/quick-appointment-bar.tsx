@@ -56,15 +56,26 @@ interface Service {
   precio_maximo?: number | null
 }
 
-/** Una fila de procedimiento en la barra: servicio + cantidad + precio libre. */
+/**
+ * Una fila de "motivo / procedimiento" en la barra. `serviceId` es un servicio
+ * del catalogo (se factura) o uno de los motivos sin precio de abajo, que se
+ * guardan como texto en `motivo_consulta` de la cita.
+ */
 interface ProcRow {
   serviceId: string
   cantidad: number
   /** Solo aplica para servicios de precio variable (ej. ECOR); '' = precio base. */
   precio: string
+  /** Texto del motivo cuando se elige "Otro motivo". */
+  motivoTexto: string
 }
 
-const EMPTY_ROW: ProcRow = { serviceId: '', cantidad: 1, precio: '' }
+/** Motivos sin precio, pedidos por la clinica: "Residuos" y un motivo libre. */
+const MOTIVO_RESIDUOS = 'motivo:residuos'
+const MOTIVO_OTRO = 'motivo:otro'
+const MOTIVO_LABELS: Record<string, string> = { [MOTIVO_RESIDUOS]: 'Residuos' }
+
+const EMPTY_ROW: ProcRow = { serviceId: '', cantidad: 1, precio: '', motivoTexto: '' }
 
 interface PatientHit {
   id: string
@@ -200,14 +211,29 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       nuevoApellido = words.slice(mid).join(' ')
     }
 
-    // Procedimientos elegidos (filas con servicio); cantidad y precio libre.
+    // Procedimientos del catalogo (filas con servicio); cantidad y precio libre.
     const servicios = procs
-      .filter((row) => row.serviceId)
+      .filter((row) => services.some((s) => s.id === row.serviceId))
       .map((row) => ({
         service_id: row.serviceId,
         cantidad: row.cantidad || 1,
         precio_unitario: row.precio ? Number(row.precio) : undefined,
       }))
+
+    // Motivos sin precio: "Residuos" o el texto libre, al motivo de la cita.
+    const motivos: string[] = []
+    for (const row of procs) {
+      if (row.serviceId === MOTIVO_RESIDUOS) motivos.push(MOTIVO_LABELS[MOTIVO_RESIDUOS])
+      if (row.serviceId === MOTIVO_OTRO) {
+        const texto = row.motivoTexto.trim()
+        if (!texto) {
+          toast.error('Escriba el motivo de la cita')
+          return
+        }
+        motivos.push(texto)
+      }
+    }
+    const motivo = motivos.join(' · ').slice(0, 500)
 
     // Mismo renglon enviado dos veces seguidas (doble Enter, clic + Enter) →
     // se reusa el request_id, y el servidor devuelve la cita que ya creo.
@@ -236,6 +262,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       duracion_min: Number(duracion),
       doctor_id: doctorId,
       servicios,
+      motivo,
     }
 
     // El renglon se libera ya: la cita se termina de guardar en segundo plano.
@@ -306,7 +333,7 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
       .finally(() => setInFlight((n) => Math.max(0, n - 1)))
   }, [
     patientId, newPatientMode, patientQuery, nuevoCelular, nuevaCedula,
-    fecha, hora, duracion, doctorId, procs, clearPatient, onCreated,
+    fecha, hora, duracion, doctorId, procs, services, clearPatient, onCreated,
   ])
 
   const onKeyDown = useCallback(
@@ -407,7 +434,8 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
           </SelectContent>
         </Select>
 
-        {/* Procedimientos: servicio + cantidad + precio libre (variables) */}
+        {/* Motivo / procedimiento: servicio del catalogo (+ cantidad y precio
+            libre en los variables) o un motivo sin precio (Residuos / libre). */}
         {procs.map((row, i) => {
           const svc = services.find((s) => s.id === row.serviceId)
           return (
@@ -421,22 +449,35 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
                     serviceId: nextId,
                     // Prefill del precio base solo para servicios variables (editable).
                     precio: nextSvc?.precio_variable ? String(nextSvc.precio_base ?? '') : '',
+                    motivoTexto: nextId === MOTIVO_OTRO ? row.motivoTexto : '',
                   })
                 }}
               >
-                <SelectTrigger className="w-[170px]">
-                  <SelectValue placeholder={i === 0 ? 'Procedimiento (opcional)' : 'Procedimiento...'} />
+                <SelectTrigger className="w-[190px]">
+                  <SelectValue placeholder={i === 0 ? 'Motivo / procedimiento' : 'Motivo / procedimiento...'} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">{i === 0 ? 'Sin procedimiento' : 'Quitar'}</SelectItem>
+                  <SelectItem value="none">{i === 0 ? 'Sin motivo' : 'Quitar'}</SelectItem>
                   {services.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       {s.nombre}
                     </SelectItem>
                   ))}
+                  <SelectItem value={MOTIVO_RESIDUOS}>{MOTIVO_LABELS[MOTIVO_RESIDUOS]}</SelectItem>
+                  <SelectItem value={MOTIVO_OTRO}>Otro motivo (escribir)…</SelectItem>
                 </SelectContent>
               </Select>
-              {row.serviceId && (
+              {row.serviceId === MOTIVO_OTRO && (
+                <Input
+                  value={row.motivoTexto}
+                  onChange={(e) => updateProc(i, { motivoTexto: e.target.value.slice(0, 200) })}
+                  placeholder="Motivo de la cita"
+                  title="Motivo libre (queda en la cita, no se factura)"
+                  className="w-[200px]"
+                  autoFocus
+                />
+              )}
+              {svc && (
                 <Input
                   type="number"
                   min={1}

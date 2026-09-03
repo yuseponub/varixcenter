@@ -368,6 +368,8 @@ export async function createQuickAppointment(
   // ==========================================================================
   // 4. Insertar los procedimientos ya validados en el paso 1
   // ==========================================================================
+  const warnings: string[] = []
+
   if (serviceRows.length > 0) {
     const { error: svcError } = await db.from('appointment_services').insert(
       serviceRows.map((row) => ({
@@ -376,17 +378,26 @@ export async function createQuickAppointment(
         created_by: userId,
       }))
     )
-    if (svcError) console.error('Quick appointment service error:', svcError)
+    if (svcError) {
+      // Hasta la migracion 080 la politica de INSERT dejaba fuera a
+      // 'secretaria' y el procedimiento se perdia sin que nadie lo notara.
+      console.error('Quick appointment service error:', svcError)
+      warnings.push(
+        'La cita quedo agendada, pero el procedimiento no se pudo guardar. Agreguelo desde la cita.'
+      )
+    }
   }
 
   await queueOutlookAppointmentSync(supabase, appointment.id)
 
   // Aviso informativo, nunca bloqueante: la cita ya quedo agendada.
   const overlapping = await countOverlapping(db, inicio, fin, appointment.id)
-  const warning =
-    overlapping > 0
-      ? `Ojo: en esa franja ya hay ${overlapping} cita${overlapping > 1 ? 's' : ''} mas.`
-      : undefined
+  if (overlapping > 0) {
+    warnings.push(
+      `Ojo: en esa franja ya hay ${overlapping} cita${overlapping > 1 ? 's' : ''} mas.`
+    )
+  }
+  const warning = warnings.length > 0 ? warnings.join(' ') : undefined
 
   return {
     success: true,

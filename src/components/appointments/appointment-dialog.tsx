@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -36,11 +37,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { StatusBadge } from '@/components/appointments/status-badge'
 import { AppointmentServicesForm } from '@/components/appointments/appointment-services-form'
 import { getAvailableTransitions, STATUS_LABELS } from '@/lib/appointments/state-machine'
-import { updateAppointmentStatus } from '@/app/(protected)/citas/actions'
+import {
+  assignPatientCedula,
+  deleteDuplicateAppointment,
+  updateAppointmentStatus,
+} from '@/app/(protected)/citas/actions'
 import { getAppointmentServices } from '@/app/(protected)/citas/service-actions'
 import { getMedicalRecordIdByAppointment, getQuotationInfoByAppointment } from '@/app/(protected)/historias/actions'
 import { EditAppointmentDialog } from '@/components/appointments/edit-appointment-dialog'
-import { Receipt } from 'lucide-react'
+import { Loader2, Receipt, Trash2 } from 'lucide-react'
 import type { CalendarEvent, AppointmentStatus } from '@/types/appointments'
 import type { ServiceOption } from '@/types/services'
 import type { AppointmentService } from '@/types/appointment-services'
@@ -59,6 +64,11 @@ interface AppointmentDialogProps {
   onStatusUpdate?: () => void
   /** Service catalog for adding services to appointment */
   services?: ServiceOption[]
+  /**
+   * Otra cita viva de la misma persona el mismo dia (la que se conservaria).
+   * Solo con ella presente se ofrece "Borrar cita repetida".
+   */
+  duplicateOf?: CalendarEvent | null
 }
 
 /** States where services can be added/viewed */
@@ -125,10 +135,18 @@ export function AppointmentDialog({
   onOpenChange,
   onStatusUpdate,
   services = [],
+  duplicateOf = null,
 }: AppointmentDialogProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [currentStatus, setCurrentStatus] = useState<AppointmentStatus | null>(null)
+  // Cedula asignada desde la cita (paciente registrado sin cedula).
+  const [cedulaInput, setCedulaInput] = useState('')
+  const [cedulaSaving, setCedulaSaving] = useState(false)
+  const [cedulaSaved, setCedulaSaved] = useState<string | null>(null)
+  // Borrado de cita repetida: pide confirmacion dentro del mismo dialogo.
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [appointmentServices, setAppointmentServices] = useState<AppointmentService[]>([])
   const [activeTab, setActiveTab] = useState<'detalles' | 'servicios'>('detalles')
   const [medicalRecordId, setMedicalRecordId] = useState<string | null>(null)
@@ -211,11 +229,51 @@ export function AppointmentDialog({
         setMedicalRecordId(null)
         setQuotationInfo(null)
         setEditDialogOpen(false)
+        setCedulaInput('')
+        setCedulaSaved(null)
+        setConfirmingDelete(false)
       }
       onOpenChange(newOpen)
     },
     [onOpenChange]
   )
+
+  /** Guarda la cedula del paciente sin pasar por "Editar cita". */
+  const handleSaveCedula = useCallback(async () => {
+    if (!event) return
+    const cedula = cedulaInput.trim()
+    if (!/^\d{6,10}$/.test(cedula)) {
+      toast.error('La cedula debe tener entre 6 y 10 digitos')
+      return
+    }
+    setCedulaSaving(true)
+    const result = await assignPatientCedula(event.extendedProps.patientId, cedula)
+    setCedulaSaving(false)
+    if (result.success) {
+      setCedulaSaved(cedula)
+      setCedulaInput('')
+      toast.success('Cedula guardada. Ya se puede buscar al paciente por cedula en pagos.')
+      onStatusUpdate?.()
+    } else {
+      toast.error(result.error || 'Error al guardar la cedula')
+    }
+  }, [event, cedulaInput, onStatusUpdate])
+
+  /** Borra esta cita porque esta repetida; el servidor vuelve a comprobarlo. */
+  const handleDeleteDuplicate = useCallback(async () => {
+    if (!event) return
+    setDeleting(true)
+    const result = await deleteDuplicateAppointment(event.extendedProps.appointmentId)
+    setDeleting(false)
+    if (result.success) {
+      toast.success('Cita repetida borrada. Se conserva la otra cita del mismo dia.')
+      handleOpenChange(false)
+      onStatusUpdate?.()
+    } else {
+      setConfirmingDelete(false)
+      toast.error(result.error || 'Error al borrar la cita')
+    }
+  }, [event, handleOpenChange, onStatusUpdate])
 
   // Handle edit success - close dialogs and refresh
   const handleEditSuccess = useCallback(() => {
@@ -228,6 +286,28 @@ export function AppointmentDialog({
   const { extendedProps } = event
   const startDate = new Date(event.start)
   const endDate = new Date(event.end)
+  // La cedula es opcional desde la migracion 041: puede venir vacia.
+  const cedula = cedulaSaved || extendedProps.patientCedula || ''
+  const motivoItems = [
+    ...(extendedProps.servicios ?? []),
+    extendedProps.motivoConsulta,
+  ].filter(Boolean) as string[]
+
+  /* Motivo y procedimientos: siempre visibles, sin entrar a la pestana Servicios. */
+  const motivoSection = (
+    <div>
+      <h4 className="text-sm font-medium text-muted-foreground mb-1">Motivo / procedimientos</h4>
+      {motivoItems.length > 0 ? (
+        <ul className="text-sm space-y-0.5">
+          {motivoItems.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm italic text-muted-foreground">Sin motivo registrado</p>
+      )}
+    </div>
+  )
 
   const confirmValue = CONFIRM_OPTIONS.some((o) => o.value === displayStatus)
     ? displayStatus
@@ -300,7 +380,40 @@ export function AppointmentDialog({
           </DialogTitle>
           <DialogDescription asChild>
             <div>
-              <span className="block">Cedula: {extendedProps.patientCedula}</span>
+              {cedula ? (
+                <span className="block">Cedula: {cedula}</span>
+              ) : (
+                /* Paciente sin cedula: se asigna aqui mismo, sin editar la cita,
+                   para que el pago lo encuentre por cedula. */
+                <span className="flex flex-wrap items-center gap-2">
+                  <span>Sin cedula.</span>
+                  <Input
+                    value={cedulaInput}
+                    onChange={(e) => setCedulaInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        void handleSaveCedula()
+                      }
+                    }}
+                    placeholder="Cedula (6-10 digitos)"
+                    inputMode="numeric"
+                    aria-label="Cedula del paciente"
+                    className="h-8 w-[170px]"
+                    disabled={cedulaSaving}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => void handleSaveCedula()}
+                    disabled={cedulaSaving || cedulaInput.length < 6}
+                  >
+                    {cedulaSaving && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
+                    Guardar cedula
+                  </Button>
+                </span>
+              )}
               {/* Telefono debajo de la cedula, listo para llamar */}
               {extendedProps.patientCelular && (
                 <a
@@ -355,13 +468,7 @@ export function AppointmentDialog({
                   </p>
                 </div>
 
-                {/* Reason for visit */}
-                {extendedProps.motivoConsulta && (
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Motivo de consulta</h4>
-                    <p className="text-sm">{extendedProps.motivoConsulta}</p>
-                  </div>
-                )}
+                {motivoSection}
 
                 {/* Notes */}
                 {extendedProps.notas && (
@@ -413,13 +520,7 @@ export function AppointmentDialog({
               </p>
             </div>
 
-            {/* Reason for visit */}
-            {extendedProps.motivoConsulta && (
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">Motivo de consulta</h4>
-                <p className="text-sm">{extendedProps.motivoConsulta}</p>
-              </div>
-            )}
+            {motivoSection}
 
             {/* Notes */}
             {extendedProps.notas && (
@@ -431,6 +532,59 @@ export function AppointmentDialog({
 
             {/* Controles de estado: Confirmación + Asistencia */}
             {statusControls}
+          </div>
+        )}
+
+        {/* Cita repetida: otra cita viva de la misma persona ese dia. Cualquier
+            rol puede borrar esta copia; el servidor exige que siga repetida. */}
+        {duplicateOf && (
+          <div className="rounded-md border border-destructive/40 bg-destructive-soft/40 p-3 text-sm space-y-2">
+            <p>
+              <span className="font-medium">Cita repetida.</span> Esta persona tiene otra cita
+              ese día a las {timeFormatter.format(new Date(duplicateOf.start))} (
+              {STATUS_LABELS[duplicateOf.extendedProps.estado] ?? duplicateOf.extendedProps.estado}
+              ).
+            </p>
+            {confirmingDelete ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span>¿Borrar esta cita y conservar la otra?</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => void handleDeleteDuplicate()}
+                  disabled={deleting}
+                >
+                  {deleting ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  Sí, borrar
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setConfirmingDelete(false)}
+                  disabled={deleting}
+                >
+                  No
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="border-destructive/60 text-destructive hover:bg-destructive-soft"
+                onClick={() => setConfirmingDelete(true)}
+                disabled={isPending}
+              >
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+                Borrar cita repetida
+              </Button>
+            )}
           </div>
         )}
 

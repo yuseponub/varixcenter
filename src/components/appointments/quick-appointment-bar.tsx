@@ -111,7 +111,8 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
   const [newPatientMode, setNewPatientMode] = useState(false)
   const [nuevoCelular, setNuevoCelular] = useState('')
   const [nuevaCedula, setNuevaCedula] = useState('')
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Cita
@@ -131,27 +132,37 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
     setProcs((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)))
   }, [])
 
-  // Busqueda con debounce
+  // Cancelar también peticiones ya enviadas al cambiar texto o elegir paciente.
   useEffect(() => {
-    if (patientId || newPatientMode) return
-    if (searchTimer.current) clearTimeout(searchTimer.current)
-    if (patientQuery.trim().length < 2) {
-      setHits([])
+    setHits([])
+    setSearchError(null)
+    if (patientId || newPatientMode || patientQuery.trim().length < 2) {
+      setIsSearching(false)
+      setShowDropdown(false)
       return
     }
-    searchTimer.current = setTimeout(async () => {
+    const controller = new AbortController()
+    setIsSearching(true)
+    setShowDropdown(true)
+    const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientQuery)}`)
-        if (!res.ok) return
+        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientQuery.trim())}`, {
+          signal: controller.signal,
+        })
+        if (!res.ok) throw new Error('Patient search failed')
         const json = await res.json()
-        setHits((json.patients ?? []).slice(0, 8))
-        setShowDropdown(true)
+        if (!controller.signal.aborted) setHits(json.patients ?? [])
       } catch {
-        // silencioso: la busqueda es best-effort
+        if (!controller.signal.aborted) {
+          setSearchError('No se pudo buscar. Intenta de nuevo.')
+        }
+      } finally {
+        if (!controller.signal.aborted) setIsSearching(false)
       }
     }, 250)
     return () => {
-      if (searchTimer.current) clearTimeout(searchTimer.current)
+      clearTimeout(timer)
+      controller.abort()
     }
   }, [patientQuery, patientId, newPatientMode])
 
@@ -378,6 +389,15 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
           />
           {showDropdown && (
             <div className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border bg-popover shadow-md">
+              {isSearching ? (
+                <div role="status" className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Buscando...
+                </div>
+              ) : searchError ? (
+                <div role="alert" className="px-3 py-2 text-sm text-destructive">{searchError}</div>
+              ) : hits.length === 0 ? (
+                <div className="px-3 py-2 text-sm text-muted-foreground">No se encontraron pacientes</div>
+              ) : null}
               {hits.map((p) => (
                 <button
                   key={p.id}
@@ -393,14 +413,14 @@ export function QuickAppointmentBar({ doctors, services, onCreated }: QuickAppoi
                   )}
                 </button>
               ))}
-              <button
+              {!isSearching && !searchError && <button
                 type="button"
                 className="flex w-full items-center gap-2 border-t px-3 py-2 text-left text-sm font-medium text-warning-foreground hover:bg-accent"
                 onClick={enableNewPatient}
               >
                 <UserPlus className="h-4 w-4" />
                 Crear &quot;{patientQuery}&quot; como paciente nuevo
-              </button>
+              </button>}
             </div>
           )}
         </div>

@@ -155,6 +155,7 @@ export function AppointmentForm({
   const [patientSearch, setPatientSearch] = useState('')
   const [searchResults, setSearchResults] = useState<Patient[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
     defaultPatient || patients.find(p => p.id === defaultValues?.patient) || null
   )
@@ -181,29 +182,40 @@ export function AppointmentForm({
     setNewPatientData(prev => ({ ...prev, [field]: value }))
   }
 
-  // Debounced API search for patients
+  // Cada texto tiene su propia petición; una respuesta anterior no puede
+  // reemplazar la búsqueda actual ni reaparecer después de elegir paciente.
   useEffect(() => {
-    if (patientSearch.length < 2) {
-      setSearchResults([])
+    setSearchResults([])
+    setSearchError(null)
+    if (patientSearch.trim().length < 2 || patientMode !== 'existing') {
+      setIsSearching(false)
       return
     }
 
+    const controller = new AbortController()
+    setIsSearching(true)
     const timer = setTimeout(async () => {
-      setIsSearching(true)
       try {
-        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientSearch)}`)
+        const res = await fetch(`/api/patients/search?q=${encodeURIComponent(patientSearch.trim())}`, {
+          signal: controller.signal,
+        })
+        if (!res.ok) throw new Error('Patient search failed')
         const data = await res.json()
-        setSearchResults(data.patients || [])
-      } catch (error) {
-        console.error('Error searching patients:', error)
-        setSearchResults([])
+        if (!controller.signal.aborted) setSearchResults(data.patients || [])
+      } catch {
+        if (!controller.signal.aborted) {
+          setSearchError('No se pudo buscar. Intenta de nuevo.')
+        }
       } finally {
-        setIsSearching(false)
+        if (!controller.signal.aborted) setIsSearching(false)
       }
     }, 300)
 
-    return () => clearTimeout(timer)
-  }, [patientSearch])
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+    }
+  }, [patientSearch, patientMode])
 
   // Bound action for edit mode or new patient mode
   const boundAction = useCallback(
@@ -294,7 +306,7 @@ export function AppointmentForm({
                     ? `${selectedPatient.nombre} ${selectedPatient.apellido} (${selectedPatient.cedula || 'Sin cedula'})`
                     : defaultValues?.patientName || ''
 
-                  const showResults = patientSearch.length >= 2
+                  const showResults = patientSearch.trim().length >= 2
 
                   return (
                     <FormItem>
@@ -336,6 +348,10 @@ export function AppointmentForm({
                                   <div className="p-3 text-center text-sm text-muted-foreground flex items-center justify-center">
                                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                                     Buscando...
+                                  </div>
+                                ) : searchError ? (
+                                  <div role="alert" className="p-3 text-center text-sm text-destructive">
+                                    {searchError}
                                   </div>
                                 ) : searchResults.length === 0 ? (
                                   <div className="p-3 text-center text-sm text-muted-foreground">

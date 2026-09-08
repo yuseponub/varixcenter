@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { getPatientNotifications } from './notifications'
+import { normalizeName, toAccentInsensitivePattern } from '@/lib/appointments/name-match'
 
 /**
  * Normalize text for phonetic search (Spanish)
@@ -19,27 +20,14 @@ function normalizeForSearch(text: string): string {
     .trim()
 }
 
-/**
- * Check if patient matches search query
- * Uses phonetic matching for Spanish names
- */
-function patientMatchesSearch(
-  patient: { cedula: string | null; nombre: string | null; apellido: string | null; celular: string | null },
-  searchWords: string[]
-): boolean {
-  const cedula = (patient.cedula || '').toLowerCase()
-  const celular = (patient.celular || '').toLowerCase()
-  const fullName = normalizeForSearch(`${patient.nombre || ''} ${patient.apellido || ''}`)
-
-  // Check if search is a number (cedula/celular search)
-  const searchTerm = searchWords.join(' ')
-  if (/^\d+$/.test(searchTerm)) {
-    return cedula.includes(searchTerm) || celular.includes(searchTerm)
-  }
-
-  // For name search, all words must match in the full name
-  const normalizedWords = searchWords.map(w => normalizeForSearch(w))
-  return normalizedWords.every(word => fullName.includes(word))
+/** Mismas equivalencias fonéticas que el buscador existente, dentro de SQL. */
+function phoneticPattern(word: string): string {
+  return Array.from(normalizeForSearch(word), (char) => {
+    if (char === 's') return '[scçzSCÇZ]'
+    if (char === 'b') return '[bvBV]'
+    if (char === 'i') return '[yiíìïîYIÍÌÏÎ]'
+    return toAccentInsensitivePattern(char.toUpperCase())
+  }).join('')
 }
 
 /**
@@ -66,79 +54,56 @@ export async function searchPatients(query: string, limit = 50) {
   }
 
   const searchTerm = query.trim()
-  const words = searchTerm.split(/\s+/).filter(w => w.length > 0)
 
-  // For numeric search (cedula/celular), use direct query
-  if (/^\d+$/.test(searchTerm)) {
-    const pattern = `%${searchTerm}%`
+  // Admitir documentos/teléfonos con separadores sin interpretar números
+  // sueltos dentro de un nombre como una búsqueda de cualquier documento.
+  if (/^[+\d\s.()-]+$/.test(searchTerm) && /\d/.test(searchTerm)) {
+    const pattern = searchTerm.replace(/\D/g, '').split('').join('[^0-9]*')
     const { data, error } = await supabase
       .from('patients')
       .select('id, cedula, nombre, apellido, celular, created_at')
-      .or(`cedula.ilike.${pattern},celular.ilike.${pattern}`)
+      .or(`cedula.imatch.${pattern},celular.imatch.${pattern}`)
       .order('apellido', { ascending: true })
+      .order('nombre', { ascending: true })
+      .order('id', { ascending: true })
       .limit(limit)
 
     if (error) throw error
     return data
   }
 
-  // For name search, search with original terms AND phonetic variants
-  // Generate variants for each word
-  const generateVariants = (word: string): string[] => {
-    const lower = word.toLowerCase()
-    const variants = new Set<string>([lower])
+  // Solo letras/números normalizados llegan a la gramática de PostgREST.
+  // La puntuación separa términos y nunca se convierte en un filtro/comodín.
+  const words = normalizeName(searchTerm).split(' ').filter(Boolean)
+  if (words.length === 0) return []
 
-    // Add common Spanish phonetic variants
-    variants.add(lower.replace(/s/g, 'c'))
-    variants.add(lower.replace(/s/g, 'z'))
-    variants.add(lower.replace(/c/g, 's'))
-    variants.add(lower.replace(/c/g, 'z'))
-    variants.add(lower.replace(/z/g, 's'))
-    variants.add(lower.replace(/z/g, 'c'))
-    variants.add(lower.replace(/b/g, 'v'))
-    variants.add(lower.replace(/v/g, 'b'))
-    variants.add(lower.replace(/y/g, 'i'))
-    variants.add(lower.replace(/i/g, 'y'))
-    variants.add(lower.replace(/ñ/g, 'n'))
-    variants.add(lower.replace(/n/g, 'ñ'))
+  const findNames = async (phonetic: boolean) => {
+    let request = supabase
+      .from('patients')
+      .select('id, cedula, nombre, apellido, celular, created_at')
 
-    return Array.from(variants).filter(v => v.length > 0)
+    // AND entre palabras, OR entre nombre/apellido. El límite se aplica DESPUÉS
+    // de comprobar todos los términos, incluso si hay miles de nombres iguales.
+    for (const word of words) {
+      const pattern = phonetic ? phoneticPattern(word) : toAccentInsensitivePattern(word)
+      request = request.or(`nombre.imatch.${pattern},apellido.imatch.${pattern}`)
+    }
+    const { data, error } = await request
+      .order('apellido', { ascending: true })
+      .order('nombre', { ascending: true })
+      .order('id', { ascending: true })
+      .limit(limit)
+    if (error) throw error
+    return data ?? []
   }
 
-  // Get variants for first word only (to limit query size)
-  const firstWordVariants = generateVariants(words[0])
-
-  // Build OR query - search in nombre and apellido for all variants
-  const orFilters = firstWordVariants
-    .flatMap(v => [`nombre.ilike.%${v}%`, `apellido.ilike.%${v}%`])
-    .join(',')
-
-  const { data, error } = await supabase
-    .from('patients')
-    .select('id, cedula, nombre, apellido, celular, created_at')
-    .or(orFilters)
-    .limit(500) // Get more candidates for filtering
-
-  if (error) throw error
-
-  // Filter with phonetic matching for multi-word searches
-  const filtered = (data || []).filter(p => patientMatchesSearch(p, words))
-
-  // Sort by relevance (exact matches first)
-  filtered.sort((a, b) => {
-    const aName = `${a.nombre} ${a.apellido}`.toLowerCase()
-    const bName = `${b.nombre} ${b.apellido}`.toLowerCase()
-    const searchLower = searchTerm.toLowerCase()
-
-    // Exact match scores higher
-    const aExact = aName.includes(searchLower) ? 0 : 1
-    const bExact = bName.includes(searchLower) ? 0 : 1
-
-    if (aExact !== bExact) return aExact - bExact
-    return aName.localeCompare(bName)
-  })
-
-  return filtered.slice(0, limit)
+  // Las coincidencias directas (sin tildes) tienen prioridad ANTES del límite;
+  // las variantes fonéticas completan la lista sin desplazar al nombre escrito.
+  const exact = await findNames(false)
+  if (exact.length >= limit) return exact
+  const phonetic = await findNames(true)
+  const seen = new Set(exact.map(patient => patient.id))
+  return [...exact, ...phonetic.filter(patient => !seen.has(patient.id))].slice(0, limit)
 }
 
 /**

@@ -64,6 +64,7 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<AppointmentSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
@@ -81,6 +82,7 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
   }, [])
 
   useEffect(() => () => {
+    requestRef.current++
     if (debounceRef.current) clearTimeout(debounceRef.current)
   }, [])
 
@@ -93,6 +95,7 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
 
     const requestId = ++requestRef.current
     setIsLoading(true)
+    setSearchError(null)
 
     try {
       const response = await fetch(
@@ -104,9 +107,9 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
       if (requestId !== requestRef.current) return
       setResults(data.appointments || [])
       setIsOpen(true)
-    } catch (error) {
-      console.error('Error en la búsqueda:', error)
+    } catch {
       if (requestId === requestRef.current) {
+        setSearchError('No se pudieron buscar las citas. Intenta de nuevo.')
         setResults([])
         setIsOpen(true)
       }
@@ -116,18 +119,30 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
   }, [])
 
   const handleInputChange = (value: string) => {
+    requestRef.current++
+    setResults([])
+    setSearchError(null)
+    setIsOpen(false)
+    setIsLoading(value.trim().length >= 2)
     setQuery(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => void search(value), 300)
+    if (value.trim().length >= 2) {
+      debounceRef.current = setTimeout(() => void search(value), 300)
+    }
   }
 
   const handleSelect = (appointment: AppointmentSearchResult) => {
+    requestRef.current++
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    setIsLoading(false)
     setIsOpen(false)
     onSelect(appointment)
   }
 
   const handleClear = () => {
     requestRef.current++
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    setSearchError(null)
     setQuery('')
     setResults([])
     setIsOpen(false)
@@ -206,6 +221,7 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
             variant="ghost"
             size="sm"
             className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+            aria-label="Limpiar búsqueda"
             onClick={handleClear}
           >
             <X className="h-4 w-4" />
@@ -231,8 +247,8 @@ export function AppointmentSearch({ onSelect }: AppointmentSearchProps) {
       )}
 
       {isOpen && query.trim().length >= 2 && results.length === 0 && !isLoading && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-4 text-center text-sm text-muted-foreground shadow-lg">
-          Esa persona no tiene citas registradas
+        <div role={searchError ? 'alert' : 'status'} className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-4 text-center text-sm text-muted-foreground shadow-lg">
+          {searchError || 'Esa persona no tiene citas registradas'}
         </div>
       )}
     </div>

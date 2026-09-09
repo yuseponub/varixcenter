@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import {
   getPatientNameIndex,
   type IndexedPatient,
@@ -109,11 +110,19 @@ export async function GET(request: Request) {
 
   const cutoff = bogotaStartOfToday()
 
-  const [varixResults, outlookResults, desktopResults] = await Promise.all([
-    searchVarixAppointments(supabase, tokens, digits, cutoff),
-    searchOutlookEvents(supabase, tokens, cutoff, 'outlook_events', 'outlook'),
-    searchOutlookEvents(supabase, tokens, cutoff, 'outlook_desktop_events', 'outlook-escritorio'),
-  ])
+  let sources: SearchResultEvent[][]
+  try {
+    sources = await Promise.all([
+      searchVarixAppointments(supabase, tokens, digits, cutoff),
+      searchOutlookEvents(supabase, tokens, cutoff, 'outlook_events', 'outlook'),
+      searchOutlookEvents(supabase, tokens, cutoff, 'outlook_desktop_events', 'outlook-escritorio'),
+    ])
+  } catch {
+    // No registrar nombres, documentos ni detalles de consultas clínicas.
+    console.error('[Buscador] No se pudo completar la consulta de citas')
+    return NextResponse.json({ error: 'No se pudieron buscar las citas. Intenta de nuevo.' }, { status: 500 })
+  }
+  const [varixResults, outlookResults, desktopResults] = sources
 
   const all = [...varixResults, ...outlookResults, ...desktopResults]
 
@@ -144,15 +153,12 @@ export async function GET(request: Request) {
 
 /** Citas nativas de Varix, resueltas por el índice de pacientes en memoria. */
 async function searchVarixAppointments(
-  supabase: any,
+  supabase: SupabaseClient,
   tokens: string[],
   digits: string,
   cutoff: string
 ): Promise<SearchResultEvent[]> {
-  const index = await getPatientNameIndex().catch((error) => {
-    console.error('[Buscador] No se pudo cargar el índice de pacientes:', error)
-    return [] as IndexedPatient[]
-  })
+  const index = await getPatientNameIndex()
 
   const scored: Array<{ patient: IndexedPatient; score: number }> = []
   for (const patient of index) {
@@ -185,8 +191,7 @@ async function searchVarixAppointments(
     base().lt('fecha_hora_inicio', cutoff).order('fecha_hora_inicio', { ascending: false }).limit(PAST_PER_SOURCE),
   ])
 
-  if (upcoming.error) console.error('[Buscador] Citas futuras:', upcoming.error)
-  if (past.error) console.error('[Buscador] Citas pasadas:', past.error)
+  if (upcoming.error || past.error) throw new Error('No se pudieron consultar las citas nativas')
 
   const rows = [
     ...(upcoming.data ?? []).map((row: any) => ({ row, esProxima: true })),
@@ -242,7 +247,7 @@ async function searchVarixAppointments(
  * del asunto con un regex tolerante a tildes.
  */
 async function searchOutlookEvents(
-  supabase: any,
+  supabase: SupabaseClient,
   tokens: string[],
   cutoff: string,
   table: 'outlook_events' | 'outlook_desktop_events',
@@ -279,7 +284,7 @@ async function searchOutlookEvents(
     }
     for (const token of tokens) {
       query = modo === 'imatch'
-        ? query.imatch('subject', toAccentInsensitivePattern(token))
+        ? query.regexIMatch('subject', toAccentInsensitivePattern(token))
         : query.ilike('subject', `%${token}%`)
     }
     return query
@@ -304,13 +309,13 @@ async function searchOutlookEvents(
     (result) => result.error && !tablaAusente(result.error)
   )
   if (falloOperador) {
-    console.error(`[Buscador] ${table}: reintentando con ilike:`, upcoming.error || past.error)
+    console.error(`[Buscador] ${table}: reintentando con ilike`)
     ;[upcoming, past] = await consultar('ilike')
   }
 
   for (const result of [upcoming, past]) {
     if (result.error && !tablaAusente(result.error)) {
-      console.error(`[Buscador] ${table}:`, result.error)
+      throw new Error(`No se pudo consultar ${table}`)
     }
   }
 
@@ -362,7 +367,7 @@ async function searchOutlookEvents(
 
 /** Nombre del médico para mostrarlo en el resultado, sin romper si falta. */
 async function loadDoctorNames(
-  supabase: any,
+  supabase: SupabaseClient,
   ids: Array<string | null>
 ): Promise<Map<string, string>> {
   const unique = [...new Set(ids.filter((id): id is string => !!id))]

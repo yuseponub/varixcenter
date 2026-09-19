@@ -78,10 +78,17 @@ Verificadas contra el schema vigente, no contra el `README.md` — que en varios
 puntos describe reglas que migraciones posteriores relajaron. Donde el código y
 la documentación difieren, manda lo que dice aquí:
 
-- **Pagos inmutables.** El único cambio de estado permitido es
-  `activo → anulado`, con justificación y trigger que lo hace cumplir
-  (`supabase/migrations/009`, `010`). Un pago no se edita ni se borra. Nunca
-  introduzcas un camino de escritura que rompa esa transición única.
+- **Pagos inmutables, con dos correcciones acotadas.** El único cambio de
+  estado permitido es `activo → anulado`, con justificación y trigger que lo
+  hace cumplir (`supabase/migrations/009`, `010`). Un pago no se borra. Las
+  únicas puertas de edición son dos RPC con rastro: `editar_metodos_pago`
+  (`074`, cambia cómo se pagó sin tocar el total) y `corregir_valor_pago`
+  (`081`, cambia precio/cantidad de servicios, total y montos; el pago queda
+  marcado "Valor editado por error" con historial inmutable en
+  `payment_value_edits`). Ambas rechazan pagos anulados o ya facturados en
+  WiMAX; paciente, número de factura, descuento y fecha nunca cambian. No
+  abras otro camino de escritura ni concedas UPDATE directo sobre `payments`,
+  `payment_items` o `payment_methods`.
 - **Numeración sin gaps.** `numero_factura` (`FAC-000001`) sale de
   `get_next_invoice_number()` con bloqueo exclusivo, no de una secuencia de
   PostgreSQL, precisamente para evitar huecos por rollback. No la sustituyas

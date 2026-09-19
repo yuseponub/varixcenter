@@ -93,6 +93,11 @@ export interface Payment {
   anulado_at: string | null
   anulacion_justificacion: string | null
   nota: string | null
+  /** Ultima correccion de valor ("Valor editado por error"); null si nunca se edito */
+  valor_editado_at: string | null
+  valor_editado_por: string | null
+  /** Total con el que se registro antes de la primera correccion */
+  total_original: number | null
   created_by: string
   created_at: string
 }
@@ -109,7 +114,51 @@ export interface PaymentItem {
   unit_price: number // snapshot at payment time
   quantity: number
   subtotal: number
+  /** Precio con el que se registro antes de la primera correccion; null si nunca cambio */
+  unit_price_original: number | null
   created_at: string
+}
+
+/**
+ * Snapshot de un servicio dentro de una correccion de valor
+ */
+export interface PaymentValueEditItem {
+  item_id: string
+  service_name: string
+  quantity: number
+  unit_price: number
+  subtotal: number
+}
+
+/**
+ * Snapshot de un metodo dentro de una correccion de valor
+ */
+export interface PaymentValueEditMethod {
+  metodo: PaymentMethodType
+  monto: number
+  comprobante_path: string | null
+}
+
+/**
+ * Una correccion de valor (payment_value_edits): quien, cuando, antes y despues
+ */
+export interface PaymentValueEdit {
+  id: string
+  payment_id: string
+  editado_por: string
+  editado_por_nombre: string
+  editado_at: string
+  motivo: string
+  nota: string | null
+  dia_cerrado: boolean
+  subtotal_anterior: number
+  subtotal_nuevo: number
+  total_anterior: number
+  total_nuevo: number
+  items_anteriores: PaymentValueEditItem[]
+  items_nuevos: PaymentValueEditItem[]
+  metodos_anteriores: PaymentValueEditMethod[]
+  metodos_nuevos: PaymentValueEditMethod[]
 }
 
 /**
@@ -140,6 +189,8 @@ export interface PaymentWithDetails extends Payment {
   payment_methods: PaymentMethod[]
   payment_invoicing: PaymentInvoicingSummary | null
   wimax_invoice_jobs: WimaxInvoiceJobSummary | null
+  /** Historial de correcciones de valor, mas reciente primero */
+  payment_value_edits?: PaymentValueEdit[]
 }
 
 /**

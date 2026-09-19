@@ -26,6 +26,7 @@ export async function getPayments(options: {
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
       payment_methods(*),
+      payment_value_edits(*),
       payment_invoicing(
         estado,
         monto_a_facturar,
@@ -97,6 +98,7 @@ export async function getPaymentWithDetails(id: string): Promise<PaymentWithDeta
       patients!inner(id, cedula, nombre, apellido),
       payment_items(*),
       payment_methods(*),
+      payment_value_edits(*),
       payment_invoicing(
         estado,
         monto_a_facturar,
@@ -124,6 +126,7 @@ export async function getPaymentWithDetails(id: string): Promise<PaymentWithDeta
       )
     `)
     .eq('id', id)
+    .order('editado_at', { referencedTable: 'payment_value_edits', ascending: false })
     .single()
 
   if (error) {

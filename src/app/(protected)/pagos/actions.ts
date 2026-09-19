@@ -357,6 +357,80 @@ export async function editPaymentMethods(input: {
 }
 
 /**
+ * Corregir el VALOR de un pago ya registrado (precio/cantidad de servicios,
+ * total y montos por metodo). Caso real: se registro con un cero de menos.
+ * El pago no se anula: queda marcado como "Valor editado por error" con
+ * quien, cuando y los valores anteriores.
+ *
+ * El control real de rol (todo el personal), el estado del pago, el bloqueo
+ * por facturacion WiMAX, el historial y la auditoria los hace el RPC
+ * `corregir_valor_pago` (migracion 081).
+ */
+const correctValuesSchema = z.object({
+  payment_id: z.string().uuid('Pago invalido'),
+  items: z
+    .array(
+      z.object({
+        item_id: z.string().uuid('Servicio invalido'),
+        unit_price: z.number().min(0, 'El precio no puede ser negativo').max(9_999_999_999.99),
+        quantity: z.number().int().min(1, 'La cantidad debe ser al menos 1').max(99),
+      })
+    )
+    .min(1, 'Debe incluir al menos un servicio')
+    .max(50),
+  total: z.number().positive('El total debe ser mayor a 0').max(9_999_999_999.99),
+  methods: z
+    .array(
+      z.object({
+        metodo: z.enum(['efectivo', 'tarjeta', 'transferencia', 'nequi']),
+        monto: z.number().positive('El monto debe ser mayor a cero'),
+        comprobante_path: z.string().nullable().optional(),
+      })
+    )
+    .min(1, 'Debe incluir al menos un metodo de pago'),
+  nota: z.string().max(300, 'La nota es muy larga (maximo 300 caracteres)').nullable().optional(),
+})
+
+export type CorrectPaymentValuesInput = z.infer<typeof correctValuesSchema>
+
+export async function correctPaymentValues(
+  input: CorrectPaymentValuesInput
+): Promise<{ success?: boolean; error?: string }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autorizado. Por favor inicie sesion.' }
+
+  const validated = correctValuesSchema.safeParse(input)
+  if (!validated.success) {
+    return { error: validated.error.issues[0]?.message ?? 'Datos invalidos' }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).rpc('corregir_valor_pago', {
+    p_payment_id: validated.data.payment_id,
+    p_items: validated.data.items,
+    p_total: validated.data.total,
+    p_methods: validated.data.methods,
+    p_nota: validated.data.nota ?? null,
+  })
+
+  if (error) {
+    console.error('Corregir valor de pago error:', { code: error.code, message: error.message })
+    // Los mensajes del RPC ya vienen en espanol y son seguros de mostrar.
+    return { error: error.message?.replace(/^.*?:\s*/, '') || 'Error al corregir el valor del pago' }
+  }
+
+  revalidatePath(`/pagos/${validated.data.payment_id}`)
+  revalidatePath('/pagos')
+  revalidatePath('/cierres')
+  revalidatePath('/reportes')
+  return { success: true }
+}
+
+/**
  * Canonicalize and enqueue the editable WiMAX invoice lines. PostgreSQL owns
  * the final catalog/total/dedup validation; this validation only gives the UI
  * fast, readable errors.

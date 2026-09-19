@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { PaymentEditedBadge } from './payment-edited-badge'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -91,9 +92,12 @@ export function PaymentsTable({ payments, canManageWimax }: PaymentsTableProps) 
               {payment.nota ?? <span>—</span>}
             </TableCell>
             <TableCell>
-              <Badge variant={payment.estado === 'activo' ? 'default' : 'destructive'}>
-                {payment.estado === 'activo' ? 'Activo' : 'Anulado'}
-              </Badge>
+              <div className="flex flex-wrap items-center gap-1">
+                <Badge variant={payment.estado === 'activo' ? 'default' : 'destructive'}>
+                  {payment.estado === 'activo' ? 'Activo' : 'Anulado'}
+                </Badge>
+                {payment.valor_editado_at && <PaymentEditedBadge compact />}
+              </div>
             </TableCell>
             <TableCell>
               <CreateWimaxInvoiceDialog

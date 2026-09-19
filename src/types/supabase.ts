@@ -1342,6 +1342,7 @@ export type Database = {
           service_name: string
           subtotal: number
           unit_price: number
+          unit_price_original: number | null
         }
         Insert: {
           created_at?: string
@@ -1352,6 +1353,7 @@ export type Database = {
           service_name: string
           subtotal: number
           unit_price: number
+          unit_price_original?: number | null
         }
         Update: {
           created_at?: string
@@ -1362,6 +1364,7 @@ export type Database = {
           service_name?: string
           subtotal?: number
           unit_price?: number
+          unit_price_original?: number | null
         }
         Relationships: [
           {
@@ -1415,6 +1418,71 @@ export type Database = {
           },
         ]
       }
+      payment_value_edits: {
+        Row: {
+          dia_cerrado: boolean
+          editado_at: string
+          editado_por: string
+          editado_por_nombre: string
+          id: string
+          items_anteriores: Json
+          items_nuevos: Json
+          metodos_anteriores: Json
+          metodos_nuevos: Json
+          motivo: string
+          nota: string | null
+          payment_id: string
+          subtotal_anterior: number
+          subtotal_nuevo: number
+          total_anterior: number
+          total_nuevo: number
+        }
+        Insert: {
+          dia_cerrado?: boolean
+          editado_at?: string
+          editado_por: string
+          editado_por_nombre: string
+          id?: string
+          items_anteriores: Json
+          items_nuevos: Json
+          metodos_anteriores: Json
+          metodos_nuevos: Json
+          motivo?: string
+          nota?: string | null
+          payment_id: string
+          subtotal_anterior: number
+          subtotal_nuevo: number
+          total_anterior: number
+          total_nuevo: number
+        }
+        Update: {
+          dia_cerrado?: boolean
+          editado_at?: string
+          editado_por?: string
+          editado_por_nombre?: string
+          id?: string
+          items_anteriores?: Json
+          items_nuevos?: Json
+          metodos_anteriores?: Json
+          metodos_nuevos?: Json
+          motivo?: string
+          nota?: string | null
+          payment_id?: string
+          subtotal_anterior?: number
+          subtotal_nuevo?: number
+          total_anterior?: number
+          total_nuevo?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_value_edits_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           anulacion_justificacion: string | null
@@ -1432,6 +1500,9 @@ export type Database = {
           patient_id: string
           subtotal: number
           total: number
+          total_original: number | null
+          valor_editado_at: string | null
+          valor_editado_por: string | null
         }
         Insert: {
           anulacion_justificacion?: string | null
@@ -1449,6 +1520,9 @@ export type Database = {
           patient_id: string
           subtotal: number
           total: number
+          total_original?: number | null
+          valor_editado_at?: string | null
+          valor_editado_por?: string | null
         }
         Update: {
           anulacion_justificacion?: string | null
@@ -1466,6 +1540,9 @@ export type Database = {
           patient_id?: string
           subtotal?: number
           total?: number
+          total_original?: number | null
+          valor_editado_at?: string | null
+          valor_editado_por?: string | null
         }
         Relationships: [
           {

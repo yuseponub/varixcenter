@@ -331,7 +331,7 @@ export function AppointmentServicesForm({
               </p>
             </div>
             <Button asChild variant="default" size="sm">
-              <Link href={`/pagos/nuevo?patient=${patientId}`}>
+              <Link href={`/pagos/nuevo?patient=${patientId}&appointment=${appointmentId}`}>
                 <CreditCard className="mr-2 h-4 w-4" />
                 Ir a Cobrar
               </Link>

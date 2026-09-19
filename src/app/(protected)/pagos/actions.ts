@@ -5,6 +5,7 @@ import { paymentSchema, anulacionSchema } from '@/lib/validations/payment'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import type { WimaxExecutionMode } from '@/types/invoicing'
+import { bogotaDayBounds, bogotaToday } from '@/lib/bogota-date'
 
 /**
  * Action state for payment server actions
@@ -33,6 +34,68 @@ const wimaxItemSchema = z.object({
   cantidad: z.number().int().min(1).max(99),
   precio_unitario: z.number().positive().max(9_999_999_999.99),
 })
+
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Resuelve la cita a la que pertenece un pago, para que la conciliación
+ * diaria pueda cruzar pago y cita sin depender solo del nombre del paciente.
+ *
+ * Prioridad:
+ * 1. Cita explícita (viene del botón "Ir a cobrar" de la agenda), si es del paciente.
+ * 2. La cita de los servicios pendientes seleccionados, si todos son de una misma cita.
+ * 3. La única cita viva del paciente hoy (Bogotá); si tiene varias, la primera
+ *    que aún no tenga un pago activo enlazado.
+ * Devuelve null si no hay una cita inequívoca: nunca adivina.
+ */
+async function resolvePaymentAppointmentId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  patientId: string,
+  explicitAppointmentId: string | null,
+  appointmentServiceIds: string[]
+): Promise<string | null> {
+  if (explicitAppointmentId && UUID_RE.test(explicitAppointmentId)) {
+    const { data } = await supabase
+      .from('appointments')
+      .select('id')
+      .eq('id', explicitAppointmentId)
+      .eq('patient_id', patientId)
+      .maybeSingle()
+    if (data?.id) return data.id
+  }
+
+  if (appointmentServiceIds.length > 0) {
+    const { data } = await supabase
+      .from('appointment_services')
+      .select('appointment_id')
+      .in('id', appointmentServiceIds)
+    const ids = new Set((data ?? []).map((row) => row.appointment_id))
+    if (ids.size === 1) return [...ids][0]
+    if (ids.size > 1) return null
+  }
+
+  const { start, end } = bogotaDayBounds(bogotaToday())
+  const { data: citas } = await supabase
+    .from('appointments')
+    .select('id')
+    .eq('patient_id', patientId)
+    .gte('fecha_hora_inicio', start)
+    .lte('fecha_hora_inicio', end)
+    .not('estado', 'in', '(cancelada,no_asistio)')
+    .order('fecha_hora_inicio', { ascending: true })
+
+  if (!citas || citas.length === 0) return null
+  if (citas.length === 1) return citas[0].id
+
+  const { data: pagados } = await supabase
+    .from('payments')
+    .select('appointment_id')
+    .in('appointment_id', citas.map((c) => c.id))
+    .eq('estado', 'activo')
+  const conPago = new Set((pagados ?? []).map((p) => p.appointment_id))
+  return citas.find((c) => !conPago.has(c.id))?.id ?? null
+}
 
 /**
  * Create a new payment
@@ -76,6 +139,7 @@ export async function createPayment(
     nota: (formData.get('nota') as string) || null,
   }
   const pidioFactura = formData.get('pidio_factura') === 'true'
+  const explicitAppointmentId = ((formData.get('appointment_id') as string) || '').trim() || null
 
   // Validate with Zod
   const validated = paymentSchema.safeParse(rawData)
@@ -94,6 +158,13 @@ export async function createPayment(
   )
   const total = subtotal - validated.data.descuento
 
+  const appointmentId = await resolvePaymentAppointmentId(
+    supabase,
+    validated.data.patient_id,
+    explicitAppointmentId,
+    appointmentServiceIds
+  )
+
   // Call RPC function for atomic creation with gapless invoice
   // Pass appointment_service_ids if any services are from appointments
   const { data: paymentData, error: paymentError } = await supabase.rpc(
@@ -108,7 +179,7 @@ export async function createPayment(
       p_items: validated.data.items,
       p_methods: validated.data.methods,
       p_appointment_service_ids: appointmentServiceIds,
-      p_appointment_id: undefined,
+      p_appointment_id: appointmentId ?? undefined,
       p_nota: validated.data.nota ?? undefined,
     }
   )

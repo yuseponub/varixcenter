@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/breadcrumb'
 
 interface NewPaymentPageProps {
-  searchParams: Promise<{ patient?: string }>
+  searchParams: Promise<{ patient?: string; appointment?: string }>
 }
 
 /**
@@ -34,7 +34,8 @@ async function getPatientById(id: string) {
  * New Payment Page
  *
  * Fetches services and patients in parallel for performance.
- * Accepts ?patient=uuid query param for pre-selection from patient detail page.
+ * Accepts ?patient=uuid query param for pre-selection from patient detail page,
+ * and ?appointment=uuid to link the payment to the appointment it came from.
  * Renders PaymentForm with all required data.
  */
 export default async function NewPaymentPage({ searchParams }: NewPaymentPageProps) {
@@ -78,6 +79,7 @@ export default async function NewPaymentPage({ searchParams }: NewPaymentPagePro
         <PaymentForm
           services={services}
           defaultPatient={defaultPatient}
+          defaultAppointmentId={defaultPatient ? params.appointment ?? null : null}
         />
       </div>
     </div>

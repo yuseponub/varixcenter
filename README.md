@@ -193,6 +193,8 @@ Los grupos son:
   `MICROSOFT_*`, `OUTLOOK_*` (ver [OUTLOOK-SYNC.md](./docs/OUTLOOK-SYNC.md))
 - **Twilio**: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
 - **Cron**: `ENABLE_CRON`, `CRON_SECRET`
+- **Conciliación diaria por correo**: `RESEND_API_KEY`, `RECONCILIATION_EMAIL_TO`,
+  `RECONCILIATION_EMAIL_FROM` (cron `/api/cron/daily-reconciliation`, 20:00 Bogotá)
 - **OCR / transcripción**: `OPENAI_API_KEY`
 
 ## Scripts

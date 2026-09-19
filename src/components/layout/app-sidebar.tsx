@@ -26,6 +26,7 @@ import {
   FileText,
   Bell,
   Vault,
+  Scale,
   UserCheck,
   ReceiptText,
 } from "lucide-react"
@@ -148,6 +149,9 @@ export function AppSidebar({
     }
     if (showAdmin) {
       items.push(...adminNavItems)
+    }
+    if (role === "admin") {
+      items.push({ href: "/reportes/conciliacion", label: "Conciliación", icon: <Scale className="h-4 w-4 shrink-0" /> })
     }
     return items
   }

@@ -37,6 +37,8 @@ interface Patient {
 interface PaymentFormProps {
   services: ServiceOption[]
   defaultPatient?: Patient | null
+  /** Cita desde la que se llegó a cobrar (botón "Ir a cobrar" de la agenda) */
+  defaultAppointmentId?: string | null
   initialPendingServices?: PendingServicesGroup[]
 }
 
@@ -53,6 +55,7 @@ interface PaymentFormProps {
 export function PaymentForm({
   services,
   defaultPatient,
+  defaultAppointmentId = null,
   initialPendingServices = [],
 }: PaymentFormProps) {
   const router = useRouter()
@@ -177,6 +180,11 @@ export function PaymentForm({
     formData.set('descuento_justificacion', descuentoJustificacion)
     formData.set('nota', nota)
     formData.set('pidio_factura', String(pidioFactura))
+    // Solo se conserva si el paciente sigue siendo el de la cita de origen
+    formData.set(
+      'appointment_id',
+      defaultAppointmentId && patientId === defaultPatient?.id ? defaultAppointmentId : ''
+    )
 
     // Extract appointment_service_ids for the RPC
     const appointmentServiceIds = pendingServiceItems

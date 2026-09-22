@@ -8,6 +8,8 @@
  *
  * Autenticación: Bearer CRON_SECRET. Usa el cliente service role porque no
  * corre bajo la sesión de ningún usuario (integración de fondo).
+ * Se habilita con RESEND_API_KEY; ENABLE_RECONCILIATION_EMAIL=false lo apaga
+ * sin tocar ENABLE_CRON (que gobierna recordatorios SMS y sync Outlook).
  *
  * @see vercel.json
  */
@@ -33,9 +35,12 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (process.env.ENABLE_CRON !== 'true') {
-    console.log('[Cron] ENABLE_CRON != true - conciliación deshabilitada en este entorno')
-    return Response.json({ skipped: true, reason: 'ENABLE_CRON disabled' })
+  // No depende de ENABLE_CRON (que también gobierna los SMS de recordatorio):
+  // el envío se habilita solo con RESEND_API_KEY y se apaga con
+  // ENABLE_RECONCILIATION_EMAIL=false.
+  if (process.env.ENABLE_RECONCILIATION_EMAIL === 'false') {
+    console.log('[Cron] ENABLE_RECONCILIATION_EMAIL=false - conciliación deshabilitada')
+    return Response.json({ skipped: true, reason: 'ENABLE_RECONCILIATION_EMAIL disabled' })
   }
 
   const config = getReconciliationEmailConfig()
